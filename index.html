@@ -1623,6 +1623,10 @@ const uw50When=s=>{try{return new Intl.DateTimeFormat(undefined,{month:'short',d
 async function uw50LoadAll(){
   if(!currentSession)return;
   const uid=currentSession.user.id;
+  // Repair any missing role-derived badges/titles before reading identity data.
+  // Safe to call repeatedly; the RPC is idempotent.
+  const repair=await uwSupabase.rpc('uw_repair_my_identity');
+  if(repair.error)console.warn('Identity repair:',repair.error.message);
   const [rd,ur,bd,ub,td,ut,ma]=await Promise.all([
     uwSupabase.from('role_definitions').select('*').eq('active',true).order('authority_rank',{ascending:false}),
     uwSupabase.from('user_roles').select('*').eq('user_id',uid).eq('status','active'),
@@ -1632,7 +1636,12 @@ async function uw50LoadAll(){
     uwSupabase.from('user_titles').select('*').eq('user_id',uid).order('granted_at',{ascending:false}),
     uwSupabase.from('role_applications').select('*').eq('user_id',uid).order('submitted_at',{ascending:false})
   ]);
-  if(ur.error){console.error(ur.error);return;}
+  const identityErrors=[rd,ur,bd,ub,td,ut,ma].filter(x=>x?.error).map(x=>x.error.message);
+  if(identityErrors.length){
+    console.error('Identity load errors:',identityErrors);
+    toast('Identity data error: '+identityErrors[0]);
+  }
+  if(ur.error)return;
   uw50Roles=ur.data||[];
   UW50.roleDefs=rd.data||[];UW50.badgeDefs=bd.data||[];UW50.badges=ub.data||[];UW50.titleDefs=td.data||[];UW50.titles=ut.data||[];UW50.myApps=ma.data||[];
   renderAccessUI();
