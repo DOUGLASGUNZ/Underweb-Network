@@ -334,7 +334,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <aside class="sidebar">
 <div class="side-label" id="networkSideLabel">UnderWeb Network</div>
 <button class="side-item active" data-page="home">Home <span>⌂</span></button>
-<button class="side-item" data-page="live">Live VRChat <span class="badge">2 LIVE</span></button>
+<button class="side-item" data-page="live">Live VRChat</button>
 <button class="side-item" data-page="discover">Discover Creators</button>
 <button class="side-item" data-page="events">Events</button>
 <button class="side-item" data-page="projects">Projects &amp; Collabs</button>
@@ -342,7 +342,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <button class="side-item" data-page="matching">Creator Matching</button>
 <button class="side-item" data-page="bookings">Bookings</button>
 <button class="side-item" data-page="profile">My Profile</button>
-<button class="side-item" data-page="notifications">Notifications <span class="badge">5</span></button>
+<button class="side-item" data-page="notifications">Notifications</button>
 <div class="side-label">Community Ops</div>
 <button class="side-item" data-page="staff" data-requires-staff="true">Staff Dashboard</button>
 <button class="side-item" data-page="availability" data-requires-staff="true">Staff Availability</button>
@@ -358,7 +358,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <main class="content">
 <section class="page active" id="page-home"><div class="wrap uw40-shell">
 <section class="uw40-statusbar">
-<div><span class="uw40-pulse"></span><strong>THE UNDERWEB // STAFF BETA</strong><small>v0.4.4</small></div>
+<div><span class="uw40-pulse"></span><strong>THE UNDERWEB // STAFF BETA</strong><small>v0.4.7</small></div>
 <div class="uw40-status-right"><span id="uwNetworkStatus">NETWORK ONLINE</span><span class="uw40-secure">SECURE SESSION</span></div>
 </section>
 <section class="uw40-hero">
@@ -412,9 +412,9 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 </div></section>
 <section class="page" id="page-events"><div class="wrap">
 <div class="page-title"><div class="eyebrow">EVENT NETWORK</div><h1>Events</h1><p>Official UnderWeb and Symbiotes events will appear here when they are actually published.</p></div>
-<div class="card"><div class="eyebrow">NO PUBLISHED EVENTS</div><h3>Nothing scheduled yet.</h3><div class="meta">This page no longer uses demo events. When the real event system is connected, only actual published events will appear here.</div><button class="btn hot" data-page="eventbuilder" data-requires-staff="true">+ Build Event</button></div>
-<div class="head"><div><div class="eyebrow">EVENT OPERATIONS</div><h2>Coverage overview</h2></div><button class="btn hot" data-page="eventbuilder" data-requires-staff="true">+ Build Event</button></div>
-<div class="tablewrap"><table><thead><tr><th>Event</th><th>Group</th><th>Date</th><th>Lead</th><th>DJ</th><th>Photo</th><th>Security</th><th>Status</th></tr></thead><tbody><tr><td colspan="8" class="meta">No real event records are published yet.</td></tr></tbody></table></div>
+<div class="card" id="eventsEmptyCard"><div class="eyebrow">NO PUBLISHED EVENTS</div><h3>Nothing scheduled yet.</h3><div class="meta">Only real events saved to the UnderWeb database appear here.</div><button class="btn hot" data-page="eventbuilder" data-requires-staff="true">+ Build Event</button></div>
+<div class="head"><div><div class="eyebrow">EVENT OPERATIONS</div><h2>Event schedule</h2></div><button class="btn hot" data-page="eventbuilder" data-requires-staff="true">+ Build Event</button></div>
+<div class="tablewrap"><table><thead><tr><th>Event</th><th>Group</th><th>Date</th><th>Location</th><th>Status</th><th>Created</th></tr></thead><tbody id="eventsTableBody"><tr><td colspan="6" class="meta">Loading real events…</td></tr></tbody></table></div>
 </div></section>
 <section class="page" id="page-projects"><div class="wrap">
 <div class="page-title"><div class="eyebrow">PROJECT BOARD</div><h1>Projects &amp; Collabs</h1><p>Open work, creative requests and collaboration opportunities.</p></div>
@@ -495,7 +495,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <section class="page" id="page-eventbuilder"><div class="wrap">
 <div class="page-title"><div class="eyebrow">EVENT OPERATIONS</div><h1>Event Builder</h1><p>Build a real event, assign coverage and prepare it for publishing.</p></div>
 <div class="uw42-staff-command"><button data-page="applications"><i>▤</i><b>Applications</b><span>Review creator, performer, staff and partnership requests.</span></button><button data-page="tickets"><i>◇</i><b>Tickets</b><span>Resolve support, safety, booking and member issues.</span></button><button data-page="availability"><i>◫</i><b>Availability</b><span>See coverage windows and fill staffing gaps.</span></button><button data-page="activity"><i>⌁</i><b>Audit Log</b><span>Review privacy-safe staff actions and operational history.</span></button></div>
-<div class="grid2"><div class="card uw-event-editor"><div class="eyebrow">EVENT DETAILS</div><h3>New Event</h3><div class="toolbar"><input class="input" id="eventPostTitle" placeholder="Event title"/><select class="select" id="eventPostGroup"><option>UnderWeb</option><option>Symbiotes</option></select><input class="input" id="eventPostTime" placeholder="Date / time"/><input class="input" id="eventPostLocation" placeholder="VRChat world / location"/></div><textarea class="textarea" id="eventPostDescription" placeholder="Event description"></textarea><button class="btn hot" data-action="save">Save Event</button> <button class="btn" id="previewDiscordBtn" type="button">Preview Discord Post</button> <button class="btn" id="copyDiscordBtn" type="button">Copy Discord Post</button><div class="uw-discord-note">Real Discord publishing will be server-side so a webhook/token is never exposed in this public HTML.</div></div>
+<div class="grid2"><div class="card uw-event-editor"><div class="eyebrow">EVENT DETAILS</div><h3>New Event</h3><div class="toolbar"><input class="input" id="eventPostTitle" placeholder="Event title"/><select class="select" id="eventPostGroup"><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select><input class="input" id="eventPostTime" type="datetime-local"/><input class="input" id="eventPostLocation" placeholder="VRChat world / location"/><select class="select" id="eventPostStatus"><option value="published">Published</option><option value="draft">Draft</option></select></div><textarea class="textarea" id="eventPostDescription" placeholder="Event description"></textarea><button class="btn hot" id="saveEventBtn" type="button">Save Event</button> <button class="btn" id="previewDiscordBtn" type="button">Preview Discord Post</button> <button class="btn" id="copyDiscordBtn" type="button">Copy Discord Post</button><div class="uw-discord-note" id="eventSaveStatus">Events save to Supabase. Discord publishing stays server-side so a webhook/token is never exposed in this public HTML.</div></div>
 <div class="card"><div class="eyebrow">COVERAGE</div><h3>No staffing assigned yet.</h3><div class="meta">Coverage will populate from real event assignments and staff availability.</div></div></div>
 </div></section>
 <section class="page" id="page-permissions"><div class="wrap">
@@ -524,7 +524,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <div class="uw-page-title"><div class="eyebrow">ACCOUNTABILITY</div><h1>Audit &amp; Activity</h1><p>A privacy-safe operational history of staff-facing changes. No password or IP logging.</p></div>
 <section class="uw-section"><div class="uw-section-head"><h3>Recent Activity</h3><button class="uw-mini-btn" id="reloadActivityBtn">REFRESH</button></div><div class="uw-list" id="activityList"></div></section>
 </div></section><section class="page" id="page-feedback"><div class="wrap">
-<div class="uw-page-title"><div class="eyebrow">STAFF BETA • 0.4.4</div><h1>Break It. Report It.</h1><p>Use this while testing the beta. Bugs, confusing flows, visual issues, missing features—send them here.</p></div>
+<div class="uw-page-title"><div class="eyebrow">STAFF BETA • 0.4.7</div><h1>Break It. Report It.</h1><p>Use this while testing the beta. Bugs, confusing flows, visual issues, missing features—send them here.</p></div>
 <div class="uw-two-col"><section class="uw-section"><div class="uw-section-head"><h3>New Feedback</h3><small>Beta testers</small></div><div class="uw-form-grid"><select class="uw-select" id="feedbackType"><option value="bug">Bug</option><option value="ux">UX / Confusing</option><option value="feature">Feature Request</option><option value="visual">Visual / Polish</option><option value="other">Other</option></select><select class="uw-select" id="feedbackSeverity"><option value="low">Low</option><option selected="" value="medium">Medium</option><option value="high">High</option><option value="blocker">Blocker</option></select><input class="uw-input full" id="feedbackTitle" placeholder="Short title"/><textarea class="uw-textarea full" id="feedbackBody" placeholder="What happened? What did you expect?"></textarea><div class="full"><button class="btn hot" id="submitFeedbackBtn">SUBMIT FEEDBACK</button></div></div></section><section class="uw-section"><div class="uw-section-head"><h3>Your Reports</h3><button class="uw-mini-btn" id="reloadFeedbackBtn">REFRESH</button></div><div class="uw-list" id="feedbackList"></div></section></div>
 </div></section></main></div>
 <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -1117,7 +1117,7 @@ document.addEventListener('click',e=>{
   else if(x==='post-project')toast('Preview: create a new project or collaboration request.');
   else if(x==='match')toast('Matching refreshed using skill, availability and history.');
   else if(x==='invite')toast('Preview: creator invite / booking request sent.');
-  else if(x==='save'){ if(a.closest('#page-profile')) saveMyProfile(); else toast('Saved in prototype.'); }
+  else if(x==='save'){ if(a.closest('#page-profile')) saveMyProfile(); else toast('This control is not connected yet.'); }
   else if(x==='availability')toast('Preview: weekly availability editor.');
   else if(x==='discord')toast('Preview: Discord event post generated.');
 });
@@ -1159,7 +1159,7 @@ try{setTheme(localStorage.getItem('underwebTheme')||'underweb')}catch(e){setThem
 </script>
 <button aria-label="Create" id="uwCreateFab" title="Create / report">+</button>
 <script>
-let uwBeta={applications:[],tickets:[],announcements:[],activity:[],feedback:[]};
+let uwBeta={applications:[],tickets:[],announcements:[],activity:[],feedback:[],events:[]};
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function niceTime(v){if(!v)return '';const d=new Date(v);if(Number.isNaN(d.getTime()))return '';return d.toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}
 function topRole(){return currentMemberships?.[0]?.role_name || (currentSession?'Member':'Guest');}
@@ -1193,8 +1193,53 @@ async function loadCreatorDirectory(){
     if(error)throw error; uwRealCreators=data||[]; renderCreatorDirectory();
   }catch(err){console.error('Creator directory load failed:',err);list.innerHTML='<div class="uw-empty" style="grid-column:1/-1">Creator directory is empty or not available yet.</div>';}
 }
+function formatEventDate(v){if(!v)return 'TBD';const d=new Date(v);if(Number.isNaN(d.getTime()))return esc(v);return d.toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}
+function eventGroupLabel(v){return v==='symbiotes'?'Symbiotes':'UnderWeb'}
+function renderEvents(){
+  const body=document.getElementById('eventsTableBody');
+  const visible=uwBeta.events.filter(x=>x.status==='published' || hasStaffAccess());
+  const published=uwBeta.events.filter(x=>x.status==='published');
+  if(body){body.innerHTML=visible.length?visible.map(x=>`<tr><td><b>${esc(x.title)}</b>${x.description?`<div class="meta">${esc(x.description).slice(0,90)}</div>`:''}</td><td>${esc(eventGroupLabel(x.group_scope))}</td><td>${formatEventDate(x.starts_at)}</td><td>${esc(x.location||'TBD')}</td><td><span class="uw-status ${esc(x.status)}">${esc(x.status)}</span></td><td>${niceTime(x.created_at)}</td></tr>`).join(''):'<tr><td colspan="6" class="meta">No real event records yet.</td></tr>';}
+  const empty=document.getElementById('eventsEmptyCard');if(empty)empty.style.display=published.length?'none':'';
+  setText('uwUpcomingCount',published.length);
+  const next=published.filter(x=>!x.starts_at || new Date(x.starts_at).getTime()>=Date.now()-21600000).sort((a,b)=>new Date(a.starts_at||'9999-12-31')-new Date(b.starts_at||'9999-12-31'))[0];
+  setText('uwNextEventTitle',next?next.title:'No published event');
+  setText('uwNextEventMeta',next?`${eventGroupLabel(next.group_scope)} • ${formatEventDate(next.starts_at)} • ${next.location||'Location TBD'}`:'Only real published events will appear here.');
+}
+async function loadEvents(){
+  if(!currentSession){uwBeta.events=[];renderEvents();return;}
+  try{
+    let q=uwSupabase.from('events').select('id,title,group_scope,starts_at,location,description,status,created_by,created_at,updated_at').order('starts_at',{ascending:true,nullsFirst:false}).limit(100);
+    if(!hasStaffAccess())q=q.eq('status','published');
+    const {data,error}=await q;if(error)throw error;uwBeta.events=data||[];renderEvents();
+  }catch(err){console.error('Events load failed:',err);uwBeta.events=[];renderEvents();const body=document.getElementById('eventsTableBody');if(body)body.innerHTML='<tr><td colspan="6" class="meta">Events backend is not installed yet. Run the 0.4.6 Events SQL migration.</td></tr>';}
+}
+async function saveEvent(){
+  if(!currentSession)return passwordlessSignIn();
+  if(!hasStaffAccess())return toast('Staff access is required to create events.');
+  const title=document.getElementById('eventPostTitle')?.value.trim();
+  const group_scope=document.getElementById('eventPostGroup')?.value||'underweb';
+  const timeRaw=document.getElementById('eventPostTime')?.value||'';
+  const location=document.getElementById('eventPostLocation')?.value.trim()||'';
+  const description=document.getElementById('eventPostDescription')?.value.trim()||'';
+  const status=document.getElementById('eventPostStatus')?.value||'published';
+  if(!title)return toast('Add an event title.');
+  if(!timeRaw)return toast('Add the event date and time.');
+  const dt=new Date(timeRaw);if(Number.isNaN(dt.getTime()))return toast('That event date/time is invalid.');
+  const btn=document.getElementById('saveEventBtn');const note=document.getElementById('eventSaveStatus');
+  if(btn){btn.disabled=true;btn.textContent='SAVING…'};if(note)note.textContent='Saving real event…';
+  try{
+    const payload={title,group_scope,starts_at:dt.toISOString(),location,description,status,created_by:currentSession.user.id,updated_at:new Date().toISOString()};
+    const {data,error}=await uwSupabase.from('events').insert(payload).select('id').single();if(error)throw error;
+    toast(status==='published'?'Event published.':'Draft event saved.');
+    if(note)note.textContent=`Saved to Supabase • Event ${data?.id?String(data.id).slice(0,8):''}`;
+    ['eventPostTitle','eventPostTime','eventPostLocation','eventPostDescription'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+    await loadEvents();await loadActivity();showPage('events');
+  }catch(err){console.error('Event save failed:',err);toast(err.message||'Event save failed.');if(note)note.textContent='Save failed. If the events table is missing, run the 0.4.6 SQL migration.';}
+  finally{if(btn){btn.disabled=false;btn.textContent='Save Event'}}
+}
 async function loadStaffBetaData(){
-  await loadCreatorDirectory();
+  await Promise.all([loadCreatorDirectory(),loadEvents()]);
   setText('uwWelcomeName',(currentAccountProfile?.display_name||currentAccountProfile?.username||'CREATOR').toUpperCase());
   setText('uwWelcomeRole',topRole().toUpperCase()+' • '+(hasStaffAccess()?'STAFF ACCESS':'NETWORK MEMBER'));
   setText('uwRoleBadge',topRole().toUpperCase());
@@ -1208,7 +1253,7 @@ async function loadStaffBetaData(){
     await Promise.all([loadApplications(),loadTickets(),loadAnnouncements(),loadActivity()]);
   }
   await loadFeedback();
-  setText('uwUpcomingCount','0');
+  renderEvents();
   updateDashboardOps();
 }
 function updateDashboardOps(){
@@ -1216,7 +1261,7 @@ function updateDashboardOps(){
   const open=uwBeta.tickets.filter(x=>['open','claimed','reviewing'].includes(x.status)).length;
   setText('uwAppBadge',pending);setText('navApplicationCount',pending);setText('uwTicketBadge',open);setText('navTicketCount',open);setText('uwOpenOpsCount',pending+open);
   const att=document.getElementById('uwAttentionList');
-  if(att){att.innerHTML=`<div class="uw-attention-row"><div class="uw-number">${pending}</div><div class="uw-row-main"><b>Applications awaiting action</b><small>Pending or reviewing</small></div><button class="uw-mini-btn hot" data-page="applications">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${open}</div><div class="uw-row-main"><b>Support tickets unresolved</b><small>Open, claimed, or reviewing</small></div><button class="uw-mini-btn hot" data-page="tickets">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${uwBeta.feedback.filter(x=>x.status==='new').length}</div><div class="uw-row-main"><b>New beta reports</b><small>Help us break 0.4.4</small></div><button class="uw-mini-btn" data-page="feedback">VIEW →</button></div>`;bindDynamicPageButtons(att)}
+  if(att){att.innerHTML=`<div class="uw-attention-row"><div class="uw-number">${pending}</div><div class="uw-row-main"><b>Applications awaiting action</b><small>Pending or reviewing</small></div><button class="uw-mini-btn hot" data-page="applications">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${open}</div><div class="uw-row-main"><b>Support tickets unresolved</b><small>Open, claimed, or reviewing</small></div><button class="uw-mini-btn hot" data-page="tickets">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${uwBeta.feedback.filter(x=>x.status==='new').length}</div><div class="uw-row-main"><b>New beta reports</b><small>Help us break 0.4.7</small></div><button class="uw-mini-btn" data-page="feedback">VIEW →</button></div>`;bindDynamicPageButtons(att)}
   renderHomeAnnouncements();renderHomeActivity();
 }
 function bindDynamicPageButtons(root=document){root.querySelectorAll('[data-page]').forEach(b=>{if(b.dataset.uwBound)return;b.dataset.uwBound='1';b.addEventListener('click',()=>showPage(b.dataset.page))})}
@@ -1247,16 +1292,18 @@ async function submitFeedback(){if(!currentSession)return passwordlessSignIn();c
 function renderMissing(id,msg){const e=document.getElementById(id);if(e)e.innerHTML=`<div class="uw-empty">${esc(msg)}</div>`}
 
 document.addEventListener('click',e=>{const a=e.target.closest('[data-app-status]');if(a){const [id,s]=a.dataset.appStatus.split('|');setApplicationStatus(id,s);return}const t=e.target.closest('[data-ticket-status]');if(t){const [id,s]=t.dataset.ticketStatus.split('|');setTicketStatus(id,s);return}});
+document.getElementById('saveEventBtn')?.addEventListener('click',saveEvent);
 document.getElementById('reloadApplicationsBtn')?.addEventListener('click',loadApplications);document.getElementById('reloadTicketsBtn')?.addEventListener('click',loadTickets);document.getElementById('reloadAnnouncementsBtn')?.addEventListener('click',loadAnnouncements);document.getElementById('reloadActivityBtn')?.addEventListener('click',loadActivity);document.getElementById('reloadFeedbackBtn')?.addEventListener('click',loadFeedback);document.getElementById('postAnnouncementBtn')?.addEventListener('click',postAnnouncement);document.getElementById('submitFeedbackBtn')?.addEventListener('click',submitFeedback);
 document.getElementById('uwCreateFab')?.addEventListener('click',()=>{if(hasStaffAccess())showPage('feedback');else showPage('profile')});
 bindDynamicPageButtons();
 </script>
-<div aria-hidden="true" class="uw-overlay" id="availabilityEditor"><div class="uw-dialog"><div class="uw-dialog-head"><div><div class="eyebrow">MY WEEKLY COVERAGE</div><h2>Set Availability</h2></div><button class="uw-dialog-close" id="closeAvailabilityEditor" type="button">×</button></div><div class="uw-field-grid"><label><span>Group</span><select class="select" id="availabilityGroupScope"><option value="both">Both Groups</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select></label><label><span>Preferred role</span><input class="input" id="availabilityPreferredRole" placeholder="Event Lead, Security, DJ, Photographer..."/></label></div><div class="uw-week-editor" id="availabilityWeekEditor"></div><label class="uw-field"><span>Notes</span><textarea class="textarea" id="availabilityNotes" placeholder="Anything staff should know about your schedule."></textarea></label><div class="uw-dialog-actions"><button class="btn" id="cancelAvailabilityBtn" type="button">Cancel</button><button class="btn hot" id="saveAvailabilityBtn" type="button">SAVE AVAILABILITY</button></div></div></div>
+<div aria-hidden="true" class="uw-overlay" id="availabilityEditor"><div class="uw-dialog"><div class="uw-dialog-head"><div><div class="eyebrow">MY WEEKLY COVERAGE</div><h2>Set Availability</h2></div><button class="uw-dialog-close" id="closeAvailabilityEditor" type="button">×</button></div><div class="uw-field-grid"><label><span>Group</span><select class="select" id="availabilityGroupScope"><option value="both">Both Groups</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select></label><label><span>Preferred role</span><input class="input" id="availabilityPreferredRole" placeholder="Event Lead, Security, DJ, Photographer..."/></label><label><span>Your time zone</span><select class="select" id="availabilityTimezone"><option value="America/New_York">Eastern Time (ET)</option><option value="America/Chicago">Central Time (CT)</option><option value="America/Denver">Mountain Time (MT)</option><option value="America/Phoenix">Arizona (MST)</option><option value="America/Los_Angeles">Pacific Time (PT)</option><option value="America/Anchorage">Alaska Time</option><option value="Pacific/Honolulu">Hawaii Time</option><option value="UTC">UTC</option><option value="Europe/London">UK / London</option><option value="Europe/Paris">Central Europe</option><option value="Asia/Tokyo">Japan</option><option value="Australia/Sydney">Sydney / Eastern Australia</option></select></label><div class="uw-field"><span>STAFF VIEW</span><div class="meta">Enter times in your own zone. Staff schedules are displayed in Eastern Time (ET) automatically.</div></div></div><div class="uw-week-editor" id="availabilityWeekEditor"></div><label class="uw-field"><span>Notes</span><textarea class="textarea" id="availabilityNotes" placeholder="Anything staff should know about your schedule."></textarea></label><div class="uw-dialog-actions"><button class="btn" id="cancelAvailabilityBtn" type="button">Cancel</button><button class="btn hot" id="saveAvailabilityBtn" type="button">SAVE AVAILABILITY</button></div></div></div>
 <div aria-hidden="true" class="uw-overlay" id="discordPreviewOverlay"><div class="uw-dialog"><div class="uw-dialog-head"><div><div class="eyebrow">DISCORD POST PREVIEW</div><h2>Generated Event Post</h2></div><button class="uw-dialog-close" id="closeDiscordPreview" type="button">×</button></div><pre class="uw-discord-preview" id="discordPreviewText"></pre><div class="uw-dialog-actions"><button class="btn" id="closeDiscordPreview2" type="button">Close</button><button class="btn hot" id="copyDiscordPreviewBtn" type="button">COPY POST</button></div></div></div>
 <script id="uw033Script">
 const UW033_DAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 const UW033_DAY_LABELS={monday:'MON',tuesday:'TUE',wednesday:'WED',thursday:'THU',friday:'FRI',saturday:'SAT',sunday:'SUN'};
 const UW033_STATE_LABELS={available:'Available',limited:'Limited',by_request:'By Request',unavailable:'Unavailable'};
+const UW033_ET_ZONE='America/New_York';
 let uw033Profile={avatar_url:'',banner_url:'',profile_mode:'creator_staff',availability:'by_request',specialties:[]};
 let uw033Availability=[];
 
@@ -1285,7 +1332,7 @@ async function loadMyProfile(){
   if(!currentSession)return;
   const uid=currentSession.user.id;
   const {data,error}=await uwSupabase.from('creator_profiles').select('display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url').eq('user_id',uid).maybeSingle();
-  if(error){console.warn('0.3.3 profile fields may need migration:',error.message);return;}
+  if(error){console.warn('Profile fields may need migration:',error.message);return;}
   uw033Profile={...uw033Profile,...(data||{})};
   if(uw033El('profileDisplayName'))uw033El('profileDisplayName').value=data?.display_name||currentAccountProfile?.display_name||'';
   if(uw033El('profileHeadline'))uw033El('profileHeadline').value=data?.headline||'';
@@ -1299,17 +1346,14 @@ async function uw033UploadProfileMedia(file,kind){
   if(!currentSession||!file)return null;
   if(!file.type?.startsWith('image/'))throw new Error('Choose an image file.');
   if(file.size>5*1024*1024)throw new Error('Image must be 5 MB or smaller.');
-  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
   const path=`${currentSession.user.id}/${kind}-${Date.now()}.${ext}`;
-  const up=await uwSupabase.storage.from('profile-media').upload(path,file,{cacheControl:'3600',upsert:true,contentType:file.type});
-  if(up.error)throw up.error;
+  const up=await uwSupabase.storage.from('profile-media').upload(path,file,{upsert:true,contentType:file.type});if(up.error)throw up.error;
   const {data}=uwSupabase.storage.from('profile-media').getPublicUrl(path);return data.publicUrl;
 }
 async function saveMyProfile(){
-  if(!currentSession){toast('Sign in first.');return passwordlessSignIn();}
-  const uid=currentSession.user.id, display=uw033El('profileDisplayName')?.value?.trim()||'', headline=uw033El('profileHeadline')?.value?.trim()||'', bio=uw033El('profileBio')?.value?.trim()||'';
-  if(!display)return toast('Add a display name first.');
-  const saveBtn=uw033El('saveProfileBtn033'),state=uw033El('profileSaveState');if(saveBtn)saveBtn.disabled=true;if(state)state.textContent='SAVING';
+  if(!currentSession)return passwordlessSignIn();const uid=currentSession.user.id,display=uw033El('profileDisplayName')?.value?.trim()||'';if(!display)return toast('Display name is required.');
+  const headline=uw033El('profileHeadline')?.value?.trim()||'',bio=uw033El('profileBio')?.value?.trim()||'';const saveBtn=uw033El('saveProfileBtn033'),state=uw033El('profileSaveState');if(saveBtn)saveBtn.disabled=true;if(state)state.textContent='SAVING';
   try{
     let avatar=uw033Profile.avatar_url||null,banner=uw033Profile.banner_url||null;
     const af=uw033El('profileAvatarInput')?.files?.[0],bf=uw033El('profileBannerInput')?.files?.[0];
@@ -1325,21 +1369,35 @@ async function saveMyProfile(){
 }
 
 function uw033WeekEditorHTML(){return UW033_DAYS.map(d=>`<div class="uw-week-row" data-day="${d}"><strong>${UW033_DAY_LABELS[d]}</strong><div class="uw-week-controls"><select class="select day-state"><option value="available">Available</option><option value="limited">Limited</option><option value="by_request">By Request</option><option value="unavailable">Unavailable</option></select><input class="input day-start" type="time" aria-label="Start time"><input class="input day-end" type="time" aria-label="End time"></div></div>`).join('')}
-function uw033OpenAvailability(){if(!currentSession)return passwordlessSignIn();const ed=uw033El('availabilityWeekEditor');if(ed&&!ed.children.length)ed.innerHTML=uw033WeekEditorHTML();const mine=uw033Availability.filter(r=>r.user_id===currentSession.user.id);UW033_DAYS.forEach(d=>{const row=ed?.querySelector(`[data-day="${d}"]`),v=mine.find(x=>x.day_of_week===d);if(row){row.querySelector('.day-state').value=v?.status||'unavailable';row.querySelector('.day-start').value=(v?.start_time||'').slice(0,5);row.querySelector('.day-end').value=(v?.end_time||'').slice(0,5);}});if(uw033El('availabilityGroupScope'))uw033El('availabilityGroupScope').value=mine[0]?.group_scope||'both';if(uw033El('availabilityPreferredRole'))uw033El('availabilityPreferredRole').value=mine[0]?.preferred_role||'';if(uw033El('availabilityNotes'))uw033El('availabilityNotes').value=mine[0]?.notes||'';uw033El('availabilityEditor')?.classList.add('open')}
+function uw033BrowserZone(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||UW033_ET_ZONE}catch{return UW033_ET_ZONE}}
+function uw033KnownZone(z){return [...(uw033El('availabilityTimezone')?.options||[])].some(o=>o.value===z)?z:UW033_ET_ZONE}
+function uw033OpenAvailability(){
+  if(!currentSession)return passwordlessSignIn();const ed=uw033El('availabilityWeekEditor');if(ed&&!ed.children.length)ed.innerHTML=uw033WeekEditorHTML();const mine=uw033Availability.filter(r=>r.user_id===currentSession.user.id);
+  UW033_DAYS.forEach(d=>{const row=ed?.querySelector(`[data-day="${d}"]`),v=mine.find(x=>x.day_of_week===d);if(row){row.querySelector('.day-state').value=v?.status||'unavailable';row.querySelector('.day-start').value=(v?.start_time||'').slice(0,5);row.querySelector('.day-end').value=(v?.end_time||'').slice(0,5);}});
+  if(uw033El('availabilityGroupScope'))uw033El('availabilityGroupScope').value=mine[0]?.group_scope||'both';if(uw033El('availabilityPreferredRole'))uw033El('availabilityPreferredRole').value=mine[0]?.preferred_role||'';if(uw033El('availabilityNotes'))uw033El('availabilityNotes').value=mine[0]?.notes||'';if(uw033El('availabilityTimezone'))uw033El('availabilityTimezone').value=uw033KnownZone(mine[0]?.timezone||uw033BrowserZone());uw033El('availabilityEditor')?.classList.add('open')
+}
 function uw033CloseAvailability(){uw033El('availabilityEditor')?.classList.remove('open')}
 async function uw033LoadAvailability(){
-  if(!currentSession)return;const {data,error}=await uwSupabase.from('staff_availability').select('user_id,group_scope,day_of_week,status,start_time,end_time,preferred_role,notes,profiles:user_id(display_name,username)').order('user_id');
-  if(error){console.warn('Availability migration not installed?',error.message);if(uw033El('availabilityTableBody'))uw033El('availabilityTableBody').innerHTML='<tr><td colspan="10" class="meta">Run the 0.3.3 SQL migration to enable saved availability.</td></tr>';return;}
-  uw033Availability=data||[];uw033RenderAvailability();
+  if(!currentSession)return;const {data,error}=await uwSupabase.from('staff_availability').select('user_id,group_scope,day_of_week,status,start_time,end_time,preferred_role,notes,timezone').order('user_id');
+  if(error){console.warn('Availability backend needs 0.4.7 migration:',error.message);if(uw033El('availabilityTableBody'))uw033El('availabilityTableBody').innerHTML='<tr><td colspan="10" class="meta">Run the 0.4.7 availability SQL migration, then reload.</td></tr>';return;}
+  const rows=data||[],ids=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];let profileMap={};if(ids.length){const pr=await uwSupabase.from('profiles').select('id,display_name,username').in('id',ids);if(!pr.error)profileMap=Object.fromEntries((pr.data||[]).map(x=>[x.id,x]));}uw033Availability=rows.map(r=>({...r,profiles:profileMap[r.user_id]||null}));uw033RenderAvailability();
 }
+function uw033NextDateForDay(day){const idx={sunday:0,monday:1,tuesday:2,wednesday:3,thursday:4,friday:5,saturday:6}[day];const d=new Date();let delta=(idx-d.getDay()+7)%7;if(delta===0)delta=7;d.setDate(d.getDate()+delta);return {y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate()}}
+function uw033ZonedWallToUtc(y,m,d,h,min,tz){let guess=Date.UTC(y,m-1,d,h,min);const fmt=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});for(let i=0;i<3;i++){const parts=Object.fromEntries(fmt.formatToParts(new Date(guess)).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));const seen=Date.UTC(+parts.year,+parts.month-1,+parts.day,+parts.hour,+parts.minute);const target=Date.UTC(y,m-1,d,h,min);guess+=target-seen;}return new Date(guess)}
+function uw033TimeET(day,time,tz){if(!time)return'';try{const [h,min]=time.slice(0,5).split(':').map(Number),dt=uw033NextDateForDay(day),utc=uw033ZonedWallToUtc(dt.y,dt.m,dt.d,h,min,tz||UW033_ET_ZONE);return new Intl.DateTimeFormat('en-US',{timeZone:UW033_ET_ZONE,hour:'numeric',minute:'2-digit',hour12:true}).format(utc)}catch{return time.slice(0,5)}}
+function uw033HoursET(v){if(!v?.start_time||!v?.end_time)return'';const tz=v.timezone||UW033_ET_ZONE;return `${uw033TimeET(v.day_of_week,v.start_time,tz)}–${uw033TimeET(v.day_of_week,v.end_time,tz)} ET`}
 function uw033RenderAvailability(){
-  const filter=uw033El('availabilityGroupFilter')?.value||'both';const rows=uw033Availability.filter(r=>filter==='both'||r.group_scope==='both'||r.group_scope===filter);const users=new Map();rows.forEach(r=>{if(!users.has(r.user_id))users.set(r.user_id,{id:r.user_id,name:r.profiles?.display_name||r.profiles?.username||'Staff',group:r.group_scope,role:r.preferred_role||'—',days:{}});users.get(r.user_id).days[r.day_of_week]=r});
-  const tb=uw033El('availabilityTableBody');if(tb)tb.innerHTML=[...users.values()].map(u=>`<tr><td>${uw033Safe(u.name)}</td><td>${uw033Safe(u.group==='both'?'Both':u.group==='underweb'?'UnderWeb':'Symbiotes')}</td>${UW033_DAYS.map(d=>{const v=u.days[d];return `<td>${v?uw033Safe(UW033_STATE_LABELS[v.status]||v.status):'—'}</td>`}).join('')}<td>${uw033Safe(u.role)}</td></tr>`).join('')||'<tr><td colspan="10" class="meta">No saved schedules for this filter yet.</td></tr>';
-  const me=currentSession?[...users.values()].find(u=>u.id===currentSession.user.id):null;const cards=uw033El('availabilityCards');if(cards){cards.innerHTML=UW033_DAYS.map(d=>{const v=me?.days[d],st=v?.status||'unavailable',hours=(v?.start_time&&v?.end_time)?`${v.start_time.slice(0,5)}–${v.end_time.slice(0,5)}`:'';return `<div class="uw-day-card ${st==='unavailable'?'off':st==='limited'?'limited':st==='by_request'?'request':''}"><strong>${UW033_DAY_LABELS[d]}</strong><div class="state">${uw033Safe(UW033_STATE_LABELS[st]||st)}</div><div class="hours">${uw033Safe(hours||'No hours set')}</div></div>`}).join('')}}
+  const filter=uw033El('availabilityGroupFilter')?.value||'both';const rows=uw033Availability.filter(r=>filter==='both'||r.group_scope==='both'||r.group_scope===filter);const users=new Map();rows.forEach(r=>{if(!users.has(r.user_id))users.set(r.user_id,{id:r.user_id,name:r.profiles?.display_name||r.profiles?.username||'Staff',group:r.group_scope,role:r.preferred_role||'—',timezone:r.timezone||UW033_ET_ZONE,days:{}});users.get(r.user_id).days[r.day_of_week]=r});
+  const tb=uw033El('availabilityTableBody');if(tb)tb.innerHTML=[...users.values()].map(u=>`<tr><td>${uw033Safe(u.name)}</td><td>${uw033Safe(u.group==='both'?'Both':u.group==='underweb'?'UnderWeb':'Symbiotes')}</td>${UW033_DAYS.map(d=>{const v=u.days[d];return `<td>${v?uw033Safe((UW033_STATE_LABELS[v.status]||v.status)+(uw033HoursET(v)?' · '+uw033HoursET(v):'')):'—'}</td>`}).join('')}<td>${uw033Safe(u.role)}</td></tr>`).join('')||'<tr><td colspan="10" class="meta">No saved schedules for this filter yet.</td></tr>';
+  const me=currentSession?[...users.values()].find(u=>u.id===currentSession.user.id):null;const cards=uw033El('availabilityCards');if(cards){cards.innerHTML=UW033_DAYS.map(d=>{const v=me?.days[d],st=v?.status||'unavailable',hours=uw033HoursET(v);return `<div class="uw-day-card ${st==='unavailable'?'off':st==='limited'?'limited':st==='by_request'?'request':''}"><strong>${UW033_DAY_LABELS[d]}</strong><div class="state">${uw033Safe(UW033_STATE_LABELS[st]||st)}</div><div class="hours">${uw033Safe(hours||'No hours set')}</div></div>`}).join('')}}
 async function uw033SaveAvailability(){
-  if(!currentSession)return;const btn=uw033El('saveAvailabilityBtn');if(btn)btn.disabled=true;try{const ed=uw033El('availabilityWeekEditor'),group=uw033El('availabilityGroupScope')?.value||'both',role=uw033El('availabilityPreferredRole')?.value?.trim()||null,notes=uw033El('availabilityNotes')?.value?.trim()||null;const payload=UW033_DAYS.map(d=>{const row=ed.querySelector(`[data-day="${d}"]`);return {user_id:currentSession.user.id,group_scope:group,day_of_week:d,status:row.querySelector('.day-state').value,start_time:row.querySelector('.day-start').value||null,end_time:row.querySelector('.day-end').value||null,preferred_role:role,notes}});const del=await uwSupabase.from('staff_availability').delete().eq('user_id',currentSession.user.id);if(del.error)throw del.error;const ins=await uwSupabase.from('staff_availability').insert(payload);if(ins.error)throw ins.error;uw033CloseAvailability();await uw033LoadAvailability();toast('Availability saved.');}catch(err){console.error(err);toast('Availability save failed: '+(err.message||err));}finally{if(btn)btn.disabled=false;}}
+  if(!currentSession)return passwordlessSignIn();const btn=uw033El('saveAvailabilityBtn');if(btn)btn.disabled=true;
+  try{const ed=uw033El('availabilityWeekEditor'),group=uw033El('availabilityGroupScope')?.value||'both',role=uw033El('availabilityPreferredRole')?.value?.trim()||null,notes=uw033El('availabilityNotes')?.value?.trim()||null,timezone=uw033El('availabilityTimezone')?.value||UW033_ET_ZONE;const schedule=UW033_DAYS.map(d=>{const row=ed.querySelector(`[data-day="${d}"]`);const status=row.querySelector('.day-state').value;return {day_of_week:d,status,start_time:status==='unavailable'?null:(row.querySelector('.day-start').value||null),end_time:status==='unavailable'?null:(row.querySelector('.day-end').value||null)}});const {error}=await uwSupabase.rpc('save_my_staff_availability',{p_group_scope:group,p_preferred_role:role,p_notes:notes,p_timezone:timezone,p_schedule:schedule});if(error)throw error;uw033CloseAvailability();await uw033LoadAvailability();toast('Availability saved. Times are shown in Eastern Time.');}
+  catch(err){console.error(err);toast('Availability save failed: '+(err.message||err));}
+  finally{if(btn)btn.disabled=false;}
+}
 
-function uw033DiscordText(){const title=uw033El('eventPostTitle')?.value||'Event',group=uw033El('eventPostGroup')?.value||'UnderWeb',time=uw033El('eventPostTime')?.value||'TBD',loc=uw033El('eventPostLocation')?.value||'VRChat',desc=uw033El('eventPostDescription')?.value||'';return `## ${group.toUpperCase()} // ${title.toUpperCase()}\n\n**When:** ${time}\n**Where:** ${loc}\n\n${desc}\n\nInterested in performing, helping staff, or collaborating? Check the UnderWeb network for event details and open roles.`}
+function uw033DiscordText(){const title=uw033El('eventPostTitle')?.value||'Event',group=eventGroupLabel(uw033El('eventPostGroup')?.value||'underweb'),time=uw033El('eventPostTime')?.value||'TBD',loc=uw033El('eventPostLocation')?.value||'VRChat',desc=uw033El('eventPostDescription')?.value||'';return `## ${group.toUpperCase()} // ${title.toUpperCase()}\n\n**When:** ${time}\n**Where:** ${loc}\n\n${desc}\n\nInterested in performing, helping staff, or collaborating? Check the UnderWeb network for event details and open roles.`}
 function uw033OpenDiscord(){if(uw033El('discordPreviewText'))uw033El('discordPreviewText').textContent=uw033DiscordText();uw033El('discordPreviewOverlay')?.classList.add('open')}
 function uw033CloseDiscord(){uw033El('discordPreviewOverlay')?.classList.remove('open')}
 async function uw033CopyDiscord(){try{await navigator.clipboard.writeText(uw033DiscordText());toast('Discord post copied.');}catch{toast('Could not access clipboard. Select and copy the preview manually.')}}
