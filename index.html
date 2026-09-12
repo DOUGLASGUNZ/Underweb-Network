@@ -292,6 +292,19 @@ body[data-theme="symbiotes"] .uw50-rarity{color:#55aaff!important}
 @media(max-width:760px){
   .events-tablewrap{border:0;background:transparent!important}.events-table,.events-table tbody,.events-table tr,.events-table td{display:block;width:100%}.events-table thead{display:none}.events-table tr{border:1px solid var(--l);background:var(--p);margin-bottom:12px;padding:10px}.events-table td{border:0!important;padding:7px 8px}.events-table td:before{content:attr(data-label);display:block;font-size:9px;letter-spacing:.13em;color:var(--g);font-weight:800;margin-bottom:3px;text-transform:uppercase}
 }
+
+/* 0.5.1.2 profile identity compaction + Symbiotes theme cleanup */
+.uw51-profile-identity{margin:0 0 18px;border-radius:18px}.uw51-identity-row{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}.uw51-identity-block{border:1px solid var(--l);background:color-mix(in srgb,var(--g) 3%,#020403);padding:12px}.uw51-identity-block>b,.uw51-block-head b{font:900 9px/1 monospace;letter-spacing:.13em;color:var(--g)}.uw51-block-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.uw51-block-head span{font:800 9px/1 monospace;color:var(--m)}.uw51-title-controls{display:flex;gap:8px;margin-top:9px}.uw51-title-controls .select{min-width:0}.uw51-current-title{font-size:11px;color:var(--m);margin-top:8px}.uw51-badges-block{margin-top:12px}.uw51-showcase{margin-top:9px;padding:8px;border:1px dashed var(--l);min-height:44px}.uw51-badge-picker{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.uw51-badge-picker .uw50-badge-card{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:999px}.uw51-badge-picker .uw50-badge-card p,.uw51-badge-picker .uw50-badge-card footer small,.uw51-badge-picker .uw50-badge-card .uw50-rarity{display:none}.uw51-badge-picker .uw50-badge-card h4{font-size:10px;margin:0}.uw51-badge-picker .uw50-badge-card footer{margin:0}.uw51-badge-picker .uw50-mini{padding:5px 7px;font-size:8px}.uw40-avatar:not(.has-image) span{font-size:22px;opacity:.55;color:var(--g)}
+@media(max-width:700px){.uw51-identity-row{grid-template-columns:1fr}.uw51-title-controls{align-items:stretch}.uw51-profile-identity{padding:13px}.uw51-badge-picker{max-height:170px;overflow:auto;padding-right:2px}.uw50-role-grid{grid-template-columns:1fr 1fr}.uw50-role-card{padding:10px}.uw50-role-card p{display:none}.uw50-role-card footer{margin-top:8px}}
+body[data-theme="symbiotes"] .uw42-meter span{background:linear-gradient(90deg,#176fe8,#63adff)!important;box-shadow:0 0 15px rgba(66,156,255,.35)!important}
+body[data-theme="symbiotes"] .uw42-online-dot{background:#429cff!important;box-shadow:0 0 12px #429cff!important}
+body[data-theme="symbiotes"] .uw40-profile-preview,body[data-theme="symbiotes"] .uw40-media-card,body[data-theme="symbiotes"] .uw40-block,body[data-theme="symbiotes"] .uw50-panel,body[data-theme="symbiotes"] .card{background:linear-gradient(145deg,#04070c,#02050a)!important;border-color:#16385f!important}
+body[data-theme="symbiotes"] .uw40-chip,body[data-theme="symbiotes"] .uw50-role-chip,body[data-theme="symbiotes"] .uw50-badge-chip{border-color:#16385f!important}
+body[data-theme="symbiotes"] .uw40-chip.hot,body[data-theme="symbiotes"] .uw50-selected-title,body[data-theme="symbiotes"] .uw50-rarity,body[data-theme="symbiotes"] .uw51-identity-block>b,body[data-theme="symbiotes"] .uw51-block-head b{color:#429cff!important}
+body[data-theme="symbiotes"] .btn.hot,body[data-theme="symbiotes"] .uw50-mini.hot{background:#429cff!important;border-color:#429cff!important;color:#001326!important}
+body[data-theme="symbiotes"] .uw40-skillchips .chip{color:#429cff!important;border-color:rgba(66,156,255,.35)!important;background:rgba(66,156,255,.06)!important}
+body[data-theme="symbiotes"] .uw40-avatar{background-color:#06101a!important}
+
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -402,7 +415,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <main class="content">
 <section class="page active" id="page-home"><div class="wrap uw40-shell">
 <section class="uw40-statusbar">
-<div><span class="uw40-pulse"></span><strong>THE UNDERWEB // STAFF BETA</strong><small>v0.5.0</small></div>
+<div><span class="uw40-pulse"></span><strong>THE UNDERWEB // STAFF BETA</strong><small>v0.5.1.2</small></div>
 <div class="uw40-status-right"><span id="uwNetworkStatus">NETWORK ONLINE</span><span class="uw40-secure">SECURE SESSION</span></div>
 </section>
 <section class="uw50-build-card">
@@ -483,11 +496,19 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <section class="uw40-profile-preview">
 <div class="uw40-profile-banner" id="liveProfileBanner"><div class="uw40-profile-noise"></div></div>
 <div class="uw40-profile-header">
-<div class="uw40-avatar" id="liveProfileAvatar"><span>UW</span></div>
+<div class="uw40-avatar" id="liveProfileAvatar"><span id="liveProfileAvatarFallback">◆</span></div>
 <div class="uw40-profile-title"><h2 id="liveProfileName">Your Name</h2><p class="uw50-selected-title" id="uw50ProfileTitle">MEMBER</p><p id="liveProfileHeadline">Your headline</p><div><span class="uw40-chip hot" id="liveProfileMode">CREATOR + STAFF</span><span class="uw40-chip" id="liveProfileAvailability">AVAILABLE BY REQUEST</span></div><div class="uw50-profile-badges" id="uw50ProfileBadges"><span class="uw40-chip">MEMBER</span></div></div>
 <div class="uw40-profile-buttons"><button type="button">BOOK ME</button><button type="button">COLLAB</button><button type="button">MESSAGE</button></div>
 </div>
 <div class="uw40-profile-body"><p id="liveProfileBio">Your profile bio will show here.</p><div class="uw40-skillchips" id="liveProfileSkills"><span class="meta">Add specialties to show them here.</span></div></div><div class="uw42-profile-meter"><div class="uw42-meter-head"><span>PROFILE COMPLETION</span><b id="uw42ProfilePercent">0%</b></div><div class="uw42-meter"><span id="uw42ProfileBar" style="width:0%"></span></div></div>
+</section>
+<section class="uw50-panel uw51-profile-identity">
+<div class="uw50-panel-title"><div><span>PROFILE IDENTITY</span><h3>Roles, Badges &amp; Title</h3><p>Manage what appears on your profile without leaving this page.</p></div><button class="uw50-mini" id="uw50ReloadIdentity" type="button">REFRESH</button></div>
+<div class="uw51-identity-row">
+<div class="uw51-identity-block"><b>ACTIVE ROLES</b><div id="uw50MyRoles" class="uw50-chipwall"><div class="uw-empty">Loading roles…</div></div></div>
+<div class="uw51-identity-block"><b>PROFILE TITLE</b><div class="uw51-title-controls"><select class="select" id="uw51TitleSelect"><option value="">No active title</option></select><button class="uw50-mini danger" data-uw50-clear-title type="button">CLEAR</button></div><div id="uw50SelectedTitle" class="uw51-current-title">No active title</div></div>
+</div>
+<div class="uw51-identity-block uw51-badges-block"><div class="uw51-block-head"><b>BADGES</b><span id="uw50ShowcaseCount">0 / 6 showcased</span></div><div id="uw50ShowcaseBadges" class="uw50-chipwall uw51-showcase"><div class="uw-empty">No showcased badges yet.</div></div><div id="uw50BadgeCollection" class="uw51-badge-picker"><div class="uw-empty">No badges earned yet.</div></div></div>
 </section>
 <div class="uw40-grid2 uw40-profile-editgrid">
 <section class="uw40-block">
@@ -505,20 +526,12 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 </div>
 </div></section>
 <section class="page" id="page-identity"><div class="wrap uw50-identity-page">
-<div class="uw40-pagehead"><div><span>NETWORK IDENTITY</span><h1>Roles, Badges &amp; Titles</h1><p>Build your network identity, apply for roles, and choose what appears on your profile.</p></div><span class="uw50-version-pill big">0.5.0</span></div>
-<div class="uw50-grid3">
-<section class="uw50-panel"><div class="uw50-panel-head"><span>ACTIVE ROLES</span><b id="uw50RoleCount">0</b></div><div id="uw50MyRoles" class="uw50-chipwall"><div class="uw-empty">Loading roles…</div></div></section>
-<section class="uw50-panel"><div class="uw50-panel-head"><span>SHOWCASE BADGES</span><b id="uw50ShowcaseCount">0 / 6</b></div><div id="uw50ShowcaseBadges" class="uw50-chipwall"><div class="uw-empty">No showcased badges yet.</div></div></section>
-<section class="uw50-panel"><div class="uw50-panel-head"><span>SELECTED TITLE</span><b>PROFILE</b></div><div id="uw50SelectedTitle" class="uw50-title-display">Member</div><p class="meta">Pick one earned title to display under your name.</p></section>
-</div>
-<section class="uw50-panel uw50-role-apply"><div class="uw50-panel-title"><div><span>ROLE APPLICATIONS</span><h3>Apply for a network role</h3><p>Choose the role and community scope. Leadership-only roles are never self-applied.</p></div><button class="btn" id="uw50ReloadIdentity" type="button">REFRESH</button></div>
+<div class="uw40-pagehead"><div><span>NETWORK IDENTITY</span><h1>Role Applications</h1><p>Apply for new network roles here. Your active roles, badges, and profile title now live under My Profile.</p></div><button class="btn" data-page="profile" type="button">MY PROFILE →</button></div>
+<section class="uw50-panel uw50-role-apply"><div class="uw50-panel-title"><div><span>ROLE APPLICATIONS</span><h3>Apply for a network role</h3><p>Choose the role and community scope. Leadership-only roles are never self-applied.</p></div></div>
 <div class="uw50-apply-controls"><select class="select" id="uw50ApplyScope"><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="network">Network-wide</option></select><textarea class="textarea" id="uw50ApplyNote" placeholder="Tell staff why this role fits you, relevant experience, links, or anything they should know."></textarea></div>
 <div id="uw50ApplicationRoles" class="uw50-role-grid"><div class="uw-empty">Loading application roles…</div></div></section>
-<div class="uw50-grid2">
 <section class="uw50-panel"><div class="uw50-panel-title"><div><span>MY APPLICATIONS</span><h3>Status</h3></div></div><div id="uw50MyApplications" class="uw50-stack"><div class="uw-empty">No role applications yet.</div></div></section>
-<section class="uw50-panel"><div class="uw50-panel-title"><div><span>BADGE COLLECTION</span><h3>Choose up to 6 to showcase</h3></div></div><div id="uw50BadgeCollection" class="uw50-badge-grid"><div class="uw-empty">No badges earned yet.</div></div></section>
-</div>
-<section class="uw50-panel"><div class="uw50-panel-title"><div><span>TITLE COLLECTION</span><h3>Choose your profile title</h3></div></div><div id="uw50TitleCollection" class="uw50-title-grid"><div class="uw-empty">No titles earned yet.</div></div></section>
+<div id="uw50TitleCollection" style="display:none"></div>
 </div></section>
 <section class="page" id="page-role-review"><div class="wrap">
 <div class="uw40-pagehead"><div><span>STAFF IDENTITY OPS</span><h1>Role Review</h1><p>Review role applications using the 0.5.0 authority hierarchy. The database—not the button—decides what you can approve.</p></div><button class="btn hot" id="uw50ReloadReviews" type="button">REFRESH</button></div>
@@ -526,7 +539,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <section class="uw50-panel"><div id="uw50ReviewQueue" class="uw50-stack"><div class="uw-empty">Loading role applications…</div></div></section>
 </div></section>
 <section class="page" id="page-updates"><div class="wrap uw50-updates-page">
-<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.5.0</span></div>
+<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.5.1.2</span></div>
 <section class="uw50-release hero-release"><div class="uw50-release-version">0.5.1</div><div><span class="eyebrow">CURRENT BUILD • OPERATIONS &amp; IDENTITY</span><h2>Operations &amp; Identity Update</h2><p>Identity repairs, protected Member access, working badge/title collections, leadership-approved events, responsive event operations, real project posting, and complete Symbiotes blue theming.</p><div class="uw50-release-tags"><span>ROLES</span><span>BADGES</span><span>TITLES</span><span>APPROVALS</span><span>FIRST WAVE</span></div></div></section>
 <div class="uw50-grid2">
 <section class="uw50-release"><div class="uw50-release-version">0.4.10</div><div><span class="eyebrow">EVENTS + LIVE INSTANCES</span><h3>Real network operations</h3><p>Moved events to a clean production schema and added real VRChat live-instance publishing, filtering, joining, expiry and closing.</p></div></section>
@@ -1443,7 +1456,7 @@ function uw033RenderLiveProfile(){
   const mode=uw033El('profileMode')?.value||'creator_staff';
   const availability=uw033El('profileAvailability')?.value||'by_request';
   const skills=(uw033El('profileSkills')?.value||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,8);
-  if(uw033El('liveProfileName'))uw033El('liveProfileName').textContent=name;
+  if(uw033El('liveProfileName'))uw033El('liveProfileName').textContent=name; const af=uw033El('liveProfileAvatarFallback'); if(af)af.textContent=(name||'?').trim().charAt(0).toUpperCase()||'◆';
   if(uw033El('liveProfileHeadline'))uw033El('liveProfileHeadline').textContent=headline;
   if(uw033El('liveProfileBio'))uw033El('liveProfileBio').textContent=bio;
   if(uw033El('liveProfileMode'))uw033El('liveProfileMode').textContent=uw033ModeLabel(mode).toUpperCase();
@@ -1669,7 +1682,7 @@ function uw50RenderIdentity(){
   const rc=document.getElementById('uw50RoleCount');if(rc)rc.textContent=uw50Roles.length;
   const showcased=UW50.badges.filter(x=>x.is_showcased);const sc=document.getElementById('uw50ShowcaseCount');if(sc)sc.textContent=`${showcased.length} / 6`;
   const sb=document.getElementById('uw50ShowcaseBadges');if(sb)sb.innerHTML=showcased.length?showcased.map(x=>`<span class="uw50-badge-chip">${uw50Esc(uw50BadgeDef(x.badge_slug)?.name||uw50Nice(x.badge_slug))}</span>`).join(''):'<div class="uw-empty">Choose badges from your collection below.</div>';
-  const selected=UW50.titles.find(x=>x.is_selected)||null;const st=document.getElementById('uw50SelectedTitle');if(st)st.innerHTML=selected?`${uw50Esc(uw50TitleDef(selected.title_slug)?.name||uw50Nice(selected.title_slug))} <button class="uw50-mini danger" style="margin-left:8px" data-uw50-clear-title>REMOVE TITLE</button>`:'No active title';
+  const selected=UW50.titles.find(x=>x.is_selected)||null;const st=document.getElementById('uw50SelectedTitle');if(st)st.innerHTML=selected?`${uw50Esc(uw50TitleDef(selected.title_slug)?.name||uw50Nice(selected.title_slug))} <button class="uw50-mini danger" style="margin-left:8px" data-uw50-clear-title>REMOVE TITLE</button>`:'No active title'; const ts=document.getElementById('uw51TitleSelect'); if(ts){ts.innerHTML='<option value="">No active title</option>'+UW50.titles.map(t=>`<option value="${t.id}" ${t.is_selected?'selected':''}>${uw50Esc(uw50TitleDef(t.title_slug)?.name||uw50Nice(t.title_slug))}</option>`).join('');}
 
   const existing=new Set(uw50Roles.map(r=>`${r.role_slug}|${r.group_scope}`));
   const open=new Set(UW50.myApps.filter(a=>['pending','reviewing'].includes(a.status)).map(a=>`${a.role_slug}|${a.group_scope}`));
@@ -1679,7 +1692,7 @@ function uw50RenderIdentity(){
 
   const apps=document.getElementById('uw50MyApplications');if(apps)apps.innerHTML=UW50.myApps.length?UW50.myApps.map(a=>`<article class="uw50-app-card"><div class="uw50-panel-head"><h4>${uw50Esc(uw50Def(a.role_slug)?.name||uw50Nice(a.role_slug))}</h4><span class="uw50-status ${uw50Esc(a.status)}">${uw50Esc(a.status.toUpperCase())}</span></div><p>${uw50Esc(a.applicant_note||'No note submitted.')}</p><div class="uw50-app-meta"><span>${uw50Esc(uw50Nice(a.group_scope))}</span><span>${uw50Esc(uw50When(a.submitted_at))}</span></div>${a.review_note?`<p style="margin-top:10px"><b>Staff note:</b> ${uw50Esc(a.review_note)}</p>`:''}${['pending','reviewing'].includes(a.status)?`<footer><span></span><button class="uw50-mini danger" data-uw50-withdraw="${a.id}">WITHDRAW</button></footer>`:''}</article>`).join(''):'<div class="uw-empty">No role applications yet.</div>';
 
-  const badges=document.getElementById('uw50BadgeCollection');if(badges)badges.innerHTML=UW50.badges.length?UW50.badges.map(b=>{const d=uw50BadgeDef(b.badge_slug)||{};return `<article class="uw50-badge-card ${b.is_showcased?'showcased':''}"><span class="uw50-rarity">${uw50Esc((d.rarity||'common').toUpperCase())}</span><h4>${uw50Esc(d.name||uw50Nice(b.badge_slug))}</h4><p>${uw50Esc(d.description||'Earned network badge.')}</p><footer><small class="meta">${uw50Esc(uw50Nice(b.group_scope))}</small><button class="uw50-mini ${b.is_showcased?'':'hot'}" data-uw50-showcase="${b.id}|${b.is_showcased?'0':'1'}">${b.is_showcased?'REMOVE':'SHOWCASE'}</button></footer></article>`}).join(''):'<div class="uw-empty">No badges earned yet.</div>';
+  const badges=document.getElementById('uw50BadgeCollection');if(badges)badges.innerHTML=UW50.badges.length?UW50.badges.map(b=>{const d=uw50BadgeDef(b.badge_slug)||{};return `<article class="uw50-badge-card ${b.is_showcased?'showcased':''}"><h4>${uw50Esc(d.name||uw50Nice(b.badge_slug))}</h4><footer><button class="uw50-mini ${b.is_showcased?'':'hot'}" data-uw50-showcase="${b.id}|${b.is_showcased?'0':'1'}">${b.is_showcased?'REMOVE':'SHOW'}</button></footer></article>`}).join(''):'<div class="uw-empty">No badges earned yet.</div>';
 
   const titles=document.getElementById('uw50TitleCollection');if(titles)titles.innerHTML=UW50.titles.length?UW50.titles.map(t=>{const d=uw50TitleDef(t.title_slug)||{};return `<article class="uw50-title-card"><span class="uw50-rarity">${uw50Esc((d.title_type||'title').toUpperCase())}</span><h4>${uw50Esc(d.name||uw50Nice(t.title_slug))}</h4><p>${uw50Esc(d.description||'Earned profile title.')}</p><footer><small class="meta">${uw50Esc(uw50Nice(t.group_scope))}</small><button class="uw50-mini ${t.is_selected?'':'hot'}" data-uw50-title="${t.id}" ${t.is_selected?'disabled':''}>${t.is_selected?'SELECTED':'SELECT'}</button></footer></article>`}).join(''):'<div class="uw-empty">No titles earned yet.</div>';
 }
@@ -1714,6 +1727,7 @@ function uw50RenderReviewQueue(){
 async function uw50Review(id,decision){const note=prompt(decision==='accepted'?'Optional approval note:':'Reason / staff note:')||'';const {error}=await uwSupabase.rpc('uw_review_role_application',{p_application_id:id,p_decision:decision,p_review_note:note});if(error)return toast(error.message);toast(decision==='accepted'?'Role approved.':'Application denied.');await uw50LoadAll()}
 
 document.addEventListener('click',e=>{const a=e.target.closest('[data-uw50-apply]');if(a){uw50Apply(a.dataset.uw50Apply);return}const w=e.target.closest('[data-uw50-withdraw]');if(w){uw50Withdraw(w.dataset.uw50Withdraw);return}const s=e.target.closest('[data-uw50-showcase]');if(s){const [id,on]=s.dataset.uw50Showcase.split('|');uw50Showcase(id,on==='1');return}const t=e.target.closest('[data-uw50-title]');if(t){uw50SelectTitle(t.dataset.uw50Title);return}const ct=e.target.closest('[data-uw50-clear-title]');if(ct){uw50ClearTitle();return}const rr=e.target.closest('[data-uw50-remove-role]');if(rr){uw50RemoveRole(rr.dataset.uw50RemoveRole);return}const r=e.target.closest('[data-uw50-review]');if(r){const [id,d]=r.dataset.uw50Review.split('|');uw50Review(id,d);return}});
+document.getElementById('uw51TitleSelect')?.addEventListener('change',e=>{if(e.target.value)uw50SelectTitle(e.target.value);else uw50ClearTitle();});
 document.getElementById('uw50ApplyScope')?.addEventListener('change',uw50RenderIdentity);
 document.getElementById('uw50ReloadIdentity')?.addEventListener('click',uw50LoadAll);
 document.getElementById('uw50ReloadReviews')?.addEventListener('click',uw50LoadReviewQueue);
