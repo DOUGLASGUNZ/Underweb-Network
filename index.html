@@ -1261,7 +1261,7 @@ function updateDashboardOps(){
   const open=uwBeta.tickets.filter(x=>['open','claimed','reviewing'].includes(x.status)).length;
   setText('uwAppBadge',pending);setText('navApplicationCount',pending);setText('uwTicketBadge',open);setText('navTicketCount',open);setText('uwOpenOpsCount',pending+open);
   const att=document.getElementById('uwAttentionList');
-  if(att){att.innerHTML=`<div class="uw-attention-row"><div class="uw-number">${pending}</div><div class="uw-row-main"><b>Applications awaiting action</b><small>Pending or reviewing</small></div><button class="uw-mini-btn hot" data-page="applications">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${open}</div><div class="uw-row-main"><b>Support tickets unresolved</b><small>Open, claimed, or reviewing</small></div><button class="uw-mini-btn hot" data-page="tickets">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${uwBeta.feedback.filter(x=>x.status==='new').length}</div><div class="uw-row-main"><b>New beta reports</b><small>Help us break 0.4.7</small></div><button class="uw-mini-btn" data-page="feedback">VIEW →</button></div>`;bindDynamicPageButtons(att)}
+  if(att){att.innerHTML=`<div class="uw-attention-row"><div class="uw-number">${pending}</div><div class="uw-row-main"><b>Applications awaiting action</b><small>Pending or reviewing</small></div><button class="uw-mini-btn hot" data-page="applications">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${open}</div><div class="uw-row-main"><b>Support tickets unresolved</b><small>Open, claimed, or reviewing</small></div><button class="uw-mini-btn hot" data-page="tickets">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${uwBeta.feedback.filter(x=>x.status==='new').length}</div><div class="uw-row-main"><b>New beta reports</b><small>Help us break 0.4.9</small></div><button class="uw-mini-btn" data-page="feedback">VIEW →</button></div>`;bindDynamicPageButtons(att)}
   renderHomeAnnouncements();renderHomeActivity();
 }
 function bindDynamicPageButtons(root=document){root.querySelectorAll('[data-page]').forEach(b=>{if(b.dataset.uwBound)return;b.dataset.uwBound='1';b.addEventListener('click',()=>showPage(b.dataset.page))})}
@@ -1371,16 +1371,32 @@ async function saveMyProfile(){
 function uw033WeekEditorHTML(){return UW033_DAYS.map(d=>`<div class="uw-week-row" data-day="${d}"><strong>${UW033_DAY_LABELS[d]}</strong><div class="uw-week-controls"><select class="select day-state"><option value="available">Available</option><option value="limited">Limited</option><option value="by_request">By Request</option><option value="unavailable">Unavailable</option></select><input class="input day-start" type="time" aria-label="Start time"><input class="input day-end" type="time" aria-label="End time"></div></div>`).join('')}
 function uw033BrowserZone(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||UW033_ET_ZONE}catch{return UW033_ET_ZONE}}
 function uw033KnownZone(z){return [...(uw033El('availabilityTimezone')?.options||[])].some(o=>o.value===z)?z:UW033_ET_ZONE}
-function uw033OpenAvailability(){
-  if(!currentSession)return passwordlessSignIn();const ed=uw033El('availabilityWeekEditor');if(ed&&!ed.children.length)ed.innerHTML=uw033WeekEditorHTML();const mine=uw033Availability.filter(r=>r.user_id===currentSession.user.id);
+async function uw033OpenAvailability(){
+  if(!currentSession)return passwordlessSignIn();
+  await uw033LoadAvailability();
+  const ed=uw033El('availabilityWeekEditor');if(ed&&!ed.children.length)ed.innerHTML=uw033WeekEditorHTML();const mine=uw033Availability.filter(r=>r.user_id===currentSession.user.id);
   UW033_DAYS.forEach(d=>{const row=ed?.querySelector(`[data-day="${d}"]`),v=mine.find(x=>x.day_of_week===d);if(row){row.querySelector('.day-state').value=v?.status||'unavailable';row.querySelector('.day-start').value=(v?.start_time||'').slice(0,5);row.querySelector('.day-end').value=(v?.end_time||'').slice(0,5);}});
   if(uw033El('availabilityGroupScope'))uw033El('availabilityGroupScope').value=mine[0]?.group_scope||'both';if(uw033El('availabilityPreferredRole'))uw033El('availabilityPreferredRole').value=mine[0]?.preferred_role||'';if(uw033El('availabilityNotes'))uw033El('availabilityNotes').value=mine[0]?.notes||'';if(uw033El('availabilityTimezone'))uw033El('availabilityTimezone').value=uw033KnownZone(mine[0]?.timezone||uw033BrowserZone());uw033El('availabilityEditor')?.classList.add('open')
 }
 function uw033CloseAvailability(){uw033El('availabilityEditor')?.classList.remove('open')}
+function uw033NormalizeDayOfWeek(v){
+  const n=Number(v);
+  if(Number.isInteger(n)&&n>=0&&n<=6)return ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][n];
+  const t=String(v??'').trim().toLowerCase();
+  return UW033_DAYS.includes(t)?t:null;
+}
 async function uw033LoadAvailability(){
-  if(!currentSession)return;const {data,error}=await uwSupabase.from('staff_availability').select('user_id,group_scope,day_of_week,status,start_time,end_time,preferred_role,notes,timezone').order('user_id');
-  if(error){console.warn('Availability backend needs 0.4.7 migration:',error.message);if(uw033El('availabilityTableBody'))uw033El('availabilityTableBody').innerHTML='<tr><td colspan="10" class="meta">Run the 0.4.7 availability SQL migration, then reload.</td></tr>';return;}
-  const rows=data||[],ids=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];let profileMap={};if(ids.length){const pr=await uwSupabase.from('profiles').select('id,display_name,username').in('id',ids);if(!pr.error)profileMap=Object.fromEntries((pr.data||[]).map(x=>[x.id,x]));}uw033Availability=rows.map(r=>({...r,profiles:profileMap[r.user_id]||null}));uw033RenderAvailability();
+  if(!currentSession)return;
+  const fields='user_id,group_scope,day_of_week,status,start_time,end_time,preferred_role,notes,timezone';
+  const uid=currentSession.user.id;
+  const own=await uwSupabase.from('staff_availability').select(fields).eq('user_id',uid).order('day_of_week');
+  if(own.error){console.warn('Availability load failed:',own.error.message);if(uw033El('availabilityTableBody'))uw033El('availabilityTableBody').innerHTML='<tr><td colspan="10" class="meta">Availability could not be loaded. Refresh or contact an administrator.</td></tr>';return;}
+  let data=own.data||[];
+  if(hasStaffAccess()){
+    const all=await uwSupabase.from('staff_availability').select(fields).order('user_id').order('day_of_week');
+    if(!all.error)data=all.data||data;
+  }
+  const rows=(data||[]).map(r=>({...r,day_of_week:uw033NormalizeDayOfWeek(r.day_of_week)})).filter(r=>r.day_of_week),ids=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];let profileMap={};if(ids.length){const pr=await uwSupabase.from('profiles').select('id,display_name,username').in('id',ids);if(!pr.error)profileMap=Object.fromEntries((pr.data||[]).map(x=>[x.id,x]));}uw033Availability=rows.map(r=>({...r,profiles:profileMap[r.user_id]||null}));uw033RenderAvailability();
 }
 function uw033NextDateForDay(day){const idx={sunday:0,monday:1,tuesday:2,wednesday:3,thursday:4,friday:5,saturday:6}[day];const d=new Date();let delta=(idx-d.getDay()+7)%7;if(delta===0)delta=7;d.setDate(d.getDate()+delta);return {y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate()}}
 function uw033ZonedWallToUtc(y,m,d,h,min,tz){let guess=Date.UTC(y,m-1,d,h,min);const fmt=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});for(let i=0;i<3;i++){const parts=Object.fromEntries(fmt.formatToParts(new Date(guess)).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));const seen=Date.UTC(+parts.year,+parts.month-1,+parts.day,+parts.hour,+parts.minute);const target=Date.UTC(y,m-1,d,h,min);guess+=target-seen;}return new Date(guess)}
@@ -1392,8 +1408,17 @@ function uw033RenderAvailability(){
   const me=currentSession?[...users.values()].find(u=>u.id===currentSession.user.id):null;const cards=uw033El('availabilityCards');if(cards){cards.innerHTML=UW033_DAYS.map(d=>{const v=me?.days[d],st=v?.status||'unavailable',hours=uw033HoursET(v);return `<div class="uw-day-card ${st==='unavailable'?'off':st==='limited'?'limited':st==='by_request'?'request':''}"><strong>${UW033_DAY_LABELS[d]}</strong><div class="state">${uw033Safe(UW033_STATE_LABELS[st]||st)}</div><div class="hours">${uw033Safe(hours||'No hours set')}</div></div>`}).join('')}}
 async function uw033SaveAvailability(){
   if(!currentSession)return passwordlessSignIn();const btn=uw033El('saveAvailabilityBtn');if(btn)btn.disabled=true;
-  try{const ed=uw033El('availabilityWeekEditor'),group=uw033El('availabilityGroupScope')?.value||'both',role=uw033El('availabilityPreferredRole')?.value?.trim()||null,notes=uw033El('availabilityNotes')?.value?.trim()||null,timezone=uw033El('availabilityTimezone')?.value||UW033_ET_ZONE;const schedule=UW033_DAYS.map(d=>{const row=ed.querySelector(`[data-day="${d}"]`);const status=row.querySelector('.day-state').value;return {day_of_week:d,status,start_time:status==='unavailable'?null:(row.querySelector('.day-start').value||null),end_time:status==='unavailable'?null:(row.querySelector('.day-end').value||null)}});const {error}=await uwSupabase.rpc('save_my_staff_availability',{p_group_scope:group,p_preferred_role:role,p_notes:notes,p_timezone:timezone,p_schedule:schedule});if(error)throw error;uw033CloseAvailability();await uw033LoadAvailability();toast('Availability saved. Times are shown in Eastern Time.');}
-  catch(err){console.error(err);toast('Availability save failed: '+(err.message||err));}
+  try{
+    const ed=uw033El('availabilityWeekEditor'),group=uw033El('availabilityGroupScope')?.value||'both',role=uw033El('availabilityPreferredRole')?.value?.trim()||null,notes=uw033El('availabilityNotes')?.value?.trim()||null,timezone=uw033El('availabilityTimezone')?.value||UW033_ET_ZONE;
+    const schedule=UW033_DAYS.map(d=>{const row=ed.querySelector(`[data-day="${d}"]`);const status=row.querySelector('.day-state').value;return {day_of_week:d,status,start_time:status==='unavailable'?null:(row.querySelector('.day-start').value||null),end_time:status==='unavailable'?null:(row.querySelector('.day-end').value||null)}});
+    const {error}=await uwSupabase.rpc('save_my_staff_availability',{p_group_scope:group,p_preferred_role:role,p_notes:notes,p_timezone:timezone,p_schedule:schedule});if(error)throw error;
+    const verify=await uwSupabase.from('staff_availability').select('user_id,group_scope,day_of_week,status,start_time,end_time,preferred_role,notes,timezone').eq('user_id',currentSession.user.id).order('day_of_week');
+    if(verify.error)throw verify.error;
+    const saved=(verify.data||[]).map(r=>({...r,day_of_week:uw033NormalizeDayOfWeek(r.day_of_week)})).filter(r=>r.day_of_week);
+    if(saved.length!==7)throw new Error(`Save verification failed: expected 7 days, found ${saved.length}.`);
+    for(const expected of schedule){const actual=saved.find(r=>r.day_of_week===expected.day_of_week);if(!actual||actual.status!==expected.status)throw new Error(`Save verification failed for ${expected.day_of_week}.`);}
+    uw033CloseAvailability();await uw033LoadAvailability();toast('Availability saved and verified. Times are shown in Eastern Time.');
+  } catch(err){console.error(err);toast('Availability save failed: '+(err.message||err));}
   finally{if(btn)btn.disabled=false;}
 }
 
