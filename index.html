@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>The UnderWeb — Staff Beta 0.3.3</title>
+<title>The UnderWeb — Staff Beta 0.4.10</title>
 <style>
 :root{
   --g:#38ff72;--g2:#0cbb4c;--bg:#010302;--p:#050a07;--p2:#08110b;--l:#123c21;
@@ -401,9 +401,9 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 </div>
 </div></section>
 <section class="page" id="page-live"><div class="wrap">
-<div class="page-title"><div class="eyebrow">VRCHAT NETWORK</div><h1>Live Instances</h1><p>Only real published UnderWeb and Symbiotes instances will appear here.</p></div>
-<div class="toolbar"><button class="btn hot" data-action="add-instance" data-requires-staff="true">+ Publish Instance</button><select class="select"><option>Both Groups</option><option>UnderWeb</option><option>Symbiotes</option></select></div>
-<div class="card"><div class="eyebrow">NO LIVE INSTANCES</div><h3>Nothing published right now.</h3><div class="meta">Demo worlds, fake player counts and placeholder hosts have been removed.</div></div>
+<div class="page-title"><div class="eyebrow">VRCHAT NETWORK</div><h1>Live Instances</h1><p>Only real published UnderWeb and Symbiotes instances appear here.</p></div>
+<div class="toolbar"><button class="btn hot" data-action="add-instance" data-requires-staff="true">+ Publish Instance</button><select class="select" id="liveGroupFilter"><option value="both">Both Groups</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select></div>
+<div class="grid3" id="liveInstancesList"><div class="uw-empty" style="grid-column:1/-1">Loading live instances…</div></div>
 </div></section>
 <section class="page" id="page-discover"><div class="wrap">
 <div class="page-title"><div class="eyebrow">CREATOR DIRECTORY</div><h1>Discover Creators</h1><p>Find approved people by discipline, availability, style and community history.</p></div>
@@ -534,6 +534,20 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <div class="modalhead"><div><div class="eyebrow">CREATOR PROFILE</div><h2 style="margin:4px 0">Creator</h2></div><button class="close" onclick="closeModal()">×</button></div>
 <div class="grid2 sectionpad"><div class="card"><div class="avatar" style="width:100%;height:220px"></div></div><div class="card"><div class="eyebrow">VERIFIED CREATOR</div><h3>Photography · Video · Event Coverage</h3><div class="meta">Available now · Open to collabs<br>UnderWeb Featured</br></div><div class="chips"><span class="chip">Nightlife</span><span class="chip">Portraits</span><span class="chip">VRChat</span></div><button class="btn hot" data-action="invite">Book / Collab</button></div></div>
 <div class="head"><div><div class="eyebrow">FEATURED WORK</div><h2>Recent work</h2></div></div><div class="grid3"><div class="work"></div><div class="work"></div><div class="work"></div></div>
+</div></div>
+<div class="uw-overlay" id="instancePublishOverlay" aria-modal="true" role="dialog">
+<div class="uw-dialog" style="width:min(680px,96vw)">
+<div class="uw-dialog-head"><div><div class="eyebrow">VRCHAT NETWORK</div><h2>Publish Live Instance</h2></div><button class="uw-dialog-close" id="closeInstancePublisher" type="button">×</button></div>
+<p class="meta">Publish a real VRChat instance for members to find.</p>
+<div class="uw-form-grid">
+<label><span class="meta">Group</span><select class="uw-select" id="instanceGroup"><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="both">Both Groups</option></select></label>
+<label><span class="meta">World / Instance Name</span><input class="uw-input" id="instanceName" maxlength="100" placeholder="UnderWeb Rave Cave"/></label>
+<label class="full"><span class="meta">VRChat Instance URL *</span><input class="uw-input" id="instanceUrl" inputmode="url" placeholder="https://vrchat.com/home/launch?..."/></label>
+<label><span class="meta">Host / Staff Contact</span><input class="uw-input" id="instanceHost" maxlength="80" placeholder="@Darko"/></label>
+<label><span class="meta">Expires</span><input class="uw-input" id="instanceExpires" type="datetime-local"/></label>
+<label class="full"><span class="meta">Note</span><textarea class="uw-textarea" id="instanceNote" maxlength="500" placeholder="Optional info for members"></textarea></label>
+</div>
+<div class="uw-dialog-actions"><button class="btn" id="cancelInstancePublisher" type="button">Cancel</button><button class="btn hot" id="publishInstanceBtn" type="button">Publish Instance</button></div>
 </div></div>
 <div aria-labelledby="onboardingTitle" aria-modal="true" id="onboardingGate" role="dialog">
 <div class="onboarding-card">
@@ -1113,7 +1127,7 @@ document.addEventListener('click',e=>{
   else if(x==='vrchat')toast('Preview: this will open the active VRChat instance invite / launch flow.');
   else if(x==='signin')passwordlessSignIn();
   else if(x==='join'){ if(!currentSession) passwordlessSignIn(); else if(!currentAccountProfile?.username || !currentAccountProfile?.display_name || !currentAccountProfile?.onboarding_complete) openOnboarding(currentAccountProfile); else showPage('profile'); }
-  else if(x==='add-instance')toast('Preview: paste VRChat instance link + publish live card.');
+  else if(x==='add-instance')openInstancePublisher();
   else if(x==='post-project')toast('Preview: create a new project or collaboration request.');
   else if(x==='match')toast('Matching refreshed using skill, availability and history.');
   else if(x==='invite')toast('Preview: creator invite / booking request sent.');
@@ -1209,10 +1223,10 @@ function renderEvents(){
 async function loadEvents(){
   if(!currentSession){uwBeta.events=[];renderEvents();return;}
   try{
-    let q=uwSupabase.from('events').select('id,title,group_scope,starts_at,location,description,status,created_by,created_at,updated_at').order('starts_at',{ascending:true,nullsFirst:false}).limit(100);
+    let q=uwSupabase.from('network_events').select('id,title,group_scope,starts_at,location,description,status,created_by,created_at,updated_at').order('starts_at',{ascending:true,nullsFirst:false}).limit(100);
     if(!hasStaffAccess())q=q.eq('status','published');
     const {data,error}=await q;if(error)throw error;uwBeta.events=data||[];renderEvents();
-  }catch(err){console.error('Events load failed:',err);uwBeta.events=[];renderEvents();const body=document.getElementById('eventsTableBody');if(body)body.innerHTML='<tr><td colspan="6" class="meta">Events backend is not installed yet. Run the 0.4.6 Events SQL migration.</td></tr>';}
+  }catch(err){console.error('Events load failed:',err);uwBeta.events=[];renderEvents();const body=document.getElementById('eventsTableBody');if(body)body.innerHTML='<tr><td colspan="6" class="meta">Events backend is not installed yet. Run the 0.4.10 database migration.</td></tr>';}
 }
 async function saveEvent(){
   if(!currentSession)return passwordlessSignIn();
@@ -1230,16 +1244,52 @@ async function saveEvent(){
   if(btn){btn.disabled=true;btn.textContent='SAVING…'};if(note)note.textContent='Saving real event…';
   try{
     const payload={title,group_scope,starts_at:dt.toISOString(),location,description,status,created_by:currentSession.user.id,updated_at:new Date().toISOString()};
-    const {data,error}=await uwSupabase.from('events').insert(payload).select('id').single();if(error)throw error;
+    const {data,error}=await uwSupabase.from('network_events').insert(payload).select('id').single();if(error)throw error;
     toast(status==='published'?'Event published.':'Draft event saved.');
     if(note)note.textContent=`Saved to Supabase • Event ${data?.id?String(data.id).slice(0,8):''}`;
     ['eventPostTitle','eventPostTime','eventPostLocation','eventPostDescription'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
     await loadEvents();await loadActivity();showPage('events');
-  }catch(err){console.error('Event save failed:',err);toast(err.message||'Event save failed.');if(note)note.textContent='Save failed. If the events table is missing, run the 0.4.6 SQL migration.';}
+  }catch(err){console.error('Event save failed:',err);toast(err.message||'Event save failed.');if(note)note.textContent='Save failed. Run the 0.4.10 database migration.';}
   finally{if(btn){btn.disabled=false;btn.textContent='Save Event'}}
 }
+
+let uwLiveInstances=[];
+function normalizeVrchatInstanceUrl(raw){
+  const value=String(raw||'').trim(); if(!value)return '';
+  try{const u=new URL(value); if(!['vrchat.com','www.vrchat.com'].includes(u.hostname.toLowerCase())||u.protocol!=='https:')return ''; return u.toString();}catch{return '';}
+}
+function renderLiveInstances(){
+  const list=document.getElementById('liveInstancesList'); if(!list)return;
+  const filter=document.getElementById('liveGroupFilter')?.value||'both', now=Date.now();
+  const rows=uwLiveInstances.filter(x=>x.status==='live'&&(!x.expires_at||new Date(x.expires_at).getTime()>now)&&(filter==='both'||x.group_scope==='both'||x.group_scope===filter));
+  if(!rows.length){list.innerHTML='<div class="uw-empty" style="grid-column:1/-1">No live instances published right now.</div>';return;}
+  list.innerHTML=rows.map(x=>`<div class="card"><div class="eyebrow">${esc(eventGroupLabel(x.group_scope))} • LIVE</div><h3>${esc(x.name||'VRChat Instance')}</h3>${x.host_display?`<div class="meta">Host: ${esc(x.host_display)}</div>`:''}${x.expires_at?`<div class="meta">Expires ${niceTime(x.expires_at)}</div>`:''}${x.note?`<p class="meta">${esc(x.note)}</p>`:''}<div class="toolbar" style="margin-top:12px"><a class="btn hot" href="${esc(x.instance_url)}" target="_blank" rel="noopener noreferrer">JOIN INSTANCE</a>${hasStaffAccess()?`<button class="btn danger" type="button" data-close-instance="${esc(x.id)}">CLOSE INSTANCE</button>`:''}</div></div>`).join('');
+}
+async function loadLiveInstances(){
+  if(!currentSession){uwLiveInstances=[];renderLiveInstances();return;}
+  try{const {data,error}=await uwSupabase.from('live_instances').select('id,group_scope,name,instance_url,host_display,note,status,expires_at,created_by,created_at,updated_at').eq('status','live').order('created_at',{ascending:false}).limit(100); if(error)throw error; uwLiveInstances=data||[]; renderLiveInstances();}
+  catch(err){console.error('Live instances load failed:',err);uwLiveInstances=[];const list=document.getElementById('liveInstancesList');if(list)list.innerHTML='<div class="uw-empty" style="grid-column:1/-1">Live-instance backend is not installed yet. Run the 0.4.10 SQL migration.</div>';}
+}
+function openInstancePublisher(){if(!currentSession)return passwordlessSignIn();if(!hasStaffAccess())return toast('Staff access is required to publish an instance.');document.getElementById('instancePublishOverlay')?.classList.add('open');}
+function closeInstancePublisher(){document.getElementById('instancePublishOverlay')?.classList.remove('open');}
+async function publishLiveInstance(){
+  if(!currentSession)return passwordlessSignIn(); if(!hasStaffAccess())return toast('Staff access is required to publish an instance.');
+  const group_scope=document.getElementById('instanceGroup')?.value||'underweb', name=document.getElementById('instanceName')?.value.trim()||'', instance_url=normalizeVrchatInstanceUrl(document.getElementById('instanceUrl')?.value||''), host_display=document.getElementById('instanceHost')?.value.trim()||'', note=document.getElementById('instanceNote')?.value.trim()||'', expiresRaw=document.getElementById('instanceExpires')?.value||'';
+  if(!instance_url)return toast('Paste a valid https://vrchat.com instance URL.');
+  let expires_at=null;if(expiresRaw){const d=new Date(expiresRaw);if(Number.isNaN(d.getTime()))return toast('The expiration time is invalid.');expires_at=d.toISOString();}
+  const btn=document.getElementById('publishInstanceBtn');if(btn){btn.disabled=true;btn.textContent='PUBLISHING…';}
+  try{const {error}=await uwSupabase.from('live_instances').insert({group_scope,name:name||'VRChat Instance',instance_url,host_display,note,status:'live',expires_at,created_by:currentSession.user.id,updated_at:new Date().toISOString()});if(error)throw error;closeInstancePublisher();['instanceName','instanceUrl','instanceHost','instanceNote','instanceExpires'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});await loadLiveInstances();toast('Instance published.');}
+  catch(err){console.error('Instance publish failed:',err);toast(err.message||'Instance publish failed.');}
+  finally{if(btn){btn.disabled=false;btn.textContent='Publish Instance';}}
+}
+async function closeLiveInstance(id){
+  if(!currentSession||!hasStaffAccess())return;
+  try{const {error}=await uwSupabase.from('live_instances').update({status:'closed',updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await loadLiveInstances();toast('Instance closed.');}
+  catch(err){console.error('Instance close failed:',err);toast(err.message||'Could not close instance.');}
+}
+
 async function loadStaffBetaData(){
-  await Promise.all([loadCreatorDirectory(),loadEvents()]);
+  await Promise.all([loadCreatorDirectory(),loadEvents(),loadLiveInstances()]);
   setText('uwWelcomeName',(currentAccountProfile?.display_name||currentAccountProfile?.username||'CREATOR').toUpperCase());
   setText('uwWelcomeRole',topRole().toUpperCase()+' • '+(hasStaffAccess()?'STAFF ACCESS':'NETWORK MEMBER'));
   setText('uwRoleBadge',topRole().toUpperCase());
@@ -1261,7 +1311,7 @@ function updateDashboardOps(){
   const open=uwBeta.tickets.filter(x=>['open','claimed','reviewing'].includes(x.status)).length;
   setText('uwAppBadge',pending);setText('navApplicationCount',pending);setText('uwTicketBadge',open);setText('navTicketCount',open);setText('uwOpenOpsCount',pending+open);
   const att=document.getElementById('uwAttentionList');
-  if(att){att.innerHTML=`<div class="uw-attention-row"><div class="uw-number">${pending}</div><div class="uw-row-main"><b>Applications awaiting action</b><small>Pending or reviewing</small></div><button class="uw-mini-btn hot" data-page="applications">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${open}</div><div class="uw-row-main"><b>Support tickets unresolved</b><small>Open, claimed, or reviewing</small></div><button class="uw-mini-btn hot" data-page="tickets">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${uwBeta.feedback.filter(x=>x.status==='new').length}</div><div class="uw-row-main"><b>New beta reports</b><small>Help us break 0.4.9</small></div><button class="uw-mini-btn" data-page="feedback">VIEW →</button></div>`;bindDynamicPageButtons(att)}
+  if(att){att.innerHTML=`<div class="uw-attention-row"><div class="uw-number">${pending}</div><div class="uw-row-main"><b>Applications awaiting action</b><small>Pending or reviewing</small></div><button class="uw-mini-btn hot" data-page="applications">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${open}</div><div class="uw-row-main"><b>Support tickets unresolved</b><small>Open, claimed, or reviewing</small></div><button class="uw-mini-btn hot" data-page="tickets">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${uwBeta.feedback.filter(x=>x.status==='new').length}</div><div class="uw-row-main"><b>New beta reports</b><small>Help us break 0.4.10</small></div><button class="uw-mini-btn" data-page="feedback">VIEW →</button></div>`;bindDynamicPageButtons(att)}
   renderHomeAnnouncements();renderHomeActivity();
 }
 function bindDynamicPageButtons(root=document){root.querySelectorAll('[data-page]').forEach(b=>{if(b.dataset.uwBound)return;b.dataset.uwBound='1';b.addEventListener('click',()=>showPage(b.dataset.page))})}
@@ -1467,6 +1517,12 @@ const uw033OriginalRefresh=window.refreshAuthUI;window.refreshAuthUI=async funct
 
 <script>
 window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('liveGroupFilter')?.addEventListener('change',renderLiveInstances);
+  document.getElementById('closeInstancePublisher')?.addEventListener('click',closeInstancePublisher);
+  document.getElementById('cancelInstancePublisher')?.addEventListener('click',closeInstancePublisher);
+  document.getElementById('publishInstanceBtn')?.addEventListener('click',publishLiveInstance);
+  document.getElementById('instancePublishOverlay')?.addEventListener('click',e=>{if(e.target.id==='instancePublishOverlay')closeInstancePublisher();});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-close-instance]');if(b)closeLiveInstance(b.dataset.closeInstance);});
   ['creatorSearch','creatorDiscipline','creatorAvailability'].forEach(id=>document.getElementById(id)?.addEventListener(id==='creatorSearch'?'input':'change',()=>{if(typeof renderCreatorDirectory==='function')renderCreatorDirectory();}));
 });
 window.addEventListener('pageshow',()=>{try{uwSupabase.auth.getSession().then(()=>refreshAuthUI())}catch(e){}});
