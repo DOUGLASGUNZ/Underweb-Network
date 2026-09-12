@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>The UnderWeb — Staff Beta 0.4.10</title>
+<title>The UnderWeb — Staff Beta 0.5.0</title>
 <style>
 :root{
   --g:#38ff72;--g2:#0cbb4c;--bg:#010302;--p:#050a07;--p2:#08110b;--l:#123c21;
@@ -1622,11 +1622,11 @@ function uw50RenderProfileIdentity(){
 }
 function uw50RenderIdentity(){
   const roles=document.getElementById('uw50MyRoles');
-  if(roles)roles.innerHTML=uw50Roles.length?uw50Roles.map(r=>`<span class="uw50-role-chip">${uw50Esc(uw50Def(r.role_slug)?.name||uw50Nice(r.role_slug))}<small>${uw50Esc(uw50Nice(r.group_scope))}</small></span>`).join(''):'<div class="uw-empty">Member role will appear after refresh.</div>';
+  if(roles)roles.innerHTML=uw50Roles.length?uw50Roles.map(r=>`<span class="uw50-role-chip">${uw50Esc(uw50Def(r.role_slug)?.name||uw50Nice(r.role_slug))}<small>${uw50Esc(uw50Nice(r.group_scope))}</small>${isOwner()&&r.role_slug!=='owner'?`<button class="uw50-mini danger" style="margin-top:7px" data-uw50-remove-role="${r.id}">REMOVE</button>`:''}</span>`).join(''):'<div class="uw-empty">Member role will appear after refresh.</div>';
   const rc=document.getElementById('uw50RoleCount');if(rc)rc.textContent=uw50Roles.length;
   const showcased=UW50.badges.filter(x=>x.is_showcased);const sc=document.getElementById('uw50ShowcaseCount');if(sc)sc.textContent=`${showcased.length} / 6`;
   const sb=document.getElementById('uw50ShowcaseBadges');if(sb)sb.innerHTML=showcased.length?showcased.map(x=>`<span class="uw50-badge-chip">${uw50Esc(uw50BadgeDef(x.badge_slug)?.name||uw50Nice(x.badge_slug))}</span>`).join(''):'<div class="uw-empty">Choose badges from your collection below.</div>';
-  const selected=UW50.titles.find(x=>x.is_selected)||null;const st=document.getElementById('uw50SelectedTitle');if(st)st.textContent=selected?(uw50TitleDef(selected.title_slug)?.name||uw50Nice(selected.title_slug)):'Member';
+  const selected=UW50.titles.find(x=>x.is_selected)||null;const st=document.getElementById('uw50SelectedTitle');if(st)st.innerHTML=selected?`${uw50Esc(uw50TitleDef(selected.title_slug)?.name||uw50Nice(selected.title_slug))} <button class="uw50-mini danger" style="margin-left:8px" data-uw50-clear-title>REMOVE TITLE</button>`:'Member';
 
   const existing=new Set(uw50Roles.map(r=>`${r.role_slug}|${r.group_scope}`));
   const open=new Set(UW50.myApps.filter(a=>['pending','reviewing'].includes(a.status)).map(a=>`${a.role_slug}|${a.group_scope}`));
@@ -1652,6 +1652,8 @@ async function uw50Apply(slug){
 async function uw50Withdraw(id){const {error}=await uwSupabase.rpc('uw_withdraw_role_application',{p_application_id:id});if(error)return toast(error.message);toast('Application withdrawn.');await uw50LoadAll()}
 async function uw50Showcase(id,on){const {error}=await uwSupabase.rpc('uw_set_badge_showcase',{p_badge_id:id,p_showcase:on});if(error)return toast(error.message);await uw50LoadAll();toast(on?'Badge added to showcase.':'Badge removed from showcase.')}
 async function uw50SelectTitle(id){const {error}=await uwSupabase.rpc('uw_select_title',{p_title_id:id});if(error)return toast(error.message);await uw50LoadAll();toast('Profile title updated.')}
+async function uw50ClearTitle(){const {error}=await uwSupabase.rpc('uw_clear_title');if(error)return toast(error.message);await uw50LoadAll();toast('Active title removed.')}
+async function uw50RemoveRole(id){const role=uw50Roles.find(r=>r.id===id);if(!role)return toast('Role not found.');if(role.role_slug==='owner')return toast('Owner role is protected.');if(!confirm(`Remove ${uw50Def(role.role_slug)?.name||uw50Nice(role.role_slug)}?`))return;const {error}=await uwSupabase.rpc('uw_revoke_role',{p_user_id:currentSession.user.id,p_role_slug:role.role_slug,p_group_scope:role.group_scope,p_reason:'Removed by owner from Identity panel.'});if(error)return toast(error.message);await uw50LoadAll();toast('Role removed.')}
 async function uw50LoadReviewQueue(){
   if(!currentSession||!hasStaffAccess())return;
   const {data,error}=await uwSupabase.from('role_applications').select('*').in('status',['pending','reviewing']).order('submitted_at');
@@ -1668,7 +1670,7 @@ function uw50RenderReviewQueue(){
 }
 async function uw50Review(id,decision){const note=prompt(decision==='accepted'?'Optional approval note:':'Reason / staff note:')||'';const {error}=await uwSupabase.rpc('uw_review_role_application',{p_application_id:id,p_decision:decision,p_review_note:note});if(error)return toast(error.message);toast(decision==='accepted'?'Role approved.':'Application denied.');await uw50LoadAll()}
 
-document.addEventListener('click',e=>{const a=e.target.closest('[data-uw50-apply]');if(a){uw50Apply(a.dataset.uw50Apply);return}const w=e.target.closest('[data-uw50-withdraw]');if(w){uw50Withdraw(w.dataset.uw50Withdraw);return}const s=e.target.closest('[data-uw50-showcase]');if(s){const [id,on]=s.dataset.uw50Showcase.split('|');uw50Showcase(id,on==='1');return}const t=e.target.closest('[data-uw50-title]');if(t){uw50SelectTitle(t.dataset.uw50Title);return}const r=e.target.closest('[data-uw50-review]');if(r){const [id,d]=r.dataset.uw50Review.split('|');uw50Review(id,d);return}});
+document.addEventListener('click',e=>{const a=e.target.closest('[data-uw50-apply]');if(a){uw50Apply(a.dataset.uw50Apply);return}const w=e.target.closest('[data-uw50-withdraw]');if(w){uw50Withdraw(w.dataset.uw50Withdraw);return}const s=e.target.closest('[data-uw50-showcase]');if(s){const [id,on]=s.dataset.uw50Showcase.split('|');uw50Showcase(id,on==='1');return}const t=e.target.closest('[data-uw50-title]');if(t){uw50SelectTitle(t.dataset.uw50Title);return}const ct=e.target.closest('[data-uw50-clear-title]');if(ct){uw50ClearTitle();return}const rr=e.target.closest('[data-uw50-remove-role]');if(rr){uw50RemoveRole(rr.dataset.uw50RemoveRole);return}const r=e.target.closest('[data-uw50-review]');if(r){const [id,d]=r.dataset.uw50Review.split('|');uw50Review(id,d);return}});
 document.getElementById('uw50ApplyScope')?.addEventListener('change',uw50RenderIdentity);
 document.getElementById('uw50ReloadIdentity')?.addEventListener('click',uw50LoadAll);
 document.getElementById('uw50ReloadReviews')?.addEventListener('click',uw50LoadReviewQueue);
