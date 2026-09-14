@@ -382,6 +382,14 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <style>
 /* 0.5.1.3 Network Identity */
 .uw51-identity-intro{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 18px}.uw51-identity-intro article{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));padding:18px;min-height:150px}.uw51-identity-intro article>span{font:700 11px/1 var(--mono);letter-spacing:.18em;color:var(--accent)}.uw51-identity-intro h3{margin:14px 0 7px;font-size:20px}.uw51-identity-intro p{margin:0;color:var(--muted);line-height:1.55}.uw51-catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.uw51-catalog-list{display:grid;gap:8px;max-height:520px;overflow:auto;padding-right:4px}.uw51-catalog-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line);padding:12px 13px;background:rgba(255,255,255,.012)}.uw51-catalog-row h4{margin:0 0 4px;font-size:14px}.uw51-catalog-row p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}.uw51-catalog-row .uw51-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}.uw51-tag{border:1px solid var(--line);padding:5px 8px;font:700 9px/1 var(--mono);letter-spacing:.1em;color:var(--muted);white-space:nowrap}.uw51-tag.hot{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 55%,transparent)}.uw51-title-catalog{display:flex;flex-wrap:wrap;gap:8px}.uw51-title-pill{border:1px solid var(--line);padding:9px 11px;background:rgba(255,255,255,.012)}.uw51-title-pill b{font-size:12px}.uw51-title-pill span{display:block;margin-top:3px;font:700 9px/1 var(--mono);letter-spacing:.1em;color:var(--muted)}@media(max-width:800px){.uw51-identity-intro{grid-template-columns:1fr}.uw51-identity-intro article{min-height:0}.uw51-catalog-grid{grid-template-columns:1fr}.uw51-catalog-list{max-height:360px}.uw51-catalog-row{grid-template-columns:1fr}.uw51-catalog-row .uw51-tags{justify-content:flex-start}}
+
+/* 0.6.1.5 event date/time picker UX */
+.uw-datetime-pickers{display:grid;grid-template-columns:minmax(150px,1fr) minmax(130px,.75fr);gap:8px;min-width:min(100%,320px)}
+.uw-picker-field{display:grid;gap:4px;min-width:0}
+.uw-picker-field .meta{font-size:9px;letter-spacing:.13em;color:var(--m)}
+.uw-picker-field input[type="date"],.uw-picker-field input[type="time"]{width:100%;min-height:42px;color-scheme:dark;cursor:pointer}
+.uw-picker-field input::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.85;cursor:pointer}
+@media(max-width:700px){.uw-datetime-pickers{grid-template-columns:1fr 1fr;width:100%;min-width:0}.uw-picker-field input{font-size:16px}}
 </style>
 </head>
 <body data-build="0.5.1" data-theme="underweb">
@@ -639,7 +647,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <section class="page" id="page-eventbuilder"><div class="wrap">
 <div class="page-title"><div class="eyebrow">EVENT OPERATIONS</div><h1>Event Builder</h1><p>Build a real event, assign coverage and prepare it for publishing.</p></div>
 <div class="uw42-staff-command"><button data-page="applications"><i>▤</i><b>Applications</b><span>Review creator, performer, staff and partnership requests.</span></button><button data-page="tickets"><i>◇</i><b>Tickets</b><span>Resolve support, safety, booking and member issues.</span></button><button data-page="availability"><i>◫</i><b>Availability</b><span>See coverage windows and fill staffing gaps.</span></button><button data-page="activity"><i>⌁</i><b>Audit Log</b><span>Review privacy-safe staff actions and operational history.</span></button></div>
-<div class="grid2"><div class="card uw-event-editor"><div class="eyebrow">EVENT DETAILS</div><h3>New Event</h3><div class="toolbar"><input class="input" id="eventPostTitle" placeholder="Event title"/><select class="select" id="eventPostGroup"><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select><input class="input" id="eventPostTime" type="datetime-local"/><input class="input" id="eventPostLocation" placeholder="VRChat world / location"/><span class="status warn" style="align-self:center">SUBMITS FOR APPROVAL</span></div><textarea class="textarea" id="eventPostDescription" placeholder="Event description"></textarea><button class="btn hot" id="saveEventBtn" type="button">Submit Event</button> <button class="btn" id="previewDiscordBtn" type="button">Preview Discord Post</button> <button class="btn" id="copyDiscordBtn" type="button">Copy Discord Post</button><div class="uw-discord-note" id="eventSaveStatus">Events submit as PENDING and require Admin, Director, or Owner approval before publishing. Discord publishing stays server-side.</div></div>
+<div class="grid2"><div class="card uw-event-editor"><div class="eyebrow">EVENT DETAILS</div><h3>New Event</h3><div class="toolbar"><input class="input" id="eventPostTitle" placeholder="Event title"/><select class="select" id="eventPostGroup"><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select><div class="uw-datetime-pickers"><label class="uw-picker-field"><span class="meta">DATE</span><input class="input" id="eventPostDate" type="date" aria-label="Event date"/></label><label class="uw-picker-field"><span class="meta">TIME</span><input class="input" id="eventPostClock" type="time" aria-label="Event time"/></label></div><input class="input" id="eventPostLocation" placeholder="VRChat world / location"/><span class="status warn" style="align-self:center">SUBMITS FOR APPROVAL</span></div><textarea class="textarea" id="eventPostDescription" placeholder="Event description"></textarea><button class="btn hot" id="saveEventBtn" type="button">Submit Event</button> <button class="btn" id="previewDiscordBtn" type="button">Preview Discord Post</button> <button class="btn" id="copyDiscordBtn" type="button">Copy Discord Post</button><div class="uw-discord-note" id="eventSaveStatus">Events submit as PENDING and require Admin, Director, or Owner approval before publishing. Discord publishing stays server-side.</div></div>
 <div class="card"><div class="eyebrow">COVERAGE</div><h3>No staffing assigned yet.</h3><div class="meta">Coverage will populate from real event assignments and staff availability.</div></div></div>
 </div></section>
 <section class="page" id="page-permissions"><div class="wrap">
@@ -1383,10 +1391,10 @@ async function loadEvents(){
 async function saveEvent(){
   if(!currentSession)return passwordlessSignIn();
   if(!hasStaffAccess())return toast('Event Staff or higher is required to submit events.');
-  const title=document.getElementById('eventPostTitle')?.value.trim(),group_scope=document.getElementById('eventPostGroup')?.value||'underweb',timeRaw=document.getElementById('eventPostTime')?.value||'',location=document.getElementById('eventPostLocation')?.value.trim()||'',description=document.getElementById('eventPostDescription')?.value.trim()||'';
+  const title=document.getElementById('eventPostTitle')?.value.trim(),group_scope=document.getElementById('eventPostGroup')?.value||'underweb',dateRaw=document.getElementById('eventPostDate')?.value||'',clockRaw=document.getElementById('eventPostClock')?.value||'',timeRaw=(dateRaw&&clockRaw)?`${dateRaw}T${clockRaw}`:'',location=document.getElementById('eventPostLocation')?.value.trim()||'',description=document.getElementById('eventPostDescription')?.value.trim()||'';
   if(!title)return toast('Add an event title.');if(!timeRaw)return toast('Add the event date and time.');const dt=new Date(timeRaw);if(Number.isNaN(dt.getTime()))return toast('That event date/time is invalid.');
   const btn=document.getElementById('saveEventBtn'),note=document.getElementById('eventSaveStatus');if(btn){btn.disabled=true;btn.textContent='SUBMITTING…'};if(note)note.textContent='Submitting for leadership approval…';
-  try{const {data,error}=await uwSupabase.rpc('uw_submit_event',{p_title:title,p_group_scope:group_scope,p_starts_at:dt.toISOString(),p_location:location,p_description:description});if(error)throw error;toast('Event submitted for approval.');if(note)note.textContent=`PENDING APPROVAL • Event ${data?String(data).slice(0,8):''}`;['eventPostTitle','eventPostTime','eventPostLocation','eventPostDescription'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadEvents();await loadActivity();showPage('events');}
+  try{const {data,error}=await uwSupabase.rpc('uw_submit_event',{p_title:title,p_group_scope:group_scope,p_starts_at:dt.toISOString(),p_location:location,p_description:description});if(error)throw error;toast('Event submitted for approval.');if(note)note.textContent=`PENDING APPROVAL • Event ${data?String(data).slice(0,8):''}`;['eventPostTitle','eventPostDate','eventPostClock','eventPostLocation','eventPostDescription'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadEvents();await loadActivity();showPage('events');}
   catch(err){console.error('Event submit failed:',err);toast(err.message||'Event submit failed.');if(note)note.textContent=err.message||'Submit failed.';}
   finally{if(btn){btn.disabled=false;btn.textContent='Submit Event'}}
 }
@@ -1678,7 +1686,7 @@ async function uw033SaveAvailability(){
   finally{if(btn)btn.disabled=false;}
 }
 
-function uw033DiscordText(){const title=uw033El('eventPostTitle')?.value||'Event',group=eventGroupLabel(uw033El('eventPostGroup')?.value||'underweb'),time=uw033El('eventPostTime')?.value||'TBD',loc=uw033El('eventPostLocation')?.value||'VRChat',desc=uw033El('eventPostDescription')?.value||'';return `## ${group.toUpperCase()} // ${title.toUpperCase()}\n\n**When:** ${time}\n**Where:** ${loc}\n\n${desc}\n\nInterested in performing, helping staff, or collaborating? Check the UnderWeb network for event details and open roles.`}
+function uw033DiscordText(){const title=uw033El('eventPostTitle')?.value||'Event',group=eventGroupLabel(uw033El('eventPostGroup')?.value||'underweb'),date=uw033El('eventPostDate')?.value||'',clock=uw033El('eventPostClock')?.value||'',time=(date&&clock)?`${date} ${clock}`:'TBD',loc=uw033El('eventPostLocation')?.value||'VRChat',desc=uw033El('eventPostDescription')?.value||'';return `## ${group.toUpperCase()} // ${title.toUpperCase()}\n\n**When:** ${time}\n**Where:** ${loc}\n\n${desc}\n\nInterested in performing, helping staff, or collaborating? Check the UnderWeb network for event details and open roles.`}
 function uw033OpenDiscord(){if(uw033El('discordPreviewText'))uw033El('discordPreviewText').textContent=uw033DiscordText();uw033El('discordPreviewOverlay')?.classList.add('open')}
 function uw033CloseDiscord(){uw033El('discordPreviewOverlay')?.classList.remove('open')}
 async function uw033CopyDiscord(){try{await navigator.clipboard.writeText(uw033DiscordText());toast('Discord post copied.');}catch{toast('Could not access clipboard. Select and copy the preview manually.')}}
@@ -1911,4 +1919,18 @@ const uw61RefreshAuth=window.refreshAuthUI;window.refreshAuthUI=async function()
 window.addEventListener('DOMContentLoaded',()=>{if(currentSession&&hasStaffAccess())uw61LoadStaffRoster()});
 </script>
 
+
+<script>
+(function(){
+  function wireNativePicker(id){
+    const el=document.getElementById(id);
+    if(!el||el.dataset.pickerWired) return;
+    el.dataset.pickerWired='1';
+    const open=()=>{ try{ if(typeof el.showPicker==='function') el.showPicker(); }catch(_){} };
+    el.addEventListener('click',open);
+  }
+  wireNativePicker('eventPostDate');
+  wireNativePicker('eventPostClock');
+})();
+</script>
 </body></html>
