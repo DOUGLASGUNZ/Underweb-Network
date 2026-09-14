@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>The UnderWeb — Community Operations 0.6.1.3</title>
+<title>The UnderWeb — Community Operations 0.6.1.4</title>
 <style>
 :root{
   --g:#38ff72;--g2:#0cbb4c;--bg:#010302;--p:#050a07;--p2:#08110b;--l:#123c21;
@@ -438,7 +438,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <div class="uw40-status-right"><span id="uwNetworkStatus">NETWORK ONLINE</span><span class="uw40-secure">SECURE SESSION</span></div>
 </section>
 <section class="uw50-build-card">
-<div><span class="uw50-build-kicker">CURRENT BUILD</span><strong>0.6.1.3</strong><h3>Community Operations</h3><p>Staff Command Center, live operational priorities, availability coverage, event approvals, projects, announcements and audit activity in one place.</p></div>
+<div><span class="uw50-build-kicker">CURRENT BUILD</span><strong>0.6.1.4</strong><h3>Community Operations</h3><p>Staff Command Center, live operational priorities, availability coverage, event approvals, projects, announcements and audit activity in one place.</p></div>
 <button type="button" data-page="updates">VIEW UPDATE →</button>
 </section>
 <section class="uw40-hero">
@@ -494,7 +494,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 </div></div></div></section>
 
 <section class="page" id="page-roster"><div class="wrap">
-<section class="uw61-hero"><div><div class="eyebrow">0.6.1.3 // COMMUNITY OPERATIONS</div><h1>Staff Roster</h1><p>Real staff identities, community roles, availability coverage and creator specialties in one operational directory.</p></div><div class="uw61-summary"><span><b id="uw61RosterCount">0</b> STAFF</span><span><b id="uw61AvailableCount">0</b> WITH COVERAGE</span></div></section>
+<section class="uw61-hero"><div><div class="eyebrow">0.6.1.4 // COMMUNITY OPERATIONS</div><h1>Staff Roster</h1><p>Real staff identities, community roles, availability coverage and creator specialties in one operational directory.</p></div><div class="uw61-summary"><span><b id="uw61RosterCount">0</b> STAFF</span><span><b id="uw61AvailableCount">0</b> WITH COVERAGE</span></div></section>
 <div class="uw61-toolbar"><input class="input" id="uw61RosterSearch" placeholder="Search staff, role or specialty..."><select class="select" id="uw61RosterCommunity"><option value="all">All Communities</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="both">Shared / Both</option></select><select class="select" id="uw61RosterCoverage"><option value="all">Any Coverage</option><option value="covered">Has Availability</option><option value="none">No Availability Saved</option></select></div>
 <div class="uw61-grid" id="uw61RosterGrid"><div class="uw61-empty">Loading staff roster…</div></div>
 </div></section>
@@ -1864,16 +1864,18 @@ document.getElementById('uw50ReloadReviews')?.addEventListener('click',uw50LoadR
 
 
 <script>
-/* ===== 0.6.1.3 STAFF ROSTER + ROLE DISPLAY ===== */
+/* ===== 0.6.1.4 STAFF ROSTER + ROLE DISPLAY ===== */
 let uw61Roster=[];
 function uw61Text(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function uw61Nice(v){return String(v||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
 function uw61Initial(v){return (String(v||'?').trim().charAt(0)||'?').toUpperCase()}
 function uw61CommunityLabel(arr){arr=Array.isArray(arr)?arr:[];const vals=[...new Set(arr.map(x=>String(x||'').toLowerCase()))];if(vals.includes('both')||vals.includes('network')||vals.includes('shared')||(vals.includes('underweb')&&vals.includes('symbiotes')))return 'Both';if(vals.includes('symbiotes'))return 'Symbiotes';if(vals.includes('underweb'))return 'UnderWeb';return 'Network'}
+function uw61AvailabilityLabel(v){const k=String(v||'').toLowerCase();return ({available:'Available',limited:'Limited',by_request:'By Request',booked:'Booked / Busy',unavailable:'Unavailable'})[k]||uw61Nice(k||'Not set')}
+function uw61CanonicalRoles(input){const rows=Array.isArray(input)?input:[];const seen=new Set();return rows.filter(r=>{const key=String(r?.slug||r?.name||'').trim().toLowerCase().replace(/[\s-]+/g,'_');if(!key||['member','community_member','community'].includes(key)||seen.has(key))return false;seen.add(key);return true}).sort((a,b)=>Number(b?.rank||0)-Number(a?.rank||0)||String(a?.name||a?.slug||'').localeCompare(String(b?.name||b?.slug||'')))}
 async function uw61LoadStaffRoster(){
   if(!currentSession||!hasStaffAccess())return;
   const out=await uwSupabase.rpc('uw_staff_roster_directory');
-  if(out.error){console.warn('Staff roster RPC error:',out.error.message);const g=document.getElementById('uw61RosterGrid');if(g)g.innerHTML=`<div class="uw61-empty"><b>Staff Roster backend error</b><br>${uw61Text(out.error.message)}<br><span class="meta">Run the 0.6.1.3 role/roster sync patch, then refresh.</span></div>`;return}
+  if(out.error){console.warn('Staff roster RPC error:',out.error.message);const g=document.getElementById('uw61RosterGrid');if(g)g.innerHTML=`<div class="uw61-empty"><b>Staff Roster backend error</b><br>${uw61Text(out.error.message)}<br><span class="meta">Run the 0.6.1.4 canonical roster patch, then refresh.</span></div>`;return}
   uw61Roster=out.data||[];uw61RenderStaffRoster();
 }
 function uw61RenderStaffRoster(){
@@ -1883,7 +1885,7 @@ function uw61RenderStaffRoster(){
   const coverage=document.getElementById('uw61RosterCoverage')?.value||'all';
   let rows=uw61Roster.filter(r=>{
     const communities=Array.isArray(r.communities)?r.communities.map(x=>String(x).toLowerCase()):[];
-    const roles=Array.isArray(r.roles)?r.roles:[];const skills=Array.isArray(r.specialties)?r.specialties:[];
+    const roles=uw61CanonicalRoles(r.roles);const skills=Array.isArray(r.specialties)?r.specialties:[];
     const hay=[r.staff_name,r.username,r.headline,r.preferred_role,...skills,...roles.map(x=>x.name||x.slug)].join(' ').toLowerCase();
     const cm=community==='all'||(community==='both'?(communities.includes('both')||communities.includes('network')||communities.includes('shared')||(communities.includes('underweb')&&communities.includes('symbiotes'))):communities.includes(community)||communities.includes('both')||communities.includes('network')||communities.includes('shared'));
     const cv=coverage==='all'||(coverage==='covered'?Number(r.coverage_days||0)>0:Number(r.coverage_days||0)===0);
@@ -1894,10 +1896,10 @@ function uw61RenderStaffRoster(){
   document.getElementById('uw61AvailableCount').textContent=rows.filter(r=>Number(r.coverage_days||0)>0).length;
   if(!rows.length){grid.innerHTML='<div class="uw61-empty">No staff match these filters.</div>';return}
   grid.innerHTML=rows.map(r=>{
-    const roles=Array.isArray(r.roles)?r.roles:[];const skills=Array.isArray(r.specialties)?r.specialties:[];
+    const roles=uw61CanonicalRoles(r.roles);const skills=Array.isArray(r.specialties)?r.specialties:[];
     const primary=roles[0]?.name||uw61Nice(roles[0]?.slug||r.preferred_role||'Staff');const community=uw61CommunityLabel(r.communities);
     const avatar=r.avatar_url?`style="background-image:url('${uw61Text(String(r.avatar_url).replace(/'/g,'%27'))}')"`:'';
-    return `<article class="uw61-card"><div class="uw61-top"><div class="uw61-avatar" ${avatar}>${r.avatar_url?'':uw61Text(uw61Initial(r.staff_name))}</div><div class="uw61-name"><h3>${uw61Text(r.staff_name||'Staff Member')}</h3><p>${uw61Text(r.headline||('@'+(r.username||'staff')))}</p></div></div><div class="uw61-tags">${roles.slice(0,4).map((x,i)=>`<span class="uw61-tag ${i===0?'hot':''}">${uw61Text(x.name||uw61Nice(x.slug))}</span>`).join('')}<span class="uw61-tag">${uw61Text(community)}</span></div><div class="uw61-meta"><div><span>Primary Role</span><b>${uw61Text(primary)}</b></div><div><span>Weekly Coverage</span><b>${Number(r.coverage_days||0)} / 7 days</b></div><div><span>Availability</span><b>${uw61Text(r.availability|| (Number(r.coverage_days||0)>0?'Saved schedule':'Not set'))}</b></div><div><span>Preferred Duty</span><b>${uw61Text(r.preferred_role||'—')}</b></div></div><div class="uw61-skills"><span>SPECIALTIES</span><div class="chips">${skills.length?skills.slice(0,6).map(x=>`<span class="chip">${uw61Text(x)}</span>`).join(''):'<span class="meta">No specialties listed.</span>'}</div></div><div class="uw61-actions"><button class="uw-mini-btn" data-page="availability">SCHEDULE →</button>${r.has_creator_profile?`<button class="uw-mini-btn hot" data-uw61-profile="${uw61Text(r.staff_name||'')}">CREATOR PROFILE →</button>`:''}</div></article>`
+    return `<article class="uw61-card"><div class="uw61-top"><div class="uw61-avatar" ${avatar}>${r.avatar_url?'':uw61Text(uw61Initial(r.staff_name))}</div><div class="uw61-name"><h3>${uw61Text(r.staff_name||'Staff Member')}</h3><p>${uw61Text(r.headline||('@'+(r.username||'staff')))}</p></div></div><div class="uw61-tags">${roles.slice(0,4).map((x,i)=>`<span class="uw61-tag ${i===0?'hot':''}">${uw61Text(x.name||uw61Nice(x.slug))}</span>`).join('')}<span class="uw61-tag">${uw61Text(community)}</span></div><div class="uw61-meta"><div><span>Primary Role</span><b>${uw61Text(primary)}</b></div><div><span>Weekly Coverage</span><b>${Number(r.coverage_days||0)} / 7 days</b></div><div><span>Availability</span><b>${uw61Text(r.availability?uw61AvailabilityLabel(r.availability):(Number(r.coverage_days||0)>0?'Saved Schedule':'Not Set'))}</b></div><div><span>Preferred Duty</span><b>${uw61Text(r.preferred_role||'—')}</b></div></div><div class="uw61-skills"><span>SPECIALTIES</span><div class="chips">${skills.length?skills.slice(0,6).map(x=>`<span class="chip">${uw61Text(x)}</span>`).join(''):'<span class="meta">No specialties listed.</span>'}</div></div><div class="uw61-actions"><button class="uw-mini-btn" data-page="availability">SCHEDULE →</button>${r.has_creator_profile?`<button class="uw-mini-btn hot" data-uw61-profile="${uw61Text(r.staff_name||'')}">CREATOR PROFILE →</button>`:''}</div></article>`
   }).join('');
   bindDynamicPageButtons(grid);
 }
