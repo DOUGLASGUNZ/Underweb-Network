@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>The UnderWeb — Community Operations 0.6.0</title>
+<title>The UnderWeb — Community Operations 0.6.1.3</title>
 <style>
 :root{
   --g:#38ff72;--g2:#0cbb4c;--bg:#010302;--p:#050a07;--p2:#08110b;--l:#123c21;
@@ -438,7 +438,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <div class="uw40-status-right"><span id="uwNetworkStatus">NETWORK ONLINE</span><span class="uw40-secure">SECURE SESSION</span></div>
 </section>
 <section class="uw50-build-card">
-<div><span class="uw50-build-kicker">CURRENT BUILD</span><strong>0.6.1</strong><h3>Community Operations</h3><p>Staff Command Center, live operational priorities, availability coverage, event approvals, projects, announcements and audit activity in one place.</p></div>
+<div><span class="uw50-build-kicker">CURRENT BUILD</span><strong>0.6.1.3</strong><h3>Community Operations</h3><p>Staff Command Center, live operational priorities, availability coverage, event approvals, projects, announcements and audit activity in one place.</p></div>
 <button type="button" data-page="updates">VIEW UPDATE →</button>
 </section>
 <section class="uw40-hero">
@@ -494,7 +494,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 </div></div></div></section>
 
 <section class="page" id="page-roster"><div class="wrap">
-<section class="uw61-hero"><div><div class="eyebrow">0.6.1 // COMMUNITY OPERATIONS</div><h1>Staff Roster</h1><p>Real staff identities, community roles, availability coverage and creator specialties in one operational directory.</p></div><div class="uw61-summary"><span><b id="uw61RosterCount">0</b> STAFF</span><span><b id="uw61AvailableCount">0</b> WITH COVERAGE</span></div></section>
+<section class="uw61-hero"><div><div class="eyebrow">0.6.1.3 // COMMUNITY OPERATIONS</div><h1>Staff Roster</h1><p>Real staff identities, community roles, availability coverage and creator specialties in one operational directory.</p></div><div class="uw61-summary"><span><b id="uw61RosterCount">0</b> STAFF</span><span><b id="uw61AvailableCount">0</b> WITH COVERAGE</span></div></section>
 <div class="uw61-toolbar"><input class="input" id="uw61RosterSearch" placeholder="Search staff, role or specialty..."><select class="select" id="uw61RosterCommunity"><option value="all">All Communities</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="both">Shared / Both</option></select><select class="select" id="uw61RosterCoverage"><option value="all">Any Coverage</option><option value="covered">Has Availability</option><option value="none">No Availability Saved</option></select></div>
 <div class="uw61-grid" id="uw61RosterGrid"><div class="uw61-empty">Loading staff roster…</div></div>
 </div></section>
@@ -1784,6 +1784,11 @@ async function uw50LoadAll(){
 function uw50Def(slug){return UW50.roleDefs.find(x=>x.slug===slug)}
 function uw50BadgeDef(slug){return UW50.badgeDefs.find(x=>x.slug===slug)}
 function uw50TitleDef(slug){return UW50.titleDefs.find(x=>x.slug===slug)}
+function uw50VisibleRoles(){
+  const ranked=[...(uw50Roles||[])].sort((a,b)=>Number(uw50Def(b.role_slug)?.authority_rank||0)-Number(uw50Def(a.role_slug)?.authority_rank||0));
+  const elevated=ranked.filter(r=>!['member','community_member','community'].includes(String(r.role_slug||'').toLowerCase()));
+  return elevated.length?elevated:ranked;
+}
 function uw50RenderProfileIdentity(){
   const selected=UW50.titles.find(x=>x.is_selected)||null;
   const title=selected?uw50TitleDef(selected.title_slug)?.name:'';
@@ -1792,13 +1797,14 @@ function uw50RenderProfileIdentity(){
   if(!showcase.length)showcase=UW50.badges.slice(0,4);
   const box=document.getElementById('uw50ProfileBadges');
   if(box)box.innerHTML=showcase.length?showcase.map(x=>`<span class="uw40-chip ${x.badge_slug==='first_wave'?'hot':''}">${uw50Esc(uw50BadgeDef(x.badge_slug)?.name||uw50Nice(x.badge_slug))}</span>`).join(''):'<span class="uw40-chip">MEMBER</span>';
-  const role=uw50Roles[0];
-  const rb=document.getElementById('uwRoleBadge');if(rb&&role)rb.textContent=(uw50Def(role.role_slug)?.name||uw50Nice(role.role_slug)).toUpperCase();
+  const role=uw50VisibleRoles()[0];
+  const rb=document.getElementById('uwRoleBadge');if(rb)rb.textContent=role?(uw50Def(role.role_slug)?.name||uw50Nice(role.role_slug)).toUpperCase():'MEMBER';
 }
 function uw50RenderIdentity(){
+  const visibleRoles=uw50VisibleRoles();
   const roles=document.getElementById('uw50MyRoles');
-  if(roles)roles.innerHTML=uw50Roles.length?uw50Roles.map(r=>`<span class="uw50-role-chip">${uw50Esc(uw50Def(r.role_slug)?.name||uw50Nice(r.role_slug))}<small>${uw50Esc(uw50Nice(r.group_scope))}</small>${isOwner()&&!['owner','member'].includes(r.role_slug)?`<button class="uw50-mini danger" style="margin-top:7px" data-uw50-remove-role="${r.id}">REMOVE</button>`:''}${r.role_slug==='member'?'<small class="meta" style="display:block;margin-top:7px">PERMANENT</small>':''}</span>`).join(''):'<div class="uw-empty">Member role will appear after refresh.</div>';
-  const rc=document.getElementById('uw50RoleCount');if(rc)rc.textContent=uw50Roles.length;
+  if(roles)roles.innerHTML=visibleRoles.length?visibleRoles.map(r=>`<span class="uw50-role-chip">${uw50Esc(uw50Def(r.role_slug)?.name||uw50Nice(r.role_slug))}<small>${uw50Esc(uw50Nice(r.group_scope))}</small>${isOwner()&&!['owner','member'].includes(r.role_slug)?`<button class="uw50-mini danger" style="margin-top:7px" data-uw50-remove-role="${r.id}">REMOVE</button>`:''}${r.role_slug==='member'?'<small class="meta" style="display:block;margin-top:7px">PERMANENT</small>':''}</span>`).join(''):'<div class="uw-empty">Member role will appear after refresh.</div>';
+  const rc=document.getElementById('uw50RoleCount');if(rc)rc.textContent=visibleRoles.length;
   const showcased=UW50.badges.filter(x=>x.is_showcased);const sc=document.getElementById('uw50ShowcaseCount');if(sc)sc.textContent=`${showcased.length} / 6`;
   const sb=document.getElementById('uw50ShowcaseBadges');if(sb)sb.innerHTML=showcased.length?showcased.map(x=>`<span class="uw50-badge-chip">${uw50Esc(uw50BadgeDef(x.badge_slug)?.name||uw50Nice(x.badge_slug))}</span>`).join(''):'<div class="uw-empty">Choose badges from your collection below.</div>';
   const selected=UW50.titles.find(x=>x.is_selected)||null;const st=document.getElementById('uw50SelectedTitle');if(st)st.innerHTML=selected?`${uw50Esc(uw50TitleDef(selected.title_slug)?.name||uw50Nice(selected.title_slug))} <button class="uw50-mini danger" style="margin-left:8px" data-uw50-clear-title>REMOVE TITLE</button>`:'No active title'; const ts=document.getElementById('uw51TitleSelect'); if(ts){ts.innerHTML='<option value="">No active title</option>'+UW50.titles.map(t=>`<option value="${t.id}" ${t.is_selected?'selected':''}>${uw50Esc(uw50TitleDef(t.title_slug)?.name||uw50Nice(t.title_slug))}</option>`).join('');}
@@ -1858,7 +1864,7 @@ document.getElementById('uw50ReloadReviews')?.addEventListener('click',uw50LoadR
 
 
 <script>
-/* ===== 0.6.1 STAFF ROSTER ===== */
+/* ===== 0.6.1.3 STAFF ROSTER + ROLE DISPLAY ===== */
 let uw61Roster=[];
 function uw61Text(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function uw61Nice(v){return String(v||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
@@ -1867,7 +1873,7 @@ function uw61CommunityLabel(arr){arr=Array.isArray(arr)?arr:[];const vals=[...ne
 async function uw61LoadStaffRoster(){
   if(!currentSession||!hasStaffAccess())return;
   const out=await uwSupabase.rpc('uw_staff_roster_directory');
-  if(out.error){console.warn('Staff roster RPC unavailable:',out.error.message);const g=document.getElementById('uw61RosterGrid');if(g)g.innerHTML='<div class="uw61-empty">Staff Roster backend is not installed yet. Run the 0.6.1 SQL patch, then refresh.</div>';return}
+  if(out.error){console.warn('Staff roster RPC error:',out.error.message);const g=document.getElementById('uw61RosterGrid');if(g)g.innerHTML=`<div class="uw61-empty"><b>Staff Roster backend error</b><br>${uw61Text(out.error.message)}<br><span class="meta">Run the 0.6.1.3 role/roster sync patch, then refresh.</span></div>`;return}
   uw61Roster=out.data||[];uw61RenderStaffRoster();
 }
 function uw61RenderStaffRoster(){
