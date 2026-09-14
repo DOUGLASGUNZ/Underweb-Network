@@ -1598,14 +1598,32 @@ async function uw033LoadAvailability(){
     const all=await uwSupabase.from('staff_availability').select(fields).order('user_id').order('day_of_week');
     if(!all.error)data=all.data||data;
   }
-  const rows=(data||[]).map(r=>({...r,day_of_week:uw033NormalizeDayOfWeek(r.day_of_week)})).filter(r=>r.day_of_week),ids=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];let profileMap={};if(ids.length){const pr=await uwSupabase.from('profiles').select('id,display_name,username').in('id',ids);if(!pr.error)profileMap=Object.fromEntries((pr.data||[]).map(x=>[x.id,x]));}uw033Availability=rows.map(r=>({...r,profiles:profileMap[r.user_id]||null}));uw033RenderAvailability();
+  const rows=(data||[]).map(r=>({...r,day_of_week:uw033NormalizeDayOfWeek(r.day_of_week)})).filter(r=>r.day_of_week);
+  const ids=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];
+  let profileMap={};
+  if(ids.length){
+    // Account profiles are the primary identity source.
+    const pr=await uwSupabase.from('profiles').select('id,display_name,username').in('id',ids);
+    if(!pr.error)(pr.data||[]).forEach(x=>profileMap[x.id]={...x});
+
+    // Some older staff accounts saved availability before their account-profile row
+    // was fully populated. Creator profiles already use user_id, so use those as a
+    // safe display-name fallback instead of rendering every unknown person as “Staff”.
+    const cp=await uwSupabase.from('creator_profiles').select('user_id,display_name').in('user_id',ids);
+    if(!cp.error)(cp.data||[]).forEach(x=>{
+      if(!profileMap[x.user_id])profileMap[x.user_id]={id:x.user_id};
+      if(!profileMap[x.user_id].display_name&&x.display_name)profileMap[x.user_id].display_name=x.display_name;
+    });
+  }
+  uw033Availability=rows.map(r=>({...r,profiles:profileMap[r.user_id]||null}));
+  uw033RenderAvailability();
 }
 function uw033NextDateForDay(day){const idx={sunday:0,monday:1,tuesday:2,wednesday:3,thursday:4,friday:5,saturday:6}[day];const d=new Date();let delta=(idx-d.getDay()+7)%7;if(delta===0)delta=7;d.setDate(d.getDate()+delta);return {y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate()}}
 function uw033ZonedWallToUtc(y,m,d,h,min,tz){let guess=Date.UTC(y,m-1,d,h,min);const fmt=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});for(let i=0;i<3;i++){const parts=Object.fromEntries(fmt.formatToParts(new Date(guess)).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));const seen=Date.UTC(+parts.year,+parts.month-1,+parts.day,+parts.hour,+parts.minute);const target=Date.UTC(y,m-1,d,h,min);guess+=target-seen;}return new Date(guess)}
 function uw033TimeET(day,time,tz){if(!time)return'';try{const [h,min]=time.slice(0,5).split(':').map(Number),dt=uw033NextDateForDay(day),utc=uw033ZonedWallToUtc(dt.y,dt.m,dt.d,h,min,tz||UW033_ET_ZONE);return new Intl.DateTimeFormat('en-US',{timeZone:UW033_ET_ZONE,hour:'numeric',minute:'2-digit',hour12:true}).format(utc)}catch{return time.slice(0,5)}}
 function uw033HoursET(v){if(!v?.start_time||!v?.end_time)return'';const tz=v.timezone||UW033_ET_ZONE;return `${uw033TimeET(v.day_of_week,v.start_time,tz)}–${uw033TimeET(v.day_of_week,v.end_time,tz)} ET`}
 function uw033RenderAvailability(){
-  const filter=uw033El('availabilityGroupFilter')?.value||'both';const rows=uw033Availability.filter(r=>filter==='both'||r.group_scope==='both'||r.group_scope===filter);const users=new Map();rows.forEach(r=>{if(!users.has(r.user_id))users.set(r.user_id,{id:r.user_id,name:r.profiles?.display_name||r.profiles?.username||'Staff',group:r.group_scope,role:r.preferred_role||'—',timezone:r.timezone||UW033_ET_ZONE,days:{}});users.get(r.user_id).days[r.day_of_week]=r});
+  const filter=uw033El('availabilityGroupFilter')?.value||'both';const rows=uw033Availability.filter(r=>filter==='both'||r.group_scope==='both'||r.group_scope===filter);const users=new Map();rows.forEach(r=>{const resolvedName=(r.profiles?.display_name||r.profiles?.username||'').trim();const fallbackName=resolvedName||`Staff · ${(r.user_id||'unknown').slice(0,6)}`;if(!users.has(r.user_id))users.set(r.user_id,{id:r.user_id,name:fallbackName,group:r.group_scope,role:r.preferred_role||'—',timezone:r.timezone||UW033_ET_ZONE,days:{}});users.get(r.user_id).days[r.day_of_week]=r});
   const tb=uw033El('availabilityTableBody');if(tb)tb.innerHTML=[...users.values()].map(u=>`<tr><td>${uw033Safe(u.name)}</td><td>${uw033Safe(u.group==='both'?'Both':u.group==='underweb'?'UnderWeb':'Symbiotes')}</td>${UW033_DAYS.map(d=>{const v=u.days[d];return `<td>${v?uw033Safe((UW033_STATE_LABELS[v.status]||v.status)+(uw033HoursET(v)?' · '+uw033HoursET(v):'')):'—'}</td>`}).join('')}<td>${uw033Safe(u.role)}</td></tr>`).join('')||'<tr><td colspan="10" class="meta">No saved schedules for this filter yet.</td></tr>';
   const me=currentSession?[...users.values()].find(u=>u.id===currentSession.user.id):null;const cards=uw033El('availabilityCards');if(cards){cards.innerHTML=UW033_DAYS.map(d=>{const v=me?.days[d],st=v?.status||'unavailable',hours=uw033HoursET(v);return `<div class="uw-day-card ${st==='unavailable'?'off':st==='limited'?'limited':st==='by_request'?'request':''}"><strong>${UW033_DAY_LABELS[d]}</strong><div class="state">${uw033Safe(UW033_STATE_LABELS[st]||st)}</div><div class="hours">${uw033Safe(hours||'No hours set')}</div></div>`}).join('')}}
 async function uw033SaveAvailability(){
