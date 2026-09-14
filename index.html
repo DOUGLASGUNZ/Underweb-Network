@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>The UnderWeb — Staff Beta 0.5.0</title>
+<title>The UnderWeb — Community Operations 0.6.0</title>
 <style>
 :root{
   --g:#38ff72;--g2:#0cbb4c;--bg:#010302;--p:#050a07;--p2:#08110b;--l:#123c21;
@@ -305,6 +305,12 @@ body[data-theme="symbiotes"] .btn.hot,body[data-theme="symbiotes"] .uw50-mini.ho
 body[data-theme="symbiotes"] .uw40-skillchips .chip{color:#429cff!important;border-color:rgba(66,156,255,.35)!important;background:rgba(66,156,255,.06)!important}
 body[data-theme="symbiotes"] .uw40-avatar{background-color:#06101a!important}
 
+
+/* 0.6.0 Community Operations — Staff Command Center */
+.uw60-hero{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;padding:24px;border:1px solid var(--l);background:linear-gradient(135deg,var(--p2),var(--p));border-radius:18px;margin-bottom:18px}.uw60-hero h1{margin:4px 0 6px;font-size:clamp(28px,5vw,46px)}.uw60-hero p{margin:0;color:var(--m);max-width:720px}.uw60-context{display:flex;gap:8px;flex-wrap:wrap}.uw60-context button{border:1px solid var(--l);background:transparent;color:var(--m);padding:9px 12px;border-radius:999px;font-weight:900;cursor:pointer}.uw60-context button.active{border-color:var(--g);color:var(--g);background:rgba(69,255,114,.07)}
+.uw60-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.uw60-kpi{border:1px solid var(--l);background:var(--p);border-radius:16px;padding:17px}.uw60-kpi span{display:block;color:var(--m);font-size:10px;font-weight:900;letter-spacing:.12em}.uw60-kpi b{display:block;font-size:31px;margin-top:5px}.uw60-layout{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}.uw60-stack{display:grid;gap:16px}.uw60-panel{border:1px solid var(--l);background:var(--p);border-radius:16px;padding:18px;min-width:0}.uw60-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.uw60-head h3{margin:0}.uw60-head button{border:0;background:none;color:var(--g);font-weight:900;cursor:pointer}.uw60-row{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--l)}.uw60-row:first-child{border-top:0}.uw60-num{width:38px;height:38px;border:1px solid var(--l);border-radius:10px;display:grid;place-items:center;font-weight:1000;color:var(--g)}.uw60-row b{display:block}.uw60-row small{display:block;color:var(--m);margin-top:3px}.uw60-row button{white-space:nowrap}.uw60-cover{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}.uw60-day{padding:9px 4px;text-align:center;border:1px solid var(--l);border-radius:9px;color:var(--m);font-size:10px;font-weight:900}.uw60-day strong{display:block;color:var(--t);font-size:15px;margin-top:4px}.uw60-empty{color:var(--m);padding:14px 0}.uw60-project{padding:11px 0;border-top:1px solid var(--l)}.uw60-project:first-child{border-top:0}.uw60-project .chips{margin-top:7px}.uw60-ann{padding:11px 0;border-top:1px solid var(--l)}.uw60-ann:first-child{border-top:0}.uw60-ann small{color:var(--m)}
+body[data-theme="symbiotes"] .uw60-context button.active{background:rgba(66,156,255,.08)}
+@media(max-width:850px){.uw60-hero{align-items:flex-start;flex-direction:column}.uw60-kpis{grid-template-columns:1fr 1fr}.uw60-layout{grid-template-columns:1fr}.uw60-row{grid-template-columns:38px 1fr}.uw60-row .btn,.uw60-row .uw-mini-btn{grid-column:2;justify-self:start}.uw60-cover{gap:3px}.uw60-day{padding:8px 2px;font-size:9px}}
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -404,6 +410,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <button class="side-item" data-page="identity">Network Identity</button>
 <button class="side-item" data-page="notifications">Notifications</button>
 <div class="side-label">Community Ops</div>
+<button class="side-item" data-page="command" data-requires-staff="true">Command Center <span class="badge" id="uw60CommandCount">—</span></button>
 <button class="side-item" data-page="staff" data-requires-staff="true">Staff Dashboard</button>
 <button class="side-item" data-page="availability" data-requires-staff="true">Staff Availability</button>
 <button class="side-item" data-page="recruiting" data-requires-staff="true">Recruiting Pipeline</button>
@@ -424,7 +431,7 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <div class="uw40-status-right"><span id="uwNetworkStatus">NETWORK ONLINE</span><span class="uw40-secure">SECURE SESSION</span></div>
 </section>
 <section class="uw50-build-card">
-<div><span class="uw50-build-kicker">CURRENT BUILD</span><strong>0.5.0</strong><h3>Identity &amp; Roles Update</h3><p>Role applications, badges, selectable titles, approval hierarchy, First Wave legacy status, and staff review tools.</p></div>
+<div><span class="uw50-build-kicker">CURRENT BUILD</span><strong>0.6.0</strong><h3>Community Operations</h3><p>Staff Command Center, live operational priorities, availability coverage, event approvals, projects, announcements and audit activity in one place.</p></div>
 <button type="button" data-page="updates">VIEW UPDATE →</button>
 </section>
 <section class="uw40-hero">
@@ -466,6 +473,18 @@ body[data-theme="symbiotes"]{--uw42:#4aa4ff;--uw42soft:rgba(74,164,255,.10);--uw
 <section class="uw40-block"><div class="uw40-title"><div><span>STAFF</span><h3>Announcements</h3></div><button class="uw40-link" data-page="announcements" data-requires-staff="true">VIEW ALL →</button></div><div id="uwAnnouncementsHome"><div class="uw-empty">No announcements yet.</div></div></section>
 </div>
 </div></section>
+<section class="page" id="page-command"><div class="wrap">
+<section class="uw60-hero"><div><div class="eyebrow">0.6.0 // COMMUNITY OPERATIONS</div><h1>Staff Command Center</h1><p>One operational view for UnderWeb, Symbiotes and shared network work. Everything here is pulled from real site data.</p></div><div class="uw60-context" id="uw60Context"><button class="active" data-uw60-scope="all">ALL</button><button data-uw60-scope="underweb">UNDERWEB</button><button data-uw60-scope="symbiotes">SYMBIOTES</button></div></section>
+<div class="uw60-kpis"><div class="uw60-kpi"><span>NEEDS ACTION</span><b id="uw60NeedsAction">0</b></div><div class="uw60-kpi"><span>UPCOMING EVENTS</span><b id="uw60Events">0</b></div><div class="uw60-kpi"><span>OPEN PROJECTS</span><b id="uw60Projects">0</b></div><div class="uw60-kpi"><span>STAFF WITH COVERAGE</span><b id="uw60Coverage">0</b></div></div>
+<div class="uw60-layout"><div class="uw60-stack">
+<section class="uw60-panel"><div class="uw60-head"><h3>Needs Attention</h3><button data-page="activity">AUDIT →</button></div><div id="uw60Attention"><div class="uw60-empty">Loading real operations…</div></div></section>
+<section class="uw60-panel"><div class="uw60-head"><h3>Upcoming Events</h3><button data-page="events">EVENT OPS →</button></div><div id="uw60EventList"><div class="uw60-empty">No upcoming events.</div></div></section>
+<section class="uw60-panel"><div class="uw60-head"><h3>Open Projects & Recruiting</h3><button data-page="projects">PROJECTS →</button></div><div id="uw60ProjectList"><div class="uw60-empty">No open projects.</div></div></section>
+</div><div class="uw60-stack">
+<section class="uw60-panel"><div class="uw60-head"><h3>Staff Coverage</h3><button data-page="availability">SCHEDULE →</button></div><div class="meta">People with at least one saved availability row. Weekly cells show saved coverage entries.</div><div class="uw60-cover" id="uw60CoverageGrid"></div><div id="uw60CoverageMeta" class="meta" style="margin-top:10px"></div></section>
+<section class="uw60-panel"><div class="uw60-head"><h3>Announcements</h3><button data-page="announcements">VIEW ALL →</button></div><div id="uw60Announcements"><div class="uw60-empty">No announcements.</div></div></section>
+<section class="uw60-panel"><div class="uw60-head"><h3>Recent Staff Activity</h3><button data-page="activity">VIEW LOG →</button></div><div id="uw60Activity"><div class="uw60-empty">No activity recorded.</div></div></section>
+</div></div></div></section>
 <section class="page" id="page-live"><div class="wrap">
 <div class="page-title"><div class="eyebrow">VRCHAT NETWORK</div><h1>Live Instances</h1><p>Only real published UnderWeb and Symbiotes instances appear here.</p></div>
 <div class="toolbar"><button class="btn hot" data-action="add-instance" data-requires-staff="true">+ Publish Instance</button><select class="select" id="liveGroupFilter"><option value="both">Both Groups</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select></div>
@@ -1411,15 +1430,41 @@ async function loadStaffBetaData(){
   await loadFeedback();
   renderEvents();
   updateDashboardOps();
+  uw60Render();
 }
 function updateDashboardOps(){
   const pending=uwBeta.applications.filter(x=>['pending','reviewing'].includes(x.status)).length;
   const open=uwBeta.tickets.filter(x=>['open','claimed','reviewing'].includes(x.status)).length;
   setText('uwAppBadge',pending);setText('navApplicationCount',pending);setText('uwTicketBadge',open);setText('navTicketCount',open);setText('uwOpenOpsCount',pending+open);
   const att=document.getElementById('uwAttentionList');
-  if(att){att.innerHTML=`<div class="uw-attention-row"><div class="uw-number">${pending}</div><div class="uw-row-main"><b>Applications awaiting action</b><small>Pending or reviewing</small></div><button class="uw-mini-btn hot" data-page="applications">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${open}</div><div class="uw-row-main"><b>Support tickets unresolved</b><small>Open, claimed, or reviewing</small></div><button class="uw-mini-btn hot" data-page="tickets">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${uwBeta.feedback.filter(x=>x.status==='new').length}</div><div class="uw-row-main"><b>New beta reports</b><small>Help us break 0.5.0</small></div><button class="uw-mini-btn" data-page="feedback">VIEW →</button></div>`;bindDynamicPageButtons(att)}
-  renderHomeAnnouncements();renderHomeActivity();
+  if(att){att.innerHTML=`<div class="uw-attention-row"><div class="uw-number">${pending}</div><div class="uw-row-main"><b>Applications awaiting action</b><small>Pending or reviewing</small></div><button class="uw-mini-btn hot" data-page="applications">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${open}</div><div class="uw-row-main"><b>Support tickets unresolved</b><small>Open, claimed, or reviewing</small></div><button class="uw-mini-btn hot" data-page="tickets">OPEN →</button></div><div class="uw-attention-row"><div class="uw-number">${uwBeta.feedback.filter(x=>x.status==='new').length}</div><div class="uw-row-main"><b>New beta reports</b><small>Help us break 0.6.0</small></div><button class="uw-mini-btn" data-page="feedback">VIEW →</button></div>`;bindDynamicPageButtons(att)}
+  renderHomeAnnouncements();renderHomeActivity();uw60Render();
 }
+let uw60Scope='all';
+function uw60GroupMatch(v){if(uw60Scope==='all')return true;v=String(v||'').toLowerCase();return v===uw60Scope||v==='both'||v==='network'||v==='shared'}
+function uw60Render(){
+  if(!hasStaffAccess())return;
+  const apps=(uwBeta.applications||[]).filter(x=>['pending','reviewing'].includes(x.status));
+  const tickets=(uwBeta.tickets||[]).filter(x=>['open','claimed','reviewing'].includes(x.status));
+  const rolePending=(UW50?.review||[]).filter(x=>['pending','reviewing'].includes(x.status));
+  const eventPending=(uwBeta.events||[]).filter(x=>x.status==='pending'&&uw60GroupMatch(x.group_scope));
+  const upcoming=(uwBeta.events||[]).filter(x=>x.status==='published'&&uw60GroupMatch(x.group_scope)&&new Date(x.starts_at)>=new Date()).sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
+  const projects=(uwProjects||[]).filter(x=>x.status==='open'&&uw60GroupMatch(x.group_scope));
+  const av=(uw033Availability||[]).filter(x=>uw60GroupMatch(x.group_scope));
+  const staffIds=new Set(av.map(x=>x.user_id).filter(Boolean));
+  const needs=apps.length+tickets.length+rolePending.length+eventPending.length;
+  setText('uw60NeedsAction',needs);setText('uw60Events',upcoming.length);setText('uw60Projects',projects.length);setText('uw60Coverage',staffIds.size);setText('uw60CommandCount',needs||0);
+  const att=document.getElementById('uw60Attention');if(att){const rows=[
+    [rolePending.length,'Role applications','Pending or reviewing','role-review'],[eventPending.length,'Event approvals','Waiting for approval','events'],[apps.length,'General applications','Pending or reviewing','applications'],[tickets.length,'Unresolved tickets','Open, claimed or reviewing','tickets']
+  ].filter(x=>x[0]>0);att.innerHTML=rows.length?rows.map(x=>`<div class="uw60-row"><div class="uw60-num">${x[0]}</div><div><b>${x[1]}</b><small>${x[2]}</small></div><button class="uw-mini-btn hot" data-page="${x[3]}">OPEN →</button></div>`).join(''):'<div class="uw60-empty">Nothing currently needs staff action.</div>';bindDynamicPageButtons(att)}
+  const ev=document.getElementById('uw60EventList');if(ev)ev.innerHTML=upcoming.length?upcoming.slice(0,5).map(x=>`<div class="uw60-row"><div class="uw60-num">${new Date(x.starts_at).getDate()}</div><div><b>${esc(x.title||'Untitled event')}</b><small>${esc(eventGroupLabel(x.group_scope))} • ${niceTime(x.starts_at)}${x.location?' • '+esc(x.location):''}</small></div><button class="uw-mini-btn" data-page="events">VIEW →</button></div>`).join(''):'<div class="uw60-empty">No published upcoming events.</div>';
+  const pr=document.getElementById('uw60ProjectList');if(pr)pr.innerHTML=projects.length?projects.slice(0,5).map(x=>`<div class="uw60-project"><b>${uw50Esc(x.title)}</b><div class="meta">${uw50Esc(uw50Nice(x.group_scope))} • needs ${Number(x.creators_needed||1)} creator${Number(x.creators_needed||1)===1?'':'s'}</div><div class="chips">${(x.skills_needed||[]).slice(0,4).map(k=>`<span class="chip">${uw50Esc(k)}</span>`).join('')}</div></div>`).join(''):'<div class="uw60-empty">No open projects for this community.</div>';
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], dayKeys=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];const cg=document.getElementById('uw60CoverageGrid');if(cg)cg.innerHTML=days.map((d,i)=>`<div class="uw60-day">${d}<strong>${av.filter(r=>String(r.day_of_week).toLowerCase()===dayKeys[i]&&r.status!=='unavailable').length}</strong></div>`).join('');setText('uw60CoverageMeta',staffIds.size?`${staffIds.size} staff member${staffIds.size===1?'':'s'} have saved coverage in this view.`:'No saved staff coverage in this view.');
+  const an=document.getElementById('uw60Announcements');if(an){const rows=(uwBeta.announcements||[]).slice(0,4);an.innerHTML=rows.length?rows.map(x=>`<div class="uw60-ann"><b>${esc(x.title||'Announcement')}</b><small>${niceTime(x.created_at)}</small></div>`).join(''):'<div class="uw60-empty">No staff announcements.</div>'}
+  const ac=document.getElementById('uw60Activity');if(ac){const rows=(uwBeta.activity||[]).slice(0,5);ac.innerHTML=rows.length?rows.map(x=>`<div class="uw60-ann"><b>${esc(x.summary||x.action||'Staff activity')}</b><small>${niceTime(x.created_at)}</small></div>`).join(''):'<div class="uw60-empty">No staff activity recorded.</div>'}
+  bindDynamicPageButtons(document.getElementById('page-command')||document);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-uw60-scope]');if(!b)return;uw60Scope=b.dataset.uw60Scope;document.querySelectorAll('[data-uw60-scope]').forEach(x=>x.classList.toggle('active',x===b));uw60Render()});
 function bindDynamicPageButtons(root=document){root.querySelectorAll('[data-page]').forEach(b=>{if(b.dataset.uwBound)return;b.dataset.uwBound='1';b.addEventListener('click',()=>showPage(b.dataset.page))})}
 async function loadApplications(){
   if(!currentSession||!hasStaffAccess())return;
