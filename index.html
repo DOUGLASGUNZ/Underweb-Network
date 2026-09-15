@@ -416,6 +416,20 @@ body[data-theme="symbiotes"] .uw61-card{border-color:#16385f;background:linear-g
 /* ===== 0.7.4.7 CANCELLATION CONTROLS ===== */
 .uw747-cancel{border-color:rgba(255,90,90,.38)!important;color:#ff8585!important}
 .uw747-cancel:hover{background:rgba(255,70,70,.08)!important}
+
+/* ===== 0.7.5 MANAGEMENT UX ===== */
+.uw75-accordion{border:1px solid var(--l);background:linear-gradient(145deg,#050907,#020403);margin:12px 0}
+.uw75-accordion>summary{list-style:none;cursor:pointer;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:14px;font-weight:950;letter-spacing:.06em}
+.uw75-accordion>summary::-webkit-details-marker{display:none}.uw75-accordion>summary:after{content:'+';color:var(--g);font-size:24px}.uw75-accordion[open]>summary:after{content:'−'}
+.uw75-accordion-body{padding:0 18px 18px}.uw75-accordion .uw50-panel{border:0;padding:0;background:transparent}
+.uw75-app-link{display:flex;justify-content:space-between;align-items:center;gap:14px;border:1px solid var(--l);padding:16px;margin:14px 0}
+.uw75-control-card{border:1px solid var(--l);background:#020503;overflow:hidden}.uw75-control-cover{height:150px;background:#07100b center/cover no-repeat}
+.uw75-control-body{padding:17px}.uw75-control-body h3{margin:5px 0 8px}.uw75-control-meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:8px 0}
+.uw75-control-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.uw75-danger{border-color:#8e3540!important;color:#ff7a88!important}
+.uw75-modal{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:18px}.uw75-modal.open{display:flex}
+.uw75-modal-card{width:min(680px,100%);max-height:90vh;overflow:auto;border:1px solid var(--g);background:#030604;padding:20px;box-shadow:0 0 50px rgba(55,255,110,.12)}
+.uw75-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.uw75-form .full{grid-column:1/-1}.uw75-form label span{display:block;color:var(--muted);font-size:10px;letter-spacing:.12em;margin-bottom:6px}
+@media(max-width:700px){.uw75-form{grid-template-columns:1fr}.uw75-form .full{grid-column:auto}.uw75-control-cover{height:120px}}
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -1031,7 +1045,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div><div class="uw70-kicker">UNDERWEB NETWORK // CREATOR DIRECTORY</div><h1>FIND YOUR<br><span>PEOPLE.</span></h1><p>Approved creators, talent and partners across the network. Identity first. Skills, work and availability second.</p></div>
     <div class="uw70-dircounts"><span><b id="uw62CreatorCount">—</b>CREATORS</span><span><b id="uw62AvailableCount">—</b>AVAILABLE</span><span><b id="uw62PartnerCount">—</b>PARTNERS</span></div>
   </section>
-  <div class="uw70-need"><span>WHO DO YOU NEED?</span><button data-uw62-need="DJ">DJ</button><button data-uw62-need="Photography">PHOTOGRAPHER</button><button data-uw62-need="Videography">VIDEOGRAPHER</button><button data-uw62-need="Unity">UNITY</button><button data-uw62-need="Blender">BLENDER</button><button data-uw62-need="World Creation">WORLD CREATOR</button><button data-uw62-need="Avatar Creation">AVATAR CREATOR</button></div>
+  <div class="uw70-need"><span>WHO DO YOU NEED?</span><button data-uw62-need="Digital Artist">DIGITAL ARTIST</button><button data-uw62-need="Traditional Artist">TRADITIONAL ARTIST</button><button data-uw62-need="DJ">DJ</button><button data-uw62-need="Photography">PHOTOGRAPHER</button><button data-uw62-need="Videography">VIDEOGRAPHER</button><button data-uw62-need="Unity">UNITY</button><button data-uw62-need="Blender">BLENDER</button><button data-uw62-need="World Creation">WORLD CREATOR</button><button data-uw62-need="Avatar Creation">AVATAR CREATOR</button></div>
   <div class="uw70-toolbar">
     <input class="input" id="creatorSearch" placeholder="Search creators, specialties, roles..."/>
     <select class="select" id="creatorCommunity"><option value="all">All Communities</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="both">Shared / Both</option></select>
@@ -1158,7 +1172,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw50-panel"><div id="uw50ReviewQueue" class="uw50-stack"><div class="uw-empty">Loading role applications…</div></div></section>
 </div></section>
 <section class="page" id="page-updates"><div class="wrap uw50-updates-page">
-<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.4.7</span></div>
+<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.5</span></div>
 <section class="uw50-release hero-release"><div class="uw50-release-version">0.7.4</div><div><span class="eyebrow">CURRENT BUILD • PREMIUM ROLE IDENTITY</span><h2>Premium Authority System</h2><p>Introduced the new UnderWeb leadership insignia system: PRIME for Owner, HORIZON for Director, ORBIT for Event Lead, ATLAS for Artist Coordinator, and static WATCH for Moderator. Premium leadership roles now use distinct motion identities while Moderator remains intentionally static. 0.7.4.2 also fixes creator-card and staff-roster profile actions so they open the selected creator directly instead of routing elsewhere.</p><div class="uw50-release-tags"><span>PRIME</span><span>HORIZON</span><span>ORBIT</span><span>ATLAS</span><span>WATCH</span><span>ROLE FX</span></div></div></section>
 <div class="uw50-grid2">
 <section class="uw50-release"><div class="uw50-release-version">0.7.3</div><div><span class="eyebrow">OWNER IDENTITY</span><h3>Barachiel + Owner presentation</h3><p>Added Darko's Owner presentation, Barachiel profile entrance, and the first premium animated title treatment.</p></div></section>
@@ -2973,7 +2987,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.4.7-cancellation-controls"></div>
+<div style="display:none" data-underweb-build="0.7.5-management-ux"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3295,5 +3309,273 @@ document.addEventListener('click',e=>{
 const uw747Observer=new MutationObserver(()=>uw747Decorate());
 uw747Observer.observe(document.body,{subtree:true,childList:true});
 window.addEventListener('pageshow',()=>setTimeout(uw747Decorate,1400));
+</script>
+
+<script id="uw748DirectoryIdentityCompatibility">
+/* 0.7.4.8 — Creator Directory + Identity compatibility pass.
+   Uses the site's real role_applications flow and user_roles(role_slug/status) schema. */
+
+const UW748_DISCIPLINES = {
+  'digital artist':['digital_artist','digital artist','digital art'],
+  'traditional artist':['traditional_artist','traditional artist','traditional art'],
+  'dj':['dj'],
+  'photography':['photographer','photography','photo'],
+  'videography':['videographer','videography','video'],
+  'unity':['unity_creator','unity','unity creator'],
+  'blender':['blender_artist','blender','blender artist'],
+  'world creation':['world_creator','world creation','world creator','world design'],
+  'avatar creation':['avatar_creator','avatar creation','avatar creator'],
+  'music':['producer','musician','rapper','vocalist','music'],
+  'partner':['partner']
+};
+function uw748Norm(v){return String(v||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ')}
+function uw748DiscMatch(label,values){
+  if(label==='All Disciplines')return true;
+  const needles=UW748_DISCIPLINES[uw748Norm(label)]||[uw748Norm(label)];
+  const hay=values.map(uw748Norm);
+  return needles.some(n=>hay.some(v=>v===uw748Norm(n)||v.includes(uw748Norm(n))));
+}
+function uw748CreatorRoles(uid){return (window.uw62RoleMap?.[uid]||[])}
+function uw748RenderDirectory(){
+  const list=document.getElementById('creatorDirectoryList'); if(!list)return;
+  const q=uw748Norm(document.getElementById('creatorSearch')?.value);
+  const disc=document.getElementById('creatorDiscipline')?.value||'All Disciplines';
+  const avail=document.getElementById('creatorAvailability')?.value||'Any Availability';
+  const community=document.getElementById('creatorCommunity')?.value||'all';
+  const all=Array.isArray(window.uwRealCreators)?window.uwRealCreators:[];
+
+  const rows=all.filter(x=>{
+    const skills=Array.isArray(x.specialties)?x.specialties:
+      String(x.specialties||'').split(',').map(v=>v.trim()).filter(Boolean);
+    const roles=uw748CreatorRoles(x.user_id);
+    const roleValues=roles.flatMap(r=>[r.slug,r.name]);
+    const scopes=roles.map(r=>r.scope||'underweb');
+    const searchable=[x.display_name,x.headline,x.bio,...skills,...roleValues].map(uw748Norm);
+    const discOk=uw748DiscMatch(disc,[...skills,...roleValues]);
+    const availOk=avail==='Any Availability'||creatorAvailabilityLabel(x.availability)===avail.toUpperCase();
+    const commOk=community==='all'||!scopes.length||scopes.includes('network')||scopes.includes('both')||
+      scopes.includes(community)||(community==='both'&&scopes.includes('underweb')&&scopes.includes('symbiotes'));
+    return (!q||searchable.some(v=>v.includes(q)))&&discOk&&availOk&&commOk;
+  });
+
+  const partners=all.filter(x=>uw748DiscMatch('Partner',uw748CreatorRoles(x.user_id).flatMap(r=>[r.slug,r.name]))).length;
+  setText('uw62CreatorCount',all.length);
+  setText('uw62AvailableCount',all.filter(x=>['available','by_request'].includes(x.availability)).length);
+  setText('uw62PartnerCount',partners);
+
+  if(!rows.length){
+    list.innerHTML='<div class="uw-empty uw62-empty">No creator profiles match these filters yet.</div>';
+    return;
+  }
+  list.innerHTML=rows.map(x=>{
+    const skills=(Array.isArray(x.specialties)?x.specialties:String(x.specialties||'').split(',')).map(v=>String(v).trim()).filter(Boolean).slice(0,5);
+    const roles=uw748CreatorRoles(x.user_id);
+    const isPartner=uw748DiscMatch('Partner',roles.flatMap(r=>[r.slug,r.name]));
+    const scopes=roles.map(r=>r.scope);
+    const avatar=x.avatar_url?`style="background-image:url('${esc(x.avatar_url)}')"`:'';
+    const banner=x.banner_url?`style="background-image:linear-gradient(90deg,rgba(0,0,0,.15),rgba(0,0,0,.45)),url('${esc(x.banner_url)}')"`:'';
+    const initial=esc((x.display_name||'C').trim().charAt(0).toUpperCase());
+    return `<article class="uw62-card ${isPartner?'uw62-partner':''}">
+      <div class="uw62-banner" ${banner}></div><div class="uw62-body">
+      <div class="uw62-id"><div class="uw62-avatar" ${avatar}>${x.avatar_url?'':initial}</div>
+      <div class="uw62-name"><h3>${esc(x.display_name||'Creator')}</h3><p>${esc(x.headline||'UnderWeb Network Creator')}</p></div>
+      <span class="uw62-community">${esc(uw62CommunityLabel(scopes))}</span></div>
+      <div class="uw62-tags"><span class="uw62-tag hot">${esc(creatorAvailabilityLabel(x.availability))}</span>
+      ${roles.slice(0,4).map(r=>`<span class="uw62-tag">${esc(r.name||String(r.slug||'').replaceAll('_',' '))}</span>`).join('')}</div>
+      <div class="uw62-bio">${esc((x.bio||'No creator bio added yet.').slice(0,150))}</div>
+      <div class="uw62-skills">${skills.length?skills.map(v=>`<span class="chip">${esc(v)}</span>`).join(''):'<span class="meta">No specialties listed yet.</span>'}</div>
+      <div class="uw62-actions"><button class="btn" data-uw62-profile="${esc(x.user_id||'')}">VIEW PROFILE</button>
+      ${x.portfolio_url?`<button class="btn hot" data-uw62-portfolio="${esc(x.portfolio_url)}">PORTFOLIO ↗</button>`:''}</div></div></article>`;
+  }).join('');
+}
+
+/* Load profiles without the old approved-only frontend gate.
+   RLS remains the database authority over what the signed-in user may read. */
+async function uw748LoadDirectory(){
+ const list=document.getElementById('creatorDirectoryList'); if(!list)return;
+ try{
+   const {data,error}=await uwSupabase.from('creator_profiles')
+    .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,portfolio_url,public_visible,approval_status')
+    .order('display_name',{ascending:true}).limit(200);
+   if(error)throw error;
+   window.uwRealCreators=data||[];
+   window.uw62RoleMap={};
+   const ids=uwRealCreators.map(x=>x.user_id).filter(Boolean);
+   if(ids.length){
+     const rr=await uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active');
+     if(rr.error)throw rr.error;
+     const defs={};
+     const rd=await uwSupabase.from('role_definitions').select('slug,name');
+     if(!rd.error)(rd.data||[]).forEach(d=>defs[d.slug]=d.name);
+     (rr.data||[]).forEach(r=>(uw62RoleMap[r.user_id]??=[]).push({
+       slug:r.role_slug,name:defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),
+       scope:r.group_scope||'underweb'
+     }));
+   }
+   uw748RenderDirectory();
+ }catch(err){
+   console.error('0.7.4.8 creator directory load failed:',err);
+   list.innerHTML=`<div class="uw-empty" style="grid-column:1/-1">${esc(err?.message||'Creator directory is unavailable.')}</div>`;
+ }
+}
+
+/* Replace the broken made-up RPC fallback with the real role application function already in the site. */
+window.uw744ApplyRole=async function(slug){
+ if(!currentSession)return toast('Sign in first.');
+ if(typeof uw50Apply==='function')return uw50Apply(slug);
+ toast('Role application system is unavailable.');
+};
+
+/* Owner/Director detection must use status, not a nonexistent active boolean. */
+window.uw745HasRole=function(slug){
+ return Array.isArray(window.uw50Roles)&&uw50Roles.some(r=>r.status==='active'&&r.role_slug===slug);
+};
+
+/* Search and filters update live. */
+['creatorSearch','creatorCommunity','creatorDiscipline','creatorAvailability'].forEach(id=>{
+ const el=document.getElementById(id);
+ if(el){el.addEventListener(id==='creatorSearch'?'input':'change',uw748RenderDirectory);}
+});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-uw62-need]');
+ if(!b)return;
+ const sel=document.getElementById('creatorDiscipline');
+ if(sel){sel.value=b.dataset.uw62Need;uw748RenderDirectory();}
+});
+
+/* Use compatibility loader whenever Network/Discover opens and after auth settles. */
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-page="discover"]');
+ if(b)setTimeout(uw748LoadDirectory,50);
+},true);
+window.addEventListener('pageshow',()=>setTimeout(()=>{
+ uw748LoadDirectory();
+ if(typeof uw745Render==='function')uw745Render();
+},1300));
+</script>
+
+<script id="uw75ManagementUX">
+/* UNDERWEB 0.7.5 — Management UX Rework */
+let uw75Events=[],uw75Editing=null;
+
+function uw75Leadership(){
+ return (Array.isArray(window.uw50Roles)?uw50Roles:[]).some(r=>r.status==='active'&&['owner','director'].includes(r.role_slug));
+}
+function uw75Wrap(node,title,sub){
+ if(!node||node.closest('.uw75-accordion'))return;
+ const d=document.createElement('details');d.className='uw75-accordion';
+ d.innerHTML=`<summary><span>${title}<small style="display:block;color:var(--muted);font-size:10px;margin-top:5px">${sub}</small></span></summary><div class="uw75-accordion-body"></div>`;
+ node.parentNode.insertBefore(d,node);d.querySelector('.uw75-accordion-body').appendChild(node);
+}
+function uw75ReworkIdentity(){
+ const page=document.getElementById('page-roles'); if(!page)return;
+ const apply=document.querySelector('#page-roles .uw50-role-apply');
+ const apps=document.getElementById('uw50MyApplications')?.closest('.uw50-panel');
+ const role=document.getElementById('uw51RoleCatalog')?.closest('.uw50-panel');
+ const badge=document.getElementById('uw51BadgeCatalog')?.closest('.uw50-panel');
+ const title=document.getElementById('uw51TitleCatalog')?.closest('.uw50-panel');
+
+ uw75Wrap(apply,'ROLES & ACCESS','Apply for creator/community roles and choose scope.');
+ uw75Wrap(role,'ROLE DIRECTORY','Browse the network authority and creator lanes.');
+ uw75Wrap(badge,'RECOGNITION & BADGES','See staff, achievement, verification and legacy recognition.');
+ uw75Wrap(title,'PROFILE TITLES','Browse earned/selectable identity titles.');
+
+ if(apps){
+   let ap=document.getElementById('page-my-role-applications');
+   if(!ap){
+     ap=document.createElement('section');ap.className='page';ap.id='page-my-role-applications';
+     ap.innerHTML='<div class="wrap"><div class="page-title"><div class="eyebrow">IDENTITY // APPLICATIONS</div><h1>My Applications</h1><p>Track pending, approved, denied and withdrawn network role applications.</p></div><div id="uw75AppsHome"></div></div>';
+     page.parentNode.insertBefore(ap,page.nextSibling);
+   }
+   document.getElementById('uw75AppsHome').appendChild(apps);
+   if(!document.getElementById('uw75AppsShortcut')){
+     const shortcut=document.createElement('div');shortcut.id='uw75AppsShortcut';shortcut.className='uw75-app-link';
+     shortcut.innerHTML='<div><b>MY APPLICATIONS</b><div class="meta">Track role requests separately from the role catalog.</div></div><button class="btn" data-page="my-role-applications">OPEN →</button>';
+     const first=page.querySelector('.uw75-accordion'); if(first)first.before(shortcut);
+   }
+ }
+}
+
+function uw75DateParts(v){
+ if(!v)return {d:'',t:''};const x=new Date(v);if(Number.isNaN(x.getTime()))return {d:'',t:''};
+ const local=new Date(x.getTime()-x.getTimezoneOffset()*60000).toISOString();
+ return {d:local.slice(0,10),t:local.slice(11,16)};
+}
+function uw75EnsureModal(){
+ if(document.getElementById('uw75EventModal'))return;
+ const m=document.createElement('div');m.id='uw75EventModal';m.className='uw75-modal';
+ m.innerHTML=`<div class="uw75-modal-card"><div class="uw50-panel-head"><div><span>COMMAND // EVENT CONTROL</span><h2>EDIT EVENT</h2></div><button class="btn" data-uw75-close>✕</button></div>
+ <div class="uw75-form">
+ <label class="full"><span>TITLE</span><input class="input" id="uw75Title"></label>
+ <label><span>COMMUNITY</span><select class="select" id="uw75Scope"><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="both">Both</option></select></label>
+ <label><span>LOCATION / WORLD</span><input class="input" id="uw75Location"></label>
+ <label><span>START DATE</span><input class="input" type="date" id="uw75StartDate"></label>
+ <label><span>START TIME</span><input class="input" type="time" id="uw75StartTime"></label>
+ <label><span>END DATE</span><input class="input" type="date" id="uw75EndDate"></label>
+ <label><span>END TIME</span><input class="input" type="time" id="uw75EndTime"></label>
+ <label class="full"><span>DESCRIPTION</span><textarea class="textarea" id="uw75Description"></textarea></label>
+ </div><div class="uw75-control-actions"><button class="btn hot" data-uw75-save>SAVE CHANGES</button><button class="btn uw75-danger" data-uw75-cancel-modal>CANCEL EVENT</button></div></div>`;
+ document.body.appendChild(m);
+}
+function uw75OpenEdit(id){
+ const e=uw75Events.find(x=>String(x.id)===String(id));if(!e)return;
+ uw75Editing=e;uw75EnsureModal();
+ const a=uw75DateParts(e.starts_at),b=uw75DateParts(e.ends_at);
+ document.getElementById('uw75Title').value=e.title||'';
+ document.getElementById('uw75Scope').value=e.group_scope||'underweb';
+ document.getElementById('uw75Location').value=e.location||'';
+ document.getElementById('uw75StartDate').value=a.d;document.getElementById('uw75StartTime').value=a.t;
+ document.getElementById('uw75EndDate').value=b.d;document.getElementById('uw75EndTime').value=b.t;
+ document.getElementById('uw75Description').value=e.description||'';
+ document.getElementById('uw75EventModal').classList.add('open');
+}
+function uw75Close(){document.getElementById('uw75EventModal')?.classList.remove('open');uw75Editing=null}
+async function uw75Save(){
+ if(!uw75Editing)return;
+ const sd=document.getElementById('uw75StartDate').value,st=document.getElementById('uw75StartTime').value,ed=document.getElementById('uw75EndDate').value,et=document.getElementById('uw75EndTime').value;
+ if(!sd||!st)return toast('Start date and time are required.');
+ const start=new Date(`${sd}T${st}`),end=(ed&&et)?new Date(`${ed}T${et}`):null;
+ if(end&&end<=start)return toast('End time must be after start time.');
+ const {error}=await uwSupabase.rpc('uw_manage_event',{
+   p_event_id:uw75Editing.id,p_title:document.getElementById('uw75Title').value.trim(),
+   p_group_scope:document.getElementById('uw75Scope').value,p_starts_at:start.toISOString(),
+   p_ends_at:end?end.toISOString():null,p_location:document.getElementById('uw75Location').value.trim(),
+   p_description:document.getElementById('uw75Description').value.trim()
+ });
+ if(error)return toast(error.message);
+ toast('Event updated.');uw75Close();await uw75LoadEventControl();if(typeof loadEvents==='function')await loadEvents();
+}
+async function uw75Cancel(id){
+ if(!uw75Leadership())return toast('Owner or Director authority required.');
+ if(!confirm('Cancel this upcoming event? It will leave active/upcoming views but remain in history.'))return;
+ const reason=(prompt('Optional cancellation reason:')||'').trim();
+ const {error}=await uwSupabase.rpc('uw_cancel_event',{p_id:id,p_reason:reason||null});
+ if(error)return toast(error.message);
+ toast('Event cancelled.');uw75Close();await uw75LoadEventControl();if(typeof loadEvents==='function')await loadEvents();
+}
+async function uw75LoadEventControl(){
+ const el=document.getElementById('uw72EventControl');if(!el)return;
+ if(!uw75Leadership()){el.innerHTML='<div class="uw-empty">Event Control is available to Owner and Director.</div>';return;}
+ let q=uwSupabase.from('network_events').select('*').is('archived_at',null).is('cancelled_at',null).gte('starts_at',new Date().toISOString()).order('starts_at',{ascending:true}).limit(50);
+ const {data,error}=await q;if(error){el.innerHTML=`<div class="uw-empty">${uw72Esc(error.message)}</div>`;return}
+ uw75Events=data||[];
+ if(!uw75Events.length){el.innerHTML='<div class="uw-empty">No active or upcoming events.</div>';return}
+ el.innerHTML=uw75Events.map(e=>`<article class="uw75-control-card">
+ <div class="uw75-control-cover"${e.cover_url?` style="background-image:url(&quot;${uw72Esc(e.cover_url)}&quot;)"`:''}></div>
+ <div class="uw75-control-body"><span class="eyebrow">${uw72Esc((e.group_scope||'network').toUpperCase())} // ${uw72Esc((e.status||'').toUpperCase())}</span>
+ <h3>${uw72Esc(e.title||'Untitled Event')}</h3><div class="uw75-control-meta"><span>${uw72Esc(new Date(e.starts_at).toLocaleString())}</span><span>${uw72Esc(e.location||'LOCATION TBD')}</span></div>
+ <p class="meta">${uw72Esc((e.description||'No description.').slice(0,180))}</p>
+ <div class="uw75-control-actions"><button class="btn hot" data-uw75-edit="${e.id}">EDIT EVENT</button><button class="btn uw75-danger" data-uw75-cancel="${e.id}">CANCEL EVENT</button></div></div></article>`).join('');
+}
+document.addEventListener('click',e=>{
+ const ed=e.target.closest('[data-uw75-edit]');if(ed){e.preventDefault();return uw75OpenEdit(ed.dataset.uw75Edit)}
+ const ca=e.target.closest('[data-uw75-cancel]');if(ca){e.preventDefault();return uw75Cancel(ca.dataset.uw75Cancel)}
+ if(e.target.closest('[data-uw75-close]'))return uw75Close();
+ if(e.target.closest('[data-uw75-save]'))return uw75Save();
+ if(e.target.closest('[data-uw75-cancel-modal]')&&uw75Editing)return uw75Cancel(uw75Editing.id);
+ const ec=e.target.closest('[data-page="eventcontrol"]');if(ec)setTimeout(uw75LoadEventControl,60);
+},true);
+
+window.addEventListener('pageshow',()=>setTimeout(()=>{uw75ReworkIdentity();uw75EnsureModal();},900));
 </script>
 </body></html>
