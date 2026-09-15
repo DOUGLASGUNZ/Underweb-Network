@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.6.2';
+    stamp.textContent='UNDERWEB // 0.7.6.3';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.6.2-event-control-hard-fix"></div>
+<div style="display:none" data-underweb-build="0.7.6.3-server-authority-fix"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3950,5 +3950,105 @@ document.addEventListener('click',e=>{
 },false);
 
 window.addEventListener('pageshow',()=>setTimeout(uw762LoadEventControl,1800));
+</script>
+
+<script id="uw763ServerAuthorityFix">
+/* UNDERWEB 0.7.6.3
+   Event Control authority comes from Supabase, never a frontend role cache. */
+
+async function uw763HasEventAuthority(){
+  if(!window.currentSession?.user?.id) return false;
+  const {data,error}=await uwSupabase.rpc('uw_is_owner_or_director');
+  if(error){
+    console.error('Authority RPC failed:',error);
+    throw error;
+  }
+  return data===true;
+}
+
+async function uw763LoadEventControl(){
+  const el=document.getElementById('uw72EventControl');
+  if(!el)return;
+
+  el.innerHTML='<div class="uw-empty">Checking Command authority…</div>';
+
+  let allowed=false;
+  try{
+    allowed=await uw763HasEventAuthority();
+  }catch(err){
+    el.innerHTML=`<div class="uw-empty">AUTHORITY ERROR: ${uw72Esc(err.message||'Could not verify Owner/Director access.')}</div>`;
+    return;
+  }
+
+  if(!allowed){
+    el.innerHTML='<div class="uw-empty">This account does not currently have an active Owner or Director role in the database.</div>';
+    return;
+  }
+
+  el.innerHTML='<div class="uw-empty">Loading manageable events…</div>';
+
+  const {data,error}=await uwSupabase
+    .from('network_events')
+    .select('*')
+    .is('archived_at',null)
+    .is('cancelled_at',null)
+    .order('starts_at',{ascending:false,nullsFirst:false})
+    .limit(100);
+
+  if(error){
+    console.error('Event Control query:',error);
+    el.innerHTML=`<div class="uw-empty">EVENT CONTROL ERROR: ${uw72Esc(error.message||'Could not load events.')}</div>`;
+    return;
+  }
+
+  const rows=data||[];
+  window.uw75Events=rows;
+
+  if(!rows.length){
+    el.innerHTML='<div class="uw-empty">No manageable events exist in the database.</div>';
+    return;
+  }
+
+  el.innerHTML=rows.map(e=>{
+    const start=e.starts_at?new Date(e.starts_at):null;
+    const end=e.ends_at?new Date(e.ends_at):null;
+    const now=Date.now();
+    let timing='NO DATE';
+    if(start&&!Number.isNaN(start.getTime())){
+      if(end&&!Number.isNaN(end.getTime())&&end.getTime()<now) timing='ENDED';
+      else if(start.getTime()<=now) timing='ACTIVE';
+      else timing='UPCOMING';
+    }
+    return `<article class="uw75-control-card" data-event-id="${uw72Esc(e.id)}">
+      <div class="uw75-control-cover"${e.cover_url?` style="background-image:url(&quot;${uw72Esc(e.cover_url)}&quot;)"`:''}></div>
+      <div class="uw75-control-body">
+        <span class="eyebrow">${uw72Esc((e.group_scope||'network').toUpperCase())} // ${uw72Esc(String(e.status||'unknown').toUpperCase())} // ${timing}</span>
+        <h3>${uw72Esc(e.title||'Untitled Event')}</h3>
+        <div class="uw75-control-meta">
+          <span>${start&&!Number.isNaN(start.getTime())?uw72Esc(start.toLocaleString()):'DATE NOT SET'}</span>
+          <span>${uw72Esc(e.location||'LOCATION TBD')}</span>
+        </div>
+        <p class="meta">${uw72Esc((e.description||'No description.').slice(0,180))}</p>
+        <div class="uw75-control-actions">
+          <button class="btn hot" data-uw75-edit="${uw72Esc(e.id)}">EDIT EVENT</button>
+          <button class="btn uw75-danger" data-uw75-cancel="${uw72Esc(e.id)}">CANCEL EVENT</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* Override every legacy loader with server-authoritative version. */
+uw762LoadEventControl=uw763LoadEventControl;
+uw75LoadEventControl=uw763LoadEventControl;
+uw72LoadEventControl=uw763LoadEventControl;
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-page="eventcontrol"]')){
+    setTimeout(uw763LoadEventControl,80);
+  }
+},true);
+
+window.addEventListener('pageshow',()=>setTimeout(uw763LoadEventControl,1400));
 </script>
 </body></html>
