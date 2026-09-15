@@ -412,6 +412,10 @@ body[data-theme="symbiotes"] .uw61-card{border-color:#16385f;background:linear-g
 /* ===== 0.7.4.5 DIRECTOR AUTHORITY ===== */
 .uw745-authority{margin:10px 0 2px;padding:10px 12px;border-left:2px solid var(--g);background:linear-gradient(90deg,rgba(57,255,104,.07),transparent);font:900 7px monospace;letter-spacing:.12em;color:var(--m)}
 .uw745-authority b{color:var(--g)}
+
+/* ===== 0.7.4.7 CANCELLATION CONTROLS ===== */
+.uw747-cancel{border-color:rgba(255,90,90,.38)!important;color:#ff8585!important}
+.uw747-cancel:hover{background:rgba(255,70,70,.08)!important}
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -1154,7 +1158,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw50-panel"><div id="uw50ReviewQueue" class="uw50-stack"><div class="uw-empty">Loading role applications…</div></div></section>
 </div></section>
 <section class="page" id="page-updates"><div class="wrap uw50-updates-page">
-<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.4.5</span></div>
+<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.4.7</span></div>
 <section class="uw50-release hero-release"><div class="uw50-release-version">0.7.4</div><div><span class="eyebrow">CURRENT BUILD • PREMIUM ROLE IDENTITY</span><h2>Premium Authority System</h2><p>Introduced the new UnderWeb leadership insignia system: PRIME for Owner, HORIZON for Director, ORBIT for Event Lead, ATLAS for Artist Coordinator, and static WATCH for Moderator. Premium leadership roles now use distinct motion identities while Moderator remains intentionally static. 0.7.4.2 also fixes creator-card and staff-roster profile actions so they open the selected creator directly instead of routing elsewhere.</p><div class="uw50-release-tags"><span>PRIME</span><span>HORIZON</span><span>ORBIT</span><span>ATLAS</span><span>WATCH</span><span>ROLE FX</span></div></div></section>
 <div class="uw50-grid2">
 <section class="uw50-release"><div class="uw50-release-version">0.7.3</div><div><span class="eyebrow">OWNER IDENTITY</span><h3>Barachiel + Owner presentation</h3><p>Added Darko's Owner presentation, Barachiel profile entrance, and the first premium animated title treatment.</p></div></section>
@@ -2691,7 +2695,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.4.5 DIRECTOR AUTHORITY';
+    stamp.textContent='UNDERWEB // 0.7.4.7 CANCELLATION CONTROLS';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -2969,7 +2973,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.4.5-director-authority"></div>
+<div style="display:none" data-underweb-build="0.7.4.7-cancellation-controls"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3184,5 +3188,112 @@ document.addEventListener('click',e=>{
 const uw745OldRender=window.uw50RenderProfileIdentity;
 if(uw745OldRender)window.uw50RenderProfileIdentity=function(){const r=uw745OldRender.apply(this,arguments);setTimeout(uw745Render,0);return r};
 window.addEventListener('pageshow',()=>setTimeout(uw745Render,1200));
+</script>
+
+<script id="uw746CreatorProfileHardFix">
+/* 0.7.4.6 — Creator Profile hard fix.
+   Staff-roster users may not already exist in uwRealCreators, while the legacy
+   profile modal silently returns when that cache misses. Resolve by UUID first,
+   hydrate the cache, then call the existing modal so all existing features stay intact. */
+async function uw746OpenCreatorProfile(uid){
+  uid=String(uid||'').trim();
+  if(!uid){toast('Creator profile could not be identified.');return;}
+
+  let creator=(window.uwRealCreators||[]).find(v=>String(v.user_id)===uid);
+
+  if(!creator){
+    try{
+      const {data,error}=await uwSupabase
+        .from('creator_profiles')
+        .select('*')
+        .eq('user_id',uid)
+        .maybeSingle();
+      if(error) throw error;
+      if(data){
+        if(!Array.isArray(window.uwRealCreators)) window.uwRealCreators=[];
+        const at=uwRealCreators.findIndex(v=>String(v.user_id)===uid);
+        if(at>=0) uwRealCreators[at]={...uwRealCreators[at],...data};
+        else uwRealCreators.push(data);
+        creator=data;
+      }
+    }catch(err){
+      console.warn('0.7.4.6 creator lookup failed',err);
+    }
+  }
+
+  if(!creator){
+    toast('This member has not created a creator profile yet.');
+    return;
+  }
+
+  /* Call the fully decorated existing profile function: recruiting + showcase + shop. */
+  if(typeof window.uw621OpenProfile==='function'){
+    window.uw621OpenProfile(uid);
+    return;
+  }
+  toast('Creator profile viewer is unavailable.');
+}
+
+/* Capture profile buttons before older handlers can misroute them. */
+document.addEventListener('click',function(e){
+  const b=e.target.closest('[data-uw62-profile],[data-uw61-profile]');
+  if(!b)return;
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+  uw746OpenCreatorProfile(b.dataset.uw62Profile||b.dataset.uw61Profile);
+},true);
+</script>
+
+<script id="uw747CancellationControls">
+/* 0.7.4.7 — Owner/Director cancellation controls.
+   Soft-cancels upcoming events/projects/collabs through server-side RPCs. */
+function uw747CanCancel(){
+ const rs=Array.isArray(window.uw50Roles)?uw50Roles:[];
+ return rs.some(r=>r.active!==false&&(r.role_slug==='owner'||r.role_slug==='director'));
+}
+async function uw747Cancel(kind,id){
+ if(!uw747CanCancel())return toast('Director authority required.');
+ const label=kind==='event'?'event':'project / collab';
+ if(!confirm(`Cancel this ${label}? It will disappear from active/upcoming views but remain in history.`))return;
+ const reason=(prompt('Optional cancellation reason:')||'').trim();
+ try{
+   const fn=kind==='event'?'uw_cancel_event':'uw_cancel_project';
+   const {error}=await uwSupabase.rpc(fn,{p_id:id,p_reason:reason||null});
+   if(error)throw error;
+   toast(`${label[0].toUpperCase()+label.slice(1)} cancelled.`);
+   /* Refresh whichever production loaders exist. */
+   for(const name of ['loadEvents','uwLoadEvents','uw40LoadEvents','uw62LoadEvents','loadProjects','uwLoadProjects','uw40LoadProjects','uw63LoadProjects']){
+     if(typeof window[name]==='function'){try{await window[name]()}catch(_){}}
+   }
+ }catch(err){toast(err?.message||`Could not cancel ${label}.`)}
+}
+/* Add controls to rendered cards without replacing existing DOM/listeners. */
+function uw747Decorate(){
+ if(!uw747CanCancel())return;
+ document.querySelectorAll('[data-event-id],[data-uw-event-id]').forEach(card=>{
+   const id=card.dataset.eventId||card.dataset.uwEventId;
+   if(!id||card.querySelector('[data-uw747-cancel-event]'))return;
+   const host=card.querySelector('.actions,.row,.uw-actions,.uw40-actions')||card;
+   const b=document.createElement('button');b.type='button';b.className='btn uw747-cancel';b.dataset.uw747CancelEvent=id;b.textContent='CANCEL EVENT';
+   host.appendChild(b);
+ });
+ document.querySelectorAll('[data-project-id],[data-uw-project-id]').forEach(card=>{
+   const id=card.dataset.projectId||card.dataset.uwProjectId;
+   if(!id||card.querySelector('[data-uw747-cancel-project]'))return;
+   const host=card.querySelector('.actions,.row,.uw-actions,.uw40-actions')||card;
+   const b=document.createElement('button');b.type='button';b.className='btn uw747-cancel';b.dataset.uw747CancelProject=id;b.textContent='CANCEL PROJECT / COLLAB';
+   host.appendChild(b);
+ });
+}
+document.addEventListener('click',e=>{
+ const ev=e.target.closest('[data-uw747-cancel-event]');
+ if(ev){e.preventDefault();e.stopPropagation();return uw747Cancel('event',ev.dataset.uw747CancelEvent)}
+ const pr=e.target.closest('[data-uw747-cancel-project]');
+ if(pr){e.preventDefault();e.stopPropagation();return uw747Cancel('project',pr.dataset.uw747CancelProject)}
+});
+const uw747Observer=new MutationObserver(()=>uw747Decorate());
+uw747Observer.observe(document.body,{subtree:true,childList:true});
+window.addEventListener('pageshow',()=>setTimeout(uw747Decorate,1400));
 </script>
 </body></html>
