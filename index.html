@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.5.9';
+    stamp.textContent='UNDERWEB // 0.7.5.10';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5.9-public-creator-profiles"></div>
+<div style="display:none" data-underweb-build="0.7.5.10-role-driven-directory"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3503,9 +3503,16 @@ function uw758Community(uid){
  return 'UnderWeb';
 }
 function uw758Visible(c){
- /* 0.7.5.9 policy: creator profiles are public network profiles.
-    Permissions/roles are separate from whether the profile itself is visible. */
- return !!c?.user_id;
+ /* 0.7.5.10:
+    Profiles are public, but DIRECTORY MEMBERSHIP is creator-role driven.
+    Staff/member accounts do not become creators merely because a profile row exists. */
+ if(!c?.user_id)return false;
+ const creatorSlugs=new Set([
+   'digital_artist','traditional_artist','dj','photographer','videographer',
+   'unity_creator','blender_artist','world_creator','avatar_creator',
+   'graphic_designer','producer','musician','rapper','vocalist'
+ ]);
+ return (uw758Roles[c.user_id]||[]).some(r=>creatorSlugs.has(String(r.slug||'').trim().toLowerCase()));
 }
 function uw758Render(){
  const list=document.getElementById('creatorDirectoryList');if(!list)return;
@@ -3530,7 +3537,7 @@ function uw758Render(){
 
  setText('uw62CreatorCount',base.length);
  setText('uw62AvailableCount',base.filter(c=>['AVAILABLE','AVAILABLE BY REQUEST'].includes(uw758Availability(c.availability))).length);
- setText('uw62PartnerCount',base.filter(c=>uw758MatchDiscipline('Partner',c)).length);
+ setText('uw62PartnerCount',uw758Creators.filter(c=>uw758MatchDiscipline('Partner',c)).length);
 
  if(!rows.length){
    list.innerHTML='<div class="uw-empty uw62-empty">No creator profiles match these filters yet.</div>';return;
