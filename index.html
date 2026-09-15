@@ -408,6 +408,10 @@ body[data-theme="symbiotes"] .uw61-card{border-color:#16385f;background:linear-g
 .uw744-shop a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:#39ff68;font:1000 9px monospace;letter-spacing:.12em}
 .uw744-shop a span{color:#839087;font-size:7px}
 @media(max-width:600px){.uw744-role-actions{display:grid;grid-template-columns:1fr}.uw744-role-actions .btn{min-width:0}}
+
+/* ===== 0.7.4.5 DIRECTOR AUTHORITY ===== */
+.uw745-authority{margin:10px 0 2px;padding:10px 12px;border-left:2px solid var(--g);background:linear-gradient(90deg,rgba(57,255,104,.07),transparent);font:900 7px monospace;letter-spacing:.12em;color:var(--m)}
+.uw745-authority b{color:var(--g)}
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -1104,7 +1108,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw744-creator-role-box">
  <div class="uw40-title"><div><span>CREATOR IDENTITY</span><h3>Add a Creator Role</h3></div><small>STAFF APPROVAL</small></div>
  <p class="meta">Your staff rank and creator disciplines are separate. Apply for the creator roles that describe what you actually make; approved roles make you discoverable in the matching Creator Directory filters.</p>
- <div class="uw744-role-actions">
+ <div class="uw744-role-actions" id="uw745CreatorRoleActions">
   <button type="button" class="btn" data-uw744-role="digital_artist">APPLY // DIGITAL ARTIST</button>
   <button type="button" class="btn" data-uw744-role="traditional_artist">APPLY // TRADITIONAL ARTIST</button>
  </div>
@@ -1150,7 +1154,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw50-panel"><div id="uw50ReviewQueue" class="uw50-stack"><div class="uw-empty">Loading role applications…</div></div></section>
 </div></section>
 <section class="page" id="page-updates"><div class="wrap uw50-updates-page">
-<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.4.4</span></div>
+<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.4.5</span></div>
 <section class="uw50-release hero-release"><div class="uw50-release-version">0.7.4</div><div><span class="eyebrow">CURRENT BUILD • PREMIUM ROLE IDENTITY</span><h2>Premium Authority System</h2><p>Introduced the new UnderWeb leadership insignia system: PRIME for Owner, HORIZON for Director, ORBIT for Event Lead, ATLAS for Artist Coordinator, and static WATCH for Moderator. Premium leadership roles now use distinct motion identities while Moderator remains intentionally static. 0.7.4.2 also fixes creator-card and staff-roster profile actions so they open the selected creator directly instead of routing elsewhere.</p><div class="uw50-release-tags"><span>PRIME</span><span>HORIZON</span><span>ORBIT</span><span>ATLAS</span><span>WATCH</span><span>ROLE FX</span></div></div></section>
 <div class="uw50-grid2">
 <section class="uw50-release"><div class="uw50-release-version">0.7.3</div><div><span class="eyebrow">OWNER IDENTITY</span><h3>Barachiel + Owner presentation</h3><p>Added Darko's Owner presentation, Barachiel profile entrance, and the first premium animated title treatment.</p></div></section>
@@ -2687,7 +2691,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.4.4 CREATOR IDENTITY + SHOWCASE';
+    stamp.textContent='UNDERWEB // 0.7.4.5 DIRECTOR AUTHORITY';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -2965,7 +2969,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.4.4-creator-identity-commerce"></div>
+<div style="display:none" data-underweb-build="0.7.4.5-director-authority"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3110,5 +3114,75 @@ if(uw744ExistingOpen)window.uw621OpenProfile=function(uid){
  return r;
 };
 window.addEventListener('pageshow',()=>setTimeout(uw744LoadMine,900));
+</script>
+
+<script id="uw745DirectorAuthority">
+const UW745_CREATOR_ROLES=[
+ ['digital_artist','DIGITAL ARTIST'],
+ ['traditional_artist','TRADITIONAL ARTIST'],
+ ['dj','DJ'],
+ ['photographer','PHOTOGRAPHER'],
+ ['videographer','VIDEOGRAPHER'],
+ ['avatar_creator','AVATAR CREATOR'],
+ ['world_creator','WORLD CREATOR'],
+ ['unity_creator','UNITY CREATOR'],
+ ['blender_artist','BLENDER ARTIST'],
+ ['graphic_designer','GRAPHIC DESIGNER'],
+ ['producer','PRODUCER'],
+ ['musician','MUSICIAN'],
+ ['rapper','RAPPER'],
+ ['vocalist','VOCALIST']
+];
+
+function uw745HasRole(slug){
+ return Array.isArray(window.uw50Roles)&&uw50Roles.some(r=>r.active!==false&&r.role_slug===slug);
+}
+function uw745IsDirector(){return uw745HasRole('director')}
+function uw745IsOwner(){return uw745HasRole('owner')}
+
+async function uw745SetOwnRole(slug,enabled){
+ if(!currentSession)return toast('Sign in first.');
+ const privileged=uw745IsOwner()||uw745IsDirector();
+ if(!privileged)return uw744ApplyRole(slug);
+ try{
+   const {error}=await uwSupabase.rpc('uw_director_set_role',{
+     p_user_id:currentSession.user.id,
+     p_role_slug:slug,
+     p_enabled:enabled
+   });
+   if(error)throw error;
+   toast(enabled?'Role added.':'Role removed.');
+   if(typeof uw50LoadIdentity==='function')await uw50LoadIdentity();
+   setTimeout(uw745Render,100);
+ }catch(err){toast(err?.message||'Could not update role.');}
+}
+
+function uw745Render(){
+ const box=document.getElementById('uw745CreatorRoleActions'),status=document.getElementById('uw744RoleStatus');
+ if(!box)return;
+ const privileged=uw745IsOwner()||uw745IsDirector();
+ if(privileged){
+   box.insertAdjacentHTML('beforebegin',
+     document.getElementById('uw745AuthorityNote')?'':`<div id="uw745AuthorityNote" class="uw745-authority"><b>${uw745IsOwner()?'OWNER':'DIRECTOR'} AUTHORITY //</b> You may add or remove any non-Owner creator role directly. No approval required.</div>`);
+   box.innerHTML=UW745_CREATOR_ROLES.map(([slug,label])=>{
+     const on=uw745HasRole(slug);
+     return `<button type="button" class="btn ${on?'':'hot'}" data-uw745-toggle="${slug}" data-enabled="${on?'1':'0'}">${on?'REMOVE':'ADD'} // ${label}</button>`;
+   }).join('');
+   if(status)status.textContent='Director authority is enforced server-side. Owner cannot be assigned or removed by Director.';
+ }else{
+   document.getElementById('uw745AuthorityNote')?.remove();
+   box.innerHTML=`<button type="button" class="btn" data-uw744-role="digital_artist">APPLY // DIGITAL ARTIST</button><button type="button" class="btn" data-uw744-role="traditional_artist">APPLY // TRADITIONAL ARTIST</button>`;
+   if(status)status.textContent='Applications use the existing UnderWeb role approval queue.';
+ }
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-uw745-toggle]');
+ if(!b)return;
+ e.preventDefault();e.stopPropagation();
+ uw745SetOwnRole(b.dataset.uw745Toggle,b.dataset.enabled!=='1');
+});
+const uw745OldRender=window.uw50RenderProfileIdentity;
+if(uw745OldRender)window.uw50RenderProfileIdentity=function(){const r=uw745OldRender.apply(this,arguments);setTimeout(uw745Render,0);return r};
+window.addEventListener('pageshow',()=>setTimeout(uw745Render,1200));
 </script>
 </body></html>
