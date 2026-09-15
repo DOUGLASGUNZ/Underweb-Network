@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.6.3';
+    stamp.textContent='UNDERWEB // 0.7.6.4';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.6.3-server-authority-fix"></div>
+<div style="display:none" data-underweb-build="0.7.6.4-mobile-auth-debug"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4051,4 +4051,76 @@ document.addEventListener('click',e=>{
 
 window.addEventListener('pageshow',()=>setTimeout(uw763LoadEventControl,1400));
 </script>
+
+<style id="uw764DebugStyle">
+#uw764AuthDebug{margin:18px 0;padding:18px;border:1px solid rgba(42,255,109,.35);background:#030806;font-family:monospace}
+#uw764AuthDebug h3{margin:0 0 12px;color:#2aff6d}
+#uw764AuthDebug pre{white-space:pre-wrap;word-break:break-word;color:#d8e3dc;font-size:12px;line-height:1.55}
+</style>
+<script id="uw764MobileAuthDebug">
+async function uw764Debug(){
+  const host=document.getElementById('uw72EventControl');
+  if(!host)return;
+
+  let box=document.getElementById('uw764AuthDebug');
+  if(!box){
+    box=document.createElement('div');
+    box.id='uw764AuthDebug';
+    box.innerHTML='<h3>OWNER DEBUG // MOBILE</h3><pre>Reading Supabase session…</pre>';
+    host.parentNode.insertBefore(box,host);
+  }
+  const pre=box.querySelector('pre');
+
+  try{
+    const {data:{session},error:sessionError}=await uwSupabase.auth.getSession();
+    if(sessionError) throw sessionError;
+
+    const uid=session?.user?.id||null;
+    const email=session?.user?.email||null;
+
+    let profile=null, roles=[], authority=null, authError=null;
+
+    if(uid){
+      const p=await uwSupabase.from('creator_profiles')
+        .select('user_id,display_name').eq('user_id',uid).maybeSingle();
+      profile=p.data||null;
+
+      const r=await uwSupabase.from('user_roles')
+        .select('role_slug,group_scope,status').eq('user_id',uid);
+      roles=r.data||[];
+
+      const a=await uwSupabase.rpc('uw_is_owner_or_director');
+      authority=a.data;
+      authError=a.error?.message||null;
+    }
+
+    pre.textContent=[
+      'SIGNED-IN UUID:',
+      String(uid),
+      '',
+      'EMAIL:',
+      String(email),
+      '',
+      'PROFILE:',
+      profile ? `${profile.display_name} // ${profile.user_id}` : 'NO PROFILE FOUND FOR THIS UUID',
+      '',
+      'ROLES FOR SIGNED-IN UUID:',
+      roles.length ? roles.map(x=>`${x.role_slug} // ${x.group_scope} // ${x.status}`).join('\n') : 'NO ROLE ROWS FOUND',
+      '',
+      'AUTHORITY RPC:',
+      String(authority),
+      authError ? `RPC ERROR: ${authError}` : ''
+    ].join('\n');
+  }catch(err){
+    pre.textContent='DEBUG ERROR:\n'+(err?.message||String(err));
+  }
+}
+
+/* Run whenever Event Control is opened. */
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-page="eventcontrol"]')) setTimeout(uw764Debug,250);
+},true);
+window.addEventListener('pageshow',()=>setTimeout(uw764Debug,1900));
+</script>
+
 </body></html>
