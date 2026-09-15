@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.5.3';
+    stamp.textContent='UNDERWEB // 0.7.5.4';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5.3-source-rebuild"></div>
+<div style="display:none" data-underweb-build="0.7.5.4-creator-role-sync"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3642,14 +3642,13 @@ async function uw752LoadDirectory(){
    window.uwRealCreators=cp.data||[];window.uw62RoleMap={};
    const ids=uwRealCreators.map(x=>x.user_id).filter(Boolean);
    if(ids.length){
-     const [ur,ra,rd]=await Promise.all([
+     const [ur,rd]=await Promise.all([
        uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active'),
-       uwSupabase.from('role_applications').select('user_id,role_slug,group_scope,status').in('user_id',ids).in('status',['accepted','approved']),
        uwSupabase.from('role_definitions').select('slug,name')
      ]);
      if(ur.error)throw ur.error;
      const defs={};if(!rd.error)(rd.data||[]).forEach(x=>defs[x.slug]=x.name);
-     const merged=[...(ur.data||[]),...(!ra.error?(ra.data||[]):[])];
+     const merged=[...(ur.data||[])];
      const seen=new Set();
      merged.forEach(r=>{
        const k=`${r.user_id}|${r.role_slug}|${r.group_scope||'underweb'}`;if(seen.has(k))return;seen.add(k);
