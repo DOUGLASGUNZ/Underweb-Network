@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.6.1';
+    stamp.textContent='UNDERWEB // 0.7.6.2';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.6.1-event-stabilization"></div>
+<div style="display:none" data-underweb-build="0.7.6.2-event-control-hard-fix"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3864,5 +3864,91 @@ document.addEventListener('click',e=>{
 },true);
 
 window.addEventListener('pageshow',()=>setTimeout(uw761RefreshAll,1300));
+</script>
+
+<script id="uw762EventControlHardFix">
+/* UNDERWEB 0.7.6.2 — EVENT CONTROL HARD FIX
+   Event Control is a management surface, NOT an "upcoming only" feed.
+   Owner/Director see every non-archived, non-cancelled event so it can
+   always be edited/cancelled even if its timestamps/status are messy. */
+
+async function uw762LoadEventControl(){
+  const el=document.getElementById('uw72EventControl');
+  if(!el)return;
+
+  el.innerHTML='<div class="uw-empty">Loading all manageable events…</div>';
+
+  const leadership=(Array.isArray(window.uw50Roles)?uw50Roles:[])
+    .some(r=>r.status==='active'&&['owner','director'].includes(r.role_slug));
+
+  if(!leadership){
+    el.innerHTML='<div class="uw-empty">Event Control is available to Owner and Director.</div>';
+    return;
+  }
+
+  const {data,error}=await uwSupabase
+    .from('network_events')
+    .select('*')
+    .is('archived_at',null)
+    .is('cancelled_at',null)
+    .order('starts_at',{ascending:false,nullsFirst:false})
+    .limit(100);
+
+  if(error){
+    console.error('Event Control load:',error);
+    el.innerHTML=`<div class="uw-empty">EVENT CONTROL ERROR: ${uw72Esc(error.message||'Could not load events.')}</div>`;
+    return;
+  }
+
+  const rows=data||[];
+  window.uw75Events=rows;
+
+  if(!rows.length){
+    el.innerHTML='<div class="uw-empty">No manageable events exist in the database.</div>';
+    return;
+  }
+
+  el.innerHTML=rows.map(e=>{
+    const start=e.starts_at?new Date(e.starts_at):null;
+    const end=e.ends_at?new Date(e.ends_at):null;
+    const now=Date.now();
+    const state=e.status||'unknown';
+    let timing='NO DATE';
+    if(start && !Number.isNaN(start.getTime())){
+      if(end && end.getTime()<now) timing='ENDED';
+      else if(start.getTime()<=now) timing='ACTIVE';
+      else timing='UPCOMING';
+    }
+    return `<article class="uw75-control-card" data-event-id="${uw72Esc(e.id)}">
+      <div class="uw75-control-cover"${e.cover_url?` style="background-image:url(&quot;${uw72Esc(e.cover_url)}&quot;)"`:''}></div>
+      <div class="uw75-control-body">
+        <span class="eyebrow">${uw72Esc((e.group_scope||'network').toUpperCase())} // ${uw72Esc(String(state).toUpperCase())} // ${timing}</span>
+        <h3>${uw72Esc(e.title||'Untitled Event')}</h3>
+        <div class="uw75-control-meta">
+          <span>${start&&!Number.isNaN(start.getTime())?uw72Esc(start.toLocaleString()):'DATE NOT SET'}</span>
+          <span>${uw72Esc(e.location||'LOCATION TBD')}</span>
+        </div>
+        <p class="meta">${uw72Esc((e.description||'No description.').slice(0,180))}</p>
+        <div class="uw75-control-actions">
+          <button class="btn hot" data-uw75-edit="${uw72Esc(e.id)}">EDIT EVENT</button>
+          <button class="btn uw75-danger" data-uw75-cancel="${uw72Esc(e.id)}">CANCEL EVENT</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* Make every legacy call resolve to this loader. */
+uw75LoadEventControl=uw762LoadEventControl;
+uw72LoadEventControl=uw762LoadEventControl;
+
+/* Capture Event Control navigation after all legacy handlers. */
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-page="eventcontrol"]')){
+    setTimeout(uw762LoadEventControl,120);
+  }
+},false);
+
+window.addEventListener('pageshow',()=>setTimeout(uw762LoadEventControl,1800));
 </script>
 </body></html>
