@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.6.7';
+    stamp.textContent='UNDERWEB // 0.7.6.8';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.6.7-role-first-creator-directory"></div>
+<div style="display:none" data-underweb-build="0.7.6.8-creator-mobile-debug"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3812,6 +3812,78 @@ window.addEventListener('pageshow',()=>{
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-page="home"],[data-page="discover"]'))
     setTimeout(()=>{if(typeof uw758Load==='function')uw758Load()},140);
+},true);
+</script>
+
+
+<style id="uw768CreatorDebugStyle">
+#uw768CreatorDebug{margin:14px 22px 22px;padding:16px;border:1px solid rgba(42,255,109,.35);background:#020604;font-family:monospace}
+#uw768CreatorDebug h3{margin:0 0 10px;color:#2aff6d;font-size:14px}
+#uw768CreatorDebug pre{white-space:pre-wrap;word-break:break-word;color:#d7e0da;font-size:11px;line-height:1.5}
+</style>
+<script id="uw768CreatorMobileDebug">
+async function uw768CreatorDebug(){
+ const list=document.getElementById('creatorDirectoryList');
+ if(!list)return;
+
+ let box=document.getElementById('uw768CreatorDebug');
+ if(!box){
+   box=document.createElement('div');
+   box.id='uw768CreatorDebug';
+   box.innerHTML='<h3>CREATOR DEBUG // MOBILE</h3><pre>Reading creator pipeline…</pre>';
+   list.parentNode.insertBefore(box,list);
+ }
+ const pre=box.querySelector('pre');
+
+ const slugs=['digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer',
+ 'unity_creator','blender_artist','world_creator','avatar_creator','graphic_designer',
+ 'producer','musician','rapper','vocalist'];
+
+ try{
+   const session=(await uwSupabase.auth.getSession()).data.session;
+   const uid=session?.user?.id||null;
+
+   const roleQ=await uwSupabase.from('user_roles')
+     .select('user_id,role_slug,group_scope,status')
+     .eq('status','active')
+     .in('role_slug',slugs);
+
+   const roles=roleQ.data||[];
+   const ids=[...new Set(roles.map(r=>r.user_id).filter(Boolean))];
+
+   let profilesQ={data:[],error:null};
+   if(ids.length){
+     profilesQ=await uwSupabase.from('creator_profiles')
+       .select('user_id,display_name,public_visible,approval_status,profile_mode,availability')
+       .in('user_id',ids);
+   }
+   const profiles=profilesQ.data||[];
+
+   const darkoRoles=roles.filter(r=>r.user_id===uid);
+   const darkoProfile=profiles.find(p=>p.user_id===uid);
+
+   pre.textContent=[
+     'SIGNED-IN UUID:', String(uid),'',
+     'CREATOR ROLE QUERY ERROR:', roleQ.error?.message||'NONE','',
+     'ACTIVE CREATOR ROLE ROWS:', String(roles.length),
+     roles.map(r=>`${r.user_id} // ${r.role_slug} // ${r.group_scope} // ${r.status}`).join('\n')||'NONE','',
+     'UNIQUE CREATOR UUIDS:', String(ids.length),
+     ids.join('\n')||'NONE','',
+     'PROFILE QUERY ERROR:', profilesQ.error?.message||'NONE','',
+     'MATCHING CREATOR PROFILES:', String(profiles.length),
+     profiles.map(p=>`${p.display_name} // ${p.user_id} // public=${p.public_visible} // approval=${p.approval_status} // mode=${p.profile_mode}`).join('\n')||'NONE','',
+     'DARKO CREATOR ROLES:',
+     darkoRoles.map(r=>`${r.role_slug} // ${r.group_scope}`).join('\n')||'NONE','',
+     'DARKO PROFILE:',
+     darkoProfile?JSON.stringify(darkoProfile,null,2):'NOT RETURNED'
+   ].join('\n');
+ }catch(err){
+   pre.textContent='CREATOR DEBUG ERROR:\n'+(err?.message||String(err));
+ }
+}
+window.addEventListener('pageshow',()=>setTimeout(uw768CreatorDebug,2200));
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-page="discover"]'))setTimeout(uw768CreatorDebug,350);
 },true);
 </script>
 
