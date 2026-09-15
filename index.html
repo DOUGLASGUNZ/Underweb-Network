@@ -1051,7 +1051,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div><div class="uw70-kicker">UNDERWEB NETWORK // CREATOR DIRECTORY</div><h1>FIND YOUR<br><span>PEOPLE.</span></h1><p>Approved creators, talent and partners across the network. Identity first. Skills, work and availability second.</p></div>
     <div class="uw70-dircounts"><span><b id="uw62CreatorCount">—</b>CREATORS</span><span><b id="uw62AvailableCount">—</b>AVAILABLE</span><span><b id="uw62PartnerCount">—</b>PARTNERS</span></div>
   </section>
-  <div class="uw70-need"><span>WHO DO YOU NEED?</span><button data-uw62-need="Digital Artist">DIGITAL ARTIST</button><button data-uw62-need="Traditional Artist">TRADITIONAL ARTIST</button><button data-uw62-need="DJ">DJ</button><button data-uw62-need="Photography">PHOTOGRAPHER</button><button data-uw62-need="Videography">VIDEOGRAPHER</button><button data-uw62-need="Unity">UNITY</button><button data-uw62-need="Blender">BLENDER</button><button data-uw62-need="World Creation">WORLD CREATOR</button><button data-uw62-need="Avatar Creation">AVATAR CREATOR</button></div>
+  <div class="uw70-need"><span>WHO DO YOU NEED?</span><button data-uw62-need="Digital Artist">DIGITAL ARTIST</button><button data-uw62-need="Traditional Artist">TRADITIONAL ARTIST</button><button data-uw62-need="VFX">VFX</button><button data-uw62-need="DJ">DJ</button><button data-uw62-need="Photography">PHOTOGRAPHER</button><button data-uw62-need="Videography">VIDEOGRAPHER</button><button data-uw62-need="Unity">UNITY</button><button data-uw62-need="Blender">BLENDER</button><button data-uw62-need="World Creation">WORLD CREATOR</button><button data-uw62-need="Avatar Creation">AVATAR CREATOR</button></div>
   <div class="uw70-toolbar">
     <input class="input" id="creatorSearch" placeholder="Search creators, specialties, roles..."/>
     <select class="select" id="creatorCommunity"><option value="all">All Communities</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="both">Shared / Both</option></select>
@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.5.10';
+    stamp.textContent='UNDERWEB // 0.7.6';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5.10-role-driven-directory"></div>
+<div style="display:none" data-underweb-build="0.7.6-network-core-cleanup"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3137,6 +3137,7 @@ window.addEventListener('pageshow',()=>setTimeout(uw744LoadMine,900));
 const UW745_CREATOR_ROLES=[
  ['digital_artist','DIGITAL ARTIST'],
  ['traditional_artist','TRADITIONAL ARTIST'],
+ ['vfx_artist','VFX ARTIST'],
  ['dj','DJ'],
  ['photographer','PHOTOGRAPHER'],
  ['videographer','VIDEOGRAPHER'],
@@ -3457,6 +3458,8 @@ document.addEventListener('click',e=>{
 const UW758_DISC={
  'digital artist':['digital artist','digital_artist'],
  'traditional artist':['traditional artist','traditional_artist'],
+ 'vfx':['vfx','vfx artist','vfx_artist','visual effects','visual effects artist'],
+ 'vfx artist':['vfx','vfx artist','vfx_artist','visual effects','visual effects artist'],
  'dj':['dj'],
  'photography':['photographer','photography'],
  'videography':['videographer','videography'],
@@ -3508,7 +3511,7 @@ function uw758Visible(c){
     Staff/member accounts do not become creators merely because a profile row exists. */
  if(!c?.user_id)return false;
  const creatorSlugs=new Set([
-   'digital_artist','traditional_artist','dj','photographer','videographer',
+   'digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer',
    'unity_creator','blender_artist','world_creator','avatar_creator',
    'graphic_designer','producer','musician','rapper','vocalist'
  ]);
@@ -3626,5 +3629,142 @@ document.addEventListener('click',e=>{
  const nav=e.target.closest('[data-page="discover"]');if(nav)setTimeout(uw758Load,80);
 },true);
 window.addEventListener('pageshow',()=>setTimeout(uw758Load,1200));
+</script>
+
+<script id="uw760NetworkCoreCleanup">
+/* ============================================================
+   UNDERWEB 0.7.6 — NETWORK CORE CLEANUP
+   - Owner + Director never apply for roles
+   - UUIDs remain internal; UI resolves display names
+   - VFX creator discipline
+   - leadership role management on viewed profiles
+   ============================================================ */
+
+function uw760HasRole(slug){
+ return (Array.isArray(window.uw50Roles)?uw50Roles:[])
+   .some(r=>r.status==='active'&&r.role_slug===slug);
+}
+function uw760Owner(){return uw760HasRole('owner')}
+function uw760Director(){return uw760HasRole('director')}
+function uw760Leadership(){return uw760Owner()||uw760Director()}
+
+/* Owner and Director both bypass applications. */
+async function uw760DirectRole(slug,enabled,userId){
+ const uid=userId||window.currentSession?.user?.id;
+ if(!uid)return toast('User account could not be identified.');
+ const {error}=await uwSupabase.rpc('uw_director_set_role',{
+   p_user_id:uid,p_role_slug:slug,p_enabled:enabled
+ });
+ if(error)return toast(error.message);
+ toast(enabled?'Role added.':'Role removed.');
+ try{if(typeof uw50LoadIdentity==='function')await uw50LoadIdentity()}catch(_){}
+ try{if(typeof uw758Load==='function')await uw758Load()}catch(_){}
+ setTimeout(uw760RenderLeadership,120);
+}
+
+async function uw760RenderLeadership(){
+ if(!uw760Leadership())return;
+ const grid=document.getElementById('uw50ApplicationRoles');
+ if(!grid)return;
+
+ [...grid.querySelectorAll('[data-uw50-apply],[data-uw757-owner-role]')].forEach(btn=>{
+   const slug=btn.getAttribute('data-uw50-apply')||btn.getAttribute('data-uw757-owner-role');
+   if(!slug||slug==='owner')return;
+   const active=(window.uw50Roles||[]).some(r=>r.status==='active'&&r.role_slug===slug);
+   btn.removeAttribute('data-uw50-apply');
+   btn.removeAttribute('data-uw757-owner-role');
+   btn.dataset.uw760DirectRole=slug;
+   btn.dataset.uw760Enable=active?'0':'1';
+   btn.textContent=active?'REMOVE':'ADD';
+ });
+ const panel=grid.closest('.uw50-panel');
+ if(panel){
+   const h=panel.querySelector('h3');if(h)h.textContent=uw760Owner()?'Owner role controls':'Director role controls';
+   const p=panel.querySelector('.uw50-panel-title p');
+   if(p)p.textContent=uw760Owner()
+     ?'Owner authority never uses applications. Add or remove any non-Owner role directly.'
+     :'Director authority never uses applications. Add or remove permitted roles below Director directly.';
+   const note=panel.querySelector('#uw50ApplyNote');if(note)note.style.display='none';
+ }
+}
+
+/* Resolve UUIDs in application/admin surfaces to creator display names.
+   UUID remains the database key; it is not the user-facing identity. */
+async function uw760ResolveNames(){
+ const roots=[
+   document.getElementById('uw50MyApplications'),
+   document.getElementById('uw50ReviewQueue'),
+   document.getElementById('uw51ReviewQueue')
+ ].filter(Boolean);
+ if(!roots.length)return;
+
+ const uuid=/\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/ig;
+ const found=new Set();
+ roots.forEach(root=>{
+   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+   let n;while(n=w.nextNode()){const m=n.nodeValue.match(uuid);if(m)m.forEach(x=>found.add(x.toLowerCase()))}
+ });
+ if(!found.size)return;
+
+ const {data,error}=await uwSupabase.from('creator_profiles')
+   .select('user_id,display_name').in('user_id',[...found]);
+ if(error)return console.warn('Display-name resolution:',error);
+ const names={};(data||[]).forEach(x=>names[String(x.user_id).toLowerCase()]=x.display_name||'Member');
+
+ roots.forEach(root=>{
+   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+   const nodes=[];let n;while(n=w.nextNode())nodes.push(n);
+   nodes.forEach(node=>{
+     node.nodeValue=node.nodeValue.replace(uuid,id=>names[id.toLowerCase()]||'Member');
+   });
+ });
+}
+
+/* Leadership role manager for the creator profile currently being viewed. */
+async function uw760ProfileRoleManager(uid){
+ if(!uw760Leadership()||!uid)return;
+ const modal=document.getElementById('uw621ProfileModal');if(!modal)return;
+ let host=document.getElementById('uw760ProfileRoleManager');
+ if(!host){
+   host=document.createElement('section');host.id='uw760ProfileRoleManager';
+   host.className='uw50-panel';host.style.marginTop='14px';
+   const body=modal.querySelector('.uw621-modal-body')||modal.querySelector('.uw621-profile')||modal;
+   body.appendChild(host);
+ }
+ const [defs,assigned]=await Promise.all([
+   uwSupabase.from('role_definitions').select('slug,name,authority_rank,active').eq('active',true).order('authority_rank',{ascending:false}),
+   uwSupabase.from('user_roles').select('role_slug,status').eq('user_id',uid).eq('status','active')
+ ]);
+ if(defs.error||assigned.error){host.innerHTML='<div class="uw-empty">Role manager unavailable.</div>';return}
+ const active=new Set((assigned.data||[]).map(x=>x.role_slug));
+ const actorRank=Math.max(0,...(window.uw50Roles||[]).filter(x=>x.status==='active').map(x=>Number(x.authority_rank||0)));
+ const rows=(defs.data||[]).filter(r=>r.slug!=='owner'&&(uw760Owner()||Number(r.authority_rank||0)<actorRank));
+ host.innerHTML=`<div class="uw50-panel-title"><div><span>LEADERSHIP ACCESS</span><h3>Manage roles</h3><p>Owner/Director direct assignment. No application required.</p></div></div>
+ <div class="uw50-role-grid">${rows.map(r=>`<div class="uw50-role-card"><div><b>${esc(r.name||r.slug)}</b></div>
+ <button class="btn ${active.has(r.slug)?'':'hot'}" data-uw760-target="${esc(uid)}" data-uw760-role="${esc(r.slug)}" data-uw760-state="${active.has(r.slug)?'0':'1'}">${active.has(r.slug)?'REMOVE':'ADD'}</button></div>`).join('')}</div>`;
+}
+
+document.addEventListener('click',e=>{
+ const direct=e.target.closest('[data-uw760-direct-role]');
+ if(direct){e.preventDefault();e.stopImmediatePropagation();return uw760DirectRole(direct.dataset.uw760DirectRole,direct.dataset.uw760Enable==='1')}
+ const manage=e.target.closest('[data-uw760-role]');
+ if(manage){e.preventDefault();e.stopImmediatePropagation();return uw760DirectRole(manage.dataset.uw760Role,manage.dataset.uw760State==='1',manage.dataset.uw760Target)}
+ const prof=e.target.closest('[data-uw758-profile],[data-uw62-profile],[data-uw61-profile]');
+ if(prof&&uw760Leadership()){
+   const uid=prof.dataset.uw758Profile||prof.dataset.uw62Profile||prof.dataset.uw61Profile;
+   setTimeout(()=>uw760ProfileRoleManager(uid),350);
+ }
+ if(e.target.closest('[data-page="identity"]'))setTimeout(()=>{uw760RenderLeadership();uw760ResolveNames()},250);
+},true);
+
+window.addEventListener('pageshow',()=>setTimeout(()=>{
+ uw760RenderLeadership();uw760ResolveNames();
+},1900));
+
+/* Application lists can refresh after initial page load. */
+const uw760Observer=new MutationObserver(()=>{clearTimeout(window.__uw760n);window.__uw760n=setTimeout(uw760ResolveNames,80)});
+['uw50MyApplications','uw50ReviewQueue','uw51ReviewQueue'].forEach(id=>{
+ const el=document.getElementById(id);if(el)uw760Observer.observe(el,{childList:true,subtree:true});
+});
 </script>
 </body></html>
