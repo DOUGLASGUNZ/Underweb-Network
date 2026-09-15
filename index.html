@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.5.4';
+    stamp.textContent='UNDERWEB // 0.7.5.5';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5.4-creator-role-sync"></div>
+<div style="display:none" data-underweb-build="0.7.5.5-creator-profile-direct-fix"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3667,6 +3667,72 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{uw752LoadDirectory();},18
 document.addEventListener('click',e=>{
  if(e.target.closest('[data-page="roles"]'))void 0;
  if(e.target.closest('[data-page="discover"]'))setTimeout(uw752LoadDirectory,100);
+},true);
+</script>
+
+<script id="uw755CreatorProfileDirectFix">
+/* 0.7.5.5 — Creator cards/roster links can open a profile even when the
+   selected creator is not currently present in the in-memory directory array. */
+async function uw755OpenCreatorProfile(uid){
+  uid=String(uid||'').trim();
+  if(!uid)return toast('Creator profile could not be identified.');
+
+  let x=(window.uwRealCreators||[]).find(v=>String(v.user_id)===uid);
+
+  if(!x){
+    const {data,error}=await uwSupabase
+      .from('creator_profiles')
+      .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,public_visible,approval_status,shop_url,shop_label')
+      .eq('user_id',uid)
+      .maybeSingle();
+
+    if(error)return toast(error.message);
+    if(!data)return toast('Creator profile was not found.');
+
+    x=data;
+    window.uwRealCreators=window.uwRealCreators||[];
+    const i=uwRealCreators.findIndex(v=>String(v.user_id)===uid);
+    if(i>=0)uwRealCreators[i]=x; else uwRealCreators.push(x);
+
+    /* Load this creator's real active roles for the profile modal. */
+    const rr=await uwSupabase.from('user_roles')
+      .select('user_id,role_slug,group_scope,status')
+      .eq('user_id',uid).eq('status','active');
+
+    if(!rr.error){
+      let defs={};
+      const rd=await uwSupabase.from('role_definitions').select('slug,name');
+      if(!rd.error)(rd.data||[]).forEach(d=>defs[d.slug]=d.name);
+      window.uw62RoleMap=window.uw62RoleMap||{};
+      uw62RoleMap[uid]=(rr.data||[]).map(r=>({
+        slug:r.role_slug,
+        name:defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),
+        scope:r.group_scope||'underweb'
+      }));
+    }
+  }
+
+  /* Base modal used to expect portfolio_url, which does not exist in this DB.
+     Keep that control hidden; shop/showcase are loaded by the newer profile modules. */
+  x.portfolio_url='';
+  if(typeof uw621OpenProfile==='function'){
+    uw621OpenProfile(uid);
+    if(typeof uw743LoadPublic==='function')uw743LoadPublic(uid);
+    if(typeof uw744DecoratePublic==='function')uw744DecoratePublic(uid);
+    return;
+  }
+  toast('Creator profile viewer is unavailable.');
+}
+
+/* Capture before the legacy roster handler, which incorrectly routes the UUID
+   into the text search field instead of opening the profile. */
+document.addEventListener('click',function(e){
+  const b=e.target.closest('[data-uw62-profile],[data-uw61-profile]');
+  if(!b)return;
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+  uw755OpenCreatorProfile(b.dataset.uw62Profile||b.dataset.uw61Profile);
 },true);
 </script>
 </body></html>
