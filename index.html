@@ -430,6 +430,12 @@ body[data-theme="symbiotes"] .uw61-card{border-color:#16385f;background:linear-g
 .uw75-modal-card{width:min(680px,100%);max-height:90vh;overflow:auto;border:1px solid var(--g);background:#030604;padding:20px;box-shadow:0 0 50px rgba(55,255,110,.12)}
 .uw75-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.uw75-form .full{grid-column:1/-1}.uw75-form label span{display:block;color:var(--muted);font-size:10px;letter-spacing:.12em;margin-bottom:6px}
 @media(max-width:700px){.uw75-form{grid-template-columns:1fr}.uw75-form .full{grid-column:auto}.uw75-control-cover{height:120px}}
+
+/* ===== 0.7.5.2 EXACT IDENTITY / DIRECTORY FIX ===== */
+.uw752-accordion{border:1px solid var(--l);margin:12px 0;background:#030604}
+.uw752-accordion>summary{cursor:pointer;list-style:none;padding:17px 18px;font-weight:950;letter-spacing:.08em;display:flex;justify-content:space-between}
+.uw752-accordion>summary::-webkit-details-marker{display:none}.uw752-accordion>summary:after{content:'+';color:var(--g);font-size:22px}.uw752-accordion[open]>summary:after{content:'−'}
+.uw752-body{padding:0 16px 16px}.uw752-body>.uw50-panel{border:0!important;padding:0!important;background:transparent!important}
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -1172,7 +1178,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw50-panel"><div id="uw50ReviewQueue" class="uw50-stack"><div class="uw-empty">Loading role applications…</div></div></section>
 </div></section>
 <section class="page" id="page-updates"><div class="wrap uw50-updates-page">
-<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.5.1</span></div>
+<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.5.2</span></div>
 <section class="uw50-release hero-release"><div class="uw50-release-version">0.7.4</div><div><span class="eyebrow">CURRENT BUILD • PREMIUM ROLE IDENTITY</span><h2>Premium Authority System</h2><p>Introduced the new UnderWeb leadership insignia system: PRIME for Owner, HORIZON for Director, ORBIT for Event Lead, ATLAS for Artist Coordinator, and static WATCH for Moderator. Premium leadership roles now use distinct motion identities while Moderator remains intentionally static. 0.7.4.2 also fixes creator-card and staff-roster profile actions so they open the selected creator directly instead of routing elsewhere.</p><div class="uw50-release-tags"><span>PRIME</span><span>HORIZON</span><span>ORBIT</span><span>ATLAS</span><span>WATCH</span><span>ROLE FX</span></div></div></section>
 <div class="uw50-grid2">
 <section class="uw50-release"><div class="uw50-release-version">0.7.3</div><div><span class="eyebrow">OWNER IDENTITY</span><h3>Barachiel + Owner presentation</h3><p>Added Darko's Owner presentation, Barachiel profile entrance, and the first premium animated title treatment.</p></div></section>
@@ -2709,7 +2715,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.4.7 CANCELLATION CONTROLS';
+    stamp.textContent='UNDERWEB // 0.7.5.2';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -2987,7 +2993,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5.1-directory-schema-fix"></div>
+<div style="display:none" data-underweb-build="0.7.5.2-exact-identity-directory-fix"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3577,5 +3583,84 @@ document.addEventListener('click',e=>{
 },true);
 
 window.addEventListener('pageshow',()=>setTimeout(()=>{uw75ReworkIdentity();uw75EnsureModal();},900));
+</script>
+
+<script id="uw752ExactFix">
+/* 0.7.5.2 — targets the actual DOM IDs present in production. */
+function uw752Accordion(panel,title){
+ if(!panel||panel.closest('.uw752-accordion'))return;
+ const d=document.createElement('details');d.className='uw752-accordion';
+ d.innerHTML=`<summary>${title}</summary><div class="uw752-body"></div>`;
+ panel.parentNode.insertBefore(d,panel);d.querySelector('.uw752-body').appendChild(panel);
+}
+function uw752RebuildRolesPage(){
+ const page=document.getElementById('page-roles');if(!page)return;
+
+ const applicationPanel=document.getElementById('uw50ApplicationRoles')?.closest('.uw50-panel');
+ const applicationsPanel=document.getElementById('uw50MyApplications')?.closest('.uw50-panel');
+ const rolePanel=document.getElementById('uw51RoleCatalog')?.closest('.uw50-panel');
+ const badgePanel=document.getElementById('uw51BadgeCatalog')?.closest('.uw50-panel');
+ const titlePanel=document.getElementById('uw51TitleCatalog')?.closest('.uw50-panel');
+
+ uw752Accordion(applicationPanel,'ROLES & ACCESS');
+ uw752Accordion(rolePanel,'ROLE DIRECTORY');
+ uw752Accordion(badgePanel,'RECOGNITION & BADGES');
+ uw752Accordion(titlePanel,'PROFILE TITLES');
+
+ if(applicationsPanel){
+   let ap=document.getElementById('page-my-role-applications');
+   if(!ap){
+     ap=document.createElement('section');ap.className='page';ap.id='page-my-role-applications';
+     ap.innerHTML='<div class="wrap"><div class="page-title"><div class="eyebrow">IDENTITY // APPLICATIONS</div><h1>MY APPLICATIONS</h1><p>Pending, accepted, denied and withdrawn role requests.</p></div><div id="uw752AppsMount"></div></div>';
+     page.after(ap);
+   }
+   document.getElementById('uw752AppsMount').appendChild(applicationsPanel);
+
+   if(!document.getElementById('uw752AppsButton')){
+     const b=document.createElement('button');b.id='uw752AppsButton';b.className='btn';b.dataset.page='my-role-applications';b.textContent='MY APPLICATIONS →';
+     const mount=page.querySelector('.wrap')||page;b.style.margin='12px 0 18px';mount.prepend(b);
+   }
+ }
+}
+
+/* Accepted applications are authoritative creator disciplines too.
+   Merge them with active user_roles so old accepted applications are discoverable. */
+async function uw752LoadDirectory(){
+ const list=document.getElementById('creatorDirectoryList');if(!list)return;
+ try{
+   const cp=await uwSupabase.from('creator_profiles')
+    .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,public_visible,approval_status')
+    .order('display_name',{ascending:true}).limit(200);
+   if(cp.error)throw cp.error;
+   window.uwRealCreators=cp.data||[];window.uw62RoleMap={};
+   const ids=uwRealCreators.map(x=>x.user_id).filter(Boolean);
+   if(ids.length){
+     const [ur,ra,rd]=await Promise.all([
+       uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active'),
+       uwSupabase.from('role_applications').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','accepted'),
+       uwSupabase.from('role_definitions').select('slug,name')
+     ]);
+     if(ur.error)throw ur.error;
+     const defs={};if(!rd.error)(rd.data||[]).forEach(x=>defs[x.slug]=x.name);
+     const merged=[...(ur.data||[]),...(!ra.error?(ra.data||[]):[])];
+     const seen=new Set();
+     merged.forEach(r=>{
+       const k=`${r.user_id}|${r.role_slug}|${r.group_scope||'underweb'}`;if(seen.has(k))return;seen.add(k);
+       (uw62RoleMap[r.user_id]??=[]).push({slug:r.role_slug,name:defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),scope:r.group_scope||'underweb'});
+     });
+   }
+   uw748RenderDirectory();
+ }catch(err){
+   console.error('0.7.5.2 directory',err);
+   list.innerHTML=`<div class="uw-empty">${esc(err?.message||'Creator directory unavailable.')}</div>`;
+ }
+}
+
+/* Force our exact implementation after old pageshow patches have run. */
+window.addEventListener('pageshow',()=>setTimeout(()=>{uw752RebuildRolesPage();uw752LoadDirectory();},1800));
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-page="roles"]'))setTimeout(uw752RebuildRolesPage,100);
+ if(e.target.closest('[data-page="discover"]'))setTimeout(uw752LoadDirectory,100);
+},true);
 </script>
 </body></html>
