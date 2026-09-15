@@ -2612,7 +2612,7 @@ function uw61RenderStaffRoster(){
     const roles=uw61CanonicalRoles(r.roles);const skills=Array.isArray(r.specialties)?r.specialties:[];
     const primary=roles[0]?.name||uw61Nice(roles[0]?.slug||r.preferred_role||'Staff');const community=uw61CommunityLabel(r.communities);
     const avatar=r.avatar_url?`style="background-image:url('${uw61Text(String(r.avatar_url).replace(/'/g,'%27'))}')"`:'';
-    return `<article class="uw61-card"><div class="uw61-top"><div class="uw61-avatar" ${avatar}>${r.avatar_url?'':uw61Text(uw61Initial(r.staff_name))}</div><div class="uw61-name"><h3>${uw61Text(r.staff_name||'Staff Member')}</h3><p>${uw61Text(r.headline||('@'+(r.username||'staff')))}</p></div></div><div class="uw61-tags">${roles.slice(0,4).map((x,i)=>`<span class="uw61-tag ${i===0?'hot':''}">${uw61Text(x.name||uw61Nice(x.slug))}</span>`).join('')}<span class="uw61-tag">${uw61Text(community)}</span></div><div class="uw61-meta"><div><span>Primary Role</span><b>${uw61Text(primary)}</b></div><div><span>Weekly Coverage</span><b>${Number(r.coverage_days||0)} / 7 days</b></div><div><span>Availability</span><b>${uw61Text(r.availability?uw61AvailabilityLabel(r.availability):(Number(r.coverage_days||0)>0?'Saved Schedule':'Not Set'))}</b></div><div><span>Preferred Duty</span><b>${uw61Text(r.preferred_role||'—')}</b></div></div><div class="uw61-skills"><span>SPECIALTIES</span><div class="chips">${skills.length?skills.slice(0,6).map(x=>`<span class="chip">${uw61Text(x)}</span>`).join(''):'<span class="meta">No specialties listed.</span>'}</div></div><div class="uw61-actions"><button class="uw-mini-btn" data-page="availability">SCHEDULE →</button>${r.has_creator_profile?`<button class="uw-mini-btn hot" data-uw61-profile="${uw61Text(r.user_id||'')}">CREATOR PROFILE →</button>`:''}</div></article>`
+    return `<article class="uw61-card"><div class="uw61-top"><div class="uw61-avatar" ${avatar}>${r.avatar_url?'':uw61Text(uw61Initial(r.staff_name))}</div><div class="uw61-name"><h3>${uw61Text(r.staff_name||'Staff Member')}</h3><p>${uw61Text(r.headline||('@'+(r.username||'staff')))}</p></div></div><div class="uw61-tags">${roles.slice(0,4).map((x,i)=>`<span class="uw61-tag ${i===0?'hot':''}">${uw61Text(x.name||uw61Nice(x.slug))}</span>`).join('')}<span class="uw61-tag">${uw61Text(community)}</span></div><div class="uw61-meta"><div><span>Primary Role</span><b>${uw61Text(primary)}</b></div><div><span>Weekly Coverage</span><b>${Number(r.coverage_days||0)} / 7 days</b></div><div><span>Availability</span><b>${uw61Text(r.availability?uw61AvailabilityLabel(r.availability):(Number(r.coverage_days||0)>0?'Saved Schedule':'Not Set'))}</b></div><div><span>Preferred Duty</span><b>${uw61Text(r.preferred_role||'—')}</b></div></div><div class="uw61-skills"><span>SPECIALTIES</span><div class="chips">${skills.length?skills.slice(0,6).map(x=>`<span class="chip">${uw61Text(x)}</span>`).join(''):'<span class="meta">No specialties listed.</span>'}</div></div><div class="uw61-actions"><button class="uw-mini-btn" data-page="availability">SCHEDULE →</button>${r.has_creator_profile?`<button class="uw-mini-btn hot" data-uw758-profile="${uw61Text(r.user_id||'')}">CREATOR PROFILE →</button>`:''}</div></article>`
   }).join('');
   bindDynamicPageButtons(grid);
 }
@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.5.8';
+    stamp.textContent='UNDERWEB // 0.7.5.9';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,22 +3000,8 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5.8-creator-directory-rebuild"></div>
-<script id="uw744CreatorProfileNavigationFix">
-/* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
-function uw744OpenCreatorProfile(uid){
-  uid=String(uid||'').trim();
-  if(!uid){toast('Creator profile could not be identified.');return;}
-  if(typeof uw621OpenProfile==='function') return uw621OpenProfile(uid);
-  toast('Creator profile viewer is unavailable.');
-}
-document.addEventListener('click',function(e){
-  const direct=e.target.closest('[data-uw62-profile],[data-uw61-profile]');
-  if(!direct)return;
-  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-  uw744OpenCreatorProfile(direct.dataset.uw62Profile||direct.dataset.uw61Profile);
-},true);
-</script>
+<div style="display:none" data-underweb-build="0.7.5.9-public-creator-profiles"></div>
+
 
 <script id="uw743CreatorShowcase">
 let uw743Mine=[],uw743Public={};
@@ -3217,60 +3203,7 @@ if(uw745OldRender)window.uw50RenderProfileIdentity=function(){const r=uw745OldRe
 window.addEventListener('pageshow',()=>setTimeout(uw745Render,1200));
 </script>
 
-<script id="uw746CreatorProfileHardFix">
-/* 0.7.4.6 — Creator Profile hard fix.
-   Staff-roster users may not already exist in uwRealCreators, while the legacy
-   profile modal silently returns when that cache misses. Resolve by UUID first,
-   hydrate the cache, then call the existing modal so all existing features stay intact. */
-async function uw746OpenCreatorProfile(uid){
-  uid=String(uid||'').trim();
-  if(!uid){toast('Creator profile could not be identified.');return;}
 
-  let creator=(window.uwRealCreators||[]).find(v=>String(v.user_id)===uid);
-
-  if(!creator){
-    try{
-      const {data,error}=await uwSupabase
-        .from('creator_profiles')
-        .select('*')
-        .eq('user_id',uid)
-        .maybeSingle();
-      if(error) throw error;
-      if(data){
-        if(!Array.isArray(window.uwRealCreators)) window.uwRealCreators=[];
-        const at=uwRealCreators.findIndex(v=>String(v.user_id)===uid);
-        if(at>=0) uwRealCreators[at]={...uwRealCreators[at],...data};
-        else uwRealCreators.push(data);
-        creator=data;
-      }
-    }catch(err){
-      console.warn('0.7.4.6 creator lookup failed',err);
-    }
-  }
-
-  if(!creator){
-    toast('This member has not created a creator profile yet.');
-    return;
-  }
-
-  /* Call the fully decorated existing profile function: recruiting + showcase + shop. */
-  if(typeof window.uw621OpenProfile==='function'){
-    window.uw621OpenProfile(uid);
-    return;
-  }
-  toast('Creator profile viewer is unavailable.');
-}
-
-/* Capture profile buttons before older handlers can misroute them. */
-document.addEventListener('click',function(e){
-  const b=e.target.closest('[data-uw62-profile],[data-uw61-profile]');
-  if(!b)return;
-  e.preventDefault();
-  e.stopPropagation();
-  e.stopImmediatePropagation();
-  uw746OpenCreatorProfile(b.dataset.uw62Profile||b.dataset.uw61Profile);
-},true);
-</script>
 
 <script id="uw747CancellationControls">
 /* 0.7.4.7 — Owner/Director cancellation controls.
@@ -3324,148 +3257,7 @@ uw747Observer.observe(document.body,{subtree:true,childList:true});
 window.addEventListener('pageshow',()=>setTimeout(uw747Decorate,1400));
 </script>
 
-<script id="uw748DirectoryIdentityCompatibility">
-/* 0.7.4.8 — Creator Directory + Identity compatibility pass.
-   Uses the site's real role_applications flow and user_roles(role_slug/status) schema. */
 
-const UW748_DISCIPLINES = {
-  'digital artist':['digital_artist','digital artist','digital art'],
-  'traditional artist':['traditional_artist','traditional artist','traditional art'],
-  'dj':['dj'],
-  'photography':['photographer','photography','photo'],
-  'videography':['videographer','videography','video'],
-  'unity':['unity_creator','unity','unity creator'],
-  'blender':['blender_artist','blender','blender artist'],
-  'world creation':['world_creator','world creation','world creator','world design'],
-  'avatar creation':['avatar_creator','avatar creation','avatar creator'],
-  'music':['producer','musician','rapper','vocalist','music'],
-  'partner':['partner']
-};
-function uw748Norm(v){return String(v||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ')}
-function uw748DiscMatch(label,values){
-  if(label==='All Disciplines')return true;
-  const needles=UW748_DISCIPLINES[uw748Norm(label)]||[uw748Norm(label)];
-  const hay=values.map(uw748Norm);
-  return needles.some(n=>hay.some(v=>v===uw748Norm(n)||v.includes(uw748Norm(n))));
-}
-function uw748CreatorRoles(uid){return (window.uw62RoleMap?.[uid]||[])}
-function uw748RenderDirectory(){
-  const list=document.getElementById('creatorDirectoryList'); if(!list)return;
-  const q=uw748Norm(document.getElementById('creatorSearch')?.value);
-  const disc=document.getElementById('creatorDiscipline')?.value||'All Disciplines';
-  const avail=document.getElementById('creatorAvailability')?.value||'Any Availability';
-  const community=document.getElementById('creatorCommunity')?.value||'all';
-  const all=Array.isArray(window.uwRealCreators)?window.uwRealCreators:[];
-
-  const rows=all.filter(x=>{
-    const skills=Array.isArray(x.specialties)?x.specialties:
-      String(x.specialties||'').split(',').map(v=>v.trim()).filter(Boolean);
-    const roles=uw748CreatorRoles(x.user_id);
-    const roleValues=roles.flatMap(r=>[r.slug,r.name]);
-    const scopes=roles.map(r=>r.scope||'underweb');
-    const searchable=[x.display_name,x.headline,x.bio,...skills,...roleValues].map(uw748Norm);
-    const discOk=uw748DiscMatch(disc,[...skills,...roleValues]);
-    const availOk=avail==='Any Availability'||creatorAvailabilityLabel(x.availability)===avail.toUpperCase();
-    const commOk=community==='all'||!scopes.length||scopes.includes('network')||scopes.includes('both')||
-      scopes.includes(community)||(community==='both'&&scopes.includes('underweb')&&scopes.includes('symbiotes'));
-    return (!q||searchable.some(v=>v.includes(q)))&&discOk&&availOk&&commOk;
-  });
-
-  const partners=all.filter(x=>uw748DiscMatch('Partner',uw748CreatorRoles(x.user_id).flatMap(r=>[r.slug,r.name]))).length;
-  setText('uw62CreatorCount',all.length);
-  setText('uw62AvailableCount',all.filter(x=>['available','by_request'].includes(x.availability)).length);
-  setText('uw62PartnerCount',partners);
-
-  if(!rows.length){
-    list.innerHTML='<div class="uw-empty uw62-empty">No creator profiles match these filters yet.</div>';
-    return;
-  }
-  list.innerHTML=rows.map(x=>{
-    const skills=(Array.isArray(x.specialties)?x.specialties:String(x.specialties||'').split(',')).map(v=>String(v).trim()).filter(Boolean).slice(0,5);
-    const roles=uw748CreatorRoles(x.user_id);
-    const isPartner=uw748DiscMatch('Partner',roles.flatMap(r=>[r.slug,r.name]));
-    const scopes=roles.map(r=>r.scope);
-    const avatar=x.avatar_url?`style="background-image:url('${esc(x.avatar_url)}')"`:'';
-    const banner=x.banner_url?`style="background-image:linear-gradient(90deg,rgba(0,0,0,.15),rgba(0,0,0,.45)),url('${esc(x.banner_url)}')"`:'';
-    const initial=esc((x.display_name||'C').trim().charAt(0).toUpperCase());
-    return `<article class="uw62-card ${isPartner?'uw62-partner':''}">
-      <div class="uw62-banner" ${banner}></div><div class="uw62-body">
-      <div class="uw62-id"><div class="uw62-avatar" ${avatar}>${x.avatar_url?'':initial}</div>
-      <div class="uw62-name"><h3>${esc(x.display_name||'Creator')}</h3><p>${esc(x.headline||'UnderWeb Network Creator')}</p></div>
-      <span class="uw62-community">${esc(uw62CommunityLabel(scopes))}</span></div>
-      <div class="uw62-tags"><span class="uw62-tag hot">${esc(creatorAvailabilityLabel(x.availability))}</span>
-      ${roles.slice(0,4).map(r=>`<span class="uw62-tag">${esc(r.name||String(r.slug||'').replaceAll('_',' '))}</span>`).join('')}</div>
-      <div class="uw62-bio">${esc((x.bio||'No creator bio added yet.').slice(0,150))}</div>
-      <div class="uw62-skills">${skills.length?skills.map(v=>`<span class="chip">${esc(v)}</span>`).join(''):'<span class="meta">No specialties listed yet.</span>'}</div>
-      <div class="uw62-actions"><button class="btn" data-uw62-profile="${esc(x.user_id||'')}">VIEW PROFILE</button>
-      </div></div></article>`;
-  }).join('');
-}
-
-/* Load profiles without the old approved-only frontend gate.
-   RLS remains the database authority over what the signed-in user may read. */
-async function uw748LoadDirectory(){
- const list=document.getElementById('creatorDirectoryList'); if(!list)return;
- try{
-   const {data,error}=await uwSupabase.from('creator_profiles')
-    .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,public_visible,approval_status')
-    .order('display_name',{ascending:true}).limit(200);
-   if(error)throw error;
-   window.uwRealCreators=data||[];
-   window.uw62RoleMap={};
-   const ids=uwRealCreators.map(x=>x.user_id).filter(Boolean);
-   if(ids.length){
-     const rr=await uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active');
-     if(rr.error)throw rr.error;
-     const defs={};
-     const rd=await uwSupabase.from('role_definitions').select('slug,name');
-     if(!rd.error)(rd.data||[]).forEach(d=>defs[d.slug]=d.name);
-     (rr.data||[]).forEach(r=>(uw62RoleMap[r.user_id]??=[]).push({
-       slug:r.role_slug,name:defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),
-       scope:r.group_scope||'underweb'
-     }));
-   }
-   uw748RenderDirectory();
- }catch(err){
-   console.error('0.7.4.8 creator directory load failed:',err);
-   list.innerHTML=`<div class="uw-empty" style="grid-column:1/-1">${esc(err?.message||'Creator directory is unavailable.')}</div>`;
- }
-}
-
-/* Replace the broken made-up RPC fallback with the real role application function already in the site. */
-window.uw744ApplyRole=async function(slug){
- if(!currentSession)return toast('Sign in first.');
- if(typeof uw50Apply==='function')return uw50Apply(slug);
- toast('Role application system is unavailable.');
-};
-
-/* Owner/Director detection must use status, not a nonexistent active boolean. */
-window.uw745HasRole=function(slug){
- return Array.isArray(window.uw50Roles)&&uw50Roles.some(r=>r.status==='active'&&r.role_slug===slug);
-};
-
-/* Search and filters update live. */
-['creatorSearch','creatorCommunity','creatorDiscipline','creatorAvailability'].forEach(id=>{
- const el=document.getElementById(id);
- if(el){el.addEventListener(id==='creatorSearch'?'input':'change',uw748RenderDirectory);}
-});
-document.addEventListener('click',e=>{
- const b=e.target.closest('[data-uw62-need]');
- if(!b)return;
- const sel=document.getElementById('creatorDiscipline');
- if(sel){sel.value=b.dataset.uw62Need;uw748RenderDirectory();}
-});
-
-/* Use compatibility loader whenever Network/Discover opens and after auth settles. */
-document.addEventListener('click',e=>{
- const b=e.target.closest('[data-page="discover"]');
- if(b)setTimeout(uw748LoadDirectory,50);
-},true);
-window.addEventListener('pageshow',()=>setTimeout(()=>{
- uw748LoadDirectory();
- if(typeof uw745Render==='function')uw745Render();
-},1300));
-</script>
 
 <script id="uw75ManagementUX">
 /* UNDERWEB 0.7.5 — Management UX Rework */
@@ -3711,10 +3503,9 @@ function uw758Community(uid){
  return 'UnderWeb';
 }
 function uw758Visible(c){
- /* Public/approved flags are honored when present. Missing legacy values do not hide a valid profile. */
- if(c.public_visible===false)return false;
- const st=uw758Norm(c.approval_status);
- return !st||['approved','accepted','active'].includes(st);
+ /* 0.7.5.9 policy: creator profiles are public network profiles.
+    Permissions/roles are separate from whether the profile itself is visible. */
+ return !!c?.user_id;
 }
 function uw758Render(){
  const list=document.getElementById('creatorDirectoryList');if(!list)return;
