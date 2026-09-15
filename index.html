@@ -400,6 +400,14 @@ body[data-theme="symbiotes"] .uw61-card{border-color:#16385f;background:linear-g
 .uw743-publicshowcase{grid-template-columns:repeat(2,minmax(0,1fr))}.uw743-publicshowcase .uw743-work{cursor:pointer}
 .uw743-viewer{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:18px}.uw743-viewer-inner{width:min(1050px,100%);max-height:94vh;display:grid;place-items:center;position:relative}.uw743-viewer img,.uw743-viewer video{max-width:100%;max-height:88vh;object-fit:contain}.uw743-viewer button{position:absolute;right:0;top:-42px;border:1px solid #315039;background:#020503;color:#fff;width:34px;height:34px;border-radius:50%;font-size:20px}
 @media(max-width:700px){.uw743-myshowcase{grid-template-columns:repeat(2,minmax(0,1fr))}.uw743-publicshowcase{grid-template-columns:1fr}.uw743-uploadrow .btn{width:100%}}
+
+/* ===== 0.7.4.4 CREATOR IDENTITY + COMMERCE LINKS ===== */
+.uw744-creator-role-box{margin-top:18px;border:1px solid var(--l);border-radius:14px;padding:16px;background:linear-gradient(135deg,rgba(57,255,104,.035),rgba(0,0,0,.2))}
+.uw744-role-actions{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}.uw744-role-actions .btn{flex:1;min-width:180px}
+.uw744-shop{margin-top:16px;padding:12px;border:1px solid rgba(57,255,104,.25);background:rgba(57,255,104,.025)}
+.uw744-shop a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:#39ff68;font:1000 9px monospace;letter-spacing:.12em}
+.uw744-shop a span{color:#839087;font-size:7px}
+@media(max-width:600px){.uw744-role-actions{display:grid;grid-template-columns:1fr}.uw744-role-actions .btn{min-width:0}}
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -1092,6 +1100,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="uw40-save"><button class="btn hot" id="saveProfileBtn033" type="button">SAVE PROFILE</button><small>Images save to your private upload folder and display publicly on your network profile.</small></div>
 </section>
 </div>
+
+<section class="uw744-creator-role-box">
+ <div class="uw40-title"><div><span>CREATOR IDENTITY</span><h3>Add a Creator Role</h3></div><small>STAFF APPROVAL</small></div>
+ <p class="meta">Your staff rank and creator disciplines are separate. Apply for the creator roles that describe what you actually make; approved roles make you discoverable in the matching Creator Directory filters.</p>
+ <div class="uw744-role-actions">
+  <button type="button" class="btn" data-uw744-role="digital_artist">APPLY // DIGITAL ARTIST</button>
+  <button type="button" class="btn" data-uw744-role="traditional_artist">APPLY // TRADITIONAL ARTIST</button>
+ </div>
+ <div class="meta" id="uw744RoleStatus">Applications use the existing UnderWeb role approval queue.</div>
+</section>
 <section class="uw743-showcase-editor">
   <div class="uw40-title"><div><span>CREATOR SHOWCASE</span><h3>Show What You Make</h3></div><small>IMAGES + VIDEO</small></div>
   <p class="meta">Upload finished work, process clips, DJ footage, renders, photography, artwork, world tours, avatar demos and more. Featured work appears first on your public creator profile.</p>
@@ -1132,7 +1150,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw50-panel"><div id="uw50ReviewQueue" class="uw50-stack"><div class="uw-empty">Loading role applications…</div></div></section>
 </div></section>
 <section class="page" id="page-updates"><div class="wrap uw50-updates-page">
-<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.4.3</span></div>
+<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.4.4</span></div>
 <section class="uw50-release hero-release"><div class="uw50-release-version">0.7.4</div><div><span class="eyebrow">CURRENT BUILD • PREMIUM ROLE IDENTITY</span><h2>Premium Authority System</h2><p>Introduced the new UnderWeb leadership insignia system: PRIME for Owner, HORIZON for Director, ORBIT for Event Lead, ATLAS for Artist Coordinator, and static WATCH for Moderator. Premium leadership roles now use distinct motion identities while Moderator remains intentionally static. 0.7.4.2 also fixes creator-card and staff-roster profile actions so they open the selected creator directly instead of routing elsewhere.</p><div class="uw50-release-tags"><span>PRIME</span><span>HORIZON</span><span>ORBIT</span><span>ATLAS</span><span>WATCH</span><span>ROLE FX</span></div></div></section>
 <div class="uw50-grid2">
 <section class="uw50-release"><div class="uw50-release-version">0.7.3</div><div><span class="eyebrow">OWNER IDENTITY</span><h3>Barachiel + Owner presentation</h3><p>Added Darko's Owner presentation, Barachiel profile entrance, and the first premium animated title treatment.</p></div></section>
@@ -2593,7 +2611,8 @@ document.querySelectorAll('[data-uw62-need]').forEach(b=>b.addEventListener('cli
 document.addEventListener('click',e=>{const p=e.target.closest('[data-uw62-portfolio]');if(p){const u=p.dataset.uw62Portfolio;if(/^https?:\/\//i.test(u))window.open(u,'_blank','noopener')}});
 </script>
 
-<div class="uw621-modal" id="uw621ProfileModal" aria-hidden="true"><article class="uw621-sheet"><div class="uw621-cover" id="uw621Cover"><span class="uw621-partnerflag" id="uw621PartnerFlag" style="display:none">✓ VERIFIED NETWORK PARTNER</span><button class="uw621-close" id="uw621Close" aria-label="Close">×</button></div><div class="uw621-main"><div class="uw621-head"><div class="uw621-avatar" id="uw621Avatar">◆</div><div class="uw621-title"><h2 id="uw621Name">Creator</h2><p id="uw621Headline">UnderWeb Network Creator</p></div><div class="uw621-scope" id="uw621Scope">UNDERWEB</div></div><div class="uw621-actions"><button class="btn hot" id="uw621Portfolio">VIEW PORTFOLIO ↗</button><button class="btn" id="uw621Invite" disabled title="Project invites arrive in 0.6.3">INVITE TO PROJECT · SOON</button></div><div class="uw621-grid"><section class="uw621-panel"><div class="uw621-kicker">ABOUT</div><h3>Creator Profile</h3><div class="uw621-bio" id="uw621Bio"></div><div class="uw621-kicker" style="margin-top:18px">SPECIALTIES</div><div class="uw621-row" id="uw621Skills"></div><div class="uw621-kicker" style="margin-top:18px">APPROVED NETWORK ROLES</div><div class="uw621-row" id="uw621Roles"></div><div class="uw621-kicker" style="margin-top:20px">SHOWCASE</div><div class="uw743-publicshowcase" id="uw743PublicShowcase"><span class="uw621-empty">No showcase work yet.</span></div></section><aside><section class="uw621-panel"><div class="uw621-kicker">AVAILABILITY</div><h3 id="uw621Availability">BY REQUEST</h3><div class="uw621-note">Availability is taken from the creator's current network profile.</div></section><section class="uw621-panel" style="margin-top:14px"><div class="uw621-kicker">VERIFIED NETWORK HISTORY</div><h3>Credits &amp; Work</h3><div class="uw621-history"><div><b>—</b><span>EVENTS</span></div><div><b>—</b><span>PROJECTS</span></div><div><b>—</b><span>COLLABS</span></div></div><div class="uw621-note">Verified credits will populate from completed UnderWeb events and projects as those systems are connected. Nothing is fabricated.</div></section></aside></div></div></article></div>
+<div class="uw621-modal" id="uw621ProfileModal" aria-hidden="true"><article class="uw621-sheet"><div class="uw621-cover" id="uw621Cover"><span class="uw621-partnerflag" id="uw621PartnerFlag" style="display:none">✓ VERIFIED NETWORK PARTNER</span><button class="uw621-close" id="uw621Close" aria-label="Close">×</button></div><div class="uw621-main"><div class="uw621-head"><div class="uw621-avatar" id="uw621Avatar">◆</div><div class="uw621-title"><h2 id="uw621Name">Creator</h2><p id="uw621Headline">UnderWeb Network Creator</p></div><div class="uw621-scope" id="uw621Scope">UNDERWEB</div></div><div class="uw621-actions"><button class="btn hot" id="uw621Portfolio">VIEW PORTFOLIO ↗</button><button class="btn" id="uw621Invite" disabled title="Project invites arrive in 0.6.3">INVITE TO PROJECT · SOON</button></div><div class="uw621-grid"><section class="uw621-panel"><div class="uw621-kicker">ABOUT</div><h3>Creator Profile</h3><div class="uw621-bio" id="uw621Bio"></div><div class="uw621-kicker" style="margin-top:18px">SPECIALTIES</div><div class="uw621-row" id="uw621Skills"></div><div id="uw744CreatorShop" class="uw744-shop" hidden></div>
+<div class="uw621-kicker" style="margin-top:18px">APPROVED NETWORK ROLES</div><div class="uw621-row" id="uw621Roles"></div><div class="uw621-kicker" style="margin-top:20px">SHOWCASE</div><div class="uw743-publicshowcase" id="uw743PublicShowcase"><span class="uw621-empty">No showcase work yet.</span></div></section><aside><section class="uw621-panel"><div class="uw621-kicker">AVAILABILITY</div><h3 id="uw621Availability">BY REQUEST</h3><div class="uw621-note">Availability is taken from the creator's current network profile.</div></section><section class="uw621-panel" style="margin-top:14px"><div class="uw621-kicker">VERIFIED NETWORK HISTORY</div><h3>Credits &amp; Work</h3><div class="uw621-history"><div><b>—</b><span>EVENTS</span></div><div><b>—</b><span>PROJECTS</span></div><div><b>—</b><span>COLLABS</span></div></div><div class="uw621-note">Verified credits will populate from completed UnderWeb events and projects as those systems are connected. Nothing is fabricated.</div></section></aside></div></div></article></div>
 
 <script>
 function uw621OpenProfile(uid){
@@ -2668,7 +2687,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.4.3 CREATOR SHOWCASE';
+    stamp.textContent='UNDERWEB // 0.7.4.4 CREATOR IDENTITY + SHOWCASE';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -2946,31 +2965,20 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.4.3-creator-showcase"></div>
-<script id="uw742CreatorProfileNavigationFix">
-/* 0.7.4.2 — Creator profile navigation hotfix.
-   All creator-profile actions resolve by user_id and open the public profile modal directly. */
-async function uw742OpenCreatorProfile(uid){
+<div style="display:none" data-underweb-build="0.7.4.4-creator-identity-commerce"></div>
+<script id="uw744CreatorProfileNavigationFix">
+/* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
+function uw744OpenCreatorProfile(uid){
   uid=String(uid||'').trim();
   if(!uid){toast('Creator profile could not be identified.');return;}
-  let creator=(uwRealCreators||[]).find(v=>String(v.user_id)===uid);
-  if(!creator){
-    try{
-      const {data,error}=await uwSupabase.from('creator_profiles')
-        .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,portfolio_url')
-        .eq('user_id',uid).eq('public_visible',true).eq('approval_status','approved').maybeSingle();
-      if(error)throw error;
-      if(data){uwRealCreators=uwRealCreators||[];uwRealCreators.push(data);creator=data;}
-    }catch(err){console.warn('Creator profile lookup failed',err);}
-  }
-  if(!creator){toast('That creator profile is not currently public.');return;}
-  if(typeof uw621OpenProfile==='function')uw621OpenProfile(uid);
+  if(typeof uw621OpenProfile==='function') return uw621OpenProfile(uid);
+  toast('Creator profile viewer is unavailable.');
 }
 document.addEventListener('click',function(e){
   const direct=e.target.closest('[data-uw62-profile],[data-uw61-profile]');
   if(!direct)return;
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-  uw742OpenCreatorProfile(direct.dataset.uw62Profile||direct.dataset.uw61Profile);
+  uw744OpenCreatorProfile(direct.dataset.uw62Profile||direct.dataset.uw61Profile);
 },true);
 </script>
 
@@ -3038,5 +3046,69 @@ document.addEventListener('click',e=>{
 const uw743OldOpen=window.uw621OpenProfile;
 if(uw743OldOpen)window.uw621OpenProfile=function(uid){const r=uw743OldOpen.apply(this,arguments);uw743LoadPublic(uid);return r};
 window.addEventListener('pageshow',()=>setTimeout(uw743LoadMine,1000));
+</script>
+
+<script id="uw744CreatorIdentityCommerce">
+let uw744ViewedUid=null;
+
+/* Profile shop fields are stored on creator_profiles via 0.7.4.4 SQL. */
+async function uw744LoadMine(){
+ if(!currentSession)return;
+ const {data}=await uwSupabase.from('creator_profiles').select('shop_url,shop_label').eq('user_id',currentSession.user.id).maybeSingle();
+ const u=document.getElementById('uw744ShopUrl'),l=document.getElementById('uw744ShopLabel');
+ if(u)u.value=data?.shop_url||''; if(l)l.value=data?.shop_label||'SHOP / COMMISSIONS';
+}
+async function uw744SaveShop(){
+ if(!currentSession)return;
+ const shop_url=document.getElementById('uw744ShopUrl')?.value.trim()||null;
+ const shop_label=document.getElementById('uw744ShopLabel')?.value.trim()||'SHOP / COMMISSIONS';
+ if(shop_url && !/^https?:\/\//i.test(shop_url))return toast('Shop link must start with http:// or https://');
+ const {error}=await uwSupabase.from('creator_profiles').update({shop_url,shop_label}).eq('user_id',currentSession.user.id);
+ if(error)toast(error.message);
+}
+
+/* Piggyback the site's normal profile-save button so shop fields save with the profile. */
+document.addEventListener('click',e=>{
+ const b=e.target.closest('#uw50SaveProfile,[data-uw50-save-profile]');
+ if(b)setTimeout(uw744SaveShop,50);
+});
+
+/* Use the site's existing role application RPC/table flow, not a second approval system. */
+async function uw744ApplyRole(slug){
+ if(!currentSession)return toast('Sign in first.');
+ try{
+   if(typeof uw50ApplyRole==='function'){await uw50ApplyRole(slug);return;}
+   if(typeof uwApplyForRole==='function'){await uwApplyForRole(slug);return;}
+   const {error}=await uwSupabase.rpc('uw_apply_for_role',{p_role_slug:slug});
+   if(error)throw error;
+   toast('Creator role application submitted.');
+ }catch(err){toast(err?.message||'Could not submit creator role application.');}
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-uw744-role]');
+ if(b){e.preventDefault();uw744ApplyRole(b.dataset.uw744Role);}
+});
+
+/* Decorate the existing public-profile viewer with commerce + selected creator showcase. */
+async function uw744DecoratePublic(uid){
+ uw744ViewedUid=String(uid||'');
+ if(typeof uw743LoadPublic==='function')uw743LoadPublic(uw744ViewedUid);
+ const box=document.getElementById('uw744CreatorShop');if(!box)return;
+ box.hidden=true;box.innerHTML='';
+ const {data}=await uwSupabase.from('creator_profiles').select('shop_url,shop_label').eq('user_id',uw744ViewedUid).maybeSingle();
+ if(data?.shop_url){
+   const safe=String(data.shop_url).replace(/"/g,'&quot;');
+   const label=String(data.shop_label||'SHOP / COMMISSIONS').replace(/[<>&]/g,'');
+   box.innerHTML=`<a href="${safe}" target="_blank" rel="noopener noreferrer">${label} <span>EXTERNAL CREATOR SHOP ↗</span></a>`;
+   box.hidden=false;
+ }
+}
+const uw744ExistingOpen=window.uw621OpenProfile;
+if(uw744ExistingOpen)window.uw621OpenProfile=function(uid){
+ const r=uw744ExistingOpen.apply(this,arguments);
+ setTimeout(()=>uw744DecoratePublic(uid),0);
+ return r;
+};
+window.addEventListener('pageshow',()=>setTimeout(uw744LoadMine,900));
 </script>
 </body></html>
