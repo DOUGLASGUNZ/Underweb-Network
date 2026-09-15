@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.5.5';
+    stamp.textContent='UNDERWEB // 0.7.5.6';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5.5-creator-profile-direct-fix"></div>
+<div style="display:none" data-underweb-build="0.7.5.6-hard-creator-profile-fix"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3733,6 +3733,78 @@ document.addEventListener('click',function(e){
   e.stopPropagation();
   e.stopImmediatePropagation();
   uw755OpenCreatorProfile(b.dataset.uw62Profile||b.dataset.uw61Profile);
+},true);
+</script>
+
+<script id="uw756HardCreatorProfileFix">
+/* 0.7.5.6 — hard replacement for every legacy creator-profile click path.
+   Does not call the old uw621OpenProfile wrapper chain. */
+async function uw756OpenCreator(uid){
+  uid=String(uid||'').trim();
+  if(!uid){toast('Missing creator user ID.');return;}
+
+  const modal=document.getElementById('uw621ProfileModal');
+  if(!modal){toast('Creator profile modal is missing.');return;}
+
+  const {data:x,error}=await uwSupabase.from('creator_profiles')
+    .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,public_visible,approval_status,shop_url,shop_label')
+    .eq('user_id',uid).maybeSingle();
+
+  if(error){console.error(error);toast(error.message);return;}
+  if(!x){toast('Creator profile was not found for this account.');return;}
+
+  const [rr,rd]=await Promise.all([
+    uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').eq('user_id',uid).eq('status','active'),
+    uwSupabase.from('role_definitions').select('slug,name')
+  ]);
+  const defs={}; if(!rd.error)(rd.data||[]).forEach(d=>defs[d.slug]=d.name);
+  const roles=!rr.error?(rr.data||[]).map(r=>({
+    slug:r.role_slug,
+    name:defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),
+    scope:r.group_scope||'underweb'
+  })):[];
+  const skills=Array.isArray(x.specialties)?x.specialties:String(x.specialties||'').split(',').map(v=>v.trim()).filter(Boolean);
+  const scopes=roles.map(r=>r.scope);
+  const partner=roles.some(r=>String(r.slug||r.name||'').toLowerCase().includes('partner'));
+
+  const by=id=>document.getElementById(id);
+  if(by('uw621Name'))by('uw621Name').textContent=x.display_name||'Creator';
+  if(by('uw621Headline'))by('uw621Headline').textContent=x.headline||'UnderWeb Network Creator';
+  if(by('uw621Scope'))by('uw621Scope').textContent=typeof uw62CommunityLabel==='function'?uw62CommunityLabel(scopes):'UNDERWEB';
+  if(by('uw621Bio'))by('uw621Bio').textContent=x.bio||'No creator bio added yet.';
+  if(by('uw621Availability'))by('uw621Availability').textContent=typeof creatorAvailabilityLabel==='function'?creatorAvailabilityLabel(x.availability):(x.availability||'BY REQUEST');
+  if(by('uw621PartnerFlag'))by('uw621PartnerFlag').style.display=partner?'':'none';
+
+  const cover=by('uw621Cover'),av=by('uw621Avatar');
+  if(cover)cover.style.backgroundImage=x.banner_url?`linear-gradient(90deg,rgba(0,0,0,.18),rgba(0,0,0,.5)),url("${String(x.banner_url).replaceAll('"','%22')}")`:'';
+  if(av){av.style.backgroundImage=x.avatar_url?`url("${String(x.avatar_url).replaceAll('"','%22')}")`:'';av.textContent=x.avatar_url?'':(x.display_name||'C').trim().charAt(0).toUpperCase();}
+
+  if(by('uw621Skills'))by('uw621Skills').innerHTML=skills.length?skills.map(v=>`<span class="uw621-skill">${esc(v)}</span>`).join(''):'<span class="uw621-empty">No specialties listed yet.</span>';
+  if(by('uw621Roles'))by('uw621Roles').innerHTML=roles.length?roles.map(r=>`<span class="uw621-role">${esc(r.name)}</span>`).join(''):'<span class="uw621-empty">No active creator roles listed.</span>';
+
+  /* portfolio_url was removed from the DB; newer Shop button replaces it. */
+  if(by('uw621Portfolio'))by('uw621Portfolio').style.display='none';
+
+  window.uw621ActiveCreator=uid;
+  window.uw744ViewedUid=uid;
+  window.uwRealCreators=window.uwRealCreators||[];
+  const pos=uwRealCreators.findIndex(v=>String(v.user_id)===uid);
+  if(pos>=0)uwRealCreators[pos]=x; else uwRealCreators.push(x);
+  window.uw62RoleMap=window.uw62RoleMap||{}; uw62RoleMap[uid]=roles;
+
+  modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
+
+  /* Load optional newer profile modules after the modal is visibly open. */
+  try{if(typeof uw743LoadPublic==='function')await uw743LoadPublic(uid)}catch(e){console.warn('showcase',e)}
+  try{if(typeof uw744DecoratePublic==='function')await uw744DecoratePublic(uid)}catch(e){console.warn('shop',e)}
+}
+
+/* One authoritative click handler. */
+document.addEventListener('click',function(e){
+  const b=e.target.closest('[data-uw62-profile],[data-uw61-profile]');
+  if(!b)return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  uw756OpenCreator(b.getAttribute('data-uw62-profile')||b.getAttribute('data-uw61-profile'));
 },true);
 </script>
 </body></html>
