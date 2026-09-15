@@ -2758,7 +2758,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.7.4';
+    stamp.textContent='UNDERWEB // 0.7.7.5';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3036,7 +3036,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.7.4-profile-role-manager-hook"></div>
+<div style="display:none" data-underweb-build="0.7.7.5-leadership-role-sheet"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4181,6 +4181,107 @@ const uw774Observer=new MutationObserver(async()=>{
 });
 const uw774Modal=document.getElementById('uw621ProfileModal');
 if(uw774Modal)uw774Observer.observe(uw774Modal,{attributes:true,attributeFilter:['class','aria-hidden'],subtree:false});
+</script>
+
+
+<style id="uw775LeadershipSheetStyle">
+/* Keep leadership controls OUT of the profile layout flow. */
+#uw773ProfileRoles{display:none!important}
+#uw775LeadershipLaunch{width:100%;margin-top:14px}
+.uw775-sheet{position:fixed;inset:0;z-index:17000;background:rgba(0,0,0,.82);display:flex;align-items:flex-end;justify-content:center}
+.uw775-panel{width:min(760px,100%);max-height:88dvh;overflow:auto;background:#030604;border:1px solid rgba(42,255,109,.35);border-bottom:0;padding:18px;box-sizing:border-box}
+.uw775-head{position:sticky;top:-18px;z-index:2;background:#030604;padding:18px 0 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.1)}
+.uw775-head span,.uw775-group>span{color:#2aff6d;font-size:11px;font-weight:800;letter-spacing:.18em}
+.uw775-head h2{margin:4px 0 0}.uw775-close{width:46px;height:46px;font-size:22px}
+.uw775-group{margin-top:20px}.uw775-role{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.uw775-role b{font-size:16px}.uw775-role small{display:block;opacity:.55;margin-top:3px}.uw775-role button{min-width:88px}
+@media(min-width:760px){.uw775-sheet{align-items:center}.uw775-panel{border-bottom:1px solid rgba(42,255,109,.35);max-height:82vh}}
+</style>
+
+<script id="uw775LeadershipSheet">
+const UW775_CREATOR=new Set([
+ 'digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer',
+ 'unity_creator','blender_artist','world_creator','avatar_creator','graphic_designer',
+ 'producer','musician','rapper','vocalist'
+]);
+const UW775_STAFF=new Set(['director','admin','moderator','event_lead','artist_coordinator','staff','security','event_staff']);
+
+function uw775Group(slug){
+ if(UW775_CREATOR.has(slug))return 'CREATOR DISCIPLINES';
+ if(UW775_STAFF.has(slug))return 'STAFF & LEADERSHIP';
+ return 'COMMUNITY & NETWORK';
+}
+function uw775MountButton(uid){
+ const modal=document.getElementById('uw621ProfileModal');if(!modal||!uid)return;
+ let btn=document.getElementById('uw775LeadershipLaunch');
+ if(!btn){
+   btn=document.createElement('button');
+   btn.id='uw775LeadershipLaunch';btn.className='btn hot';btn.type='button';
+   btn.textContent='LEADERSHIP TOOLS · MANAGE ROLES';
+   /* Put only the compact launcher in normal profile flow. */
+   const body=modal.querySelector('.uw621-modal-body')||modal;
+   body.appendChild(btn);
+ }
+ btn.dataset.uid=uid;
+}
+async function uw775Open(uid){
+ if(!uid||!(await uw773Leadership()))return;
+ const [defs,roles]=await Promise.all([
+  uwSupabase.from('role_definitions').select('slug,name,authority_rank,active').eq('active',true).order('authority_rank',{ascending:false}),
+  uwSupabase.from('user_roles').select('role_slug,status').eq('user_id',uid).eq('status','active')
+ ]);
+ if(defs.error||roles.error)return toast('Role manager unavailable.');
+ const active=new Set((roles.data||[]).map(r=>r.role_slug));
+ const allowed=(defs.data||[]).filter(r=>r.slug!=='owner'&&(uw773Owner()||r.slug!=='director'));
+ const groups=['STAFF & LEADERSHIP','CREATOR DISCIPLINES','COMMUNITY & NETWORK'];
+ document.getElementById('uw775Sheet')?.remove();
+ document.body.insertAdjacentHTML('beforeend',`<div class="uw775-sheet" id="uw775Sheet">
+  <section class="uw775-panel">
+   <header class="uw775-head"><div><span>LEADERSHIP ACCESS</span><h2>MANAGE ROLES</h2></div><button class="btn uw775-close" data-uw775-close>×</button></header>
+   ${groups.map(g=>{
+     const rows=allowed.filter(r=>uw775Group(r.slug)===g);
+     if(!rows.length)return '';
+     return `<div class="uw775-group"><span>${g}</span>${rows.map(r=>`<div class="uw775-role">
+       <div><b>${uw50Esc(r.name||uw50Nice(r.slug))}</b><small>${active.has(r.slug)?'ACTIVE':'NOT ASSIGNED'}</small></div>
+       <button class="btn ${active.has(r.slug)?'':'hot'}" data-uw775-target="${uw50Esc(uid)}" data-uw775-role="${uw50Esc(r.slug)}" data-uw775-enable="${active.has(r.slug)?'0':'1'}">${active.has(r.slug)?'REMOVE':'ADD'}</button>
+     </div>`).join('')}</div>`;
+   }).join('')}
+  </section></div>`);
+}
+async function uw775Set(btn){
+ const uid=btn.dataset.uw775Target,slug=btn.dataset.uw775Role,enabled=btn.dataset.uw775Enable==='1';
+ if(!(await uw773Leadership()))return toast('Leadership authority required.');
+ if(slug==='owner')return toast('Owner is protected.');
+ if(uw773Director()&&slug==='director')return toast('Director cannot grant or remove Director authority.');
+ const {error}=await uwSupabase.rpc('uw_director_set_role',{p_user_id:uid,p_role_slug:slug,p_enabled:enabled});
+ if(error)return toast(error.message);
+ toast(enabled?'Role added.':'Role removed.');
+ await uw775Open(uid);
+ if(typeof uw758Load==='function')await uw758Load();
+}
+
+/* Override only the presentation hook; keep the working role RPC plumbing. */
+const uw775OldOpen=window.uw758Open;
+if(typeof uw775OldOpen==='function'){
+ window.uw758Open=async function(uid){
+   const result=await uw775OldOpen.apply(this,arguments);
+   try{
+     if(await uw773Leadership()){
+       document.getElementById('uw773ProfileRoles')?.remove();
+       uw775MountButton(String(uid||'').trim());
+     }
+   }catch(e){console.warn(e)}
+   return result;
+ };
+}
+
+document.addEventListener('click',e=>{
+ const launch=e.target.closest('#uw775LeadershipLaunch');
+ if(launch){e.preventDefault();e.stopImmediatePropagation();return uw775Open(launch.dataset.uid)}
+ if(e.target.closest('[data-uw775-close]')||e.target.id==='uw775Sheet'){document.getElementById('uw775Sheet')?.remove();return}
+ const role=e.target.closest('[data-uw775-role]');
+ if(role){e.preventDefault();e.stopImmediatePropagation();return uw775Set(role)}
+},true);
 </script>
 
 </body></html>
