@@ -1172,7 +1172,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw50-panel"><div id="uw50ReviewQueue" class="uw50-stack"><div class="uw-empty">Loading role applications…</div></div></section>
 </div></section>
 <section class="page" id="page-updates"><div class="wrap uw50-updates-page">
-<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.5</span></div>
+<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.5.1</span></div>
 <section class="uw50-release hero-release"><div class="uw50-release-version">0.7.4</div><div><span class="eyebrow">CURRENT BUILD • PREMIUM ROLE IDENTITY</span><h2>Premium Authority System</h2><p>Introduced the new UnderWeb leadership insignia system: PRIME for Owner, HORIZON for Director, ORBIT for Event Lead, ATLAS for Artist Coordinator, and static WATCH for Moderator. Premium leadership roles now use distinct motion identities while Moderator remains intentionally static. 0.7.4.2 also fixes creator-card and staff-roster profile actions so they open the selected creator directly instead of routing elsewhere.</p><div class="uw50-release-tags"><span>PRIME</span><span>HORIZON</span><span>ORBIT</span><span>ATLAS</span><span>WATCH</span><span>ROLE FX</span></div></div></section>
 <div class="uw50-grid2">
 <section class="uw50-release"><div class="uw50-release-version">0.7.3</div><div><span class="eyebrow">OWNER IDENTITY</span><h3>Barachiel + Owner presentation</h3><p>Added Darko's Owner presentation, Barachiel profile entrance, and the first premium animated title treatment.</p></div></section>
@@ -1995,13 +1995,13 @@ function renderCreatorDirectory(){
     const isPartner=roles.some(r=>String(r.name||r.slug||'').toLowerCase().includes('partner')); const scopes=roles.map(r=>r.scope);
     const avatar=x.avatar_url?`style="background-image:url('${esc(x.avatar_url)}')"`:''; const banner=x.banner_url?`style="background-image:linear-gradient(90deg,rgba(0,0,0,.15),rgba(0,0,0,.45)),url('${esc(x.banner_url)}')"`:'';
     const initial=esc((x.display_name||'C').trim().charAt(0).toUpperCase());
-    return `<article class="uw62-card ${isPartner?'uw62-partner':''}"><div class="uw62-banner" ${banner}></div><div class="uw62-body"><div class="uw62-id"><div class="uw62-avatar" ${avatar}>${x.avatar_url?'':initial}</div><div class="uw62-name"><h3>${esc(x.display_name||'Creator')}</h3><p>${esc(x.headline||'UnderWeb Network Creator')}</p></div><span class="uw62-community">${esc(uw62CommunityLabel(scopes))}</span></div><div class="uw62-tags"><span class="uw62-tag hot">${esc(creatorAvailabilityLabel(x.availability))}</span>${roles.slice(0,3).map(r=>`<span class="uw62-tag">${esc(r.name||String(r.slug||'').replaceAll('_',' '))}</span>`).join('')}</div><div class="uw62-bio">${esc((x.bio||'No creator bio added yet.').slice(0,150))}</div><div class="uw62-skills">${skills.length?skills.map(v=>`<span class="chip">${esc(v)}</span>`).join(''):'<span class="meta">No specialties listed yet.</span>'}</div><div class="uw62-actions"><button class="btn" data-uw62-profile="${esc(x.user_id||'')}">VIEW PROFILE</button>${x.portfolio_url?`<button class="btn hot" data-uw62-portfolio="${esc(x.portfolio_url)}">PORTFOLIO ↗</button>`:''}</div></div></article>`;
+    return `<article class="uw62-card ${isPartner?'uw62-partner':''}"><div class="uw62-banner" ${banner}></div><div class="uw62-body"><div class="uw62-id"><div class="uw62-avatar" ${avatar}>${x.avatar_url?'':initial}</div><div class="uw62-name"><h3>${esc(x.display_name||'Creator')}</h3><p>${esc(x.headline||'UnderWeb Network Creator')}</p></div><span class="uw62-community">${esc(uw62CommunityLabel(scopes))}</span></div><div class="uw62-tags"><span class="uw62-tag hot">${esc(creatorAvailabilityLabel(x.availability))}</span>${roles.slice(0,3).map(r=>`<span class="uw62-tag">${esc(r.name||String(r.slug||'').replaceAll('_',' '))}</span>`).join('')}</div><div class="uw62-bio">${esc((x.bio||'No creator bio added yet.').slice(0,150))}</div><div class="uw62-skills">${skills.length?skills.map(v=>`<span class="chip">${esc(v)}</span>`).join(''):'<span class="meta">No specialties listed yet.</span>'}</div><div class="uw62-actions"><button class="btn" data-uw62-profile="${esc(x.user_id||'')}">VIEW PROFILE</button></div></div></article>`;
   }).join('');
 }
 async function loadCreatorDirectory(){
   const list=document.getElementById('creatorDirectoryList'); if(!list)return;
   try{
-    const {data,error}=await uwSupabase.from('creator_profiles').select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,portfolio_url').eq('public_visible',true).eq('approval_status','approved').order('display_name',{ascending:true}).limit(100);
+    const {data,error}=await uwSupabase.from('creator_profiles').select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url').eq('public_visible',true).eq('approval_status','approved').order('display_name',{ascending:true}).limit(100);
     if(error)throw error; uwRealCreators=data||[]; uw62RoleMap={};
     const ids=uwRealCreators.map(x=>x.user_id).filter(Boolean);
     if(ids.length){const rr=await uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active');if(!rr.error){const defs={};try{const rd=await uwSupabase.from('role_definitions').select('slug,name');if(!rd.error)(rd.data||[]).forEach(d=>defs[d.slug]=d.name)}catch(_){};(rr.data||[]).forEach(r=>(uw62RoleMap[r.user_id]??=[]).push({slug:r.role_slug,name:defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),scope:r.group_scope||'underweb'}));}}
@@ -2987,7 +2987,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5-management-ux"></div>
+<div style="display:none" data-underweb-build="0.7.5.1-directory-schema-fix"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3385,7 +3385,7 @@ function uw748RenderDirectory(){
       <div class="uw62-bio">${esc((x.bio||'No creator bio added yet.').slice(0,150))}</div>
       <div class="uw62-skills">${skills.length?skills.map(v=>`<span class="chip">${esc(v)}</span>`).join(''):'<span class="meta">No specialties listed yet.</span>'}</div>
       <div class="uw62-actions"><button class="btn" data-uw62-profile="${esc(x.user_id||'')}">VIEW PROFILE</button>
-      ${x.portfolio_url?`<button class="btn hot" data-uw62-portfolio="${esc(x.portfolio_url)}">PORTFOLIO ↗</button>`:''}</div></div></article>`;
+      </div></div></article>`;
   }).join('');
 }
 
@@ -3395,7 +3395,7 @@ async function uw748LoadDirectory(){
  const list=document.getElementById('creatorDirectoryList'); if(!list)return;
  try{
    const {data,error}=await uwSupabase.from('creator_profiles')
-    .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,portfolio_url,public_visible,approval_status')
+    .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,public_visible,approval_status')
     .order('display_name',{ascending:true}).limit(200);
    if(error)throw error;
    window.uwRealCreators=data||[];
