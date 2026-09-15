@@ -1150,27 +1150,34 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </section>
 </div></section>
 <section class="page" id="page-identity"><div class="wrap uw50-identity-page">
-<div class="uw40-pagehead"><div><span>NETWORK IDENTITY</span><h1>Roles, Recognition &amp; Access</h1><p>Explore the network structure, apply for roles, and see what badges and titles can be earned. Your active identity stays managed from My Profile.</p></div><button class="btn" data-page="profile" type="button">MY PROFILE →</button></div>
+<div class="uw40-pagehead"><div><span>NETWORK IDENTITY</span><h1>Roles, Recognition &amp; Access</h1><p>Manage your network identity without digging through giant catalogs.</p></div><button class="btn" data-page="profile" type="button">MY PROFILE →</button></div>
 
-<div class="uw51-identity-intro">
-  <article><span>01</span><h3>Find your lane</h3><p>See what roles exist across creators, staff, operations and partners.</p></article>
-  <article><span>02</span><h3>Apply</h3><p>Submit for roles that are open to applications. Leadership-only roles stay assignment-only.</p></article>
-  <article><span>03</span><h3>Earn recognition</h3><p>Roles, legacy status, verification and achievements can unlock badges and profile titles.</p></article>
-</div>
+<button class="btn hot" data-page="my-role-applications" type="button" style="width:100%;margin:0 0 16px">MY APPLICATIONS →</button>
 
+<details class="uw752-accordion">
+<summary>ROLES &amp; ACCESS</summary><div class="uw752-body">
 <section class="uw50-panel uw50-role-apply"><div class="uw50-panel-title"><div><span>ROLE APPLICATIONS</span><h3>Apply for a network role</h3><p>Choose the community scope and tell staff why the role fits you.</p></div></div>
 <div class="uw50-apply-controls"><select class="select" id="uw50ApplyScope"><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="network">Network-wide</option></select><textarea class="textarea" id="uw50ApplyNote" placeholder="Experience, links, past events, specialties, or anything staff should know."></textarea></div>
 <div id="uw50ApplicationRoles" class="uw50-role-grid"><div class="uw-empty">Loading application roles…</div></div></section>
+</div></details>
 
-<section class="uw50-panel"><div class="uw50-panel-title"><div><span>MY APPLICATIONS</span><h3>Application status</h3><p>Track pending, approved, denied and withdrawn requests.</p></div></div><div id="uw50MyApplications" class="uw50-stack"><div class="uw-empty">No role applications yet.</div></div></section>
+<details class="uw752-accordion"><summary>ROLE DIRECTORY</summary><div class="uw752-body">
+<section class="uw50-panel"><div class="uw50-panel-title"><div><span>ROLE DIRECTORY</span><h3>Network roles</h3><p>What each lane does and whether it can be applied for.</p></div></div><div id="uw51RoleCatalog" class="uw51-catalog-list"><div class="uw-empty">Loading roles…</div></div></section>
+</div></details>
 
-<div class="uw51-catalog-grid">
-  <section class="uw50-panel"><div class="uw50-panel-title"><div><span>ROLE DIRECTORY</span><h3>Network roles</h3><p>What each lane does and whether it can be applied for.</p></div></div><div id="uw51RoleCatalog" class="uw51-catalog-list"><div class="uw-empty">Loading roles…</div></div></section>
-  <section class="uw50-panel"><div class="uw50-panel-title"><div><span>RECOGNITION</span><h3>Badge catalog</h3><p>Role, staff, verification, achievement and legacy recognition.</p></div></div><div id="uw51BadgeCatalog" class="uw51-catalog-list"><div class="uw-empty">Loading badges…</div></div></section>
-</div>
+<details class="uw752-accordion"><summary>RECOGNITION &amp; BADGES</summary><div class="uw752-body">
+<section class="uw50-panel"><div class="uw50-panel-title"><div><span>RECOGNITION</span><h3>Badge catalog</h3><p>Role, staff, verification, achievement and legacy recognition.</p></div></div><div id="uw51BadgeCatalog" class="uw51-catalog-list"><div class="uw-empty">Loading badges…</div></div></section>
+</div></details>
 
+<details class="uw752-accordion"><summary>PROFILE TITLES</summary><div class="uw752-body">
 <section class="uw50-panel"><div class="uw50-panel-title"><div><span>PROFILE TITLES</span><h3>Title catalog</h3><p>Titles are earned through roles or special recognition, then selected from My Profile.</p></div></div><div id="uw51TitleCatalog" class="uw51-title-catalog"><div class="uw-empty">Loading titles…</div></div></section>
 <div id="uw50TitleCollection" style="display:none"></div>
+</div></details>
+</div></section>
+
+<section class="page" id="page-my-role-applications"><div class="wrap">
+<div class="uw40-pagehead"><div><span>IDENTITY // APPLICATIONS</span><h1>My Applications</h1><p>Track pending, accepted, denied and withdrawn network role requests.</p></div><button class="btn" data-page="identity" type="button">← ROLES &amp; ACCESS</button></div>
+<section class="uw50-panel"><div id="uw50MyApplications" class="uw50-stack"><div class="uw-empty">No role applications yet.</div></div></section>
 </div></section>
 <section class="page" id="page-role-review"><div class="wrap">
 <div class="uw40-pagehead"><div><span>STAFF IDENTITY OPS</span><h1>Role Review</h1><p>Review role applications using the 0.5.0 authority hierarchy. The database—not the button—decides what you can approve.</p></div><button class="btn hot" id="uw50ReloadReviews" type="button">REFRESH</button></div>
@@ -2715,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.5.2';
+    stamp.textContent='UNDERWEB // 0.7.5.3';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -2993,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.5.2-exact-identity-directory-fix"></div>
+<div style="display:none" data-underweb-build="0.7.5.3-source-rebuild"></div>
 <script id="uw744CreatorProfileNavigationFix">
 /* 0.7.4.4 — route the selected user_id directly into the site's existing public-profile loader. */
 function uw744OpenCreatorProfile(uid){
@@ -3473,7 +3480,7 @@ function uw75Wrap(node,title,sub){
  d.innerHTML=`<summary><span>${title}<small style="display:block;color:var(--muted);font-size:10px;margin-top:5px">${sub}</small></span></summary><div class="uw75-accordion-body"></div>`;
  node.parentNode.insertBefore(d,node);d.querySelector('.uw75-accordion-body').appendChild(node);
 }
-function uw75ReworkIdentity(){
+function uw75ReworkIdentity_DISABLED(){
  const page=document.getElementById('page-roles'); if(!page)return;
  const apply=document.querySelector('#page-roles .uw50-role-apply');
  const apps=document.getElementById('uw50MyApplications')?.closest('.uw50-panel');
@@ -3582,7 +3589,7 @@ document.addEventListener('click',e=>{
  const ec=e.target.closest('[data-page="eventcontrol"]');if(ec)setTimeout(uw75LoadEventControl,60);
 },true);
 
-window.addEventListener('pageshow',()=>setTimeout(()=>{uw75ReworkIdentity();uw75EnsureModal();},900));
+window.addEventListener('pageshow',()=>setTimeout(()=>{uw75EnsureModal();},900));
 </script>
 
 <script id="uw752ExactFix">
@@ -3593,7 +3600,7 @@ function uw752Accordion(panel,title){
  d.innerHTML=`<summary>${title}</summary><div class="uw752-body"></div>`;
  panel.parentNode.insertBefore(d,panel);d.querySelector('.uw752-body').appendChild(panel);
 }
-function uw752RebuildRolesPage(){
+function uw752RebuildRolesPage_DISABLED(){
  const page=document.getElementById('page-roles');if(!page)return;
 
  const applicationPanel=document.getElementById('uw50ApplicationRoles')?.closest('.uw50-panel');
@@ -3637,7 +3644,7 @@ async function uw752LoadDirectory(){
    if(ids.length){
      const [ur,ra,rd]=await Promise.all([
        uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active'),
-       uwSupabase.from('role_applications').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','accepted'),
+       uwSupabase.from('role_applications').select('user_id,role_slug,group_scope,status').in('user_id',ids).in('status',['accepted','approved']),
        uwSupabase.from('role_definitions').select('slug,name')
      ]);
      if(ur.error)throw ur.error;
@@ -3657,9 +3664,9 @@ async function uw752LoadDirectory(){
 }
 
 /* Force our exact implementation after old pageshow patches have run. */
-window.addEventListener('pageshow',()=>setTimeout(()=>{uw752RebuildRolesPage();uw752LoadDirectory();},1800));
+window.addEventListener('pageshow',()=>setTimeout(()=>{uw752LoadDirectory();},1800));
 document.addEventListener('click',e=>{
- if(e.target.closest('[data-page="roles"]'))setTimeout(uw752RebuildRolesPage,100);
+ if(e.target.closest('[data-page="roles"]'))void 0;
  if(e.target.closest('[data-page="discover"]'))setTimeout(uw752LoadDirectory,100);
 },true);
 </script>
