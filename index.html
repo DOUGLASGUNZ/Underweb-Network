@@ -711,6 +711,24 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .uw72-shell{max-width:1500px}.uw72-head{display:flex;justify-content:space-between;gap:24px;align-items:end;padding:42px 0 24px;border-bottom:1px solid #213329;margin-bottom:22px}.uw72-head span,.uw72-service{font:700 9px/1 monospace;letter-spacing:.18em;color:#45ff72}.uw72-head h1{font-size:clamp(48px,7vw,92px);line-height:.82;margin:8px 0 12px;letter-spacing:-.055em}.uw72-head p{max-width:760px;color:#88968d}.uw72-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.uw72-control{border:1px solid #22372a;background:#040604;padding:18px}.uw72-control h3{font-size:25px;margin:7px 0}.uw72-control .meta{line-height:1.6}.uw72-checks{display:grid;gap:7px;margin:16px 0}.uw72-checks span{padding:8px 10px;background:#070b08;border-left:2px solid #2a4434;font-size:9px}.uw72-tabs{display:flex;gap:6px;overflow:auto;margin-bottom:18px}.uw72-tabs button{background:#050806;color:#87958c;border:1px solid #22372a;padding:10px 14px;font:700 9px monospace;letter-spacing:.12em}.uw72-tabs button.active{color:#45ff72;border-color:#45ff72}.uw72-gallery{columns:3 280px;column-gap:12px}.uw72-media{break-inside:avoid;margin:0 0 12px;border:1px solid #22372a;background:#040604}.uw72-media-img{height:230px;background-size:cover;background-position:center}.uw72-media-body{padding:12px}.uw72-media-body span{font-size:8px;color:#45ff72}.uw72-media-body h3{margin:5px 0}.uw72-partners{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.uw72-partner{border:1px solid #22372a;background:#040604;padding:18px;min-height:190px}.uw72-partner h3{font-size:25px;margin:8px 0}.uw72-connect-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.uw72-connect{display:grid;gap:12px;border:1px solid #22372a;background:#040604;padding:20px}.uw72-connect.disabled{opacity:.55}.uw72-connect h3{font-size:28px;margin:0}.uw72-connect small{color:#748178}.uw72-notif-layout{display:grid;grid-template-columns:1fr 300px;gap:14px}.uw72-notifs{display:grid;gap:8px}.uw72-notif{border:1px solid #22372a;background:#040604;padding:14px;display:grid;grid-template-columns:1fr auto;gap:10px}.uw72-notif.unread{border-left:3px solid #45ff72}.uw72-notif h3{margin:4px 0}.uw72-notif time{font-size:8px;color:#6e7c73}.uw72-pref{display:grid;gap:12px;align-self:start;border:1px solid #22372a;background:#040604;padding:18px;position:sticky;top:90px}.uw72-pref>span{font-size:8px;color:#45ff72}.uw72-pref label{font-size:10px;color:#a6b0aa}
 @media(max-width:820px){.uw72-head{align-items:start;flex-direction:column;padding-top:26px}.uw72-grid,.uw72-connect-grid,.uw72-notif-layout{grid-template-columns:1fr}.uw72-partners{grid-template-columns:1fr}.uw72-gallery{columns:1}.uw72-media-img{height:220px}.uw72-pref{position:static}}
 </style>
+
+<style id="uw721VerificationCSS">
+.uw721-verifybox{border:1px solid #35513e;background:#071009;padding:14px;display:grid;gap:10px}
+.uw721-verifybox[hidden],.uw721-staffverify[hidden]{display:none!important}
+.uw721-verifybox>span{font:700 8px monospace;letter-spacing:.16em;color:#45ff72}
+.uw721-verifybox strong,.uw721-code{font:900 22px monospace;letter-spacing:.12em;color:#fff;background:#020302;border:1px dashed #45ff72;padding:12px;word-break:break-all}
+.uw721-verifybox p{margin:0;color:#9aa69e;font-size:10px;line-height:1.55}
+.uw721-staffverify{margin-top:32px}
+.uw721-staffverify .uw72-head h2{font-size:clamp(32px,5vw,62px);margin:7px 0}
+</style>
+
+<style id="uw722VerificationCopyCSS">
+.uw722-privacy{border-left:3px solid #45ff72;background:#071009;padding:12px 14px;margin:4px 0}
+.uw722-privacy strong{font:800 9px monospace;letter-spacing:.14em;color:#45ff72}
+.uw722-privacy p{margin:7px 0 0!important;font-size:10px!important;line-height:1.55!important;color:#a2aea6!important}
+.uw722-verified{display:block!important;padding:11px 12px!important;border:1px solid #315a3d!important;background:#071009!important;color:#b9c9be!important;line-height:1.5!important}
+.uw722-verified b{color:#45ff72}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -742,6 +760,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <button class="side-item" data-page="bookings">Bookings</button>
 <button class="side-item" data-page="profile">My Profile</button>
 <button class="side-item" data-page="identity">Network Identity</button>
+<button class="side-item" data-page="connections">Connected Accounts</button>
+<button class="side-item" data-page="gallery">Network Gallery</button>
+<button class="side-item" data-page="partners">Partner Hub</button>
 <button class="side-item" data-page="notifications">Notifications</button>
 <div class="side-label">Community Ops</div>
 <button class="side-item" data-page="command" data-requires-staff="true">Command Center <span class="badge" id="uw60CommandCount">—</span></button>
@@ -750,6 +771,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <button class="side-item" data-page="availability" data-requires-staff="true">Staff Availability</button>
 <button class="side-item" data-page="recruiting" data-requires-staff="true">Recruiting Pipeline</button>
 <button class="side-item" data-page="eventbuilder">Event Builder</button>
+<button class="side-item" data-page="eventcontrol" data-requires-staff="true">Event Control</button>
 <button class="side-item" data-page="applications" data-requires-staff="true">Applications <span class="badge" id="navApplicationCount">—</span></button>
 <button class="side-item" data-page="role-review" data-requires-staff="true">Role Review <span class="badge" id="uw50RoleReviewCount">—</span></button>
 <button class="side-item" data-page="tickets" data-requires-staff="true">Tickets <span class="badge" id="navTicketCount">—</span></button>
@@ -998,10 +1020,37 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </div></section>
 
 <section class="page" id="page-connections"><div class="wrap uw72-shell">
-  <div class="uw72-head"><div><span>NETWORK IDENTITY</span><h1>CONNECTED ACCOUNTS.</h1><p>Link the identities that power your network profile. Discord is staged for 0.8; VRChat linking can be used now.</p></div></div>
+  <div class="uw72-head"><div><span>NETWORK IDENTITY</span><h1>CONNECTED ACCOUNTS.</h1><p>Claims are not trusted automatically. Discord will use OAuth. VRChat uses proof-of-control verification so nobody can simply paste somebody else's profile.</p></div></div>
   <div class="uw72-connect-grid">
-    <article class="uw72-connect"><div class="uw72-service">VRCHAT</div><h3 id="uw72VrcState">NOT LINKED</h3><p>Attach your VRChat user/profile URL to your UnderWeb identity.</p><input class="input" id="uw72VrcUrl" placeholder="https://vrchat.com/home/user/usr_..."><button class="btn hot" id="uw72SaveVrc">SAVE VRCHAT</button><small id="uw72VrcNote"></small></article>
-    <article class="uw72-connect disabled"><div class="uw72-service">DISCORD</div><h3>COMING IN 0.8</h3><p>Discord OAuth, account linking and bot sync are staged but intentionally disabled until the Discord application secret is available.</p><button class="btn" disabled>CONNECT DISCORD</button></article>
+    <article class="uw72-connect">
+      <div class="uw72-service">VRCHAT</div>
+      <h3 id="uw72VrcState">NOT CLAIMED</h3>
+      <p>Paste your VRChat user profile. UnderWeb gives you a temporary verification code to place in your VRChat bio/status. This proves you control the profile without giving UnderWeb access to your VRChat account.</p>
+      <div class="uw722-privacy">
+        <strong>PRIVACY-FIRST VERIFICATION</strong>
+        <p>UnderWeb will never ask for your VRChat password, 2FA code, authentication token, or session data. We use a temporary public verification code specifically so you do not have to give us sensitive account information.</p>
+      </div>
+      <input class="input" id="uw72VrcUrl" placeholder="https://vrchat.com/home/user/usr_...">
+      <button class="btn hot" id="uw72SaveVrc">CLAIM VRCHAT ACCOUNT</button>
+      <div id="uw721VerifyBox" class="uw721-verifybox" hidden>
+        <span>YOUR VERIFICATION CODE</span>
+        <strong id="uw721VerifyCode">—</strong>
+        <p>Temporarily put this exact code in your VRChat bio/status, then press Verify My Account. For now, this sends the claim to staff for proof-of-control review. The verification system is structured so this check can be automated later without changing how your identity is stored.</p>
+        <button class="btn hot" id="uw721RequestVerify">VERIFY MY ACCOUNT</button>
+        <small>Once UnderWeb shows your account as <b>VERIFIED</b>, you can immediately remove this code from your VRChat profile.</small>
+      </div>
+      <small id="uw72VrcNote"></small>
+    </article>
+    <article class="uw72-connect disabled">
+      <div class="uw72-service">DISCORD</div>
+      <h3>COMING IN 0.8</h3>
+      <p>Discord will be verified by OAuth directly. Users will never be able to type a Discord username and call it verified.</p>
+      <button class="btn" disabled>CONNECT DISCORD</button>
+    </article>
+  </div>
+  <div id="uw721StaffVerifyWrap" class="uw721-staffverify" hidden>
+    <div class="uw72-head"><div><span>STAFF // IDENTITY REVIEW</span><h2>VRCHAT VERIFICATION.</h2><p>Open the claimed VRChat profile, confirm the displayed challenge code is present, then approve or deny.</p></div></div>
+    <div id="uw721StaffVerifyQueue" class="uw72-grid"></div>
   </div>
 </div></section>
 
@@ -2476,7 +2525,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.2 NETWORK EXPANSION';
+    stamp.textContent='UNDERWEB // 0.7.2.2 PRIVACY VERIFICATION';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -2540,16 +2589,42 @@ async function uw72LoadPartners(){
  el.innerHTML=data.map(r=>{const p=map[r.user_id]||{};return `<article class="uw72-partner"><span class="eyebrow">VERIFIED NETWORK PARTNER</span><h3>${uw72Esc(p.display_name||p.name||'Partner')}</h3><p>${uw72Esc(p.headline||p.bio||'Verified partner in the UnderWeb Network.')}</p>${p.portfolio_url?`<a class="btn" target="_blank" rel="noopener" href="${uw72Esc(p.portfolio_url)}">VIEW WORK</a>`:''}</article>`}).join('');
 }
 async function uw72LoadConnections(){
- const input=document.getElementById('uw72VrcUrl'),state=document.getElementById('uw72VrcState');if(!input||!state)return;
- const {data}=await uwSupabase.from('network_connections').select('*').eq('user_id',currentSession.user.id).eq('provider','vrchat').maybeSingle();
- if(data){input.value=data.profile_url||'';state.textContent=data.display_name||'VRCHAT LINKED';state.style.color='#45ff72'}
+ const input=document.getElementById('uw72VrcUrl'),state=document.getElementById('uw72VrcState'),box=document.getElementById('uw721VerifyBox'),codeEl=document.getElementById('uw721VerifyCode'),note=document.getElementById('uw72VrcNote');
+ if(!input||!state)return;
+ const {data,error}=await uwSupabase.from('network_connections').select('*').eq('user_id',currentSession.user.id).eq('provider','vrchat').maybeSingle();
+ if(error){if(note)note.textContent=error.message;return}
+ if(!data){state.textContent='NOT CLAIMED';if(box)box.hidden=true;return}
+ input.value=data.profile_url||'';
+ const status=(data.verification_status||'unverified').toLowerCase();
+ if(status==='verified'){state.textContent=(data.display_name||'VRCHAT')+' // VERIFIED';state.style.color='#45ff72';if(box)box.hidden=true;if(note){note.innerHTML='✓ Identity verified'+(data.verified_at?' on '+new Date(data.verified_at).toLocaleDateString():'')+'. <b>You may now remove the UnderWeb verification code from your VRChat profile.</b>';note.classList.add('uw722-verified')}}
+ else {state.textContent=status==='pending'?'AWAITING STAFF REVIEW':'UNVERIFIED';state.style.color=status==='pending'?'#ffd369':'#ff8b8b';if(codeEl)codeEl.textContent=data.verification_code||'—';if(box)box.hidden=false;if(note)note.textContent=status==='pending'?'Keep the verification code visible on your VRChat profile until staff reviews it.':'This claim is not verified yet.';}
+ try{const rank=await uwSupabase.rpc('uw_max_role_rank');if(!rank.error&&Number(rank.data||0)>=60)uw721LoadStaffVerification()}catch(e){}
 }
 async function uw72SaveVrc(){
- const input=document.getElementById('uw72VrcUrl'),note=document.getElementById('uw72VrcNote');let url=(input?.value||'').trim();
+ const input=document.getElementById('uw72VrcUrl'),note=document.getElementById('uw72VrcNote');const url=(input?.value||'').trim();
  if(!/^https:\/\/(www\.)?vrchat\.com\/home\/user\/usr_[A-Za-z0-9_-]+/i.test(url)){note.textContent='Paste a VRChat user profile URL.';return}
- const m=url.match(/usr_[A-Za-z0-9_-]+/i);note.textContent='SAVING…';
- const {error}=await uwSupabase.from('network_connections').upsert({user_id:currentSession.user.id,provider:'vrchat',external_id:m[0],profile_url:url,updated_at:new Date().toISOString()},{onConflict:'user_id,provider'});
- note.textContent=error?error.message:'VRCHAT LINKED';if(!error)uw72LoadConnections();
+ note.textContent='CREATING VERIFICATION CHALLENGE…';
+ const {data,error}=await uwSupabase.rpc('uw_claim_vrchat_profile',{p_profile_url:url});
+ note.textContent=error?error.message:'Claim saved. Add the code to your VRChat bio/status.';
+ if(!error)uw72LoadConnections();
+}
+async function uw721RequestVerify(){
+ const note=document.getElementById('uw72VrcNote');
+ const {error}=await uwSupabase.rpc('uw_request_vrchat_verification');
+ note.textContent=error?error.message:'Verification submitted to staff.';
+ if(!error)uw72LoadConnections();
+}
+async function uw721LoadStaffVerification(){
+ const wrap=document.getElementById('uw721StaffVerifyWrap'),el=document.getElementById('uw721StaffVerifyQueue');if(!wrap||!el)return;
+ const {data,error}=await uwSupabase.rpc('uw_vrchat_verification_queue');
+ if(error)return;
+ wrap.hidden=false;
+ el.innerHTML=data?.length?data.map(x=>`<article class="uw72-control"><span class="eyebrow">PENDING VRCHAT CLAIM</span><h3>${uw72Esc(x.display_name||x.external_id)}</h3><div class="meta">${uw72Esc(x.profile_url)}</div><div class="uw721-code">${uw72Esc(x.verification_code)}</div><div class="row"><a class="btn" href="${uw72Esc(x.profile_url)}" target="_blank" rel="noopener">OPEN VRCHAT</a><button class="btn hot" onclick="uw721ReviewVrc('${uw72Esc(x.id)}',true)">VERIFY</button><button class="btn" onclick="uw721ReviewVrc('${uw72Esc(x.id)}',false)">DENY</button></div></article>`).join(''):'<div class="uw-empty">No VRChat verification requests waiting.</div>';
+}
+async function uw721ReviewVrc(id,approve){
+ const {error}=await uwSupabase.rpc('uw_review_vrchat_connection',{p_connection_id:id,p_approve:approve});
+ toast(error?error.message:(approve?'VRChat identity verified.':'VRChat claim denied.'));
+ if(!error)uw721LoadStaffVerification();
 }
 async function uw72LoadNotifications(){
  const el=document.getElementById('uw72Notifications');if(!el)return;
@@ -2562,6 +2637,7 @@ async function uw72LoadNotifications(){
 document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('[data-uw72-gallery]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-uw72-gallery]').forEach(x=>x.classList.remove('active'));b.classList.add('active');uw72GalleryFilter=b.dataset.uw72Gallery;uw72LoadGallery()});
  document.getElementById('uw72SaveVrc')?.addEventListener('click',uw72SaveVrc);
+ document.getElementById('uw721RequestVerify')?.addEventListener('click',uw721RequestVerify);
  document.getElementById('uw72MarkRead')?.addEventListener('click',async()=>{await uwSupabase.from('network_notifications').update({read_at:new Date().toISOString()}).eq('user_id',currentSession.user.id).is('read_at',null);uw72LoadNotifications()});
  document.getElementById('uw72SavePrefs')?.addEventListener('click',async()=>{const g=id=>document.getElementById(id)?.checked!==false;const {error}=await uwSupabase.from('notification_preferences').upsert({user_id:currentSession.user.id,projects:g('uw72PrefProjects'),events:g('uw72PrefEvents'),roles:g('uw72PrefRoles'),staff:g('uw72PrefStaff'),updated_at:new Date().toISOString()});toast(error?error.message:'Notification preferences saved.')});
 });
