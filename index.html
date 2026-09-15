@@ -2758,7 +2758,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.7.2';
+    stamp.textContent='UNDERWEB // 0.7.7.3';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3036,7 +3036,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.7.2-multi-upload-zoom"></div>
+<div style="display:none" data-underweb-build="0.7.7.3-role-stabilization"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4013,6 +4013,146 @@ document.addEventListener('touchmove',e=>{
  uw772SetScale(uw772StartScale*d/uw772Touches);
 },{passive:true});
 document.addEventListener('touchend',e=>{if(e.touches.length<2)uw772Touches=null},{passive:true});
+</script>
+
+
+<style id="uw773RoleStabilityStyle">
+.uw773-role-manager{margin-top:16px;padding:16px;border:1px solid rgba(42,255,109,.25);background:#030705}
+.uw773-role-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.uw773-role-row:last-child{border-bottom:0}.uw773-role-row small{display:block;opacity:.62;margin-top:3px}
+</style>
+<script id="uw773CanonicalRoleStability">
+/* 0.7.7.3 — beta role stabilization.
+   Leadership authority is verified by the existing server RPC.
+   Owner/Director never submit role applications. */
+const UW773_CREATOR_SLUGS=new Set([
+ 'digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer',
+ 'unity_creator','blender_artist','world_creator','avatar_creator','graphic_designer',
+ 'producer','musician','rapper','vocalist'
+]);
+
+async function uw773Leadership(){
+ const {data,error}=await uwSupabase.rpc('uw_is_owner_or_director');
+ if(error){console.warn('Leadership check:',error);return false}
+ return data===true;
+}
+function uw773Owner(){
+ return (window.uw50Roles||[]).some(r=>r.status==='active'&&r.role_slug==='owner');
+}
+function uw773Director(){
+ return (window.uw50Roles||[]).some(r=>r.status==='active'&&r.role_slug==='director');
+}
+
+/* Canonical self-role action. Leadership bypasses applications entirely. */
+async function uw773SelfRole(slug,enabled){
+ if(!currentSession)return passwordlessSignIn();
+ if(await uw773Leadership()){
+   if(slug==='owner')return toast('Owner is protected.');
+   const {error}=await uwSupabase.rpc('uw_director_set_role',{
+     p_user_id:currentSession.user.id,p_role_slug:slug,p_enabled:enabled
+   });
+   if(error)return toast(error.message);
+   toast(enabled?'Role added.':'Role removed.');
+   if(typeof uw50LoadAll==='function')await uw50LoadAll();
+   if(typeof uw758Load==='function')await uw758Load();
+   return;
+ }
+ return uw50Apply(slug);
+}
+
+/* Replace the competing leadership renderers with one deterministic identity renderer. */
+async function uw773RenderIdentityRoles(){
+ const grid=document.getElementById('uw50ApplicationRoles');if(!grid)return;
+ if(!(await uw773Leadership()))return; // normal members keep the existing application UI
+
+ const active=new Set((window.uw50Roles||[]).filter(r=>r.status==='active').map(r=>r.role_slug));
+ const defs=(window.UW50?.roleDefs||[]).filter(r=>r.active!==false&&r.slug!=='owner');
+ grid.innerHTML=defs.map(r=>`<div class="uw50-role-card">
+   <div><b>${uw50Esc(r.name||uw50Nice(r.slug))}</b>
+   ${UW773_CREATOR_SLUGS.has(r.slug)?'<small>CREATOR DISCIPLINE</small>':''}</div>
+   <button class="btn ${active.has(r.slug)?'':'hot'}"
+     data-uw773-self="${uw50Esc(r.slug)}"
+     data-uw773-enable="${active.has(r.slug)?'0':'1'}">${active.has(r.slug)?'REMOVE':'ADD'}</button>
+ </div>`).join('');
+
+ const panel=grid.closest('.uw50-panel');
+ const title=panel?.querySelector('h3');if(title)title.textContent=uw773Owner()?'Owner role controls':'Director role controls';
+ const desc=panel?.querySelector('.uw50-panel-title p');if(desc)desc.textContent=uw773Owner()
+  ?'Direct role management. Owner never submits applications.'
+  :'Direct management for permitted roles below Director. Director never submits applications.';
+ const note=document.getElementById('uw50ApplyNote');if(note)note.style.display='none';
+}
+
+/* Canonical review queue: display creator_profiles.display_name, never UUID as identity. */
+async function uw773ReviewQueue(){
+ if(!currentSession||!hasStaffAccess())return;
+ const {data,error}=await uwSupabase.from('role_applications')
+   .select('*').in('status',['pending','reviewing']).order('submitted_at');
+ if(error)return console.warn('Role review:',error);
+
+ UW50.reviewApps=data||[];
+ const ids=[...new Set(UW50.reviewApps.map(x=>x.user_id).filter(Boolean))];
+ UW50.reviewProfiles={};
+ if(ids.length){
+   const p=await uwSupabase.from('creator_profiles').select('user_id,display_name').in('user_id',ids);
+   (p.data||[]).forEach(x=>UW50.reviewProfiles[x.user_id]={display_name:x.display_name});
+ }
+ uw50RenderReviewQueue();
+}
+
+/* Canonical leadership manager on viewed creator profiles. */
+async function uw773ProfileManager(uid){
+ if(!uid||!(await uw773Leadership()))return;
+ const modal=document.getElementById('uw621ProfileModal');if(!modal)return;
+ let host=document.getElementById('uw773ProfileRoles');
+ if(!host){
+   host=document.createElement('section');host.id='uw773ProfileRoles';host.className='uw773-role-manager';
+   (modal.querySelector('.uw621-modal-body')||modal).appendChild(host);
+ }
+ const [defs,roles]=await Promise.all([
+   uwSupabase.from('role_definitions').select('slug,name,authority_rank,active').eq('active',true).order('authority_rank',{ascending:false}),
+   uwSupabase.from('user_roles').select('role_slug,status').eq('user_id',uid).eq('status','active')
+ ]);
+ if(defs.error||roles.error){host.innerHTML='<div class="uw-empty">Role manager unavailable.</div>';return}
+ const active=new Set((roles.data||[]).map(r=>r.role_slug));
+ const rows=(defs.data||[]).filter(r=>r.slug!=='owner' && (uw773Owner() || r.slug!=='director'));
+ host.innerHTML=`<span class="eyebrow">LEADERSHIP ACCESS</span><h3>MANAGE ROLES</h3>
+ ${rows.map(r=>`<div class="uw773-role-row"><div><b>${uw50Esc(r.name||uw50Nice(r.slug))}</b>
+ <small>${UW773_CREATOR_SLUGS.has(r.slug)?'CREATOR DISCIPLINE':'NETWORK ROLE'}</small></div>
+ <button class="btn ${active.has(r.slug)?'':'hot'}" data-uw773-target="${uw50Esc(uid)}"
+ data-uw773-role="${uw50Esc(r.slug)}" data-uw773-enable="${active.has(r.slug)?'0':'1'}">${active.has(r.slug)?'REMOVE':'ADD'}</button></div>`).join('')}`;
+}
+
+async function uw773SetTarget(uid,slug,enabled){
+ if(!(await uw773Leadership()))return toast('Leadership authority required.');
+ if(slug==='owner')return toast('Owner is protected.');
+ if(uw773Director()&&slug==='director')return toast('Director cannot grant or remove Director authority.');
+ const {error}=await uwSupabase.rpc('uw_director_set_role',{p_user_id:uid,p_role_slug:slug,p_enabled:enabled});
+ if(error)return toast(error.message);
+ toast(enabled?'Role added.':'Role removed.');
+ await uw773ProfileManager(uid);
+ if(typeof uw758Load==='function')await uw758Load();
+}
+
+/* Make existing loaders use the canonical review source. */
+window.uw50LoadReviewQueue=uw773ReviewQueue;
+
+document.addEventListener('click',e=>{
+ const self=e.target.closest('[data-uw773-self]');
+ if(self){e.preventDefault();e.stopImmediatePropagation();return uw773SelfRole(self.dataset.uw773Self,self.dataset.uw773Enable==='1')}
+ const target=e.target.closest('[data-uw773-role]');
+ if(target){e.preventDefault();e.stopImmediatePropagation();return uw773SetTarget(target.dataset.uw773Target,target.dataset.uw773Role,target.dataset.uw773Enable==='1')}
+ const prof=e.target.closest('[data-uw758-profile],[data-uw62-profile],[data-uw61-profile]');
+ if(prof){
+   const uid=prof.dataset.uw758Profile||prof.dataset.uw62Profile||prof.dataset.uw61Profile;
+   setTimeout(()=>uw773ProfileManager(uid),420);
+ }
+ if(e.target.closest('[data-page="identity"]'))setTimeout(()=>{uw773RenderIdentityRoles();uw773ReviewQueue()},300);
+},true);
+
+window.addEventListener('pageshow',()=>setTimeout(()=>{
+ uw773RenderIdentityRoles();uw773ReviewQueue();
+},2100));
 </script>
 
 </body></html>
