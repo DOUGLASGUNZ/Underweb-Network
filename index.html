@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.6.5';
+    stamp.textContent='UNDERWEB // 0.7.6.6';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.6.5-canonical-event-control"></div>
+<div style="display:none" data-underweb-build="0.7.6.6-role-driven-creator-count"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3762,6 +3762,58 @@ document.addEventListener('click',e=>{
 },true);
 
 window.addEventListener('pageshow',()=>setTimeout(uw765Load,1400));
+</script>
+
+
+<script id="uw766RoleDrivenCreatorCount">
+/* 0.7.6.6 — Home + Directory creator totals use the same rule:
+   a creator profile counts only when that user has an ACTIVE creator discipline role. */
+const UW766_CREATOR_ROLES=[
+  'digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer',
+  'unity_creator','blender_artist','world_creator','avatar_creator','graphic_designer',
+  'producer','musician','rapper','vocalist'
+];
+
+async function uw766SyncCreatorCounts(){
+  try{
+    const profiles=await uwSupabase.from('creator_profiles').select('user_id');
+    if(profiles.error)throw profiles.error;
+
+    const ids=[...new Set((profiles.data||[]).map(x=>x.user_id).filter(Boolean))];
+    if(!ids.length){
+      setText('uwCreatorCount',0);
+      setText('uw62CreatorCount',0);
+      return 0;
+    }
+
+    const roles=await uwSupabase.from('user_roles')
+      .select('user_id,role_slug,status')
+      .in('user_id',ids)
+      .eq('status','active')
+      .in('role_slug',UW766_CREATOR_ROLES);
+    if(roles.error)throw roles.error;
+
+    const creatorIds=new Set((roles.data||[]).map(x=>x.user_id).filter(Boolean));
+    const total=creatorIds.size;
+    setText('uwCreatorCount',total);
+    setText('uw62CreatorCount',total);
+    return total;
+  }catch(err){
+    console.error('Creator count sync:',err);
+    return null;
+  }
+}
+
+/* Re-sync after the app finishes its older dashboard loaders so they cannot
+   overwrite the role-driven total with raw creator_profiles count. */
+window.addEventListener('pageshow',()=>{
+  setTimeout(uw766SyncCreatorCounts,900);
+  setTimeout(uw766SyncCreatorCounts,2400);
+});
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-page="home"],[data-page="discover"]'))
+    setTimeout(uw766SyncCreatorCounts,180);
+},true);
 </script>
 
 </body></html>
