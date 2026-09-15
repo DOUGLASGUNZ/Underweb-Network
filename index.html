@@ -907,19 +907,27 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </style>
 
 
-<style id="uw771ShowcaseGalleryStyle">
-.uw743-publicshowcase,.uw743-myshowcase{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
-.uw743-work{min-width:0}.uw743-media{aspect-ratio:1/1;overflow:hidden;background:#020403;cursor:zoom-in}
+
+
+
+<style id="uw772ShowcaseGalleryStyle">
+.uw743-publicshowcase,.uw743-myshowcase{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.uw743-media{aspect-ratio:1/1;overflow:hidden;background:#020403;cursor:zoom-in}
 .uw743-media img,.uw743-media video{width:100%;height:100%;object-fit:cover}
-.uw771-viewer{position:fixed;inset:0;z-index:12000;background:rgba(0,0,0,.96);display:flex;align-items:center;justify-content:center;touch-action:none}
-.uw771-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.uw771-stage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;will-change:transform;user-select:none;-webkit-user-drag:none}
-.uw771-stage video{max-width:100%;max-height:100%}
-.uw771-close,.uw771-prev,.uw771-next{position:fixed;z-index:12002;border:1px solid rgba(42,255,109,.55);background:rgba(0,0,0,.72);color:#fff;font-size:25px}
-.uw771-close{right:14px;top:14px;width:48px;height:48px}.uw771-prev,.uw771-next{top:50%;transform:translateY(-50%);width:48px;height:64px}
-.uw771-prev{left:12px}.uw771-next{right:12px}.uw771-meta{position:fixed;z-index:12002;left:50%;bottom:18px;transform:translateX(-50%);max-width:min(760px,88vw);padding:9px 14px;background:rgba(0,0,0,.72);text-align:center;color:#fff}
-.uw771-count{color:#2aff6d;font-family:monospace;font-size:11px;letter-spacing:.12em}.uw771-hint{opacity:.65;font-size:10px;margin-top:4px}
-@media(max-width:620px){.uw743-publicshowcase,.uw743-myshowcase{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.uw771-prev,.uw771-next{top:auto;bottom:74px}.uw771-meta{bottom:14px}}
+#uw772Viewer{position:fixed;inset:0;z-index:15000;background:#000;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#uw772Canvas{min-width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;padding:72px 8px 120px;box-sizing:border-box}
+#uw772Image{display:block;max-width:none;max-height:none;width:auto;height:auto;transform-origin:top left;user-select:none;-webkit-user-drag:none}
+#uw772Video{max-width:100%;max-height:80vh}
+.uw772-ui{position:fixed;z-index:15002;border:1px solid rgba(42,255,109,.55);background:rgba(0,0,0,.8);color:#fff}
+#uw772Close{right:12px;top:12px;width:48px;height:48px;font-size:24px}
+#uw772Prev,#uw772Next{bottom:68px;width:52px;height:52px;font-size:28px}
+#uw772Prev{left:12px}#uw772Next{right:12px}
+#uw772Zoom{left:50%;top:12px;transform:translateX(-50%);display:flex}
+#uw772Zoom button{width:48px;height:48px;border:0;border-right:1px solid rgba(255,255,255,.15);background:transparent;color:#fff;font-size:20px}
+#uw772Zoom button:last-child{border-right:0}
+#uw772Meta{position:fixed;z-index:15002;left:50%;bottom:12px;transform:translateX(-50%);max-width:70vw;padding:8px 12px;background:rgba(0,0,0,.8);color:#fff;text-align:center}
+#uw772Meta small{display:block;color:#2aff6d;font-family:monospace}
+@media(max-width:620px){.uw743-publicshowcase,.uw743-myshowcase{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
 </style>
 
 </head>
@@ -1170,7 +1178,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   <div class="uw40-title"><div><span>CREATOR SHOWCASE</span><h3>Show What You Make</h3></div><small>IMAGES + VIDEO</small></div>
   <p class="meta">Upload finished work, process clips, DJ footage, renders, photography, artwork, world tours, avatar demos and more. Featured work appears first on your public creator profile.</p>
   <div class="uw743-uploadrow">
-    <input id="uw743ShowcaseFile" type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"/>
+    <input id="uw743ShowcaseFile" multiple type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"/>
     <button class="btn hot" type="button" id="uw743PickShowcase">+ ADD WORK</button>
     <span class="meta">Images max 12 MB · Videos max 100 MB · JPG, PNG, WebP, GIF, MP4, WebM, MOV</span>
   </div>
@@ -2750,7 +2758,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.7.1';
+    stamp.textContent='UNDERWEB // 0.7.7.2';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3028,7 +3036,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.7.1-showcase-gallery"></div>
+<div style="display:none" data-underweb-build="0.7.7.2-multi-upload-zoom"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3067,7 +3075,7 @@ async function uw743Upload(file){
  const url=uwSupabase.storage.from('creator-showcase').getPublicUrl(path).data.publicUrl;
  const ins=await uwSupabase.from('creator_showcase').insert({user_id:currentSession.user.id,media_url:url,storage_path:path,media_type:video?'video':'image',title:title||'Untitled Work',caption,is_featured:false,sort_order:0});
  if(ins.error){await uwSupabase.storage.from('creator-showcase').remove([path]);return toast(ins.error.message)}
- toast('Showcase work added.');await uw743LoadMine();
+ return true;
 }
 async function uw743Feature(id){
  const x=uw743Mine.find(v=>String(v.id)===String(id));if(!x)return;
@@ -3085,7 +3093,14 @@ function uw743Viewer(x){
  document.body.insertAdjacentHTML('beforeend',`<div class="uw743-viewer" id="uw743Viewer"><div class="uw743-viewer-inner"><button type="button" data-uw743-close>×</button>${media}</div></div>`);
 }
 document.getElementById('uw743PickShowcase')?.addEventListener('click',()=>document.getElementById('uw743ShowcaseFile')?.click());
-document.getElementById('uw743ShowcaseFile')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)uw743Upload(f);e.target.value=''});
+document.getElementById('uw743ShowcaseFile')?.addEventListener('change',async e=>{
+ const files=[...(e.target.files||[])];
+ if(!files.length)return;
+ for(const f of files) await uw743Upload(f);
+ e.target.value='';
+ await uw743LoadMine();
+ toast(files.length===1?'Showcase upload complete.':`${files.length} showcase uploads complete.`);
+});
 document.addEventListener('click',e=>{
  const f=e.target.closest('[data-uw743-feature]');if(f){e.preventDefault();e.stopPropagation();uw743Feature(f.dataset.uw743Feature);return}
  const d=e.target.closest('[data-uw743-delete]');if(d){e.preventDefault();e.stopPropagation();uw743Delete(d.dataset.uw743Delete);return}
@@ -3932,76 +3947,72 @@ document.addEventListener('click',e=>{
 </script>
 
 
-<script id="uw771CanonicalShowcaseGallery">
-/* 0.7.7.1 — multi-item creator showcase + full-screen mobile viewer */
-let uw771Items=[],uw771Index=0,uw771Scale=1,uw771X=0,uw771Y=0,uw771Pointers=new Map(),uw771StartDist=0,uw771StartScale=1;
 
-function uw771Open(items,index){
-  uw771Items=items||[];uw771Index=Math.max(0,Math.min(index,uw771Items.length-1));
-  document.getElementById('uw771Viewer')?.remove();
-  document.body.insertAdjacentHTML('beforeend',`<div class="uw771-viewer" id="uw771Viewer">
-    <button class="uw771-close" data-uw771-close>×</button>
-    <button class="uw771-prev" data-uw771-prev>‹</button>
-    <div class="uw771-stage" id="uw771Stage"></div>
-    <button class="uw771-next" data-uw771-next>›</button>
-    <div class="uw771-meta" id="uw771Meta"></div>
-  </div>`);
-  uw771Show();
+
+
+<script id="uw772ShowcaseGallery">
+let uw772Items=[],uw772Index=0,uw772Scale=1;
+
+function uw772Render(){
+ const x=uw772Items[uw772Index];if(!x)return;
+ uw772Scale=1;
+ const canvas=document.getElementById('uw772Canvas');
+ canvas.innerHTML=x.media_type==='video'
+  ?`<video id="uw772Video" src="${uw743Esc(x.media_url)}" controls autoplay playsinline></video>`
+  :`<img id="uw772Image" src="${uw743Esc(x.media_url)}" alt="${uw743Esc(x.title||'Creator media')}">`;
+ document.getElementById('uw772Meta').innerHTML=`<small>${uw772Index+1} / ${uw772Items.length}</small>${uw743Esc(x.title||'Untitled Work')}`;
+ uw772Apply();
 }
-function uw771Show(){
-  const x=uw771Items[uw771Index];if(!x)return;
-  uw771Scale=1;uw771X=0;uw771Y=0;uw771Pointers.clear();
-  const stage=document.getElementById('uw771Stage');
-  stage.innerHTML=x.media_type==='video'
-    ?`<video src="${uw743Esc(x.media_url)}" controls autoplay playsinline></video>`
-    :`<img id="uw771Image" src="${uw743Esc(x.media_url)}" alt="${uw743Esc(x.title||'Creator media')}">`;
-  document.getElementById('uw771Meta').innerHTML=`<div class="uw771-count">${uw771Index+1} / ${uw771Items.length}</div><b>${uw743Esc(x.title||'Untitled Work')}</b>${x.caption?`<div>${uw743Esc(x.caption)}</div>`:''}<div class="uw771-hint">PINCH TO ZOOM · DOUBLE TAP TO RESET</div>`;
-  document.querySelector('.uw771-prev').style.display=uw771Items.length>1?'block':'none';
-  document.querySelector('.uw771-next').style.display=uw771Items.length>1?'block':'none';
+function uw772Apply(){
+ const img=document.getElementById('uw772Image');if(!img)return;
+ img.style.width=`${uw772Scale*100}vw`;
+ img.style.height='auto';
 }
-function uw771Move(dir){if(!uw771Items.length)return;uw771Index=(uw771Index+dir+uw771Items.length)%uw771Items.length;uw771Show()}
-function uw771Apply(){const img=document.getElementById('uw771Image');if(img)img.style.transform=`translate(${uw771X}px,${uw771Y}px) scale(${uw771Scale})`}
-function uw771Dist(){const a=[...uw771Pointers.values()];return a.length<2?0:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}
+function uw772SetScale(v){uw772Scale=Math.max(1,Math.min(5,v));uw772Apply()}
+function uw772Move(d){uw772Index=(uw772Index+d+uw772Items.length)%uw772Items.length;uw772Render()}
+function uw772Open(items,index){
+ uw772Items=items;uw772Index=index;
+ document.getElementById('uw772Viewer')?.remove();
+ document.body.insertAdjacentHTML('beforeend',`<div id="uw772Viewer">
+  <div id="uw772Canvas"></div>
+  <button id="uw772Close" class="uw772-ui">×</button>
+  <div id="uw772Zoom" class="uw772-ui"><button data-z="-">−</button><button data-z="reset">1×</button><button data-z="+">＋</button></div>
+  <button id="uw772Prev" class="uw772-ui">‹</button><button id="uw772Next" class="uw772-ui">›</button>
+  <div id="uw772Meta"></div>
+ </div>`);
+ uw772Render();
+}
 
 document.addEventListener('click',e=>{
-  const work=e.target.closest('.uw743-publicshowcase [data-uw743-view], .uw743-myshowcase [data-uw743-view]');
-  if(work && !e.target.closest('button')){
-    e.preventDefault();e.stopImmediatePropagation();
-    const owner=work.closest('.uw743-myshowcase');
-    const items=owner?uw743Mine:Object.values(uw743Public).flat();
-    const i=items.findIndex(x=>String(x.id)===String(work.dataset.uw743View));
-    if(i>=0)uw771Open(items,i);return;
-  }
-  if(e.target.closest('[data-uw771-close]'))document.getElementById('uw771Viewer')?.remove();
-  if(e.target.closest('[data-uw771-prev]'))uw771Move(-1);
-  if(e.target.closest('[data-uw771-next]'))uw771Move(1);
+ const work=e.target.closest('.uw743-publicshowcase [data-uw743-view],.uw743-myshowcase [data-uw743-view]');
+ if(work&&!e.target.closest('button')){
+  e.preventDefault();e.stopImmediatePropagation();
+  const items=work.closest('.uw743-myshowcase')?uw743Mine:Object.values(uw743Public).flat();
+  const i=items.findIndex(x=>String(x.id)===String(work.dataset.uw743View));
+  if(i>=0)uw772Open(items,i);return;
+ }
+ if(e.target.closest('#uw772Close'))document.getElementById('uw772Viewer')?.remove();
+ if(e.target.closest('#uw772Prev'))uw772Move(-1);
+ if(e.target.closest('#uw772Next'))uw772Move(1);
+ const z=e.target.closest('[data-z]');
+ if(z){const v=z.dataset.z;uw772SetScale(v==='+'?uw772Scale+.5:v==='-'?uw772Scale-.5:1)}
 },true);
 
-document.addEventListener('pointerdown',e=>{
- if(!e.target.closest('#uw771Stage'))return;
- uw771Pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
- if(uw771Pointers.size===2){uw771StartDist=uw771Dist();uw771StartScale=uw771Scale}
-});
-document.addEventListener('pointermove',e=>{
- if(!uw771Pointers.has(e.pointerId))return;
- const old=uw771Pointers.get(e.pointerId);uw771Pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
- if(uw771Pointers.size>=2){
-   const d=uw771Dist();if(uw771StartDist)uw771Scale=Math.max(1,Math.min(5,uw771StartScale*d/uw771StartDist));
- }else if(uw771Scale>1){uw771X+=e.clientX-old.x;uw771Y+=e.clientY-old.y}
- uw771Apply();
-});
-document.addEventListener('pointerup',e=>uw771Pointers.delete(e.pointerId));
-document.addEventListener('pointercancel',e=>uw771Pointers.delete(e.pointerId));
-let uw771LastTap=0;
-document.addEventListener('pointerdown',e=>{
- if(e.target.id!=='uw771Image')return;const now=Date.now();
- if(now-uw771LastTap<300){uw771Scale=1;uw771X=0;uw771Y=0;uw771Apply()}uw771LastTap=now;
-});
-document.addEventListener('keydown',e=>{
- if(!document.getElementById('uw771Viewer'))return;
- if(e.key==='Escape')document.getElementById('uw771Viewer')?.remove();
- if(e.key==='ArrowLeft')uw771Move(-1);if(e.key==='ArrowRight')uw771Move(1);
-});
+/* Real pinch gesture: adjust image width while the browser's scroll container
+   supplies panning. Buttons remain as a guaranteed mobile fallback. */
+let uw772Touches=null,uw772StartScale=1;
+document.addEventListener('touchstart',e=>{
+ if(!e.target.closest('#uw772Canvas')||e.touches.length!==2)return;
+ const a=e.touches[0],b=e.touches[1];
+ uw772Touches=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+ uw772StartScale=uw772Scale;
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+ if(!uw772Touches||e.touches.length!==2)return;
+ const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+ uw772SetScale(uw772StartScale*d/uw772Touches);
+},{passive:true});
+document.addEventListener('touchend',e=>{if(e.touches.length<2)uw772Touches=null},{passive:true});
 </script>
 
 </body></html>
