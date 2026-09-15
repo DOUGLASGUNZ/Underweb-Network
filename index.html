@@ -2722,7 +2722,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.6.6';
+    stamp.textContent='UNDERWEB // 0.7.6.7';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3000,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.6.6-role-driven-creator-count"></div>
+<div style="display:none" data-underweb-build="0.7.6.7-role-first-creator-directory"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3443,28 +3443,65 @@ async function uw758Load(){
  const list=document.getElementById('creatorDirectoryList');if(!list)return;
  list.innerHTML='<div class="uw-empty">Loading creator network…</div>';
  try{
-   const cp=await uwSupabase.from('creator_profiles')
-     .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,public_visible,approval_status,shop_url,shop_label')
-     .order('display_name',{ascending:true}).limit(500);
-   if(cp.error)throw cp.error;
-   uw758Creators=cp.data||[];uw758Roles={};uw758Defs={};
-   const ids=uw758Creators.map(c=>c.user_id).filter(Boolean);
-   if(ids.length){
-     const [ur,rd]=await Promise.all([
-       uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active'),
-       uwSupabase.from('role_definitions').select('slug,name')
-     ]);
-     if(ur.error)throw ur.error;
-     if(!rd.error)(rd.data||[]).forEach(d=>uw758Defs[d.slug]=d.name);
-     (ur.data||[]).forEach(r=>(uw758Roles[r.user_id]??=[]).push({
-       slug:r.role_slug,name:uw758Defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),scope:r.group_scope||'underweb'
-     }));
+   const creatorSlugs=[
+     'digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer',
+     'unity_creator','blender_artist','world_creator','avatar_creator','graphic_designer',
+     'producer','musician','rapper','vocalist'
+   ];
+
+   /* ROLE FIRST: directory membership comes from active creator roles,
+      never from the existence of a profile row. */
+   const ur=await uwSupabase.from('user_roles')
+     .select('user_id,role_slug,group_scope,status')
+     .eq('status','active')
+     .in('role_slug',creatorSlugs);
+   if(ur.error)throw ur.error;
+
+   const creatorIds=[...new Set((ur.data||[]).map(r=>r.user_id).filter(Boolean))];
+   uw758Creators=[];uw758Roles={};uw758Defs={};
+
+   if(!creatorIds.length){
+     window.uwRealCreators=[];window.uw62RoleMap={};
+     uw758Render();
+     if(typeof setText==='function'){setText('uwCreatorCount',0);setText('uw62CreatorCount',0);}
+     return;
    }
-   window.uwRealCreators=uw758Creators;window.uw62RoleMap=uw758Roles;
+
+   const [cp,allRoles,rd]=await Promise.all([
+     uwSupabase.from('creator_profiles')
+       .select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,public_visible,approval_status,shop_url,shop_label')
+       .in('user_id',creatorIds)
+       .order('display_name',{ascending:true}),
+     uwSupabase.from('user_roles')
+       .select('user_id,role_slug,group_scope,status')
+       .in('user_id',creatorIds)
+       .eq('status','active'),
+     uwSupabase.from('role_definitions').select('slug,name')
+   ]);
+   if(cp.error)throw cp.error;
+   if(allRoles.error)throw allRoles.error;
+
+   uw758Creators=cp.data||[];
+   if(!rd.error)(rd.data||[]).forEach(d=>uw758Defs[d.slug]=d.name);
+   (allRoles.data||[]).forEach(r=>(uw758Roles[r.user_id]??=[]).push({
+     slug:r.role_slug,
+     name:uw758Defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),
+     scope:r.group_scope||'underweb'
+   }));
+
+   window.uwRealCreators=uw758Creators;
+   window.uw62RoleMap=uw758Roles;
    uw758Render();
+
+   /* Home count comes from the exact same rendered creator membership. */
+   const total=uw758Creators.filter(uw758Visible).length;
+   if(typeof setText==='function'){
+     setText('uwCreatorCount',total);
+     setText('uw62CreatorCount',total);
+   }
  }catch(err){
-   console.error('Creator Directory rebuild:',err);
-   list.innerHTML=`<div class="uw-empty">${esc(err?.message||'Creator Directory could not load.')}</div>`;
+   console.error('Creator Directory role-first load:',err);
+   list.innerHTML=`<div class="uw-empty">CREATOR DIRECTORY ERROR: ${esc(err?.message||String(err))}</div>`;
  }
 }
 async function uw758Open(uid){
@@ -3765,54 +3802,16 @@ window.addEventListener('pageshow',()=>setTimeout(uw765Load,1400));
 </script>
 
 
-<script id="uw766RoleDrivenCreatorCount">
-/* 0.7.6.6 — Home + Directory creator totals use the same rule:
-   a creator profile counts only when that user has an ACTIVE creator discipline role. */
-const UW766_CREATOR_ROLES=[
-  'digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer',
-  'unity_creator','blender_artist','world_creator','avatar_creator','graphic_designer',
-  'producer','musician','rapper','vocalist'
-];
 
-async function uw766SyncCreatorCounts(){
-  try{
-    const profiles=await uwSupabase.from('creator_profiles').select('user_id');
-    if(profiles.error)throw profiles.error;
 
-    const ids=[...new Set((profiles.data||[]).map(x=>x.user_id).filter(Boolean))];
-    if(!ids.length){
-      setText('uwCreatorCount',0);
-      setText('uw62CreatorCount',0);
-      return 0;
-    }
 
-    const roles=await uwSupabase.from('user_roles')
-      .select('user_id,role_slug,status')
-      .in('user_id',ids)
-      .eq('status','active')
-      .in('role_slug',UW766_CREATOR_ROLES);
-    if(roles.error)throw roles.error;
-
-    const creatorIds=new Set((roles.data||[]).map(x=>x.user_id).filter(Boolean));
-    const total=creatorIds.size;
-    setText('uwCreatorCount',total);
-    setText('uw62CreatorCount',total);
-    return total;
-  }catch(err){
-    console.error('Creator count sync:',err);
-    return null;
-  }
-}
-
-/* Re-sync after the app finishes its older dashboard loaders so they cannot
-   overwrite the role-driven total with raw creator_profiles count. */
+<script id="uw767CreatorDirectoryStability">
 window.addEventListener('pageshow',()=>{
-  setTimeout(uw766SyncCreatorCounts,900);
-  setTimeout(uw766SyncCreatorCounts,2400);
+  setTimeout(()=>{if(typeof uw758Load==='function')uw758Load()},2200);
 });
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-page="home"],[data-page="discover"]'))
-    setTimeout(uw766SyncCreatorCounts,180);
+    setTimeout(()=>{if(typeof uw758Load==='function')uw758Load()},140);
 },true);
 </script>
 
