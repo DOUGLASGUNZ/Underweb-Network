@@ -2758,7 +2758,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.7.3';
+    stamp.textContent='UNDERWEB // 0.7.7.4';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3036,7 +3036,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.7.3-role-stabilization"></div>
+<div style="display:none" data-underweb-build="0.7.7.4-profile-role-manager-hook"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4153,6 +4153,34 @@ document.addEventListener('click',e=>{
 window.addEventListener('pageshow',()=>setTimeout(()=>{
  uw773RenderIdentityRoles();uw773ReviewQueue();
 },2100));
+</script>
+
+
+<script id="uw774ProfileRoleManagerHook">
+/* 0.7.7.4 — attach leadership role manager to the actual canonical profile-open
+   function instead of relying on a competing document click listener. */
+(function(){
+ const original=window.uw758Open;
+ if(typeof original!=='function')return;
+ window.uw758Open=async function(uid){
+   const result=await original.apply(this,arguments);
+   try{
+     if(await uw773Leadership())await uw773ProfileManager(String(uid||'').trim());
+   }catch(err){console.error('Profile role manager:',err)}
+   return result;
+ };
+})();
+
+/* Also cover profiles opened by older roster/card handlers. */
+const uw774Observer=new MutationObserver(async()=>{
+ const modal=document.getElementById('uw621ProfileModal');
+ if(!modal?.classList.contains('open'))return;
+ const uid=window.uw621ActiveCreator;
+ if(!uid||document.getElementById('uw773ProfileRoles'))return;
+ try{if(await uw773Leadership())await uw773ProfileManager(uid)}catch(err){console.error(err)}
+});
+const uw774Modal=document.getElementById('uw621ProfileModal');
+if(uw774Modal)uw774Observer.observe(uw774Modal,{attributes:true,attributeFilter:['class','aria-hidden'],subtree:false});
 </script>
 
 </body></html>
