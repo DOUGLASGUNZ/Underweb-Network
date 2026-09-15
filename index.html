@@ -906,6 +906,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:620px){.uw770-grid{grid-template-columns:1fr}.uw770-modal{padding:16px}}
 </style>
 
+
+<style id="uw771ShowcaseGalleryStyle">
+.uw743-publicshowcase,.uw743-myshowcase{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.uw743-work{min-width:0}.uw743-media{aspect-ratio:1/1;overflow:hidden;background:#020403;cursor:zoom-in}
+.uw743-media img,.uw743-media video{width:100%;height:100%;object-fit:cover}
+.uw771-viewer{position:fixed;inset:0;z-index:12000;background:rgba(0,0,0,.96);display:flex;align-items:center;justify-content:center;touch-action:none}
+.uw771-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.uw771-stage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;will-change:transform;user-select:none;-webkit-user-drag:none}
+.uw771-stage video{max-width:100%;max-height:100%}
+.uw771-close,.uw771-prev,.uw771-next{position:fixed;z-index:12002;border:1px solid rgba(42,255,109,.55);background:rgba(0,0,0,.72);color:#fff;font-size:25px}
+.uw771-close{right:14px;top:14px;width:48px;height:48px}.uw771-prev,.uw771-next{top:50%;transform:translateY(-50%);width:48px;height:64px}
+.uw771-prev{left:12px}.uw771-next{right:12px}.uw771-meta{position:fixed;z-index:12002;left:50%;bottom:18px;transform:translateX(-50%);max-width:min(760px,88vw);padding:9px 14px;background:rgba(0,0,0,.72);text-align:center;color:#fff}
+.uw771-count{color:#2aff6d;font-family:monospace;font-size:11px;letter-spacing:.12em}.uw771-hint{opacity:.65;font-size:10px;margin-top:4px}
+@media(max-width:620px){.uw743-publicshowcase,.uw743-myshowcase{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.uw771-prev,.uw771-next{top:auto;bottom:74px}.uw771-meta{bottom:14px}}
+</style>
+
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2734,7 +2750,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.7.0';
+    stamp.textContent='UNDERWEB // 0.7.7.1';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3012,7 +3028,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.7.0-event-editor"></div>
+<div style="display:none" data-underweb-build="0.7.7.1-showcase-gallery"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3913,6 +3929,79 @@ document.addEventListener('click',e=>{
     if(typeof uw758Load==='function')uw758Load();
   },120);
 },true);
+</script>
+
+
+<script id="uw771CanonicalShowcaseGallery">
+/* 0.7.7.1 — multi-item creator showcase + full-screen mobile viewer */
+let uw771Items=[],uw771Index=0,uw771Scale=1,uw771X=0,uw771Y=0,uw771Pointers=new Map(),uw771StartDist=0,uw771StartScale=1;
+
+function uw771Open(items,index){
+  uw771Items=items||[];uw771Index=Math.max(0,Math.min(index,uw771Items.length-1));
+  document.getElementById('uw771Viewer')?.remove();
+  document.body.insertAdjacentHTML('beforeend',`<div class="uw771-viewer" id="uw771Viewer">
+    <button class="uw771-close" data-uw771-close>×</button>
+    <button class="uw771-prev" data-uw771-prev>‹</button>
+    <div class="uw771-stage" id="uw771Stage"></div>
+    <button class="uw771-next" data-uw771-next>›</button>
+    <div class="uw771-meta" id="uw771Meta"></div>
+  </div>`);
+  uw771Show();
+}
+function uw771Show(){
+  const x=uw771Items[uw771Index];if(!x)return;
+  uw771Scale=1;uw771X=0;uw771Y=0;uw771Pointers.clear();
+  const stage=document.getElementById('uw771Stage');
+  stage.innerHTML=x.media_type==='video'
+    ?`<video src="${uw743Esc(x.media_url)}" controls autoplay playsinline></video>`
+    :`<img id="uw771Image" src="${uw743Esc(x.media_url)}" alt="${uw743Esc(x.title||'Creator media')}">`;
+  document.getElementById('uw771Meta').innerHTML=`<div class="uw771-count">${uw771Index+1} / ${uw771Items.length}</div><b>${uw743Esc(x.title||'Untitled Work')}</b>${x.caption?`<div>${uw743Esc(x.caption)}</div>`:''}<div class="uw771-hint">PINCH TO ZOOM · DOUBLE TAP TO RESET</div>`;
+  document.querySelector('.uw771-prev').style.display=uw771Items.length>1?'block':'none';
+  document.querySelector('.uw771-next').style.display=uw771Items.length>1?'block':'none';
+}
+function uw771Move(dir){if(!uw771Items.length)return;uw771Index=(uw771Index+dir+uw771Items.length)%uw771Items.length;uw771Show()}
+function uw771Apply(){const img=document.getElementById('uw771Image');if(img)img.style.transform=`translate(${uw771X}px,${uw771Y}px) scale(${uw771Scale})`}
+function uw771Dist(){const a=[...uw771Pointers.values()];return a.length<2?0:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}
+
+document.addEventListener('click',e=>{
+  const work=e.target.closest('.uw743-publicshowcase [data-uw743-view], .uw743-myshowcase [data-uw743-view]');
+  if(work && !e.target.closest('button')){
+    e.preventDefault();e.stopImmediatePropagation();
+    const owner=work.closest('.uw743-myshowcase');
+    const items=owner?uw743Mine:Object.values(uw743Public).flat();
+    const i=items.findIndex(x=>String(x.id)===String(work.dataset.uw743View));
+    if(i>=0)uw771Open(items,i);return;
+  }
+  if(e.target.closest('[data-uw771-close]'))document.getElementById('uw771Viewer')?.remove();
+  if(e.target.closest('[data-uw771-prev]'))uw771Move(-1);
+  if(e.target.closest('[data-uw771-next]'))uw771Move(1);
+},true);
+
+document.addEventListener('pointerdown',e=>{
+ if(!e.target.closest('#uw771Stage'))return;
+ uw771Pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(uw771Pointers.size===2){uw771StartDist=uw771Dist();uw771StartScale=uw771Scale}
+});
+document.addEventListener('pointermove',e=>{
+ if(!uw771Pointers.has(e.pointerId))return;
+ const old=uw771Pointers.get(e.pointerId);uw771Pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(uw771Pointers.size>=2){
+   const d=uw771Dist();if(uw771StartDist)uw771Scale=Math.max(1,Math.min(5,uw771StartScale*d/uw771StartDist));
+ }else if(uw771Scale>1){uw771X+=e.clientX-old.x;uw771Y+=e.clientY-old.y}
+ uw771Apply();
+});
+document.addEventListener('pointerup',e=>uw771Pointers.delete(e.pointerId));
+document.addEventListener('pointercancel',e=>uw771Pointers.delete(e.pointerId));
+let uw771LastTap=0;
+document.addEventListener('pointerdown',e=>{
+ if(e.target.id!=='uw771Image')return;const now=Date.now();
+ if(now-uw771LastTap<300){uw771Scale=1;uw771X=0;uw771Y=0;uw771Apply()}uw771LastTap=now;
+});
+document.addEventListener('keydown',e=>{
+ if(!document.getElementById('uw771Viewer'))return;
+ if(e.key==='Escape')document.getElementById('uw771Viewer')?.remove();
+ if(e.key==='ArrowLeft')uw771Move(-1);if(e.key==='ArrowRight')uw771Move(1);
+});
 </script>
 
 </body></html>
