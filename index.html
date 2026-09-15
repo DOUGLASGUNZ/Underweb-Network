@@ -894,6 +894,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @keyframes uwBoltJitter{0%{stroke-dashoffset:0;transform:translate(0,0)}50%{stroke-dashoffset:-3;transform:translate(.7px,-.4px)}100%{stroke-dashoffset:-6;transform:translate(-.5px,.3px)}}
 @media(prefers-reduced-motion:reduce){.uw-owner-lightning{display:none!important}}
 </style>
+
+<style id="uw770EventEditorStyle">
+.uw770-backdrop{position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.88);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px 90px;overflow:auto}
+.uw770-modal{width:min(720px,100%);background:#050806;border:1px solid rgba(42,255,109,.38);padding:20px;box-shadow:0 0 40px rgba(42,255,109,.08)}
+.uw770-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:18px}
+.uw770-head h2{margin:4px 0 0}.uw770-modal label{display:block;color:#aeb7b1;font-size:11px;letter-spacing:.12em;margin:0 0 14px}
+.uw770-modal input,.uw770-modal textarea{box-sizing:border-box;width:100%;margin-top:7px;padding:13px;background:#010302;border:1px solid rgba(255,255,255,.16);color:#f2f5f3;font:inherit}
+.uw770-modal textarea{resize:vertical}.uw770-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.uw770-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.uw770-error{min-height:18px;color:#ff7474;font-size:12px}
+@media(max-width:620px){.uw770-grid{grid-template-columns:1fr}.uw770-modal{padding:16px}}
+</style>
+
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2722,7 +2734,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.6.9';
+    stamp.textContent='UNDERWEB // 0.7.7.0';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3000,7 +3012,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.6.9-canonical-creator-renderer"></div>
+<div style="display:none" data-underweb-build="0.7.7.0-event-editor"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3789,15 +3801,85 @@ async function uw765Cancel(id){
   try{if(typeof loadEvents==='function')await loadEvents()}catch(_){}
 }
 
+function uw770LocalInput(v){
+  if(!v)return '';
+  const d=new Date(v); if(Number.isNaN(d.getTime()))return '';
+  const p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function uw770Iso(v){ return v ? new Date(v).toISOString() : null; }
+
+function uw770CloseEditor(){
+  document.getElementById('uw770EventEditor')?.remove();
+}
+
 async function uw765Edit(id){
   const e=window.uw765EventMap[id];
   if(!e)return toast('Event could not be found.');
 
-  /* Reuse the existing event editor when present. */
-  if(typeof window.uw75OpenEventEditor==='function')return window.uw75OpenEventEditor(id);
-  if(typeof window.uw72EditEvent==='function')return window.uw72EditEvent(id);
+  uw770CloseEditor();
+  const modal=document.createElement('div');
+  modal.id='uw770EventEditor';
+  modal.className='uw770-backdrop';
+  modal.innerHTML=`<section class="uw770-modal">
+    <div class="uw770-head">
+      <div><span class="eyebrow">EVENT CONTROL // EDIT</span><h2>EDIT EVENT</h2></div>
+      <button class="btn" type="button" data-uw770-close>✕</button>
+    </div>
+    <form id="uw770EventForm">
+      <label>EVENT TITLE<input name="title" required value="${uw72Esc(e.title||'')}"></label>
+      <label>DESCRIPTION<textarea name="description" rows="5">${uw72Esc(e.description||'')}</textarea></label>
+      <div class="uw770-grid">
+        <label>START<input name="starts_at" type="datetime-local" value="${uw770LocalInput(e.starts_at)}"></label>
+        <label>END<input name="ends_at" type="datetime-local" value="${uw770LocalInput(e.ends_at)}"></label>
+      </div>
+      <label>LOCATION<input name="location" value="${uw72Esc(e.location||'')}"></label>
+      <label>COMMUNITY / SCOPE<input name="group_scope" value="${uw72Esc(e.group_scope||'network')}"></label>
+      <label>COVER IMAGE URL<input name="cover_url" type="url" value="${uw72Esc(e.cover_url||'')}" placeholder="https://…"></label>
+      <div id="uw770EventError" class="uw770-error"></div>
+      <div class="uw770-actions">
+        <button class="btn" type="button" data-uw770-close>CANCEL</button>
+        <button class="btn hot" type="submit">SAVE CHANGES</button>
+      </div>
+    </form>
+  </section>`;
+  document.body.appendChild(modal);
 
-  toast('Cancel is ready. Event editor will be consolidated next.');
+  modal.querySelector('#uw770EventForm').addEventListener('submit',async ev=>{
+    ev.preventDefault();
+    const f=new FormData(ev.currentTarget);
+    const btn=ev.currentTarget.querySelector('[type="submit"]');
+    const err=modal.querySelector('#uw770EventError');
+    btn.disabled=true; btn.textContent='SAVING…'; err.textContent='';
+    try{
+      if(!(await uw765Authority()))throw new Error('Owner or Director authority required.');
+      const patch={
+        title:String(f.get('title')||'').trim(),
+        description:String(f.get('description')||'').trim()||null,
+        starts_at:uw770Iso(String(f.get('starts_at')||'')),
+        ends_at:uw770Iso(String(f.get('ends_at')||'')),
+        location:String(f.get('location')||'').trim()||null,
+        group_scope:String(f.get('group_scope')||'network').trim()||'network',
+        cover_url:String(f.get('cover_url')||'').trim()||null
+      };
+      if(!patch.title)throw new Error('Event title is required.');
+      if(patch.starts_at && patch.ends_at && new Date(patch.ends_at)<=new Date(patch.starts_at))
+        throw new Error('End time must be after start time.');
+
+      const {data,error}=await uwSupabase.from('network_events')
+        .update(patch).eq('id',id).select('*').single();
+      if(error)throw error;
+
+      window.uw765EventMap[id]=data;
+      uw770CloseEditor();
+      toast('Event updated.');
+      await uw765Load();
+      try{if(typeof loadEvents==='function')await loadEvents()}catch(_){}
+    }catch(ex){
+      err.textContent=ex?.message||String(ex);
+      btn.disabled=false; btn.textContent='SAVE CHANGES';
+    }
+  });
 }
 
 document.addEventListener('click',e=>{
