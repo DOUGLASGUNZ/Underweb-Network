@@ -2758,7 +2758,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.7.5';
+    stamp.textContent='UNDERWEB // 0.7.7.6';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3036,7 +3036,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.7.5-leadership-role-sheet"></div>
+<div style="display:none" data-underweb-build="0.7.7.6-header-leadership-button"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4282,6 +4282,57 @@ document.addEventListener('click',e=>{
  const role=e.target.closest('[data-uw775-role]');
  if(role){e.preventDefault();e.stopImmediatePropagation();return uw775Set(role)}
 },true);
+</script>
+
+
+<style id="uw776HeaderLeadershipFix">
+/* 0.7.7.6: absolutely nothing from leadership tools participates in profile layout. */
+#uw775LeadershipLaunch,#uw773ProfileRoles{display:none!important}
+#uw776LeadershipButton{position:absolute;z-index:20;top:18px;right:72px;width:46px;height:46px;padding:0;border-radius:50%;display:grid;place-items:center;background:#06100a;border:1px solid rgba(42,255,109,.5);color:#2aff6d;font-size:19px;font-weight:900;box-shadow:0 0 22px rgba(42,255,109,.12)}
+</style>
+<script id="uw776HeaderLeadershipFixScript">
+function uw776RemoveInjected(){
+ document.getElementById('uw775LeadershipLaunch')?.remove();
+ document.getElementById('uw773ProfileRoles')?.remove();
+}
+function uw776Mount(uid){
+ uw776RemoveInjected();
+ const modal=document.getElementById('uw621ProfileModal');if(!modal||!uid)return;
+ let btn=document.getElementById('uw776LeadershipButton');
+ if(!btn){
+   btn=document.createElement('button');
+   btn.id='uw776LeadershipButton';btn.type='button';btn.title='Manage roles';btn.setAttribute('aria-label','Manage roles');
+   btn.textContent='⚙';
+   /* Absolute overlay: does not become a grid/flex child in the profile layout. */
+   modal.appendChild(btn);
+ }
+ btn.dataset.uid=uid;
+ /* Establish containing block without changing layout geometry. */
+ if(getComputedStyle(modal).position==='static')modal.style.position='relative';
+}
+const uw776OldOpen=window.uw758Open;
+if(typeof uw776OldOpen==='function'){
+ window.uw758Open=async function(uid){
+   const result=await uw776OldOpen.apply(this,arguments);
+   uw776RemoveInjected();
+   try{if(await uw773Leadership())uw776Mount(String(uid||'').trim())}catch(e){console.warn(e)}
+   return result;
+ };
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('#uw776LeadershipButton');
+ if(b){e.preventDefault();e.stopImmediatePropagation();uw775Open(b.dataset.uid)}
+},true);
+
+/* Cleanup stale layout children from prior hooks whenever the profile opens. */
+const uw776Modal=document.getElementById('uw621ProfileModal');
+if(uw776Modal)new MutationObserver(()=>{
+ if(uw776Modal.classList.contains('open')){
+   uw776RemoveInjected();
+   const uid=window.uw621ActiveCreator;
+   if(uid)uw773Leadership().then(ok=>{if(ok)uw776Mount(uid)});
+ }
+}).observe(uw776Modal,{attributes:true,attributeFilter:['class','aria-hidden']});
 </script>
 
 </body></html>
