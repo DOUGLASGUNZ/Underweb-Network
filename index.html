@@ -1026,6 +1026,34 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .uw790-reviewitem{grid-template-columns:1fr}.uw790-reviewmedia{aspect-ratio:16/10}
 }
 </style>
+<style id="uw791HomeLogoCSS">
+.uw791-homebrand{
+  display:none;
+  width:100%;
+  overflow:hidden;
+  background:#000;
+  border-bottom:1px solid rgba(69,255,114,.12);
+}
+.uw791-homebrand img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+@media(max-width:700px){
+  #page-home .uw791-homebrand{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:155px;
+    margin:0 0 8px;
+    padding:4px 14px;
+  }
+  #page-home .uw791-homebrand img{
+    max-height:145px;
+  }
+}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -1087,6 +1115,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <h2>CREATE × COLLABORATE × PERFORM × BELONG</h2>
       <p>People. Music. Worlds. Art. One underground network built to connect creators, run events, recruit collaborators and keep the community moving.</p>
       <div class="uw70-hero-actions"><button class="btn hot" data-action="join">JOIN THE NETWORK</button><button class="btn" data-page="discover">EXPLORE CREATORS</button></div>
+      <div class="uw791-homebrand" aria-label="The UnderWeb">
+        <img src="./underweb-home-logo.webp" alt="The UnderWeb">
+      </div>
       <div class="uw70-session"><span class="uw70-dot"></span><strong id="uw42SessionStatus">CHECKING SESSION…</strong><button id="uw42LocalLogout" type="button">SIGN OUT THIS DEVICE</button></div>
     </div>
     <div class="uw790-homequick">
@@ -2879,7 +2910,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.9';
+    stamp.textContent='UNDERWEB // 0.7.9.1';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3157,7 +3188,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.9-home-media-review"></div>
+<div style="display:none" data-underweb-build="0.7.9.1-home-logo"></div>
 
 
 <script id="uw743CreatorShowcase">
