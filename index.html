@@ -2819,7 +2819,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.3';
+    stamp.textContent='UNDERWEB // 0.7.8.3.1';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3097,7 +3097,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.3-global-people-search"></div>
+<div style="display:none" data-underweb-build="0.7.8.3.1-people-search-rls-fix"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4591,13 +4591,24 @@ let uw783People=[],uw783Roles={},uw783Timer=null;
 function uw783Safe(v){return typeof esc==='function'?esc(v):String(v??'')}
 async function uw783LoadPeople(){
  const out=document.getElementById('uw783PeopleResults');if(!out||!currentSession)return;
- const q=(document.getElementById('uw783PeopleQuery')?.value||'').trim().toLowerCase();
- if(q.length<1){out.innerHTML='<div class="uw70-empty">Type a name to search the Network.</div>';return}
+ const raw=(document.getElementById('uw783PeopleQuery')?.value||'').trim();
+ if(raw.length<1){out.innerHTML='<div class="uw70-empty">Type a name to search the Network.</div>';return}
  out.innerHTML='<div class="uw70-empty">Searching Network…</div>';
- /* profiles is the account identity table, so this includes non-creators. */
- const pr=await uwSupabase.from('profiles').select('id,display_name,username').order('display_name',{ascending:true}).limit(250);
- if(pr.error){out.innerHTML=`<div class="uw70-empty">${uw783Safe(pr.error.message)}</div>`;return}
- const matched=(pr.data||[]).filter(x=>[x.display_name,x.username].some(v=>String(v||'').toLowerCase().includes(q))).slice(0,40);
+
+ /* 0.7.8.3.1: do NOT try to read the entire profiles table and filter it in-browser.
+    RLS commonly exposes only the signed-in profile. Ask Supabase for matches instead. */
+ const safe=raw.replace(/[%_,]/g,' ').trim();
+ const pr=await uwSupabase.from('profiles')
+   .select('id,display_name,username')
+   .or(`display_name.ilike.%${safe}%,username.ilike.%${safe}%`)
+   .order('display_name',{ascending:true})
+   .limit(40);
+
+ if(pr.error){
+   out.innerHTML=`<div class="uw70-empty">PEOPLE SEARCH ERROR: ${uw783Safe(pr.error.message)}</div>`;
+   return;
+ }
+ const matched=pr.data||[];
  const ids=matched.map(x=>x.id);
  let cps={},roles={};
  if(ids.length){
@@ -4610,7 +4621,9 @@ async function uw783LoadPeople(){
  }
  uw783People=matched;uw783Roles=roles;
  const count=document.getElementById('uw783PeopleCount');if(count)count.textContent=matched.length;
- if(!matched.length){out.innerHTML='<div class="uw70-empty">No registered users match that name.</div>';return}
+ if(!matched.length){
+   out.innerHTML='<div class="uw70-empty">No registered users match that name.</div>';return;
+ }
  out.innerHTML=matched.map(p=>{
    const c=cps[p.id]||{},rs=roles[p.id]||[],av=c.avatar_url?`style="background-image:url('${uw783Safe(c.avatar_url)}')"`:'';
    return `<article class="uw783-person"><div class="uw783-personhead"><div class="uw783-avatar" ${av}>${c.avatar_url?'':uw783Safe((p.display_name||p.username||'U').charAt(0).toUpperCase())}</div>
