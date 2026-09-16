@@ -1352,6 +1352,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </div>
 <div class="uw51-identity-block uw51-badges-block"><div class="uw51-block-head"><b>BADGES</b><span id="uw50ShowcaseCount">0 / 6 showcased</span></div><div id="uw50ShowcaseBadges" class="uw50-chipwall uw51-showcase"><div class="uw-empty">No showcased badges yet.</div></div><div id="uw50BadgeCollection" class="uw51-badge-picker"><div class="uw-empty">No badges earned yet.</div></div></div>
 </section>
+<section class="uw50-panel uwcos-locker" id="uwCosmeticsLocker">
+ <div class="uw50-panel-title"><div><span>PROFILE COSMETICS</span><h3>Cosmetics Locker</h3><p>Secret discoveries permanently unlock profile cosmetics. Equip one effect per cosmetic type.</p></div><button class="uw50-mini" id="uwCosReload" type="button">REFRESH</button></div>
+ <div class="uwcos-locker-status"><span id="uwCosDiscoveryCount">0 / ??? SECRETS DISCOVERED</span><span>Cosmetics never grant roles, verification, or authority.</span></div>
+ <div class="uwcos-locker-grid" id="uwCosLockerGrid"><div class="uw-empty">Loading unlocked cosmetics…</div></div>
+</section>
 <div class="uw40-grid2 uw40-profile-editgrid">
 <section class="uw40-block">
 <div class="uw40-title"><div><span>PROFILE MEDIA</span><h3>Avatar &amp; Banner</h3></div><small>MAX 5 MB EACH</small></div>
@@ -5381,6 +5386,12 @@ uw786LoadVerifiedVrc=async function(uid){
 .uw-secret-hotspot{position:fixed;right:5px;bottom:68px;width:12px;height:12px;border:0;background:transparent;color:rgba(57,255,104,.12);font-size:9px;z-index:58;padding:0;cursor:pointer}.uw-secret-hotspot:hover{color:rgba(57,255,104,.5)}
 @media(max-width:700px){.uw-public-authority{max-width:none}.uw-public-authority .uw74-card{transform-origin:left top}.uw621-avatar.uwcos-webwalker:after,.uw621-avatar.uwcos-void_signal:after,.uw621-avatar.uwcos-parasite:after{inset:-7px}}
 @media(prefers-reduced-motion:reduce){.uw621-avatar:before,.uw621-avatar:after{animation:none!important}}
+
+/* ===== RC1 COSMETICS LOCKER ===== */
+.uwcos-locker{margin:0 0 18px}.uwcos-locker-status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:-3px 0 13px;color:var(--m);font:800 9px/1.4 monospace;letter-spacing:.08em}.uwcos-locker-status span:first-child{color:var(--g)}
+.uwcos-locker-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.uwcos-locker-card{position:relative;min-height:148px;border:1px solid var(--l);background:linear-gradient(145deg,#040806,#020403);padding:14px;overflow:hidden}.uwcos-locker-card.equipped{border-color:rgba(57,255,104,.65);box-shadow:inset 0 0 0 1px rgba(57,255,104,.14),0 0 24px rgba(57,255,104,.06)}.uwcos-locker-card.mystery{border-style:dashed;opacity:.58}.uwcos-locker-card .type{color:var(--g);font:900 8px/1 monospace;letter-spacing:.14em}.uwcos-locker-card h4{margin:9px 0 5px;font-size:16px}.uwcos-locker-card p{margin:0;color:var(--m);font-size:11px;line-height:1.5}.uwcos-locker-card footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:17px}.uwcos-locker-card .rarity{font:900 8px/1 monospace;letter-spacing:.1em;color:#9daaa1}.uwcos-locker-card .uw50-mini{min-width:72px}.uwcos-locker-card .uw50-mini.equipped{color:#001807;background:var(--g);border-color:var(--g)}
+.uw40-avatar{position:relative;isolation:isolate;overflow:visible!important}.uw40-avatar:before,.uw40-avatar:after{content:"";position:absolute;pointer-events:none;z-index:-1}.uw40-avatar.uwcos-webwalker:after{inset:-8px;border-radius:22px;background:repeating-conic-gradient(from 0deg,rgba(57,255,104,.8) 0 1deg,transparent 1deg 22.5deg);mask:radial-gradient(circle,transparent 62%,#000 64% 69%,transparent 71%);animation:uwCosSpin 16s linear infinite;filter:drop-shadow(0 0 5px rgba(57,255,104,.55))}.uw40-avatar.uwcos-void_signal:after{inset:-7px;border-radius:21px;border:2px solid #818cf8;box-shadow:4px 0 0 rgba(57,255,104,.55),-4px 0 0 rgba(129,140,248,.45);animation:uwCosGlitch 3.4s steps(1,end) infinite}.uw40-avatar.uwcos-parasite:after{inset:-8px;border-radius:22px;border:1px solid rgba(57,255,104,.75);clip-path:polygon(0 12%,36% 12%,45% 0,54% 12%,100% 12%,100% 88%,64% 88%,55% 100%,46% 88%,0 88%);box-shadow:inset 0 0 14px rgba(57,255,104,.24),0 0 16px rgba(57,255,104,.2);animation:uwCosPulse 2.1s ease-in-out infinite}
+@media(max-width:800px){.uwcos-locker-grid{grid-template-columns:1fr}.uwcos-locker-card{min-height:128px}}
 </style>
 <script id="uwSharedPublicIdentityCosmetics">
 const UW_PUBLIC_AUTHORITY_ORDER=['owner','director','event_lead','artist_coordinator','moderator'];
@@ -5441,6 +5452,41 @@ document.addEventListener('click',e=>{
  if(e.target.closest('#uwSecretHotspot')){uwSecretTaps++;if(uwSecretTaps===3)uwDiscoverCosmetic('under_the_web')}
 });
 document.body.insertAdjacentHTML('beforeend','<button id="uwSecretHotspot" class="uw-secret-hotspot" aria-label="">·</button>');
+
+// Cosmetics Locker: reads only the current user's unlocked cosmetics and equips through a guarded RPC.
+const UW_COSMETIC_CLASSES=['uwcos-webwalker','uwcos-void_signal','uwcos-parasite'];
+function uwCosApplyOwnFrame(rows){
+ const avatar=document.getElementById('liveProfileAvatar');if(!avatar)return;
+ UW_COSMETIC_CLASSES.forEach(c=>avatar.classList.remove(c));
+ (rows||[]).filter(x=>x&&x.is_equipped).forEach(x=>{const s=String(x.cosmetic_slug||'');if(s)avatar.classList.add('uwcos-'+s)});
+}
+function uwCosEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function uwLoadCosmeticsLocker(){
+ const grid=document.getElementById('uwCosLockerGrid'),count=document.getElementById('uwCosDiscoveryCount');if(!grid||!currentSession)return;
+ grid.innerHTML='<div class="uw-empty">Loading unlocked cosmetics…</div>';
+ try{
+  const r=await uwSupabase.rpc('uw_my_cosmetic_locker');
+  if(r.error){grid.innerHTML='<div class="uw-empty">Cosmetics Locker needs the latest SQL migration.</div>';return}
+  const rows=Array.isArray(r.data)?r.data:[];uwCosApplyOwnFrame(rows);
+  if(count)count.textContent=`${rows.length} / ??? SECRETS DISCOVERED`;
+  const cards=rows.map(x=>`<article class="uwcos-locker-card ${x.is_equipped?'equipped':''}"><span class="type">${uwCosEsc(String(x.cosmetic_type||'COSMETIC').replaceAll('_',' ').toUpperCase())}</span><h4>${uwCosEsc(x.cosmetic_name||'UNLOCKED COSMETIC')}</h4><p>Discovered. Permanently bound to your UnderWeb account.</p><footer><span class="rarity">${uwCosEsc(String(x.rarity||'SECRET').toUpperCase())}</span><button class="uw50-mini ${x.is_equipped?'equipped hot':''}" data-uwcos-equip="${uwCosEsc(x.cosmetic_slug)}" data-equipped="${x.is_equipped?'1':'0'}">${x.is_equipped?'EQUIPPED':'EQUIP'}</button></footer></article>`).join('');
+  grid.innerHTML=cards+`<article class="uwcos-locker-card mystery"><span class="type">UNDISCOVERED</span><h4>???</h4><p>Something is still hiding in the Network.</p><footer><span class="rarity">SECRET</span><span class="meta">LOCKED</span></footer></article>`;
+ }catch(e){console.warn('Cosmetics locker unavailable',e);grid.innerHTML='<div class="uw-empty">Could not load cosmetics right now.</div>'}
+}
+async function uwSetCosmetic(slug,equipped){
+ if(!slug||!currentSession)return;
+ const r=await uwSupabase.rpc('uw_set_cosmetic_equipped',{p_cosmetic_slug:slug,p_equipped:!!equipped});
+ if(r.error){toast(r.error.message||'Could not update cosmetic.');return}
+ toast(equipped?'COSMETIC EQUIPPED':'COSMETIC UNEQUIPPED');await uwLoadCosmeticsLocker();
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-uwcos-equip]');if(b){const on=b.dataset.equipped!=='1';uwSetCosmetic(b.dataset.uwcosEquip,on)}
+ if(e.target.closest('#uwCosReload'))uwLoadCosmeticsLocker();
+});
+// Load when My Profile becomes active, without replacing existing navigation behavior.
+new MutationObserver(()=>{const p=document.getElementById('page-profile');if(p?.classList.contains('active'))uwLoadCosmeticsLocker()}).observe(document.getElementById('page-profile'),{attributes:true,attributeFilter:['class']});
+setTimeout(()=>{if(document.getElementById('page-profile')?.classList.contains('active'))uwLoadCosmeticsLocker()},700);
+
 </script>
 
 </body></html>
