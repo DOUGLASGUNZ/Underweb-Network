@@ -1004,6 +1004,28 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .uw743-work{position:relative}.uw785-private-media{height:100%;min-height:140px;display:grid;place-content:center;text-align:center;gap:8px;padding:20px;background:repeating-linear-gradient(135deg,#050805,#050805 10px,#070b07 10px,#070b07 20px)}
 .uw785-private-media b{font:1000 10px/1 monospace;letter-spacing:.12em;color:#ffd166}.uw785-denied .uw785-private-media b{color:#ff7885}.uw785-private-media span{max-width:240px;color:#818b84;font-size:11px;line-height:1.4}
 </style>
+<style id="uw790HomeMediaCSS">
+.uw790-homequick{display:grid;gap:10px;align-content:center}
+.uw790-homequick button{border:1px solid var(--l);background:linear-gradient(135deg,rgba(69,255,114,.055),rgba(0,0,0,.25));color:var(--t);text-align:left;padding:16px;cursor:pointer}
+.uw790-homequick b,.uw790-homequick span{display:block}.uw790-homequick b{color:var(--g);font:1000 11px monospace;letter-spacing:.1em}.uw790-homequick span{color:var(--m);font-size:11px;margin-top:5px}
+#uw790MediaBadge:not(:empty){display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:5px;border-radius:99px;background:var(--g);color:#001506;font-size:9px}
+.uw790-reviewmodal{position:fixed;inset:0;z-index:10040;background:rgba(0,0,0,.88);display:none;place-items:center;padding:14px}.uw790-reviewmodal.open{display:grid}
+.uw790-reviewbox{width:min(920px,100%);max-height:92vh;overflow:auto;border:1px solid rgba(69,255,114,.35);background:#030603;padding:18px}
+.uw790-reviewhead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;border-bottom:1px solid var(--l);padding-bottom:12px}.uw790-reviewhead span{font:1000 9px monospace;color:var(--g);letter-spacing:.12em}.uw790-reviewhead h2{margin:4px 0 0}.uw790-reviewhead button{border:1px solid var(--l);background:#050805;color:var(--t);width:38px;height:38px;font-size:22px}.uw790-reviewcopy{color:var(--m);font-size:11px}
+.uw790-reviewitem{display:grid;grid-template-columns:180px 1fr;gap:16px;padding:16px 0;border-top:1px solid var(--l)}.uw790-reviewmedia{aspect-ratio:1/1;background:#070a07;overflow:hidden;display:grid;place-items:center}.uw790-reviewmedia img,.uw790-reviewmedia video{width:100%;height:100%;object-fit:cover}.uw790-reviewbody h3{margin:3px 0 7px}.uw790-reviewbody p{color:var(--m);font-size:11px}.uw790-reviewmeta{font:900 9px monospace;color:#768078;letter-spacing:.05em}.uw790-reviewactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+@media(max-width:700px){
+ #page-home .uw70-wrap{padding-top:8px}
+ #page-home .uw70-homehero{display:block!important;min-height:0!important;margin-top:0!important;padding-top:8px!important}
+ #page-home .uw70-hero-copy{padding-bottom:10px!important}
+ #page-home .uw70-hero-copy>.uw70-kicker,#page-home .uw70-hero-copy>h1,#page-home .uw70-hero-copy>h2,#page-home .uw70-hero-copy>p,#page-home .uw70-hero-actions{display:none!important}
+ #page-home .uw70-session{margin-top:0!important;margin-bottom:12px!important;padding:11px 0!important}
+ #page-home .uw790-homequick{grid-template-columns:repeat(3,1fr);gap:7px;margin:0 0 12px}
+ #page-home .uw790-homequick button{padding:11px 9px;min-height:68px}
+ #page-home .uw790-homequick span{font-size:9px}
+ #page-home .uw70-livebar{margin-top:0!important}
+ .uw790-reviewitem{grid-template-columns:1fr}.uw790-reviewmedia{aspect-ratio:16/10}
+}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -1067,9 +1089,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <div class="uw70-hero-actions"><button class="btn hot" data-action="join">JOIN THE NETWORK</button><button class="btn" data-page="discover">EXPLORE CREATORS</button></div>
       <div class="uw70-session"><span class="uw70-dot"></span><strong id="uw42SessionStatus">CHECKING SESSION…</strong><button id="uw42LocalLogout" type="button">SIGN OUT THIS DEVICE</button></div>
     </div>
-    <div class="uw70-hero-art">
-      <div class="uw70-graffiti">MORE THAN A PLATFORM<br><b>A NETWORK.</b></div>
-      <div class="uw70-rail"><span>PEOPLE</span><span>IDEAS</span><span>EVENTS</span><span>WORLDS</span><span>OPPORTUNITY</span><span>COMMUNITY</span><span>CULTURE</span></div>
+    <div class="uw790-homequick">
+      <button data-page="people"><b>FIND PEOPLE</b><span>Search the whole network →</span></button>
+      <button data-page="events"><b>EVENTS</b><span>See what’s coming up →</span></button>
+      <button data-page="profile"><b>MY PROFILE</b><span>Edit your network identity →</span></button>
     </div>
   </section>
 
@@ -1126,7 +1149,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="uw70-commandstatus"><span>NETWORK COMMAND</span><b>● LIVE DATA</b></div>
   </section>
   <div class="uw70-commandnav">
-    <button class="active">OVERVIEW</button><button data-page="roster">STAFF</button><button data-page="availability">AVAILABILITY</button><button data-page="recruiting">RECRUITING</button><button data-page="eventbuilder">EVENT CONTROL</button><button data-page="applications">APPLICATIONS</button><button data-page="role-review">ROLE REVIEW</button><button data-page="tickets">TICKETS</button><button data-page="announcements">ANNOUNCEMENTS</button><button data-page="activity">AUDIT</button>
+    <button class="active">OVERVIEW</button><button data-page="roster">STAFF</button><button data-page="availability">AVAILABILITY</button><button data-page="recruiting">RECRUITING</button><button data-page="eventbuilder">EVENT CONTROL</button><button data-page="applications">APPLICATIONS</button><button data-uw790-media-review="true">MEDIA REVIEW <span id="uw790MediaBadge"></span></button><button data-page="role-review">ROLE REVIEW</button><button data-page="tickets">TICKETS</button><button data-page="announcements">ANNOUNCEMENTS</button><button data-page="activity">AUDIT</button>
   </div>
   <div class="uw70-commandbar">
     <div><span>NEEDS ACTION</span><b id="uw60NeedsAction">0</b></div><div><span>UPCOMING EVENTS</span><b id="uw60Events">0</b></div><div><span>OPEN PROJECTS</span><b id="uw60Projects">0</b></div><div><span>STAFF WITH COVERAGE</span><b id="uw60Coverage">0</b></div>
@@ -2856,7 +2879,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.5B';
+    stamp.textContent='UNDERWEB // 0.7.9';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3134,7 +3157,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.5b-private-showcase-uploads"></div>
+<div style="display:none" data-underweb-build="0.7.9-home-media-review"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4852,5 +4875,72 @@ const uw786Modal=document.getElementById('uw621ProfileModal');
 if(uw786Modal)new MutationObserver(()=>{
  if(uw786Modal.classList.contains('open')&&window.uw621ActiveCreator)uw786LoadVerifiedVrc(window.uw621ActiveCreator);
 }).observe(uw786Modal,{attributes:true,attributeFilter:['class']});
+</script>
+<div id="uw790MediaReviewModal" class="uw790-reviewmodal" aria-hidden="true">
+ <div class="uw790-reviewbox">
+  <div class="uw790-reviewhead"><div><span>COMMAND CENTER</span><h2>MEDIA REVIEW</h2></div><button id="uw790MediaClose" type="button">×</button></div>
+  <p class="uw790-reviewcopy">Private showcase uploads waiting for staff approval. Approved files are promoted into the public showcase bucket.</p>
+  <div id="uw790MediaQueue"><div class="uw70-empty">Loading review queue…</div></div>
+ </div>
+</div>
+<script id="uw790MediaReview">
+let uw790Queue=[];
+function uw790Esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+async function uw790Signed(path){
+ const {data,error}=await uwSupabase.storage.from('creator-showcase-pending').createSignedUrl(path,600);
+ return error?null:data?.signedUrl;
+}
+async function uw790RefreshBadge(){
+ try{
+  const a=await uwSupabase.rpc('uw_can_review_media');if(a.error||!a.data)return;
+  const q=await uwSupabase.rpc('uw_showcase_review_queue');if(q.error)return;
+  const n=(q.data||[]).length,b=document.getElementById('uw790MediaBadge');if(b)b.textContent=n?String(n):'';
+  const home=document.getElementById('uwOpenOpsCount');if(home)home.textContent=String(n);
+ }catch(e){console.warn('Media review badge',e)}
+}
+async function uw790OpenReview(){
+ const modal=document.getElementById('uw790MediaReviewModal'),box=document.getElementById('uw790MediaQueue');modal?.classList.add('open');document.body.style.overflow='hidden';
+ box.innerHTML='<div class="uw70-empty">Loading private review queue…</div>';
+ const a=await uwSupabase.rpc('uw_can_review_media');if(a.error||!a.data){box.innerHTML='<div class="uw70-empty">Media review authority required.</div>';return}
+ const q=await uwSupabase.rpc('uw_showcase_review_queue');if(q.error){box.innerHTML=`<div class="uw70-empty">${uw790Esc(q.error.message)}</div>`;return}
+ uw790Queue=q.data||[];if(!uw790Queue.length){box.innerHTML='<div class="uw70-empty">No media waiting for review.</div>';uw790RefreshBadge();return}
+ const cards=[];
+ for(const x of uw790Queue){
+   const url=await uw790Signed(x.storage_path);
+   const media=url?(x.media_type==='video'?`<video src="${uw790Esc(url)}" controls playsinline></video>`:`<img src="${uw790Esc(url)}" alt="">`):'<span>Preview unavailable</span>';
+   cards.push(`<article class="uw790-reviewitem" data-id="${uw790Esc(x.id)}"><div class="uw790-reviewmedia">${media}</div><div class="uw790-reviewbody"><div class="uw790-reviewmeta">${uw790Esc(x.user_id)} · ${new Date(x.created_at).toLocaleString()}</div><h3>${uw790Esc(x.title||'Untitled Work')}</h3>${x.caption?`<p>${uw790Esc(x.caption)}</p>`:''}<div class="uw790-reviewactions"><button class="btn hot" data-uw790-approve="${uw790Esc(x.id)}">APPROVE</button><button class="btn" data-uw790-deny="${uw790Esc(x.id)}">DENY</button></div></div></article>`);
+ }
+ box.innerHTML=cards.join('');
+}
+async function uw790Approve(id){
+ const x=uw790Queue.find(v=>v.id===id);if(!x)return;
+ if(!confirm('Approve this media and publish it to the creator showcase?'))return;
+ const dl=await uwSupabase.storage.from('creator-showcase-pending').download(x.storage_path);if(dl.error)return toast(dl.error.message);
+ const ext=(x.storage_path.split('.').pop()||'bin').replace(/[^a-z0-9]/gi,'');
+ const publicPath=`${x.user_id}/${Date.now()}-${id}.${ext}`;
+ const up=await uwSupabase.storage.from('creator-showcase').upload(publicPath,dl.data,{upsert:false,contentType:dl.data.type||undefined});
+ if(up.error)return toast(up.error.message);
+ const publicUrl=uwSupabase.storage.from('creator-showcase').getPublicUrl(publicPath).data.publicUrl;
+ const db=await uwSupabase.from('creator_showcase').update({media_url:publicUrl,storage_path:publicPath}).eq('id',id).eq('moderation_status','pending');
+ if(db.error){await uwSupabase.storage.from('creator-showcase').remove([publicPath]);return toast(db.error.message)}
+ const rv=await uwSupabase.rpc('uw_review_showcase_media',{p_media_id:id,p_approve:true,p_reason:null});
+ if(rv.error){await uwSupabase.from('creator_showcase').update({media_url:'pending://'+x.storage_path,storage_path:x.storage_path}).eq('id',id);await uwSupabase.storage.from('creator-showcase').remove([publicPath]);return toast(rv.error.message)}
+ await uwSupabase.storage.from('creator-showcase-pending').remove([x.storage_path]);
+ toast('Media approved and published.');uw790OpenReview();uw790RefreshBadge();
+}
+async function uw790Deny(id){
+ const reason=prompt('Optional denial reason:')??null;if(reason===null)return;
+ if(!confirm('Deny this showcase upload?'))return;
+ const rv=await uwSupabase.rpc('uw_review_showcase_media',{p_media_id:id,p_approve:false,p_reason:reason});
+ if(rv.error)return toast(rv.error.message);
+ toast('Media denied. It remains private.');uw790OpenReview();uw790RefreshBadge();
+}
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-uw790-media-review]')){e.preventDefault();uw790OpenReview()}
+ const a=e.target.closest('[data-uw790-approve]');if(a)uw790Approve(a.dataset.uw790Approve);
+ const d=e.target.closest('[data-uw790-deny]');if(d)uw790Deny(d.dataset.uw790Deny);
+ if(e.target.closest('#uw790MediaClose')){document.getElementById('uw790MediaReviewModal')?.classList.remove('open');document.body.style.overflow=''}
+});
+document.addEventListener('DOMContentLoaded',()=>setTimeout(uw790RefreshBadge,1400));
 </script>
 </body></html>
