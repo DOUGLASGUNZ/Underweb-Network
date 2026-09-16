@@ -974,6 +974,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:600px){.uw783-results{grid-template-columns:1fr}}
 </style>
 
+<style id="uw784CropCSS">
+.uw784-cropmodal{display:none;position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.88);padding:18px;align-items:center;justify-content:center}
+.uw784-cropmodal.open{display:flex}.uw784-cropsheet{width:min(100%,520px);background:#050806;border:1px solid #294631;padding:18px;box-shadow:0 0 50px rgba(0,0,0,.8)}
+.uw784-crophead{display:flex;justify-content:space-between;align-items:flex-start}.uw784-crophead span{font:800 9px monospace;color:#45ff72;letter-spacing:.13em}.uw784-crophead h3{margin:5px 0 0}.uw784-crophead button{border:0;background:none;color:#fff;font-size:28px}
+.uw784-cropsheet>p{color:#89958d;font-size:12px}.uw784-stage{width:min(76vw,390px);aspect-ratio:1;margin:18px auto;position:relative;overflow:hidden;background:#000;touch-action:none}
+#uw784Canvas{width:100%;height:100%;display:block}.uw784-ring{position:absolute;inset:2%;border:3px solid #45ff72;border-radius:50%;box-shadow:0 0 0 100vmax rgba(0,0,0,.48),inset 0 0 25px rgba(69,255,114,.1);pointer-events:none}
+.uw784-controls{display:grid;grid-template-columns:42px 1fr 42px;gap:10px;align-items:center}.uw784-controls button{height:42px;background:#080d09;border:1px solid #2b4432;color:#45ff72;font-size:22px}.uw784-controls input{width:100%;accent-color:#45ff72}
+.uw784-actions{display:flex;gap:10px;margin-top:16px}.uw784-actions .btn{flex:1}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2369,7 +2378,7 @@ async function saveMyProfile(){
   const headline=uw033El('profileHeadline')?.value?.trim()||'',bio=uw033El('profileBio')?.value?.trim()||'';const saveBtn=uw033El('saveProfileBtn033'),state=uw033El('profileSaveState');if(saveBtn)saveBtn.disabled=true;if(state)state.textContent='SAVING';
   try{
     let avatar=uw033Profile.avatar_url||null,banner=uw033Profile.banner_url||null;
-    const af=uw033El('profileAvatarInput')?.files?.[0],bf=uw033El('profileBannerInput')?.files?.[0];
+    const af=(typeof uw784AvatarFile==='function'?uw784AvatarFile():uw033El('profileAvatarInput')?.files?.[0]),bf=uw033El('profileBannerInput')?.files?.[0];
     if(af){if(state)state.textContent='UPLOADING AVATAR';avatar=await uw033UploadProfileMedia(af,'avatar')}
     if(bf){if(state)state.textContent='UPLOADING BANNER';banner=await uw033UploadProfileMedia(bf,'banner')}
     const specialties=(uw033El('profileSkills')?.value||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,20);
@@ -2819,7 +2828,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.3.2';
+    stamp.textContent='UNDERWEB // 0.7.8.3.3';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3097,7 +3106,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.3.2-people-search-rpc"></div>
+<div style="display:none" data-underweb-build="0.7.8.3.3-avatar-crop"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4674,4 +4683,60 @@ document.addEventListener('click',e=>{
 },true);
 </script>
 
+<div id="uw784CropModal" class="uw784-cropmodal" aria-hidden="true">
+ <div class="uw784-cropsheet">
+  <div class="uw784-crophead"><div><span>PROFILE PICTURE</span><h3>POSITION YOUR PHOTO</h3></div><button id="uw784CropClose" type="button">×</button></div>
+  <p>Drag to reposition. Pinch or use the slider to zoom. The circle is exactly what your profile picture will use.</p>
+  <div class="uw784-stage" id="uw784Stage"><canvas id="uw784Canvas" width="640" height="640"></canvas><div class="uw784-ring"></div></div>
+  <div class="uw784-controls"><button id="uw784Minus" type="button">−</button><input id="uw784Zoom" type="range" min="1" max="4" step=".01" value="1"><button id="uw784Plus" type="button">+</button></div>
+  <div class="uw784-actions"><button class="btn" id="uw784Cancel" type="button">CANCEL</button><button class="btn hot" id="uw784Use" type="button">USE THIS CROP</button></div>
+ </div>
+</div>
+
+<script id="uw784AvatarCrop">
+let uw784Img=null,uw784Source=null,uw784Scale=1,uw784X=0,uw784Y=0,uw784Drag=null,uw784Pinch=null,uw784CroppedFile=null;
+const uw784=id=>document.getElementById(id);
+function uw784Draw(){
+ const c=uw784('uw784Canvas');if(!c||!uw784Img)return;const x=c.getContext('2d'),W=c.width,H=c.height;
+ x.clearRect(0,0,W,H);
+ const base=Math.max(W/uw784Img.naturalWidth,H/uw784Img.naturalHeight),sc=base*uw784Scale;
+ const w=uw784Img.naturalWidth*sc,h=uw784Img.naturalHeight*sc;
+ x.drawImage(uw784Img,(W-w)/2+uw784X,(H-h)/2+uw784Y,w,h);
+}
+function uw784Open(file){
+ if(!file||!file.type.startsWith('image/'))return;
+ uw784Source=file;uw784CroppedFile=null;const im=new Image(),u=URL.createObjectURL(file);
+ im.onload=()=>{URL.revokeObjectURL(u);uw784Img=im;uw784Scale=1;uw784X=0;uw784Y=0;uw784('uw784Zoom').value=1;uw784Draw();uw784('uw784CropModal').classList.add('open');document.body.style.overflow='hidden'};
+ im.src=u;
+}
+function uw784Close(){uw784('uw784CropModal').classList.remove('open');document.body.style.overflow=''}
+function uw784SetScale(v){uw784Scale=Math.max(1,Math.min(4,Number(v)||1));uw784('uw784Zoom').value=uw784Scale;uw784Draw()}
+async function uw784Commit(){
+ const c=uw784('uw784Canvas');if(!c)return;
+ const blob=await new Promise(r=>c.toBlob(r,'image/webp',.92));if(!blob)return toast('Could not crop image.');
+ uw784CroppedFile=new File([blob],`avatar-${Date.now()}.webp`,{type:'image/webp'});
+ const u=URL.createObjectURL(blob);uw033SetPreview(uw033El('avatarPreview'),u);uw033SetPreview(uw033El('liveProfileAvatar'),u);uw784Close();toast('Profile picture crop ready. Save Profile to upload it.');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ const input=uw784('profileAvatarInput');
+ if(input){
+   /* capture phase stops the old auto-preview handler from replacing our crop preview */
+   input.addEventListener('change',e=>{const f=e.target.files?.[0];if(f){e.stopImmediatePropagation();uw784Open(f)}},true);
+ }
+ uw784('uw784Zoom')?.addEventListener('input',e=>uw784SetScale(e.target.value));
+ uw784('uw784Minus')?.addEventListener('click',()=>uw784SetScale(uw784Scale-.15));
+ uw784('uw784Plus')?.addEventListener('click',()=>uw784SetScale(uw784Scale+.15));
+ uw784('uw784Use')?.addEventListener('click',uw784Commit);uw784('uw784Cancel')?.addEventListener('click',uw784Close);uw784('uw784CropClose')?.addEventListener('click',uw784Close);
+ const st=uw784('uw784Stage');
+ st?.addEventListener('pointerdown',e=>{st.setPointerCapture(e.pointerId);uw784Drag={id:e.pointerId,x:e.clientX,y:e.clientY,ox:uw784X,oy:uw784Y}});
+ st?.addEventListener('pointermove',e=>{if(!uw784Drag||e.pointerId!==uw784Drag.id)return;const k=640/st.clientWidth;uw784X=uw784Drag.ox+(e.clientX-uw784Drag.x)*k;uw784Y=uw784Drag.oy+(e.clientY-uw784Drag.y)*k;uw784Draw()});
+ st?.addEventListener('pointerup',()=>uw784Drag=null);st?.addEventListener('pointercancel',()=>uw784Drag=null);
+ /* native touch pinch */
+ st?.addEventListener('touchstart',e=>{if(e.touches.length===2){const a=e.touches[0],b=e.touches[1];uw784Pinch={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),s:uw784Scale}}},{passive:false});
+ st?.addEventListener('touchmove',e=>{if(e.touches.length===2&&uw784Pinch){e.preventDefault();const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);uw784SetScale(uw784Pinch.s*d/uw784Pinch.d)}},{passive:false});
+ st?.addEventListener('touchend',()=>uw784Pinch=null);
+});
+/* saveMyProfile reads this helper so the cropped file, not the raw original, is uploaded */
+function uw784AvatarFile(){return uw784CroppedFile||uw033El('profileAvatarInput')?.files?.[0]||null}
+</script>
 </body></html>
