@@ -983,6 +983,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .uw784-controls{display:grid;grid-template-columns:42px 1fr 42px;gap:10px;align-items:center}.uw784-controls button{height:42px;background:#080d09;border:1px solid #2b4432;color:#45ff72;font-size:22px}.uw784-controls input{width:100%;accent-color:#45ff72}
 .uw784-actions{display:flex;gap:10px;margin-top:16px}.uw784-actions .btn{flex:1}
 </style>
+<style id="uw785BannerCropCSS">
+.uw785-sheet{width:min(100%,760px)}
+.uw785-stage{width:100%;aspect-ratio:16/5;margin:18px auto;position:relative;overflow:hidden;background:#000;touch-action:none}
+#uw785Canvas{width:100%;height:100%;display:block}
+.uw785-frame{position:absolute;inset:0;border:2px solid #45ff72;box-shadow:inset 0 0 28px rgba(69,255,114,.09);pointer-events:none}
+@media(max-width:600px){.uw785-stage{width:100%}}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2378,7 +2385,7 @@ async function saveMyProfile(){
   const headline=uw033El('profileHeadline')?.value?.trim()||'',bio=uw033El('profileBio')?.value?.trim()||'';const saveBtn=uw033El('saveProfileBtn033'),state=uw033El('profileSaveState');if(saveBtn)saveBtn.disabled=true;if(state)state.textContent='SAVING';
   try{
     let avatar=uw033Profile.avatar_url||null,banner=uw033Profile.banner_url||null;
-    const af=(typeof uw784AvatarFile==='function'?uw784AvatarFile():uw033El('profileAvatarInput')?.files?.[0]),bf=uw033El('profileBannerInput')?.files?.[0];
+    const af=(typeof uw784AvatarFile==='function'?uw784AvatarFile():uw033El('profileAvatarInput')?.files?.[0]),bf=(typeof uw785BannerFile==='function'?uw785BannerFile():uw033El('profileBannerInput')?.files?.[0]);
     if(af){if(state)state.textContent='UPLOADING AVATAR';avatar=await uw033UploadProfileMedia(af,'avatar')}
     if(bf){if(state)state.textContent='UPLOADING BANNER';banner=await uw033UploadProfileMedia(bf,'banner')}
     const specialties=(uw033El('profileSkills')?.value||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,20);
@@ -2828,7 +2835,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.3.3';
+    stamp.textContent='UNDERWEB // 0.7.8.3.4';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3106,7 +3113,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.3.3-avatar-crop"></div>
+<div style="display:none" data-underweb-build="0.7.8.3.4-profile-media-positioning"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4738,5 +4745,56 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 /* saveMyProfile reads this helper so the cropped file, not the raw original, is uploaded */
 function uw784AvatarFile(){return uw784CroppedFile||uw033El('profileAvatarInput')?.files?.[0]||null}
+</script>
+<div id="uw785BannerModal" class="uw784-cropmodal" aria-hidden="true">
+ <div class="uw784-cropsheet uw785-sheet">
+  <div class="uw784-crophead"><div><span>PROFILE BANNER</span><h3>POSITION YOUR BANNER</h3></div><button id="uw785Close" type="button">×</button></div>
+  <p>Drag to reposition. Pinch or use the slider to zoom. The frame matches the wide profile banner.</p>
+  <div class="uw785-stage" id="uw785Stage"><canvas id="uw785Canvas" width="1600" height="500"></canvas><div class="uw785-frame"></div></div>
+  <div class="uw784-controls"><button id="uw785Minus" type="button">−</button><input id="uw785Zoom" type="range" min="1" max="4" step=".01" value="1"><button id="uw785Plus" type="button">+</button></div>
+  <div class="uw784-actions"><button class="btn" id="uw785Cancel" type="button">CANCEL</button><button class="btn hot" id="uw785Use" type="button">USE THIS BANNER</button></div>
+ </div>
+</div>
+
+<script id="uw785BannerCrop">
+let uw785Img=null,uw785Scale=1,uw785X=0,uw785Y=0,uw785Drag=null,uw785Pinch=null,uw785CroppedFile=null;
+const uw785=id=>document.getElementById(id);
+function uw785Draw(){
+ const c=uw785('uw785Canvas');if(!c||!uw785Img)return;const x=c.getContext('2d'),W=c.width,H=c.height;
+ x.clearRect(0,0,W,H);
+ const base=Math.max(W/uw785Img.naturalWidth,H/uw785Img.naturalHeight),sc=base*uw785Scale;
+ const w=uw785Img.naturalWidth*sc,h=uw785Img.naturalHeight*sc;
+ x.drawImage(uw785Img,(W-w)/2+uw785X,(H-h)/2+uw785Y,w,h);
+}
+function uw785Open(file){
+ if(!file||!file.type.startsWith('image/'))return;
+ uw785CroppedFile=null;const im=new Image(),u=URL.createObjectURL(file);
+ im.onload=()=>{URL.revokeObjectURL(u);uw785Img=im;uw785Scale=1;uw785X=0;uw785Y=0;uw785('uw785Zoom').value=1;uw785Draw();uw785('uw785BannerModal').classList.add('open');document.body.style.overflow='hidden'};
+ im.src=u;
+}
+function uw785Close(){uw785('uw785BannerModal').classList.remove('open');document.body.style.overflow=''}
+function uw785SetScale(v){uw785Scale=Math.max(1,Math.min(4,Number(v)||1));uw785('uw785Zoom').value=uw785Scale;uw785Draw()}
+async function uw785Commit(){
+ const c=uw785('uw785Canvas');if(!c)return;
+ const blob=await new Promise(r=>c.toBlob(r,'image/webp',.92));if(!blob)return toast('Could not crop banner.');
+ uw785CroppedFile=new File([blob],`banner-${Date.now()}.webp`,{type:'image/webp'});
+ const u=URL.createObjectURL(blob);uw033SetPreview(uw033El('bannerPreview'),u);uw033SetPreview(uw033El('liveProfileBanner'),u);uw785Close();toast('Banner crop ready. Save Profile to upload it.');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ const input=uw785('profileBannerInput');
+ if(input)input.addEventListener('change',e=>{const f=e.target.files?.[0];if(f){e.stopImmediatePropagation();uw785Open(f)}},true);
+ uw785('uw785Zoom')?.addEventListener('input',e=>uw785SetScale(e.target.value));
+ uw785('uw785Minus')?.addEventListener('click',()=>uw785SetScale(uw785Scale-.15));
+ uw785('uw785Plus')?.addEventListener('click',()=>uw785SetScale(uw785Scale+.15));
+ uw785('uw785Use')?.addEventListener('click',uw785Commit);uw785('uw785Cancel')?.addEventListener('click',uw785Close);uw785('uw785Close')?.addEventListener('click',uw785Close);
+ const st=uw785('uw785Stage');
+ st?.addEventListener('pointerdown',e=>{st.setPointerCapture(e.pointerId);uw785Drag={id:e.pointerId,x:e.clientX,y:e.clientY,ox:uw785X,oy:uw785Y}});
+ st?.addEventListener('pointermove',e=>{if(!uw785Drag||e.pointerId!==uw785Drag.id)return;const k=1600/st.clientWidth;uw785X=uw785Drag.ox+(e.clientX-uw785Drag.x)*k;uw785Y=uw785Drag.oy+(e.clientY-uw785Drag.y)*k;uw785Draw()});
+ st?.addEventListener('pointerup',()=>uw785Drag=null);st?.addEventListener('pointercancel',()=>uw785Drag=null);
+ st?.addEventListener('touchstart',e=>{if(e.touches.length===2){const a=e.touches[0],b=e.touches[1];uw785Pinch={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),s:uw785Scale}}},{passive:false});
+ st?.addEventListener('touchmove',e=>{if(e.touches.length===2&&uw785Pinch){e.preventDefault();const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);uw785SetScale(uw785Pinch.s*d/uw785Pinch.d)}},{passive:false});
+ st?.addEventListener('touchend',()=>uw785Pinch=null);
+});
+function uw785BannerFile(){return uw785CroppedFile||uw033El('profileBannerInput')?.files?.[0]||null}
 </script>
 </body></html>
