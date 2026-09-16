@@ -3368,18 +3368,44 @@ async function uw744LoadMine(){
 }
 async function uw744SaveShop(){
   const state=document.getElementById('uw744CommissionState');
+  if(!currentSession)return passwordlessSignIn();
+  const uid=currentSession.user.id;
+  const urlInput=document.getElementById('uw744ShopUrl');
+  const labelInput=document.getElementById('uw744ShopLabel');
+  const raw=String(urlInput?.value||'').trim();
+  const label=String(labelInput?.value||'').trim()||'SHOP / COMMISSIONS';
+
+  if(raw){
+    let parsed;
+    try{parsed=new URL(raw)}catch(_){if(state)state.textContent='INVALID URL';return toast('Use the full shop link, including https://');}
+    if(parsed.protocol!=='http:'&&parsed.protocol!=='https:'){if(state)state.textContent='INVALID URL';return toast('Shop link must start with https://');}
+  }
+
   if(state)state.textContent='SAVING';
-  await saveMyProfile();
-  if(!currentSession)return;
-  const {data,error}=await uwSupabase.from('creator_profiles')
-    .select('shop_url,shop_label')
-    .eq('user_id',currentSession.user.id)
-    .maybeSingle();
-  if(error){if(state)state.textContent='SAVE FAILED';return toast('Commission verification failed: '+error.message);}
-  const expected=document.getElementById('uw744ShopUrl')?.value.trim()||'';
-  const actual=String(data?.shop_url||'').trim();
-  if(expected!==actual){if(state)state.textContent='NOT SAVED';return toast('Commission URL did not persist.');}
-  if(state)state.textContent=actual?'SAVED — PUBLIC PROFILE':'LINK REMOVED';
+  try{
+    // Capture the exact field value first and write commission data directly.
+    // Do not route this button through the larger profile/media save path.
+    const write=await uwSupabase.from('creator_profiles')
+      .update({shop_url:raw||null,shop_label:label})
+      .eq('user_id',uid)
+      .select('user_id,shop_url,shop_label')
+      .maybeSingle();
+    if(write.error)throw write.error;
+    if(!write.data)throw new Error('No creator profile row was updated.');
+
+    const actual=String(write.data.shop_url||'').trim();
+    if(actual!==raw)throw new Error('Database verification failed: commission URL did not persist.');
+
+    if(urlInput)urlInput.value=actual;
+    if(labelInput)labelInput.value=write.data.shop_label||label;
+    if(uw033Profile){uw033Profile.shop_url=actual||null;uw033Profile.shop_label=write.data.shop_label||label;}
+    if(state)state.textContent=actual?'SAVED — PUBLIC PROFILE':'LINK REMOVED';
+    toast(actual?'Commission link saved to your public profile.':'Commission link removed.');
+  }catch(err){
+    console.error('Commission save failed',err);
+    if(state)state.textContent='SAVE FAILED';
+    toast('Commission save failed: '+(err.message||err));
+  }
 }
 document.getElementById('uw744SaveCommission')?.addEventListener('click',uw744SaveShop);
 
