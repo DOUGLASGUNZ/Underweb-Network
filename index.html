@@ -2900,8 +2900,8 @@ document.querySelectorAll('[data-uw62-need]').forEach(b=>b.addEventListener('cli
 document.addEventListener('click',e=>{const p=e.target.closest('[data-uw62-portfolio]');if(p){const u=p.dataset.uw62Portfolio;if(/^https?:\/\//i.test(u))window.open(u,'_blank','noopener')}});
 </script>
 
-<div class="uw621-modal" id="uw621ProfileModal" aria-hidden="true"><article class="uw621-sheet"><div class="uw621-cover" id="uw621Cover"><span class="uw621-partnerflag" id="uw621PartnerFlag" style="display:none">✓ VERIFIED NETWORK PARTNER</span><button class="uw621-close" id="uw621Close" aria-label="Close">×</button></div><div class="uw621-main"><div class="uw621-head"><div class="uw621-avatar" id="uw621Avatar">◆</div><div class="uw621-title"><h2 id="uw621Name">Creator</h2><p id="uw621Headline">UnderWeb Network Creator</p></div><div class="uw621-scope" id="uw621Scope">UNDERWEB</div></div><div class="uw621-actions"><button class="btn hot" id="uw621Portfolio">VIEW PORTFOLIO ↗</button><button class="btn" id="uw621Invite" disabled title="Project invites arrive in 0.6.3">INVITE TO PROJECT · SOON</button></div><div class="uw621-grid"><section class="uw621-panel"><div class="uw621-kicker">ABOUT</div><h3>Creator Profile</h3><div class="uw621-bio" id="uw621Bio"></div><div class="uw621-kicker" style="margin-top:18px">SPECIALTIES</div><div class="uw621-row" id="uw621Skills"></div><div id="uw744CreatorShop" class="uw744-shop" hidden></div>
-<div class="uw621-kicker" style="margin-top:18px">APPROVED NETWORK ROLES</div><div class="uw621-row" id="uw621Roles"></div><div id="uw786VrcWrap" class="uw786-vrc" hidden>
+<div class="uw621-modal" id="uw621ProfileModal" aria-hidden="true"><article class="uw621-sheet"><div class="uw621-cover" id="uw621Cover"><span class="uw621-partnerflag" id="uw621PartnerFlag" style="display:none">✓ VERIFIED NETWORK PARTNER</span><button class="uw621-close" id="uw621Close" aria-label="Close">×</button></div><div class="uw621-main"><div class="uw621-head"><div class="uw621-avatar" id="uw621Avatar">◆</div><div class="uw621-title"><h2 id="uw621Name">Creator</h2><p id="uw621Headline">UnderWeb Network Creator</p><div id="uwVerifyBadges" class="uwverify-badges" aria-label="Verified connections"></div></div><div class="uw621-scope" id="uw621Scope">UNDERWEB</div></div><div class="uw621-actions"><button class="btn hot" id="uw621Portfolio">VIEW PORTFOLIO ↗</button><button class="btn" id="uw621Invite" disabled title="Project invites arrive in 0.6.3">INVITE TO PROJECT · SOON</button></div><div class="uw621-grid"><section class="uw621-panel"><div class="uw621-kicker">ABOUT</div><h3>Creator Profile</h3><div class="uw621-bio" id="uw621Bio"></div><div class="uw621-kicker" style="margin-top:18px">SPECIALTIES</div><div class="uw621-row" id="uw621Skills"></div><div id="uw744CreatorShop" class="uw744-shop" hidden></div>
+<div class="uw621-kicker" style="margin-top:18px">APPROVED NETWORK ROLES</div><div class="uw621-row" id="uw621Roles"></div><div id="uw786VrcWrap" class="uw786-vrc" hidden style="display:none!important">
   <div class="uw621-kicker">VERIFIED CONNECTION</div>
   <div class="uw786-vrcrow">
     <div class="uw786-vrcmark">✓</div>
@@ -5300,5 +5300,43 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-page="profile"]'))setTimeout(uw795RefreshCommissionEditor,180);
 });
 window.addEventListener('pageshow',()=>setTimeout(uw795RefreshCommissionEditor,1500));
+</script>
+\n<style id="uwVerifyBadgesCSS">
+.uwverify-badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;min-height:0}
+.uwverify-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid rgba(69,255,114,.42);border-radius:999px;background:rgba(69,255,114,.075);box-shadow:0 0 18px rgba(69,255,114,.08);color:#dfffe7;font-size:10px;font-weight:900;letter-spacing:.08em;line-height:1;white-space:nowrap}
+.uwverify-badge .uwverify-check{display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#45ff72;color:#041108;font-size:11px;box-shadow:0 0 12px rgba(69,255,114,.5)}
+.uwverify-badge.discord{border-color:rgba(129,140,248,.5);background:rgba(88,101,242,.11);box-shadow:0 0 18px rgba(88,101,242,.1)}
+.uwverify-badge.discord .uwverify-check{background:#818cf8;color:#070918;box-shadow:0 0 12px rgba(129,140,248,.5)}
+@media(max-width:600px){.uwverify-badge{font-size:9px;padding:5px 8px}}
+</style>
+<script id="uwVerifyBadgesV1">
+function uwVerifyBadgeMarkup(kind){
+ const discord=kind==='discord';
+ return `<span class="uwverify-badge${discord?' discord':''}" title="${discord?'Discord identity linked to this UnderWeb account':'VRChat identity verified by UnderWeb staff'}"><span class="uwverify-check">✓</span>${discord?'DISCORD VERIFIED':'VRCHAT VERIFIED'}</span>`;
+}
+async function uwLoadVerificationBadges(uid){
+ const box=document.getElementById('uwVerifyBadges');
+ if(!box||!uid)return;
+ box.innerHTML='';
+ const checks=await Promise.allSettled([
+   uwSupabase.rpc('uw_public_verified_vrchat',{p_user_id:uid}),
+   uwSupabase.rpc('uw_public_verified_discord',{p_user_id:uid})
+ ]);
+ let vrc=false,discord=false;
+ if(checks[0].status==='fulfilled'&&!checks[0].value.error){
+   const d=checks[0].value.data,v=Array.isArray(d)?d[0]:d;
+   vrc=!!(v&&v.profile_url);
+ }
+ if(checks[1].status==='fulfilled'&&!checks[1].value.error){
+   const d=checks[1].value.data,v=Array.isArray(d)?d[0]:d;
+   discord=!!(v&&(v.discord_user_id||v.provider_id||v.verified));
+ }
+ box.innerHTML=(vrc?uwVerifyBadgeMarkup('vrchat'):'')+(discord?uwVerifyBadgeMarkup('discord'):'');
+}
+// Override the legacy VRChat decoration with the compact permanent badge renderer.
+uw786LoadVerifiedVrc=async function(uid){
+ const old=document.getElementById('uw786VrcWrap'); if(old)old.hidden=true;
+ await uwLoadVerificationBadges(uid);
+};
 </script>
 </body></html>
