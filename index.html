@@ -1079,6 +1079,30 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .uw794-desktopnav button{padding-left:8px;padding-right:8px;font-size:9px}
 }
 </style>
+<style id="uw795DesktopDrawerCSS">
+@media(min-width:1051px){
+  #drawerBtn{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    min-width:42px!important;width:42px!important;height:42px!important;padding:0!important;
+    font-size:20px!important;border:1px solid #24402d!important;background:#030703!important;color:#dfffe8!important;
+  }
+  .uw794-desktopnav{display:none!important}
+  .uw70-nav{display:flex!important}
+  .sidebar{
+    display:block!important;position:fixed!important;top:72px!important;left:0!important;bottom:0!important;
+    width:310px!important;height:auto!important;z-index:120!important;transform:translateX(-105%)!important;
+    transition:transform .22s ease!important;background:#030503!important;border-right:1px solid #24402d!important;
+    box-shadow:18px 0 42px rgba(0,0,0,.68)!important;overflow:auto!important;padding:14px 10px 28px!important;
+  }
+  .sidebar.open{transform:translateX(0)!important}
+  .drawer-overlay{position:fixed!important;inset:72px 0 0!important;background:rgba(0,0,0,.64)!important;z-index:110!important;display:none!important}
+  .drawer-overlay.open{display:block!important}
+}
+</style>
+<style id="uw795CommissionCSS">
+.uw795-commission{margin:18px 0 0;padding:16px;border:1px solid rgba(69,255,114,.28);background:linear-gradient(135deg,rgba(69,255,114,.045),rgba(0,0,0,.18))}
+.uw795-commission[hidden]{display:none!important}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -1338,6 +1362,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw40-block">
 <div class="uw40-title"><div><span>IDENTITY</span><h3>Profile Details</h3></div></div>
 <div class="uw40-fields"><label><span>Display name</span><input class="input" id="profileDisplayName" placeholder="Display name"/></label><label><span>Headline</span><input class="input" id="profileHeadline" placeholder="DJ • Unity Artist • Community Owner"/></label><label class="full"><span>Bio</span><textarea class="textarea" id="profileBio" placeholder="Tell the network what you make, perform, or do."></textarea></label><label><span>Profile type</span><select class="select" id="profileMode"><option value="creator_staff">Creator + Staff</option><option value="creator">Creator</option><option value="staff">Staff</option><option value="community">Community Member</option></select></label><label><span>Availability</span><select class="select" id="profileAvailability"><option value="available">Available</option><option value="limited">Limited</option><option value="by_request">Available by request</option><option value="booked">Booked / Busy</option><option value="unavailable">Unavailable</option></select></label><label class="full"><span>Specialties / skills</span><input class="input" id="profileSkills" placeholder="Unity, World Design, DJ, Blender, Photography"/></label></div>
+<div id="uw795CommissionEditor" class="uw795-commission" hidden>
+ <div class="uw40-title"><div><span>CONFIRMED CREATOR</span><h3>Commission Link</h3></div><small>PUBLIC PROFILE</small></div>
+ <p class="meta">Approved creators can link an external commission page, shop, Carrd, Ko-fi, Gumroad, Booth, portfolio booking page, or similar creator destination.</p>
+ <div class="uw40-fields">
+  <label class="full"><span>Commission / shop URL</span><input class="input" id="uw744ShopUrl" type="url" placeholder="https://..."/></label>
+  <label class="full"><span>Button label</span><input class="input" id="uw744ShopLabel" maxlength="40" placeholder="COMMISSIONS OPEN"/></label>
+ </div>
+</div>
 <div class="uw40-save"><button class="btn hot" id="saveProfileBtn033" type="button">SAVE PROFILE</button><small>Images save to your private upload folder and display publicly on your network profile.</small></div>
 </section>
 </div>
@@ -2942,7 +2974,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.9.4';
+    stamp.textContent='UNDERWEB // 0.7.9.5';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3220,7 +3252,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.9.4-desktop-navigation"></div>
+<div style="display:none" data-underweb-build="0.7.9.5-pc-menu-creator-commissions"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3343,16 +3375,23 @@ document.addEventListener('click',e=>{
 });
 
 /* Decorate the existing public-profile viewer with commerce + selected creator showcase. */
+const UW795_CREATOR_ROLE_SET=new Set(['digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer','avatar_creator','world_creator','unity_creator','blender_artist','graphic_designer','producer','musician','rapper','vocalist','artist','performer']);
+async function uw795ConfirmedCreator(uid){
+ const {data,error}=await uwSupabase.from('user_roles').select('role_slug').eq('user_id',uid).eq('status','active');
+ return !error&&(data||[]).some(r=>UW795_CREATOR_ROLE_SET.has(String(r.role_slug||'').toLowerCase()));
+}
 async function uw744DecoratePublic(uid){
  uw744ViewedUid=String(uid||'');
  if(typeof uw743LoadPublic==='function')uw743LoadPublic(uw744ViewedUid);
  const box=document.getElementById('uw744CreatorShop');if(!box)return;
  box.hidden=true;box.innerHTML='';
+ if(!await uw795ConfirmedCreator(uw744ViewedUid))return;
  const {data}=await uwSupabase.from('creator_profiles').select('shop_url,shop_label').eq('user_id',uw744ViewedUid).maybeSingle();
  if(data?.shop_url){
-   const safe=String(data.shop_url).replace(/"/g,'&quot;');
-   const label=String(data.shop_label||'SHOP / COMMISSIONS').replace(/[<>&]/g,'');
-   box.innerHTML=`<a href="${safe}" target="_blank" rel="noopener noreferrer">${label} <span>EXTERNAL CREATOR SHOP ↗</span></a>`;
+   let safe='';try{const u=new URL(String(data.shop_url));if(u.protocol==='http:'||u.protocol==='https:')safe=u.href}catch(e){}
+   if(!safe)return;
+   const label=String(data.shop_label||'SHOP / COMMISSIONS').replace(/[<>&]/g,'').slice(0,40);
+   box.innerHTML=`<a href="${safe.replace(/"/g,'&quot;')}" target="_blank" rel="noopener noreferrer">${label} <span>CREATOR COMMISSIONS ↗</span></a>`;
    box.hidden=false;
  }
 }
@@ -5115,5 +5154,18 @@ document.addEventListener('click',e=>{
    });
  },0);
 },false);
+</script>
+<script id="uw795ConfirmedCreatorCommerce">
+async function uw795RefreshCommissionEditor(){
+ const box=document.getElementById('uw795CommissionEditor');
+ if(!box||typeof currentSession==='undefined'||!currentSession?.user?.id)return;
+ const ok=await uw795ConfirmedCreator(currentSession.user.id);
+ box.hidden=!ok;
+ if(ok&&typeof uw744LoadMine==='function')await uw744LoadMine();
+}
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-page="profile"]'))setTimeout(uw795RefreshCommissionEditor,180);
+});
+window.addEventListener('pageshow',()=>setTimeout(uw795RefreshCommissionEditor,1500));
 </script>
 </body></html>
