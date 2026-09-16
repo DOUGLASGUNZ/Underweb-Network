@@ -1103,6 +1103,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .uw795-commission{margin:18px 0 0;padding:16px;border:1px solid rgba(69,255,114,.28);background:linear-gradient(135deg,rgba(69,255,114,.045),rgba(0,0,0,.18))}
 .uw795-commission[hidden]{display:none!important}
 </style>
+<!-- RC1 commission consolidation: canonical profile save/load/view only -->
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2005,7 +2006,7 @@ async function loadMyProfile(){
   }
 }
 
-async function saveMyProfile(){
+async function uwLegacySaveMyProfileDisabled(){
   if(!currentSession){
     toast("Sign in first to save your profile.");
     return passwordlessSignIn();
@@ -2493,7 +2494,7 @@ function uw033RenderLiveProfile(){
 async function loadMyProfile(){
   if(!currentSession)return;
   const uid=currentSession.user.id;
-  const {data,error}=await uwSupabase.from('creator_profiles').select('display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url').eq('user_id',uid).maybeSingle();
+  const {data,error}=await uwSupabase.from('creator_profiles').select('display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,shop_url,shop_label').eq('user_id',uid).maybeSingle();
   if(error){console.warn('Profile fields may need migration:',error.message);return;}
   uw033Profile={...uw033Profile,...(data||{})};
   if(uw033El('profileDisplayName'))uw033El('profileDisplayName').value=data?.display_name||currentAccountProfile?.display_name||'';
@@ -2502,6 +2503,8 @@ async function loadMyProfile(){
   if(uw033El('profileMode'))uw033El('profileMode').value=data?.profile_mode||'creator_staff';
   if(uw033El('profileAvailability'))uw033El('profileAvailability').value=data?.availability||'by_request';
   if(uw033El('profileSkills'))uw033El('profileSkills').value=Array.isArray(data?.specialties)?data.specialties.join(', '):'';
+  if(uw033El('uw744ShopUrl'))uw033El('uw744ShopUrl').value=data?.shop_url||'';
+  if(uw033El('uw744ShopLabel'))uw033El('uw744ShopLabel').value=data?.shop_label||'SHOP / COMMISSIONS';
   uw033SetPreview(uw033El('avatarPreview'),data?.avatar_url);uw033SetPreview(uw033El('bannerPreview'),data?.banner_url);uw033RenderLiveProfile();
 }
 async function uw033UploadProfileMedia(file,kind){
@@ -3364,22 +3367,19 @@ async function uw744LoadMine(){
  if(u)u.value=data?.shop_url||''; if(l)l.value=data?.shop_label||'SHOP / COMMISSIONS';
 }
 async function uw744SaveShop(){
- if(!currentSession)return passwordlessSignIn();
- const state=document.getElementById('uw744CommissionState');
- const shop_url=document.getElementById('uw744ShopUrl')?.value.trim()||null;
- const shop_label=document.getElementById('uw744ShopLabel')?.value.trim()||'SHOP / COMMISSIONS';
- if(shop_url && !/^https?:\/\//i.test(shop_url))return toast('Shop link must start with http:// or https://');
- if(!await uw795ConfirmedCreator(currentSession.user.id))return toast('An active creator role is required to publish commission links.');
- if(state)state.textContent='SAVING…';
- const {data,error}=await uwSupabase.from('creator_profiles')
-   .update({shop_url,shop_label})
-   .eq('user_id',currentSession.user.id)
-   .select('shop_url,shop_label')
-   .maybeSingle();
- if(error){if(state)state.textContent='SAVE FAILED';return toast('Commission save failed: '+error.message);}
- if(shop_url && !data?.shop_url){if(state)state.textContent='NOT SAVED';return toast('Commission URL was not persisted.');}
- if(state)state.textContent=shop_url?'SAVED — PUBLIC PROFILE':'LINK REMOVED';
- toast(shop_url?'Commission link saved to public profile.':'Commission link removed.');
+  const state=document.getElementById('uw744CommissionState');
+  if(state)state.textContent='SAVING';
+  await saveMyProfile();
+  if(!currentSession)return;
+  const {data,error}=await uwSupabase.from('creator_profiles')
+    .select('shop_url,shop_label')
+    .eq('user_id',currentSession.user.id)
+    .maybeSingle();
+  if(error){if(state)state.textContent='SAVE FAILED';return toast('Commission verification failed: '+error.message);}
+  const expected=document.getElementById('uw744ShopUrl')?.value.trim()||'';
+  const actual=String(data?.shop_url||'').trim();
+  if(expected!==actual){if(state)state.textContent='NOT SAVED';return toast('Commission URL did not persist.');}
+  if(state)state.textContent=actual?'SAVED — PUBLIC PROFILE':'LINK REMOVED';
 }
 document.getElementById('uw744SaveCommission')?.addEventListener('click',uw744SaveShop);
 
@@ -3427,12 +3427,6 @@ async function uw744DecoratePublic(uid){
    box.hidden=false;
  }
 }
-const uw744ExistingOpen=window.uw621OpenProfile;
-if(uw744ExistingOpen)window.uw621OpenProfile=function(uid){
- const r=uw744ExistingOpen.apply(this,arguments);
- setTimeout(()=>uw744DecoratePublic(uid),0);
- return r;
-};
 window.addEventListener('pageshow',()=>setTimeout(uw744LoadMine,900));
 </script>
 
@@ -4888,6 +4882,7 @@ async function uw783OpenPerson(uid){
  const cover=by('uw621Cover');if(cover)cover.style.backgroundImage='';
  by('uw621Portfolio').style.display='none';
  const showcase=by('uw743PublicShowcase');if(showcase)showcase.innerHTML='<span class="uw621-empty">No public showcase.</span>';
+ const shopBox=by('uw744CreatorShop');if(shopBox){shopBox.hidden=true;shopBox.innerHTML='';}
  window.uw621ActiveCreator=uid;window.uw744ViewedUid=uid;
  modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
  /* Leadership manager works for non-creators too because it is keyed by user UUID. */
