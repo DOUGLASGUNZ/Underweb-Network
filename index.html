@@ -957,6 +957,23 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:820px){.uw782-searchbox{width:100%;min-width:100%}.uw70-toolbar{display:grid;grid-template-columns:1fr}.uw782-searchbox .input{height:52px;font-size:16px}}
 </style>
 
+
+<style id="uw783PeopleSearchCSS">
+.uw783-search{position:relative;max-width:720px;margin:0 0 22px}
+.uw783-search>span{position:absolute;left:16px;top:50%;transform:translateY(-52%);color:#45ff72;font:900 25px monospace;z-index:2}
+.uw783-search .input{width:100%;box-sizing:border-box;height:56px;padding-left:48px;padding-right:48px;font-size:16px;border-color:rgba(69,255,114,.4);background:#020503}
+.uw783-search .input:focus{outline:none;border-color:#45ff72;box-shadow:0 0 0 1px #45ff72,0 0 28px rgba(69,255,114,.08)}
+#uw783PeopleClear{position:absolute;right:9px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#89938d;font-size:27px}
+.uw783-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.uw783-person{border:1px solid #1d2921;background:#030604;padding:16px;display:grid;gap:12px}
+.uw783-person:hover{border-color:#315a3d}.uw783-personhead{display:flex;gap:12px;align-items:center}
+.uw783-avatar{width:48px;height:48px;border-radius:50%;background:#0a100c center/cover no-repeat;border:1px solid #294431;display:grid;place-items:center;font-weight:900;color:#45ff72;flex:0 0 auto}
+.uw783-person h3{margin:0;font-size:18px}.uw783-person .meta{font-size:9px;color:#7e8982;text-transform:uppercase}
+.uw783-roles{display:flex;flex-wrap:wrap;gap:6px}.uw783-role{font:700 8px monospace;border:1px solid #26352b;padding:5px 7px;color:#aab5ae}
+.uw783-person .btn{width:100%}
+@media(max-width:600px){.uw783-results{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -964,7 +981,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   <div class="logo logo-img-wrap uw70-brand" data-page="home"><span class="uw70-brandmark">UNDERWEB</span><small>NETWORK</small></div>
   <nav class="topnav uw70-nav">
     <button class="active" data-page="home">Home</button>
-    <button data-page="discover">Creators</button>
+    <button data-page="people">People</button><button data-page="discover">Creators</button>
     <button data-page="events">Events</button>
     <button data-page="projects">Projects</button>
     <button data-page="command" data-requires-staff="true">Command</button>
@@ -980,7 +997,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="side-label" id="networkSideLabel">UnderWeb Network</div>
 <button class="side-item active" data-page="home">Home <span>⌂</span></button>
 <button class="side-item" data-page="live">Live VRChat</button>
-<button class="side-item" data-page="discover">Discover Creators</button>
+<button class="side-item" data-page="people">Find People</button><button class="side-item" data-page="discover">Discover Creators</button>
 <button class="side-item" data-page="events">Events</button>
 <button class="side-item" data-page="projects">Projects &amp; Collabs</button>
 <div class="side-label">Creator Tools</div>
@@ -1109,6 +1126,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="toolbar"><button class="btn hot" data-action="add-instance" data-requires-staff="true">+ Publish Instance</button><select class="select" id="liveGroupFilter"><option value="both">Both Groups</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select></div>
 <div class="grid3" id="liveInstancesList"><div class="uw-empty" style="grid-column:1/-1">Loading live instances…</div></div>
 </div></section>
+<section class="page" id="page-people"><div class="wrap uw70-wrap">
+  <section class="uw70-pagehero">
+    <div><div class="uw70-kicker">UNDERWEB NETWORK // PEOPLE</div><h1>FIND ANYONE<br><span>ON THE NETWORK.</span></h1>
+    <p>Search registered UnderWeb members by display name. Creators, members and staff all live here.</p></div>
+    <div class="uw70-dircounts"><span><b id="uw783PeopleCount">—</b>PEOPLE</span></div>
+  </section>
+  <div class="uw783-search">
+    <span>⌕</span><input class="input" id="uw783PeopleQuery" autocomplete="off" placeholder="Search display name..."/>
+    <button id="uw783PeopleClear" type="button" aria-label="Clear">×</button>
+  </div>
+  <div id="uw783PeopleResults" class="uw783-results"><div class="uw70-empty">Type a name to search the Network.</div></div>
+</div></section>
+
 <section class="page" id="page-discover"><div class="wrap uw70-wrap">
   <section class="uw70-pagehero">
     <div><div class="uw70-kicker">UNDERWEB NETWORK // CREATOR DIRECTORY</div><h1>FIND YOUR<br><span>PEOPLE.</span></h1><p>Approved creators, talent and partners across the network. Identity first. Skills, work and availability second.</p></div>
@@ -2789,7 +2819,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.2';
+    stamp.textContent='UNDERWEB // 0.7.8.3';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3067,7 +3097,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.2-network-search"></div>
+<div style="display:none" data-underweb-build="0.7.8.3-global-people-search"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4553,6 +4583,80 @@ document.addEventListener('click',e=>{
    setTimeout(()=>q?.focus(),60);
  }
 });
+</script>
+
+
+<script id="uw783GlobalPeopleSearch">
+let uw783People=[],uw783Roles={},uw783Timer=null;
+function uw783Safe(v){return typeof esc==='function'?esc(v):String(v??'')}
+async function uw783LoadPeople(){
+ const out=document.getElementById('uw783PeopleResults');if(!out||!currentSession)return;
+ const q=(document.getElementById('uw783PeopleQuery')?.value||'').trim().toLowerCase();
+ if(q.length<1){out.innerHTML='<div class="uw70-empty">Type a name to search the Network.</div>';return}
+ out.innerHTML='<div class="uw70-empty">Searching Network…</div>';
+ /* profiles is the account identity table, so this includes non-creators. */
+ const pr=await uwSupabase.from('profiles').select('id,display_name,username').order('display_name',{ascending:true}).limit(250);
+ if(pr.error){out.innerHTML=`<div class="uw70-empty">${uw783Safe(pr.error.message)}</div>`;return}
+ const matched=(pr.data||[]).filter(x=>[x.display_name,x.username].some(v=>String(v||'').toLowerCase().includes(q))).slice(0,40);
+ const ids=matched.map(x=>x.id);
+ let cps={},roles={};
+ if(ids.length){
+   const [cp,ur]=await Promise.all([
+     uwSupabase.from('creator_profiles').select('user_id,avatar_url,headline').in('user_id',ids),
+     uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active')
+   ]);
+   if(!cp.error)(cp.data||[]).forEach(x=>cps[x.user_id]=x);
+   if(!ur.error)(ur.data||[]).forEach(x=>(roles[x.user_id]??=[]).push(x));
+ }
+ uw783People=matched;uw783Roles=roles;
+ const count=document.getElementById('uw783PeopleCount');if(count)count.textContent=matched.length;
+ if(!matched.length){out.innerHTML='<div class="uw70-empty">No registered users match that name.</div>';return}
+ out.innerHTML=matched.map(p=>{
+   const c=cps[p.id]||{},rs=roles[p.id]||[],av=c.avatar_url?`style="background-image:url('${uw783Safe(c.avatar_url)}')"`:'';
+   return `<article class="uw783-person"><div class="uw783-personhead"><div class="uw783-avatar" ${av}>${c.avatar_url?'':uw783Safe((p.display_name||p.username||'U').charAt(0).toUpperCase())}</div>
+   <div><h3>${uw783Safe(p.display_name||p.username||'UnderWeb Member')}</h3><div class="meta">${uw783Safe(c.headline||'UNDERWEB NETWORK MEMBER')}</div></div></div>
+   <div class="uw783-roles">${rs.length?rs.slice(0,6).map(r=>`<span class="uw783-role">${uw783Safe(String(r.role_slug||'').replaceAll('_',' '))}</span>`).join(''):'<span class="meta">MEMBER</span>'}</div>
+   <button class="btn hot" data-uw783-person="${uw783Safe(p.id)}">VIEW PROFILE →</button></article>`;
+ }).join('');
+}
+async function uw783OpenPerson(uid){
+ uid=String(uid||'').trim();if(!uid)return;
+ /* If a creator profile exists, reuse the proven canonical profile viewer. */
+ const cp=await uwSupabase.from('creator_profiles').select('user_id').eq('user_id',uid).maybeSingle();
+ if(cp.error)return toast(cp.error.message);
+ if(cp.data){return uw758Open(uid)}
+ /* Non-creator: seed the same viewer with account identity + active roles. */
+ const [p,ur]=await Promise.all([
+   uwSupabase.from('profiles').select('id,display_name,username').eq('id',uid).maybeSingle(),
+   uwSupabase.from('user_roles').select('role_slug,group_scope,status').eq('user_id',uid).eq('status','active')
+ ]);
+ if(p.error)return toast(p.error.message);if(!p.data)return toast('Member profile not found.');
+ const modal=document.getElementById('uw621ProfileModal'),by=id=>document.getElementById(id);if(!modal)return;
+ const roles=ur.data||[];
+ by('uw621Name').textContent=p.data.display_name||p.data.username||'UnderWeb Member';
+ by('uw621Headline').textContent='UnderWeb Network Member';
+ by('uw621Scope').textContent='NETWORK';
+ by('uw621Bio').textContent='This member has not created a public creator profile.';
+ by('uw621Availability').textContent='—';
+ by('uw621Skills').innerHTML='<span class="uw621-empty">No creator specialties listed.</span>';
+ by('uw621Roles').innerHTML=roles.length?roles.map(r=>`<span class="uw621-role">${uw783Safe(String(r.role_slug||'').replaceAll('_',' '))}</span>`).join(''):'<span class="uw621-empty">Member</span>';
+ const av=by('uw621Avatar');if(av){av.style.backgroundImage='';av.textContent=(p.data.display_name||p.data.username||'U').charAt(0).toUpperCase()}
+ const cover=by('uw621Cover');if(cover)cover.style.backgroundImage='';
+ by('uw621Portfolio').style.display='none';
+ const showcase=by('uw743PublicShowcase');if(showcase)showcase.innerHTML='<span class="uw621-empty">No public showcase.</span>';
+ window.uw621ActiveCreator=uid;window.uw744ViewedUid=uid;
+ modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
+ /* Leadership manager works for non-creators too because it is keyed by user UUID. */
+ try{if(await uw773Leadership())uw776Mount(uid)}catch(e){console.warn(e)}
+}
+document.addEventListener('input',e=>{
+ if(e.target?.id==='uw783PeopleQuery'){clearTimeout(uw783Timer);uw783Timer=setTimeout(uw783LoadPeople,120)}
+});
+document.addEventListener('click',e=>{
+ const p=e.target.closest('[data-uw783-person]');if(p){e.preventDefault();uw783OpenPerson(p.dataset.uw783Person);return}
+ if(e.target.closest('#uw783PeopleClear')){const q=document.getElementById('uw783PeopleQuery');if(q){q.value='';q.focus();uw783LoadPeople()}}
+ const nav=e.target.closest('[data-page="people"]');if(nav)setTimeout(()=>document.getElementById('uw783PeopleQuery')?.focus(),100);
+},true);
 </script>
 
 </body></html>
