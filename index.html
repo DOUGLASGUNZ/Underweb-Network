@@ -930,6 +930,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:620px){.uw743-publicshowcase,.uw743-myshowcase{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
 </style>
 
+
+<style id="uw780OnboardingStyle">
+.uw780-wrap{position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.94);display:grid;place-items:center;padding:14px}
+.uw780-card{width:min(680px,100%);max-height:92dvh;overflow:auto;background:#030604;border:1px solid rgba(42,255,109,.38);padding:22px;box-sizing:border-box}
+.uw780-step{color:#2aff6d;font:800 11px/1.2 monospace;letter-spacing:.18em}.uw780-card h2{font-size:clamp(27px,7vw,44px);margin:7px 0 8px}
+.uw780-card p{color:#aeb8b1;line-height:1.55}.uw780-progress{height:3px;background:#111;margin:18px 0}.uw780-progress i{display:block;height:100%;background:#2aff6d}
+.uw780-field{display:block;margin:14px 0}.uw780-field span{display:block;font-size:11px;font-weight:800;letter-spacing:.12em;margin-bottom:7px}
+.uw780-field input,.uw780-field textarea,.uw780-field select{width:100%;box-sizing:border-box;background:#050806;color:#fff;border:1px solid rgba(255,255,255,.16);padding:13px}
+.uw780-field textarea{min-height:105px;resize:vertical}.uw780-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.uw780-rolegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.uw780-role{border:1px solid rgba(255,255,255,.12);padding:11px;background:#050806}
+.uw780-role input{margin-right:7px}.uw780-note{font-size:12px;color:#78827c}
+@media(max-width:560px){.uw780-rolegrid{grid-template-columns:1fr}.uw780-card{padding:18px}}
+</style>
+
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2758,7 +2772,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.7.6';
+    stamp.textContent='UNDERWEB // 0.7.8.0';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3036,7 +3050,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.7.6-header-leadership-button"></div>
+<div style="display:none" data-underweb-build="0.7.8.0-open-beta-onboarding"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4333,6 +4347,111 @@ if(uw776Modal)new MutationObserver(()=>{
    if(uid)uw773Leadership().then(ok=>{if(ok)uw776Mount(uid)});
  }
 }).observe(uw776Modal,{attributes:true,attributeFilter:['class','aria-hidden']});
+</script>
+
+
+<script id="uw780FreshAccountOnboarding">
+/* 0.7.8.0 — Fresh account onboarding. Uses existing profiles,
+   creator_profiles and role application/direct-role flows. No fake data. */
+const UW780_KEY='underweb-onboarding-v1';
+let uw780Step=0,uw780Profile=null,uw780Defs=[];
+
+function uw780Done(){try{return localStorage.getItem(UW780_KEY)==='done'}catch(_){return false}}
+function uw780MarkDone(){try{localStorage.setItem(UW780_KEY,'done')}catch(_){}}
+function uw780Esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function uw780CreatorDef(r){
+ return ['digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer','unity_creator','blender_artist','world_creator','avatar_creator','graphic_designer','producer','musician','rapper','vocalist'].includes(r.slug);
+}
+async function uw780Load(){
+ if(!currentSession||uw780Done()||document.getElementById('uw780Onboarding'))return;
+ const uid=currentSession.user.id;
+ const [p,cp,rd]=await Promise.all([
+   uwSupabase.from('profiles').select('display_name').eq('id',uid).maybeSingle(),
+   uwSupabase.from('creator_profiles').select('display_name,headline,bio,availability,profile_mode,specialties').eq('user_id',uid).maybeSingle(),
+   uwSupabase.from('role_definitions').select('slug,name,active').eq('active',true)
+ ]);
+ uw780Profile={...(cp.data||{}),display_name:cp.data?.display_name||p.data?.display_name||''};
+ uw780Defs=(rd.data||[]).filter(uw780CreatorDef);
+ /* Existing established users should not be forced through first-run onboarding. */
+ if(uw780Profile.display_name && (uw780Profile.bio||uw780Profile.headline||uw780Profile.specialties?.length)){uw780MarkDone();return}
+ uw780Step=0;uw780Render();
+}
+function uw780Shell(body){
+ document.getElementById('uw780Onboarding')?.remove();
+ document.body.insertAdjacentHTML('beforeend',`<div class="uw780-wrap" id="uw780Onboarding"><section class="uw780-card">
+ <div class="uw780-step">OPEN BETA SETUP · ${uw780Step+1} / 4</div>
+ <div class="uw780-progress"><i style="width:${(uw780Step+1)*25}%"></i></div>${body}</section></div>`);
+}
+function uw780Render(){
+ if(uw780Step===0)return uw780Shell(`<h2>WELCOME TO UNDERWEB.</h2><p>Set up your Network identity before you jump in. This takes about a minute, and everything can be edited later.</p>
+ <label class="uw780-field"><span>DISPLAY NAME</span><input id="uw780Name" maxlength="40" value="${uw780Esc(uw780Profile?.display_name||'')}" placeholder="How people will know you"></label>
+ <div class="uw780-actions"><button class="btn hot" data-uw780-next>CONTINUE</button></div>`);
+ if(uw780Step===1)return uw780Shell(`<h2>BUILD YOUR PROFILE.</h2><p>Give people enough context to know who you are and what you do.</p>
+ <label class="uw780-field"><span>HEADLINE</span><input id="uw780Headline" maxlength="100" value="${uw780Esc(uw780Profile?.headline||'')}" placeholder="DJ · World Creator · Photographer"></label>
+ <label class="uw780-field"><span>ABOUT YOU</span><textarea id="uw780Bio" maxlength="1200" placeholder="Tell the Network about your work...">${uw780Esc(uw780Profile?.bio||'')}</textarea></label>
+ <label class="uw780-field"><span>AVAILABILITY</span><select id="uw780Availability"><option value="by_request">By request</option><option value="available">Available</option><option value="limited">Limited</option><option value="unavailable">Unavailable</option></select></label>
+ <div class="uw780-actions"><button class="btn" data-uw780-back>BACK</button><button class="btn hot" data-uw780-next>CONTINUE</button></div>`);
+ if(uw780Step===2)return uw780Shell(`<h2>WHAT DO YOU CREATE?</h2><p>Select creator disciplines that fit you. Regular members can skip this entirely.</p>
+ <div class="uw780-rolegrid">${uw780Defs.map(r=>`<label class="uw780-role"><input type="checkbox" data-uw780-role="${uw780Esc(r.slug)}"> ${uw780Esc(r.name||r.slug)}</label>`).join('')}</div>
+ <p class="uw780-note">Creator roles use the Network's existing approval flow. Owner/Director accounts use direct assignment instead.</p>
+ <div class="uw780-actions"><button class="btn" data-uw780-back>BACK</button><button class="btn hot" data-uw780-next>CONTINUE</button></div>`);
+ return uw780Shell(`<h2>YOU'RE READY.</h2><p>Your identity is set. From here you can finish your avatar/banner, upload showcase work, set shop or commission links, join projects, and explore creators.</p>
+ <div class="uw780-actions"><button class="btn" data-uw780-back>BACK</button><button class="btn hot" data-uw780-finish>ENTER THE NETWORK</button></div>`);
+}
+async function uw780SaveIdentity(){
+ const name=document.getElementById('uw780Name')?.value.trim();
+ if(!name)return toast('Choose a display name first.');
+ const uid=currentSession.user.id;
+ const a=await uwSupabase.from('profiles').update({display_name:name}).eq('id',uid);if(a.error)return toast(a.error.message);
+ const existing=await uwSupabase.from('creator_profiles').select('id').eq('user_id',uid).maybeSingle();if(existing.error)return toast(existing.error.message);
+ const payload={user_id:uid,display_name:name,profile_mode:'creator_staff',availability:'by_request',specialties:[]};
+ const b=existing.data?.id
+   ?await uwSupabase.from('creator_profiles').update({display_name:name}).eq('id',existing.data.id)
+   :await uwSupabase.from('creator_profiles').insert({...payload,approval_status:'pending',public_visible:false,created_by:uid});
+ if(b.error)return toast(b.error.message);
+ uw780Profile={...uw780Profile,...payload};uw780Step++;uw780Render();
+}
+async function uw780SaveProfile(){
+ const uid=currentSession.user.id;
+ const headline=document.getElementById('uw780Headline')?.value.trim()||'';
+ const bio=document.getElementById('uw780Bio')?.value.trim()||'';
+ const availability=document.getElementById('uw780Availability')?.value||'by_request';
+ const {error}=await uwSupabase.from('creator_profiles').update({headline,bio,availability}).eq('user_id',uid);
+ if(error)return toast(error.message);
+ uw780Profile={...uw780Profile,headline,bio,availability};uw780Step++;uw780Render();
+}
+async function uw780Roles(){
+ const chosen=[...document.querySelectorAll('[data-uw780-role]:checked')].map(x=>x.dataset.uw780Role);
+ for(const slug of chosen){
+   if(await uw773Leadership()){
+     const r=await uwSupabase.rpc('uw_director_set_role',{p_user_id:currentSession.user.id,p_role_slug:slug,p_enabled:true});
+     if(r.error)return toast(r.error.message);
+   }else{
+     const exists=await uwSupabase.from('role_applications').select('id').eq('user_id',currentSession.user.id).eq('role_slug',slug).in('status',['pending','reviewing','accepted']).limit(1);
+     if(exists.error)return toast(exists.error.message);
+     if(!exists.data?.length){
+       const ins=await uwSupabase.from('role_applications').insert({user_id:currentSession.user.id,role_slug:slug,group_scope:'underweb',applicant_note:'Selected during Open Beta onboarding.',status:'pending'});
+       if(ins.error)return toast(ins.error.message);
+     }
+   }
+ }
+ uw780Step++;uw780Render();
+}
+document.addEventListener('click',async e=>{
+ if(e.target.closest('[data-uw780-back]')){uw780Step=Math.max(0,uw780Step-1);uw780Render();return}
+ if(e.target.closest('[data-uw780-next]')){
+   if(uw780Step===0)return uw780SaveIdentity();
+   if(uw780Step===1)return uw780SaveProfile();
+   if(uw780Step===2)return uw780Roles();
+ }
+ if(e.target.closest('[data-uw780-finish]')){
+   uw780MarkDone();document.getElementById('uw780Onboarding')?.remove();
+   try{if(typeof loadMyProfile==='function')await loadMyProfile()}catch(_){}
+   try{if(typeof uw50LoadAll==='function')await uw50LoadAll()}catch(_){}
+   toast('Welcome to the UnderWeb Network.');
+ }
+});
+window.addEventListener('pageshow',()=>setTimeout(uw780Load,2400));
 </script>
 
 </body></html>
