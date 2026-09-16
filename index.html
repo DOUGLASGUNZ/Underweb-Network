@@ -3813,8 +3813,8 @@ function uw758Render(){
    const bn=c.banner_url?`style="background-image:linear-gradient(90deg,rgba(0,0,0,.15),rgba(0,0,0,.45)),url('${esc(c.banner_url)}')"`:'';
    return `<article class="uw62-card ${uw758MatchDiscipline('Partner',c)?'uw62-partner':''}">
     <div class="uw62-banner" ${bn}></div><div class="uw62-body">
-    <div class="uw62-id"><div class="uw62-avatar" ${av}>${c.avatar_url?'':esc((c.display_name||'C').charAt(0).toUpperCase())}</div>
-    <div class="uw62-name"><h3>${esc(c.display_name||'Creator')}</h3><p>${esc(c.headline||'UnderWeb Network Creator')}</p></div>
+    <div class="uw62-id"><div class="uw62-avatar" ${av}></div>
+    <div class="uw62-name"><h3>${esc(c.display_name||'Creator')}</h3><p>${esc(c.headline||'UnderWeb Network Creator')}</p><div class="uwverify-badges uwverify-card-badges" data-uw-verify-uid="${esc(c.user_id)}"></div></div>
     <span class="uw62-community">${esc(uw758Community(c.user_id))}</span></div>
     <div class="uw62-tags"><span class="uw62-tag hot">${esc(uw758Availability(c.availability))}</span>
     ${roles.slice(0,5).map(r=>`<span class="uw62-tag">${esc(r.name||r.slug)}</span>`).join('')}</div>
@@ -3823,6 +3823,7 @@ function uw758Render(){
     <div class="uw62-actions"><button class="btn hot" type="button" data-uw758-profile="${esc(c.user_id)}">VIEW CREATOR PROFILE →</button></div>
     </div></article>`;
  }).join('');
+ if(typeof uwHydrateVerificationBadges==='function') setTimeout(()=>uwHydrateVerificationBadges(list),0);
 }
 async function uw758Load(){
  const list=document.getElementById('creatorDirectoryList');if(!list)return;
@@ -5308,37 +5309,57 @@ window.addEventListener('pageshow',()=>setTimeout(uw795RefreshCommissionEditor,1
 .uwverify-badge .uwverify-check{display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#45ff72;color:#041108;font-size:11px;box-shadow:0 0 12px rgba(69,255,114,.5)}
 .uwverify-badge.discord{border-color:rgba(129,140,248,.5);background:rgba(88,101,242,.11);box-shadow:0 0 18px rgba(88,101,242,.1)}
 .uwverify-badge.discord .uwverify-check{background:#818cf8;color:#070918;box-shadow:0 0 12px rgba(129,140,248,.5)}
-@media(max-width:600px){.uwverify-badge{font-size:9px;padding:5px 8px}}
+.uwverify-card-badges{margin-top:7px}.uwverify-card-badges .uwverify-badge{font-size:8px;padding:4px 7px}
+@media(max-width:600px){.uwverify-badge{font-size:9px;padding:5px 8px}.uwverify-card-badges{gap:5px}.uwverify-card-badges .uwverify-badge{font-size:7.5px;padding:4px 6px}}
 .uw40-avatar.has-image #liveProfileAvatarFallback{display:none!important}
 #liveProfileAvatarFallback{font-size:0!important}
 </style>
-<script id="uwVerifyBadgesV1">
+<script id="uwVerifyBadgesV2">
+const uwVerifyCache=new Map();
 function uwVerifyBadgeMarkup(kind){
  const discord=kind==='discord';
  return `<span class="uwverify-badge${discord?' discord':''}" title="${discord?'Discord identity linked to this UnderWeb account':'VRChat identity verified by UnderWeb staff'}"><span class="uwverify-check">✓</span>${discord?'DISCORD VERIFIED':'VRCHAT VERIFIED'}</span>`;
 }
-async function uwLoadVerificationBadges(uid){
- const box=document.getElementById('uwVerifyBadges');
+function uwVerifyHasRow(data){
+ if(Array.isArray(data)) return data.length>0 && !!data[0];
+ return !!data;
+}
+async function uwGetVerificationState(uid){
+ if(!uid)return {vrc:false,discord:false};
+ if(uwVerifyCache.has(uid))return uwVerifyCache.get(uid);
+ const promise=(async()=>{
+   const checks=await Promise.allSettled([
+     uwSupabase.rpc('uw_public_verified_vrchat',{p_user_id:uid}),
+     uwSupabase.rpc('uw_public_verified_discord',{p_user_id:uid})
+   ]);
+   let vrc=false,discord=false;
+   if(checks[0].status==='fulfilled'&&!checks[0].value.error) vrc=uwVerifyHasRow(checks[0].value.data);
+   if(checks[1].status==='fulfilled'&&!checks[1].value.error) discord=uwVerifyHasRow(checks[1].value.data);
+   return {vrc,discord};
+ })();
+ uwVerifyCache.set(uid,promise);
+ return promise;
+}
+function uwVerificationMarkup(state){
+ return (state.vrc?uwVerifyBadgeMarkup('vrchat'):'')+(state.discord?uwVerifyBadgeMarkup('discord'):'');
+}
+async function uwRenderVerificationInto(box,uid){
  if(!box||!uid)return;
  box.innerHTML='';
- const checks=await Promise.allSettled([
-   uwSupabase.rpc('uw_public_verified_vrchat',{p_user_id:uid}),
-   uwSupabase.rpc('uw_public_verified_discord',{p_user_id:uid})
- ]);
- let vrc=false,discord=false;
- if(checks[0].status==='fulfilled'&&!checks[0].value.error){
-   const d=checks[0].value.data,v=Array.isArray(d)?d[0]:d;
-   vrc=!!(v&&v.profile_url);
- }
- if(checks[1].status==='fulfilled'&&!checks[1].value.error){
-   const d=checks[1].value.data,v=Array.isArray(d)?d[0]:d;
-   discord=!!(v&&(v.discord_user_id||v.provider_id||v.verified));
- }
- box.innerHTML=(vrc?uwVerifyBadgeMarkup('vrchat'):'')+(discord?uwVerifyBadgeMarkup('discord'):'');
+ try{box.innerHTML=uwVerificationMarkup(await uwGetVerificationState(uid))}
+ catch(e){console.warn('Verification badge render failed:',e)}
 }
-// Override the legacy VRChat decoration with the compact permanent badge renderer.
+async function uwLoadVerificationBadges(uid){
+ const box=document.getElementById('uwVerifyBadges');
+ await uwRenderVerificationInto(box,uid);
+}
+async function uwHydrateVerificationBadges(root=document){
+ const boxes=[...root.querySelectorAll('[data-uw-verify-uid]')];
+ await Promise.all(boxes.map(box=>uwRenderVerificationInto(box,box.dataset.uwVerifyUid)));
+}
+// Keep the old verified-VRChat block hidden; permanent badges are canonical.
 uw786LoadVerifiedVrc=async function(uid){
- const old=document.getElementById('uw786VrcWrap'); if(old)old.hidden=true;
+ const old=document.getElementById('uw786VrcWrap');if(old)old.hidden=true;
  await uwLoadVerificationBadges(uid);
 };
 </script>
