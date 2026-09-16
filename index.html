@@ -2484,7 +2484,7 @@ function uw033RenderLiveProfile(){
   const mode=uw033El('profileMode')?.value||'creator_staff';
   const availability=uw033El('profileAvailability')?.value||'by_request';
   const skills=(uw033El('profileSkills')?.value||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,8);
-  if(uw033El('liveProfileName'))uw033El('liveProfileName').textContent=name; const af=uw033El('liveProfileAvatarFallback'); if(af)af.textContent=(name||'?').trim().charAt(0).toUpperCase()||'◆';
+  if(uw033El('liveProfileName'))uw033El('liveProfileName').textContent=name; const af=uw033El('liveProfileAvatarFallback'); if(af)af.textContent='';
   if(uw033El('liveProfileHeadline'))uw033El('liveProfileHeadline').textContent=headline;
   if(uw033El('liveProfileBio'))uw033El('liveProfileBio').textContent=bio;
   if(uw033El('liveProfileMode'))uw033El('liveProfileMode').textContent=uw033ModeLabel(mode).toUpperCase();
@@ -3921,7 +3921,7 @@ async function uw758Open(uid){
  if(by('uw621Availability'))by('uw621Availability').textContent=uw758Availability(c.availability);
  if(by('uw621Skills'))by('uw621Skills').innerHTML=skills.length?skills.map(v=>`<span class="uw621-skill">${esc(v)}</span>`).join(''):'<span class="uw621-empty">No specialties listed.</span>';
  if(by('uw621Roles'))by('uw621Roles').innerHTML=roles.length?roles.map(r=>`<span class="uw621-role">${esc(r.name||r.slug)}</span>`).join(''):'<span class="uw621-empty">No active roles listed.</span>';
- const av=by('uw621Avatar');if(av){av.style.backgroundImage=c.avatar_url?`url("${c.avatar_url}")`:'';av.textContent=c.avatar_url?'':(c.display_name||'C').charAt(0).toUpperCase()}
+ const av=by('uw621Avatar');if(av){av.style.backgroundImage=c.avatar_url?`url("${c.avatar_url}")`:'';av.textContent=''}
  const cover=by('uw621Cover');if(cover)cover.style.backgroundImage=c.banner_url?`linear-gradient(90deg,rgba(0,0,0,.18),rgba(0,0,0,.5)),url("${c.banner_url}")`:'';
  if(by('uw621Portfolio'))by('uw621Portfolio').style.display='none';
  /* Render creator commerce directly in the canonical profile opener.
@@ -3949,6 +3949,7 @@ async function uw758Open(uid){
  }
  window.uw621ActiveCreator=uid;window.uw744ViewedUid=uid;
  modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
+ try{if(typeof uwLoadVerificationBadges==='function')await uwLoadVerificationBadges(uid)}catch(e){console.warn('Verification badge render failed:',e)}
  try{if(typeof uw743LoadPublic==='function')await uw743LoadPublic(uid)}catch(e){console.warn(e)}
 }
 ['creatorSearch','creatorCommunity','creatorDiscipline','creatorAvailability'].forEach(id=>{
@@ -5308,6 +5309,8 @@ window.addEventListener('pageshow',()=>setTimeout(uw795RefreshCommissionEditor,1
 .uwverify-badge.discord{border-color:rgba(129,140,248,.5);background:rgba(88,101,242,.11);box-shadow:0 0 18px rgba(88,101,242,.1)}
 .uwverify-badge.discord .uwverify-check{background:#818cf8;color:#070918;box-shadow:0 0 12px rgba(129,140,248,.5)}
 @media(max-width:600px){.uwverify-badge{font-size:9px;padding:5px 8px}}
+.uw40-avatar.has-image #liveProfileAvatarFallback{display:none!important}
+#liveProfileAvatarFallback{font-size:0!important}
 </style>
 <script id="uwVerifyBadgesV1">
 function uwVerifyBadgeMarkup(kind){
