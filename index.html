@@ -2521,7 +2521,10 @@ async function saveMyProfile(){
     if(af){if(state)state.textContent='UPLOADING AVATAR';avatar=await uw033UploadProfileMedia(af,'avatar')}
     if(bf){if(state)state.textContent='UPLOADING BANNER';banner=await uw033UploadProfileMedia(bf,'banner')}
     const specialties=(uw033El('profileSkills')?.value||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,20);
-    const payload={user_id:uid,display_name:display,headline,bio,availability:uw033El('profileAvailability')?.value||'by_request',profile_mode:uw033El('profileMode')?.value||'creator_staff',specialties,avatar_url:avatar,banner_url:banner};
+    const shop_url=uw033El('uw744ShopUrl')?.value?.trim()||null;
+    const shop_label=uw033El('uw744ShopLabel')?.value?.trim()||'SHOP / COMMISSIONS';
+    if(shop_url && !/^https?:\/\//i.test(shop_url))throw new Error('Shop link must start with http:// or https://');
+    const payload={user_id:uid,display_name:display,headline,bio,availability:uw033El('profileAvailability')?.value||'by_request',profile_mode:uw033El('profileMode')?.value||'creator_staff',specialties,avatar_url:avatar,banner_url:banner,shop_url,shop_label};
     const accountUpdate=await uwSupabase.from('profiles').update({display_name:display}).eq('id',uid);if(accountUpdate.error)throw accountUpdate.error;
     const existing=await uwSupabase.from('creator_profiles').select('id').eq('user_id',uid).maybeSingle();if(existing.error)throw existing.error;
     let result;if(existing.data?.id)result=await uwSupabase.from('creator_profiles').update(payload).eq('id',existing.data.id);else result=await uwSupabase.from('creator_profiles').insert({...payload,approval_status:'pending',public_visible:false,created_by:uid});if(result.error)throw result.error;
@@ -3368,11 +3371,7 @@ async function uw744SaveShop(){
  if(error)toast(error.message);
 }
 
-/* Piggyback the site's normal profile-save button so shop fields save with the profile. */
-document.addEventListener('click',e=>{
- const b=e.target.closest('#saveProfileBtn033,#uw50SaveProfile,[data-uw50-save-profile]');
- if(b)setTimeout(uw744SaveShop,50);
-});
+/* Commission fields are saved atomically by the canonical saveMyProfile() payload. */
 
 /* Use the site's existing role application RPC/table flow, not a second approval system. */
 async function uw744ApplyRole(slug){
