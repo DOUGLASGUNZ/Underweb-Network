@@ -1159,7 +1159,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <button class="side-item" data-page="announcements" data-requires-staff="true">Announcements</button>
 <button class="side-item" data-page="activity" data-requires-staff="true">Audit &amp; Activity</button>
 <button class="side-item" data-page="feedback">Beta Feedback</button>
-<button class="side-item" data-page="updates">Platform Updates <span class="uw50-version-pill">0.7.4.3</span></button>
+<button class="side-item" data-page="updates">Platform Updates <span class="uw50-version-pill">0.8.0 RC1</span></button>
 <button class="side-item" data-page="permissions" data-requires-owner="true">Roles &amp; Permissions</button>
 </aside>
 <main class="content">
@@ -1430,8 +1430,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <section class="uw50-panel"><div id="uw50ReviewQueue" class="uw50-stack"><div class="uw-empty">Loading role applications…</div></div></section>
 </div></section>
 <section class="page" id="page-updates"><div class="wrap uw50-updates-page">
-<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.7.5.2</span></div>
-<section class="uw50-release hero-release"><div class="uw50-release-version">0.7.4</div><div><span class="eyebrow">CURRENT BUILD • PREMIUM ROLE IDENTITY</span><h2>Premium Authority System</h2><p>Introduced the new UnderWeb leadership insignia system: PRIME for Owner, HORIZON for Director, ORBIT for Event Lead, ATLAS for Artist Coordinator, and static WATCH for Moderator. Premium leadership roles now use distinct motion identities while Moderator remains intentionally static. 0.7.4.2 also fixes creator-card and staff-roster profile actions so they open the selected creator directly instead of routing elsewhere.</p><div class="uw50-release-tags"><span>PRIME</span><span>HORIZON</span><span>ORBIT</span><span>ATLAS</span><span>WATCH</span><span>ROLE FX</span></div></div></section>
+<div class="uw40-pagehead"><div><span>PLATFORM CHANGELOG</span><h1>UnderWeb Network Updates</h1><p>What build is live, what changed, and what the team is currently testing.</p></div><span class="uw50-version-pill big">CURRENT: 0.8.0 OPEN BETA RC1</span></div>
+<section class="uw50-release hero-release"><div class="uw50-release-version">0.8.0</div><div><span class="eyebrow">OPEN BETA RC1 • FEATURE FREEZE</span><h2>Open Beta Release Candidate</h2><p>Stabilization release with verified VRChat network access, creator-role-correct Network Gallery, secure creator showcase moderation, hardened role and project permissions, protected Owner authority, creator-only commission links, and persistent per-device authentication. New feature work is frozen while RC1 is staff tested.</p><div class="uw50-release-tags"><span>OPEN BETA</span><span>RC1</span><span>SECURITY</span><span>VRCHAT</span><span>CREATORS</span><span>MEDIA REVIEW</span></div></div></section>
 <div class="uw50-grid2">
 <section class="uw50-release"><div class="uw50-release-version">0.7.3</div><div><span class="eyebrow">OWNER IDENTITY</span><h3>Barachiel + Owner presentation</h3><p>Added Darko's Owner presentation, Barachiel profile entrance, and the first premium animated title treatment.</p></div></section>
 <section class="uw50-release"><div class="uw50-release-version">0.7.2</div><div><span class="eyebrow">NETWORK EXPANSION</span><h3>Connected network tools</h3><p>Added Event Control, Network Gallery, Partner Hub, notifications, Connected Accounts, and proof-of-control VRChat verification workflow.</p></div></section>
@@ -2974,7 +2974,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.9.8';
+    stamp.textContent='UNDERWEB // 0.8.0 OPEN BETA RC1';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3268,7 +3268,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.9.8-vrchat-verification-fix"></div>
+<div style="display:none" data-underweb-build="0.8.0-open-beta-rc1"></div>
 
 
 <script id="uw743CreatorShowcase">
