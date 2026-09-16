@@ -1484,11 +1484,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
       <small id="uw72VrcNote"></small>
     </article>
-    <article class="uw72-connect disabled">
+    <article class="uw72-connect" id="uwDiscordCard">
       <div class="uw72-service">DISCORD</div>
-      <h3>COMING IN 0.8</h3>
-      <p>Discord will be verified by OAuth directly. Users will never be able to type a Discord username and call it verified.</p>
-      <button class="btn" disabled>CONNECT DISCORD</button>
+      <h3 id="uwDiscordState">NOT CONNECTED</h3>
+      <p>Link Discord securely with OAuth. Your existing UnderWeb account stays the same; Discord is attached as a verified identity and never controls your Network authority.</p>
+      <div id="uwDiscordIdentity" class="meta" hidden></div>
+      <button class="btn hot" id="uwDiscordConnect">CONNECT DISCORD</button>
+      <small id="uwDiscordNote">UnderWeb never asks for or stores your Discord password.</small>
     </article>
   </div>
   <div id="uw721StaffVerifyWrap" class="uw721-staffverify" hidden>
@@ -3011,7 +3013,7 @@ const uw72Esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>
 let uw72GalleryFilter='all';
 async function uw72LoadAll(){
  if(!currentSession)return;
- await Promise.allSettled([uw72LoadEventControl(),uw72LoadGallery(),uw72LoadPartners(),uw72LoadConnections(),uw72LoadNotifications()]);
+ await Promise.allSettled([uw72LoadEventControl(),uw72LoadGallery(),uw72LoadPartners(),uw72LoadConnections(),uwLoadDiscordConnection(),uw72LoadNotifications()]);
 }
 async function uw72LoadEventControl(){
  const el=document.getElementById('uw72EventControl');if(!el)return;
@@ -3098,6 +3100,58 @@ async function uw721ReviewVrc(id,approve){
  toast(error?error.message:(approve?'VRChat identity verified.':'VRChat claim denied.'));
  if(!error)uw721LoadStaffVerification();
 }
+function uwDiscordIdentity(){
+ const ids=(currentSession?.user?.identities||[]);
+ return ids.find(i=>String(i.provider||'').toLowerCase()==='discord')||null;
+}
+function uwDiscordMeta(identity){
+ const d=identity?.identity_data||{};
+ const username=d.username||d.full_name||d.name||d.preferred_username||'Discord user';
+ const discordId=identity?.id||d.provider_id||d.sub||'';
+ const avatar=d.avatar_url||d.picture||'';
+ return {username,discordId,avatar};
+}
+async function uwLoadDiscordConnection(){
+ const state=document.getElementById('uwDiscordState'), box=document.getElementById('uwDiscordIdentity'), btn=document.getElementById('uwDiscordConnect'), note=document.getElementById('uwDiscordNote');
+ if(!state||!btn)return;
+ const {data:{session},error}=await uwSupabase.auth.getSession();
+ if(error||!session?.user){state.textContent='SIGN IN REQUIRED';btn.disabled=true;return}
+ currentSession=session;
+ const identity=(session.user.identities||[]).find(i=>String(i.provider||'').toLowerCase()==='discord');
+ if(!identity){state.textContent='NOT CONNECTED';state.style.color='';box.hidden=true;btn.disabled=false;btn.textContent='CONNECT DISCORD';return}
+ const m=uwDiscordMeta(identity);
+ state.textContent='DISCORD // CONNECTED';state.style.color='#45ff72';
+ box.hidden=false;
+ box.innerHTML=`${m.avatar?`<img src="${uw72Esc(m.avatar)}" alt="" style="width:42px;height:42px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px">`:''}<strong>${uw72Esc(m.username)}</strong>${m.discordId?`<br><small>Discord ID: ${uw72Esc(m.discordId)}</small>`:''}`;
+ btn.disabled=true;btn.textContent='CONNECTED ✓';
+ if(note)note.textContent='Discord is securely linked to this UnderWeb account.';
+}
+async function uwConnectDiscord(){
+ const btn=document.getElementById('uwDiscordConnect'),note=document.getElementById('uwDiscordNote');
+ try{
+  const {data:{session},error:sessionError}=await uwSupabase.auth.getSession();
+  if(sessionError)throw sessionError;
+  if(!session?.user)throw new Error('Sign in to UnderWeb first.');
+  const existing=(session.user.identities||[]).find(i=>String(i.provider||'').toLowerCase()==='discord');
+  if(existing){await uwLoadDiscordConnection();return}
+  if(btn){btn.disabled=true;btn.textContent='OPENING DISCORD…'}
+  if(note)note.textContent='Authorize Discord, then you will return to UnderWeb.';
+  const {data,error}=await uwSupabase.auth.linkIdentity({provider:'discord',options:{redirectTo:'https://www.underweb.cloud'}});
+  if(error)throw error;
+  if(data?.url)window.location.assign(data.url);
+ }catch(e){
+  if(note)note.textContent=e?.message||'Discord connection failed.';
+  if(btn){btn.disabled=false;btn.textContent='CONNECT DISCORD'}
+ }
+}
+async function uwDiscordReturnRefresh(){
+ try{
+  const {data:{session}}=await uwSupabase.auth.getSession();
+  if(session)currentSession=session;
+  await uwLoadDiscordConnection();
+ }catch(_){ }
+}
+
 async function uw72LoadNotifications(){
  const el=document.getElementById('uw72Notifications');if(!el)return;
  const {data,error}=await uwSupabase.from('network_notifications').select('*').eq('user_id',currentSession.user.id).order('created_at',{ascending:false}).limit(100);
@@ -3109,10 +3163,12 @@ async function uw72LoadNotifications(){
 document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('[data-uw72-gallery]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-uw72-gallery]').forEach(x=>x.classList.remove('active'));b.classList.add('active');uw72GalleryFilter=b.dataset.uw72Gallery;uw72LoadGallery()});
  document.getElementById('uw72SaveVrc')?.addEventListener('click',uw72SaveVrc);
+ document.getElementById('uwDiscordConnect')?.addEventListener('click',uwConnectDiscord);
  document.getElementById('uw721RequestVerify')?.addEventListener('click',uw721RequestVerify);
  document.getElementById('uw72MarkRead')?.addEventListener('click',async()=>{await uwSupabase.from('network_notifications').update({read_at:new Date().toISOString()}).eq('user_id',currentSession.user.id).is('read_at',null);uw72LoadNotifications()});
  document.getElementById('uw72SavePrefs')?.addEventListener('click',async()=>{const g=id=>document.getElementById(id)?.checked!==false;const {error}=await uwSupabase.from('notification_preferences').upsert({user_id:currentSession.user.id,projects:g('uw72PrefProjects'),events:g('uw72PrefEvents'),roles:g('uw72PrefRoles'),staff:g('uw72PrefStaff'),updated_at:new Date().toISOString()});toast(error?error.message:'Notification preferences saved.')});
 });
+uwSupabase.auth.onAuthStateChange((event,session)=>{if(session)currentSession=session;if(event==='USER_UPDATED'||event==='SIGNED_IN'||event==='INITIAL_SESSION')setTimeout(uwDiscordReturnRefresh,100)});
 </script>
 
 <script id="uw72LoadHook">
