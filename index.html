@@ -2974,7 +2974,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.9.6';
+    stamp.textContent='UNDERWEB // 0.7.9.8';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3015,15 +3015,27 @@ async function uw72LoadEventControl(){
 }
 async function uw72LoadGallery(){
  const el=document.getElementById('uw72Gallery');if(!el)return;
- const [er,pr,cr]=await Promise.all([
+ const [er,pr,defs]=await Promise.all([
   uwSupabase.from('network_events').select('id,title,cover_url,starts_at').not('cover_url','is',null).order('starts_at',{ascending:false}).limit(30),
   uwSupabase.from('network_projects').select('id,title,cover_url,created_at').not('cover_url','is',null).order('created_at',{ascending:false}).limit(30),
-  uwSupabase.from('creator_profiles').select('*').limit(60)
+  uwSupabase.from('role_definitions').select('slug').eq('active',true).eq('category','creator')
  ]);
+ let creators=[];
+ if(!defs.error&&(defs.data||[]).length){
+  const creatorSlugs=(defs.data||[]).map(d=>d.slug).filter(Boolean);
+  const roles=await uwSupabase.from('user_roles').select('user_id,role_slug').eq('status','active').in('role_slug',creatorSlugs);
+  if(!roles.error){
+   const ids=[...new Set((roles.data||[]).map(r=>r.user_id).filter(Boolean))];
+   if(ids.length){
+    const cr=await uwSupabase.from('creator_profiles').select('*').in('user_id',ids).eq('public_visible',true).limit(60);
+    if(!cr.error)creators=cr.data||[];
+   }
+  }
+ }
  let rows=[];
  if(uw72GalleryFilter==='all'||uw72GalleryFilter==='events') rows.push(...(er.data||[]).map(x=>({type:'EVENT',title:x.title,url:x.cover_url,date:x.starts_at})));
  if(uw72GalleryFilter==='all'||uw72GalleryFilter==='projects') rows.push(...(pr.data||[]).map(x=>({type:'PROJECT',title:x.title,url:x.cover_url,date:x.created_at})));
- if(uw72GalleryFilter==='all'||uw72GalleryFilter==='creators') (cr.data||[]).forEach(x=>{const url=x.banner_url||x.avatar_url||x.image_url;if(url)rows.push({type:'CREATOR',title:x.display_name||x.name||x.username||'Creator',url,date:x.updated_at||x.created_at})});
+ if(uw72GalleryFilter==='all'||uw72GalleryFilter==='creators') creators.forEach(x=>{const url=x.banner_url||x.avatar_url||x.image_url;if(url)rows.push({type:'CREATOR',title:x.display_name||x.name||x.username||'Creator',url,date:x.updated_at||x.created_at})});
  rows=rows.filter(x=>x.url).sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
  el.innerHTML=rows.length?rows.map(x=>`<article class="uw72-media"><div class="uw72-media-img" style="background-image:url(&quot;${uw72Esc(x.url)}&quot;)"></div><div class="uw72-media-body"><span>${x.type}</span><h3>${uw72Esc(x.title)}</h3></div></article>`).join(''):'<div class="uw-empty">No uploaded network media in this category yet.</div>';
 }
@@ -3256,7 +3268,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.9.6-vrchat-verification-fix"></div>
+<div style="display:none" data-underweb-build="0.7.9.8-vrchat-verification-fix"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -3378,11 +3390,16 @@ document.addEventListener('click',e=>{
  if(b){e.preventDefault();uw744ApplyRole(b.dataset.uw744Role);}
 });
 
-/* Decorate the existing public-profile viewer with commerce + selected creator showcase. */
-const UW795_CREATOR_ROLE_SET=new Set(['digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer','avatar_creator','world_creator','unity_creator','blender_artist','graphic_designer','producer','musician','rapper','vocalist','artist','performer']);
+/* Decorate the existing public-profile viewer with commerce + selected creator showcase.
+   Canonical creator rule: active role whose role_definitions.category = 'creator'. */
 async function uw795ConfirmedCreator(uid){
- const {data,error}=await uwSupabase.from('user_roles').select('role_slug').eq('user_id',uid).eq('status','active');
- return !error&&(data||[]).some(r=>UW795_CREATOR_ROLE_SET.has(String(r.role_slug||'').toLowerCase()));
+ const [roles,defs]=await Promise.all([
+  uwSupabase.from('user_roles').select('role_slug').eq('user_id',uid).eq('status','active'),
+  uwSupabase.from('role_definitions').select('slug').eq('active',true).eq('category','creator')
+ ]);
+ if(roles.error||defs.error)return false;
+ const creatorSlugs=new Set((defs.data||[]).map(d=>String(d.slug||'').toLowerCase()));
+ return (roles.data||[]).some(r=>creatorSlugs.has(String(r.role_slug||'').toLowerCase()));
 }
 async function uw744DecoratePublic(uid){
  uw744ViewedUid=String(uid||'');
@@ -3724,14 +3741,22 @@ async function uw758Load(){
  const list=document.getElementById('creatorDirectoryList');if(!list)return;
  list.innerHTML='<div class="uw-empty">Loading creator network…</div>';
  try{
-   const creatorSlugs=[
-     'digital_artist','traditional_artist','vfx_artist','dj','photographer','videographer',
-     'unity_creator','blender_artist','world_creator','avatar_creator','graphic_designer',
-     'producer','musician','rapper','vocalist'
-   ];
+   /* ROLE FIRST: creator membership is defined by role_definitions.category='creator'.
+      Never infer creator status from the existence of a creator_profiles row. */
+   const creatorDefs=await uwSupabase.from('role_definitions')
+     .select('slug,name')
+     .eq('active',true)
+     .eq('category','creator');
+   if(creatorDefs.error)throw creatorDefs.error;
+   const creatorSlugs=(creatorDefs.data||[]).map(d=>d.slug).filter(Boolean);
 
-   /* ROLE FIRST: directory membership comes from active creator roles,
-      never from the existence of a profile row. */
+   if(!creatorSlugs.length){
+     uw758Creators=[];uw758Roles={};uw758Defs={};window.uwRealCreators=[];window.uw62RoleMap={};
+     uw758Render();
+     if(typeof setText==='function'){setText('uwCreatorCount',0);setText('uw62CreatorCount',0);}
+     return;
+   }
+
    const ur=await uwSupabase.from('user_roles')
      .select('user_id,role_slug,group_scope,status')
      .eq('status','active')
