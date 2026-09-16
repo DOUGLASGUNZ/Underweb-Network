@@ -2772,7 +2772,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.0';
+    stamp.textContent='UNDERWEB // 0.7.8.1';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3050,7 +3050,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.0-open-beta-onboarding"></div>
+<div style="display:none" data-underweb-build="0.7.8.1-beta-flow-fixes"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4393,7 +4393,7 @@ function uw780Render(){
  <div class="uw780-actions"><button class="btn" data-uw780-back>BACK</button><button class="btn hot" data-uw780-next>CONTINUE</button></div>`);
  if(uw780Step===2)return uw780Shell(`<h2>WHAT DO YOU CREATE?</h2><p>Select creator disciplines that fit you. Regular members can skip this entirely.</p>
  <div class="uw780-rolegrid">${uw780Defs.map(r=>`<label class="uw780-role"><input type="checkbox" data-uw780-role="${uw780Esc(r.slug)}"> ${uw780Esc(r.name||r.slug)}</label>`).join('')}</div>
- <p class="uw780-note">Creator roles use the Network's existing approval flow. Owner/Director accounts use direct assignment instead.</p>
+ <p class="uw780-note">Choose what fits you and continue immediately. Requests can stay pending while you use UnderWeb; approval is not required to finish setup. Owner/Director accounts use direct assignment instead.</p>
  <div class="uw780-actions"><button class="btn" data-uw780-back>BACK</button><button class="btn hot" data-uw780-next>CONTINUE</button></div>`);
  return uw780Shell(`<h2>YOU'RE READY.</h2><p>Your identity is set. From here you can finish your avatar/banner, upload showcase work, set shop or commission links, join projects, and explore creators.</p>
  <div class="uw780-actions"><button class="btn" data-uw780-back>BACK</button><button class="btn hot" data-uw780-finish>ENTER THE NETWORK</button></div>`);
@@ -4422,8 +4422,11 @@ async function uw780SaveProfile(){
 }
 async function uw780Roles(){
  const chosen=[...document.querySelectorAll('[data-uw780-role]:checked')].map(x=>x.dataset.uw780Role);
+ /* Selection is onboarding intent, not an approval gate. Submit requests, then move on. */
+ if(!chosen.length){uw780Step++;uw780Render();return}
+ const leadership=await uw773Leadership();
  for(const slug of chosen){
-   if(await uw773Leadership()){
+   if(leadership){
      const r=await uwSupabase.rpc('uw_director_set_role',{p_user_id:currentSession.user.id,p_role_slug:slug,p_enabled:true});
      if(r.error)return toast(r.error.message);
    }else{
@@ -4435,6 +4438,7 @@ async function uw780Roles(){
      }
    }
  }
+ toast(leadership?'Creator roles added.':'Creator role requests submitted. You can keep using UnderWeb while staff reviews them.');
  uw780Step++;uw780Render();
 }
 document.addEventListener('click',async e=>{
@@ -4452,6 +4456,53 @@ document.addEventListener('click',async e=>{
  }
 });
 window.addEventListener('pageshow',()=>setTimeout(uw780Load,2400));
+</script>
+
+
+<style id="uw781VerificationReviewNavStyle">
+#uw781VrcReviewJump{margin-top:14px;width:100%}
+</style>
+<script id="uw781BetaFlowFixes">
+async function uw781CanReviewVrc(){
+ try{
+   const leadership=await uwSupabase.rpc('uw_is_owner_or_director');
+   if(!leadership.error&&leadership.data===true)return true;
+ }catch(_){}
+ try{
+   const rank=await uwSupabase.rpc('uw_max_role_rank');
+   return !rank.error&&Number(rank.data||0)>=60;
+ }catch(_){return false}
+}
+async function uw781InstallVrcReview(){
+ const page=document.getElementById('page-connections');if(!page)return;
+ const can=await uw781CanReviewVrc();
+ let jump=document.getElementById('uw781VrcReviewJump');
+ if(!can){jump?.remove();return}
+ if(!jump){
+   jump=document.createElement('button');jump.id='uw781VrcReviewJump';jump.className='btn hot';
+   jump.textContent='STAFF · REVIEW VRCHAT VERIFICATIONS';
+   const head=page.querySelector('.uw72-head');head?.appendChild(jump);
+ }
+ jump.onclick=async()=>{
+   await uw721LoadStaffVerification();
+   const wrap=document.getElementById('uw721StaffVerifyWrap');
+   if(wrap){wrap.hidden=false;wrap.scrollIntoView({behavior:'smooth',block:'start'})}
+ };
+ await uw721LoadStaffVerification();
+}
+/* Replace connection loader's staff discovery weakness without changing verification RPCs. */
+const uw781OldConnections=window.uw72LoadConnections;
+if(typeof uw781OldConnections==='function'){
+ window.uw72LoadConnections=async function(){
+   const result=await uw781OldConnections.apply(this,arguments);
+   await uw781InstallVrcReview();
+   return result;
+ };
+}
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-page="connections"]'))setTimeout(uw781InstallVrcReview,250);
+},true);
+window.addEventListener('pageshow',()=>setTimeout(uw781InstallVrcReview,2600));
 </script>
 
 </body></html>
