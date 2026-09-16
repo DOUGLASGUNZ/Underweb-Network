@@ -990,6 +990,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .uw785-frame{position:absolute;inset:0;border:2px solid #45ff72;box-shadow:inset 0 0 28px rgba(69,255,114,.09);pointer-events:none}
 @media(max-width:600px){.uw785-stage{width:100%}}
 </style>
+<style id="uw786VerifiedVRChatCSS">
+.uw786-vrc{margin-top:18px;padding:14px;border:1px solid rgba(69,255,114,.32);background:linear-gradient(135deg,rgba(69,255,114,.055),rgba(0,0,0,.12))}
+.uw786-vrcrow{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;margin-top:9px}
+.uw786-vrcmark{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid #45ff72;color:#45ff72;font-size:20px;font-weight:1000;box-shadow:0 0 18px rgba(69,255,114,.12)}
+.uw786-vrctext{display:grid;gap:3px}.uw786-vrctext b{font:1000 10px monospace;letter-spacing:.1em;color:#45ff72}.uw786-vrctext span{font-weight:900}.uw786-vrctext small{color:#78837c;font-size:9px}
+@media(max-width:560px){.uw786-vrcrow{grid-template-columns:42px 1fr}.uw786-vrcrow .btn{grid-column:1/-1;width:100%}}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2760,7 +2767,14 @@ document.addEventListener('click',e=>{const p=e.target.closest('[data-uw62-portf
 </script>
 
 <div class="uw621-modal" id="uw621ProfileModal" aria-hidden="true"><article class="uw621-sheet"><div class="uw621-cover" id="uw621Cover"><span class="uw621-partnerflag" id="uw621PartnerFlag" style="display:none">✓ VERIFIED NETWORK PARTNER</span><button class="uw621-close" id="uw621Close" aria-label="Close">×</button></div><div class="uw621-main"><div class="uw621-head"><div class="uw621-avatar" id="uw621Avatar">◆</div><div class="uw621-title"><h2 id="uw621Name">Creator</h2><p id="uw621Headline">UnderWeb Network Creator</p></div><div class="uw621-scope" id="uw621Scope">UNDERWEB</div></div><div class="uw621-actions"><button class="btn hot" id="uw621Portfolio">VIEW PORTFOLIO ↗</button><button class="btn" id="uw621Invite" disabled title="Project invites arrive in 0.6.3">INVITE TO PROJECT · SOON</button></div><div class="uw621-grid"><section class="uw621-panel"><div class="uw621-kicker">ABOUT</div><h3>Creator Profile</h3><div class="uw621-bio" id="uw621Bio"></div><div class="uw621-kicker" style="margin-top:18px">SPECIALTIES</div><div class="uw621-row" id="uw621Skills"></div><div id="uw744CreatorShop" class="uw744-shop" hidden></div>
-<div class="uw621-kicker" style="margin-top:18px">APPROVED NETWORK ROLES</div><div class="uw621-row" id="uw621Roles"></div><div class="uw621-kicker" style="margin-top:20px">SHOWCASE</div><div class="uw743-publicshowcase" id="uw743PublicShowcase"><span class="uw621-empty">No showcase work yet.</span></div></section><aside><section class="uw621-panel"><div class="uw621-kicker">AVAILABILITY</div><h3 id="uw621Availability">BY REQUEST</h3><div class="uw621-note">Availability is taken from the creator's current network profile.</div></section><section class="uw621-panel" style="margin-top:14px"><div class="uw621-kicker">VERIFIED NETWORK HISTORY</div><h3>Credits &amp; Work</h3><div class="uw621-history"><div><b>—</b><span>EVENTS</span></div><div><b>—</b><span>PROJECTS</span></div><div><b>—</b><span>COLLABS</span></div></div><div class="uw621-note">Verified credits will populate from completed UnderWeb events and projects as those systems are connected. Nothing is fabricated.</div></section></aside></div></div></article></div>
+<div class="uw621-kicker" style="margin-top:18px">APPROVED NETWORK ROLES</div><div class="uw621-row" id="uw621Roles"></div><div id="uw786VrcWrap" class="uw786-vrc" hidden>
+  <div class="uw621-kicker">VERIFIED CONNECTION</div>
+  <div class="uw786-vrcrow">
+    <div class="uw786-vrcmark">✓</div>
+    <div class="uw786-vrctext"><b>VERIFIED VRCHAT</b><span id="uw786VrcName">VRChat</span><small id="uw786VrcDate"></small></div>
+    <a id="uw786VrcLink" class="btn" target="_blank" rel="noopener noreferrer">VIEW VRCHAT ↗</a>
+  </div>
+</div><div class="uw621-kicker" style="margin-top:20px">SHOWCASE</div><div class="uw743-publicshowcase" id="uw743PublicShowcase"><span class="uw621-empty">No showcase work yet.</span></div></section><aside><section class="uw621-panel"><div class="uw621-kicker">AVAILABILITY</div><h3 id="uw621Availability">BY REQUEST</h3><div class="uw621-note">Availability is taken from the creator's current network profile.</div></section><section class="uw621-panel" style="margin-top:14px"><div class="uw621-kicker">VERIFIED NETWORK HISTORY</div><h3>Credits &amp; Work</h3><div class="uw621-history"><div><b>—</b><span>EVENTS</span></div><div><b>—</b><span>PROJECTS</span></div><div><b>—</b><span>COLLABS</span></div></div><div class="uw621-note">Verified credits will populate from completed UnderWeb events and projects as those systems are connected. Nothing is fabricated.</div></section></aside></div></div></article></div>
 
 <script>
 function uw621OpenProfile(uid){
@@ -2835,7 +2849,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.3.4';
+    stamp.textContent='UNDERWEB // 0.7.8.4';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3113,7 +3127,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.3.4-profile-media-positioning"></div>
+<div style="display:none" data-underweb-build="0.7.8.4-verified-vrchat-profiles"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4796,5 +4810,35 @@ document.addEventListener('DOMContentLoaded',()=>{
  st?.addEventListener('touchend',()=>uw785Pinch=null);
 });
 function uw785BannerFile(){return uw785CroppedFile||uw033El('profileBannerInput')?.files?.[0]||null}
+</script>
+<script id="uw786VerifiedVRChat">
+async function uw786LoadVerifiedVrc(uid){
+ const wrap=document.getElementById('uw786VrcWrap'),name=document.getElementById('uw786VrcName'),date=document.getElementById('uw786VrcDate'),link=document.getElementById('uw786VrcLink');
+ if(!wrap)return;
+ wrap.hidden=true;
+ try{
+   const {data,error}=await uwSupabase.rpc('uw_public_verified_vrchat',{p_user_id:uid});
+   if(error){console.warn('Verified VRChat:',error);return}
+   const v=Array.isArray(data)?data[0]:data;
+   if(!v||!v.profile_url)return;
+   name.textContent=v.display_name||'VRChat User';
+   date.textContent=v.verified_at?'Verified '+new Date(v.verified_at).toLocaleDateString():'Verified by UnderWeb staff';
+   link.href=v.profile_url;
+   wrap.hidden=false;
+ }catch(e){console.warn('Verified VRChat:',e)}
+}
+/* Both creator profiles and ordinary People profiles set uw621ActiveCreator.
+   Observe the proven modal rather than introducing another profile renderer. */
+document.addEventListener('click',e=>{
+ const p=e.target.closest('[data-uw758-profile],[data-uw62-profile],[data-uw61-profile],[data-uw783-person]');
+ if(p){
+   const uid=p.dataset.uw758Profile||p.dataset.uw62Profile||p.dataset.uw61Profile||p.dataset.uw783Person;
+   setTimeout(()=>uw786LoadVerifiedVrc(uid),80);
+ }
+},true);
+const uw786Modal=document.getElementById('uw621ProfileModal');
+if(uw786Modal)new MutationObserver(()=>{
+ if(uw786Modal.classList.contains('open')&&window.uw621ActiveCreator)uw786LoadVerifiedVrc(window.uw621ActiveCreator);
+}).observe(uw786Modal,{attributes:true,attributeFilter:['class']});
 </script>
 </body></html>
