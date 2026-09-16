@@ -3370,7 +3370,7 @@ async function uw744SaveShop(){
 
 /* Piggyback the site's normal profile-save button so shop fields save with the profile. */
 document.addEventListener('click',e=>{
- const b=e.target.closest('#uw50SaveProfile,[data-uw50-save-profile]');
+ const b=e.target.closest('#saveProfileBtn033,#uw50SaveProfile,[data-uw50-save-profile]');
  if(b)setTimeout(uw744SaveShop,50);
 });
 
