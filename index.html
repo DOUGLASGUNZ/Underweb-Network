@@ -997,6 +997,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .uw786-vrctext{display:grid;gap:3px}.uw786-vrctext b{font:1000 10px monospace;letter-spacing:.1em;color:#45ff72}.uw786-vrctext span{font-weight:900}.uw786-vrctext small{color:#78837c;font-size:9px}
 @media(max-width:560px){.uw786-vrcrow{grid-template-columns:42px 1fr}.uw786-vrcrow .btn{grid-column:1/-1;width:100%}}
 </style>
+<style id="uw785ModeratedUploadCSS">
+.uw785-state{position:absolute;z-index:3;top:8px;left:8px;padding:6px 8px;font:1000 8px/1 monospace;letter-spacing:.11em;border:1px solid}
+.uw785-state.pending{color:#ffd166;border-color:rgba(255,209,102,.55);background:#151105}
+.uw785-state.denied{color:#ff7885;border-color:rgba(255,120,133,.5);background:#160608}
+.uw743-work{position:relative}.uw785-private-media{height:100%;min-height:140px;display:grid;place-content:center;text-align:center;gap:8px;padding:20px;background:repeating-linear-gradient(135deg,#050805,#050805 10px,#070b07 10px,#070b07 20px)}
+.uw785-private-media b{font:1000 10px/1 monospace;letter-spacing:.12em;color:#ffd166}.uw785-denied .uw785-private-media b{color:#ff7885}.uw785-private-media span{max-width:240px;color:#818b84;font-size:11px;line-height:1.4}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2849,7 +2856,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.4';
+    stamp.textContent='UNDERWEB // 0.7.8.5B';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3127,17 +3134,22 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.4-verified-vrchat-profiles"></div>
+<div style="display:none" data-underweb-build="0.7.8.5b-private-showcase-uploads"></div>
 
 
 <script id="uw743CreatorShowcase">
 let uw743Mine=[],uw743Public={};
 const uw743Esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 function uw743Card(x,owner=false){
- const media=x.media_type==='video'
-  ?`<video src="${uw743Esc(x.media_url)}" controls preload="metadata" playsinline></video>`
-  :`<img src="${uw743Esc(x.media_url)}" alt="${uw743Esc(x.title||'Creator work')}" loading="lazy"/>`;
- return `<article class="uw743-work" data-uw743-view="${uw743Esc(x.id)}">${x.is_featured?'<span class="uw743-featured">FEATURED</span>':''}<div class="uw743-media">${media}</div><div class="uw743-workbody"><b>${uw743Esc(x.title||'Untitled Work')}</b>${x.caption?`<p>${uw743Esc(x.caption)}</p>`:''}${owner?`<div class="uw743-workactions"><button class="hot" data-uw743-feature="${uw743Esc(x.id)}">${x.is_featured?'UNFEATURE':'FEATURE'}</button><button data-uw743-delete="${uw743Esc(x.id)}">DELETE</button></div>`:''}</div></article>`;
+ const status=(x.moderation_status||'approved').toLowerCase(),pending=status==='pending',denied=status==='denied';
+ const media=(pending||denied)
+  ?`<div class="uw785-private-media"><b>${pending?'AWAITING REVIEW':'NOT APPROVED'}</b><span>${pending?'This upload is private until staff approves it.':uw743Esc(x.denial_reason||'This upload was not approved.')}</span></div>`
+  :(x.media_type==='video'
+    ?`<video src="${uw743Esc(x.media_url)}" controls preload="metadata" playsinline></video>`
+    :`<img src="${uw743Esc(x.media_url)}" alt="${uw743Esc(x.title||'Creator work')}" loading="lazy"/>`);
+ const state=owner&&pending?'<span class="uw785-state pending">AWAITING REVIEW</span>':owner&&denied?'<span class="uw785-state denied">DENIED</span>':'';
+ const feature=owner&&status==='approved'?`<button class="hot" data-uw743-feature="${uw743Esc(x.id)}">${x.is_featured?'UNFEATURE':'FEATURE'}</button>`:'';
+ return `<article class="uw743-work ${pending?'uw785-pending':''} ${denied?'uw785-denied':''}" data-uw743-view="${uw743Esc(x.id)}">${x.is_featured&&status==='approved'?'<span class="uw743-featured">FEATURED</span>':''}${state}<div class="uw743-media">${media}</div><div class="uw743-workbody"><b>${uw743Esc(x.title||'Untitled Work')}</b>${x.caption?`<p>${uw743Esc(x.caption)}</p>`:''}${owner?`<div class="uw743-workactions">${feature}<button data-uw743-delete="${uw743Esc(x.id)}">DELETE</button></div>`:''}</div></article>`;
 }
 async function uw743LoadMine(){
  if(!currentSession)return;
@@ -3148,7 +3160,7 @@ async function uw743LoadMine(){
 async function uw743LoadPublic(uid){
  const box=document.getElementById('uw743PublicShowcase');if(!box)return;
  box.innerHTML='<span class="uw621-empty">Loading showcase…</span>';
- const {data,error}=await uwSupabase.from('creator_showcase').select('*').eq('user_id',uid).order('is_featured',{ascending:false}).order('sort_order').order('created_at',{ascending:false});
+ const {data,error}=await uwSupabase.from('creator_showcase').select('*').eq('user_id',uid).eq('moderation_status','approved').order('is_featured',{ascending:false}).order('sort_order').order('created_at',{ascending:false});
  if(error){box.innerHTML='<span class="uw621-empty">Showcase unavailable.</span>';return}
  uw743Public[uid]=data||[];box.innerHTML=data?.length?data.map(x=>uw743Card(x,false)).join(''):'<span class="uw621-empty">No showcase work uploaded yet.</span>';
 }
@@ -3161,11 +3173,10 @@ async function uw743Upload(file){
  const caption=prompt('Optional caption / description:')||'';
  const ext=(file.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'');
  const path=`${currentSession.user.id}/${Date.now()}-${crypto.randomUUID?.()||Math.random().toString(36).slice(2)}.${ext}`;
- const up=await uwSupabase.storage.from('creator-showcase').upload(path,file,{upsert:false,contentType:file.type});
+ const up=await uwSupabase.storage.from('creator-showcase-pending').upload(path,file,{upsert:false,contentType:file.type});
  if(up.error)return toast(up.error.message);
- const url=uwSupabase.storage.from('creator-showcase').getPublicUrl(path).data.publicUrl;
- const ins=await uwSupabase.from('creator_showcase').insert({user_id:currentSession.user.id,media_url:url,storage_path:path,media_type:video?'video':'image',title:title||'Untitled Work',caption,is_featured:false,sort_order:0});
- if(ins.error){await uwSupabase.storage.from('creator-showcase').remove([path]);return toast(ins.error.message)}
+ const ins=await uwSupabase.from('creator_showcase').insert({user_id:currentSession.user.id,media_url:'pending://'+path,storage_path:path,media_type:video?'video':'image',title:title||'Untitled Work',caption,is_featured:false,sort_order:0,moderation_status:'pending'});
+ if(ins.error){await uwSupabase.storage.from('creator-showcase-pending').remove([path]);return toast(ins.error.message)}
  return true;
 }
 async function uw743Feature(id){
@@ -3176,11 +3187,12 @@ async function uw743Feature(id){
 async function uw743Delete(id){
  const x=uw743Mine.find(v=>String(v.id)===String(id));if(!x||!confirm('Delete this showcase item?'))return;
  const del=await uwSupabase.from('creator_showcase').delete().eq('id',id).eq('user_id',currentSession.user.id);if(del.error)return toast(del.error.message);
- if(x.storage_path)await uwSupabase.storage.from('creator-showcase').remove([x.storage_path]);
+ if(x.storage_path)await uwSupabase.storage.from((x.moderation_status||'approved')==='approved'?'creator-showcase':'creator-showcase-pending').remove([x.storage_path]);
  toast('Showcase item deleted.');await uw743LoadMine();
 }
 function uw743Viewer(x){
- if(!x)return;const media=x.media_type==='video'?`<video src="${uw743Esc(x.media_url)}" controls autoplay playsinline></video>`:`<img src="${uw743Esc(x.media_url)}" alt="">`;
+ if(!x)return;if((x.moderation_status||'approved')!=='approved')return toast('This upload is still private.');
+ const media=x.media_type==='video'?`<video src="${uw743Esc(x.media_url)}" controls autoplay playsinline></video>`:`<img src="${uw743Esc(x.media_url)}" alt="">`;
  document.body.insertAdjacentHTML('beforeend',`<div class="uw743-viewer" id="uw743Viewer"><div class="uw743-viewer-inner"><button type="button" data-uw743-close>×</button>${media}</div></div>`);
 }
 document.getElementById('uw743PickShowcase')?.addEventListener('click',()=>document.getElementById('uw743ShowcaseFile')?.click());
@@ -3190,7 +3202,7 @@ document.getElementById('uw743ShowcaseFile')?.addEventListener('change',async e=
  for(const f of files) await uw743Upload(f);
  e.target.value='';
  await uw743LoadMine();
- toast(files.length===1?'Showcase upload complete.':`${files.length} showcase uploads complete.`);
+ toast(files.length===1?'Uploaded — awaiting staff review.':`${files.length} uploads submitted for staff review.`);
 });
 document.addEventListener('click',e=>{
  const f=e.target.closest('[data-uw743-feature]');if(f){e.preventDefault();e.stopPropagation();uw743Feature(f.dataset.uw743Feature);return}
