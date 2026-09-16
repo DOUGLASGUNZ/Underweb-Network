@@ -5019,20 +5019,14 @@ async function uw790OpenReview(){
  box.innerHTML=cards.join('');
 }
 async function uw790Approve(id){
- const x=uw790Queue.find(v=>v.id===id);if(!x)return;
- if(!confirm('Approve this media and publish it to the creator showcase?'))return;
- const dl=await uwSupabase.storage.from('creator-showcase-pending').download(x.storage_path);if(dl.error)return toast(dl.error.message);
- const ext=(x.storage_path.split('.').pop()||'bin').replace(/[^a-z0-9]/gi,'');
- const publicPath=`${x.user_id}/${Date.now()}-${id}.${ext}`;
- const up=await uwSupabase.storage.from('creator-showcase').upload(publicPath,dl.data,{upsert:false,contentType:dl.data.type||undefined});
- if(up.error)return toast(up.error.message);
- const publicUrl=uwSupabase.storage.from('creator-showcase').getPublicUrl(publicPath).data.publicUrl;
- const db=await uwSupabase.from('creator_showcase').update({media_url:publicUrl,storage_path:publicPath}).eq('id',id).eq('moderation_status','pending');
- if(db.error){await uwSupabase.storage.from('creator-showcase').remove([publicPath]);return toast(db.error.message)}
- const rv=await uwSupabase.rpc('uw_review_showcase_media',{p_media_id:id,p_approve:true,p_reason:null});
- if(rv.error){await uwSupabase.from('creator_showcase').update({media_url:'pending://'+x.storage_path,storage_path:x.storage_path}).eq('id',id);await uwSupabase.storage.from('creator-showcase').remove([publicPath]);return toast(rv.error.message)}
- await uwSupabase.storage.from('creator-showcase-pending').remove([x.storage_path]);
- toast('Media approved and published.');uw790OpenReview();uw790RefreshBadge();
+  const x=uw790Queue.find(v=>v.id===id);if(!x)return;
+  if(!confirm('Approve this media and publish it to the creator showcase?'))return;
+  const {data,error}=await uwSupabase.functions.invoke('approve-showcase-media',{body:{media_id:id}});
+  if(error){console.error('Showcase approval function error',error);return toast(error.message||'Media approval failed.')}
+  if(!data?.ok){console.error('Showcase approval response',data);return toast(data?.error||'Media approval failed.')}
+  toast('Media approved and published.');
+  await uw790OpenReview();
+  await uw790RefreshBadge();
 }
 async function uw790Deny(id){
  const reason=prompt('Optional denial reason:')??null;if(reason===null)return;
