@@ -1063,6 +1063,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .uw792-navlocked{opacity:.42!important}
 @media(max-width:600px){.uw792-gate{align-items:end;padding:10px}.uw792-gatebox{padding:22px 18px;margin-bottom:72px}.uw792-actions .btn{flex:1}}
 </style>
+<style id="uw794DesktopNavCSS">
+.uw794-desktopnav{display:none}
+@media(min-width:901px){
+  .uw70-top{display:grid!important;grid-template-columns:auto auto 1fr auto;align-items:center;gap:20px}
+  #drawerBtn{display:none!important}
+  .uw70-nav{display:none!important}
+  .uw794-desktopnav{display:flex!important;align-items:center;justify-content:center;gap:4px;min-width:0}
+  .uw794-desktopnav button{appearance:none;border:0;border-bottom:2px solid transparent;background:transparent;color:#7f8982;padding:14px 13px 12px;font:900 10px/1 monospace;letter-spacing:.1em;cursor:pointer;white-space:nowrap}
+  .uw794-desktopnav button:hover,.uw794-desktopnav button.active{color:var(--g);border-bottom-color:var(--g);background:rgba(69,255,114,.035)}
+  .uw70-brand{cursor:pointer}
+  .uw70-actions{justify-self:end}
+}
+@media(min-width:901px) and (max-width:1120px){
+  .uw794-desktopnav button{padding-left:8px;padding-right:8px;font-size:9px}
+}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -1074,6 +1090,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
     <button data-page="events">Events</button>
     <button data-page="projects">Projects</button>
     <button data-page="command" data-requires-staff="true">Command</button>
+  </nav>
+  <nav class="uw794-desktopnav" aria-label="Primary navigation">
+    <button class="active" data-page="home">HOME</button>
+    <button data-page="people">NETWORK</button>
+    <button data-page="events">EVENTS</button>
+    <button data-page="command" data-requires-staff="true">STAFF</button>
+    <button data-page="profile">PROFILE</button>
   </nav>
   <div class="actions uw70-actions">
     <span id="authState" style="font-size:11px;opacity:.68"></span>
@@ -2919,7 +2942,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.9.3';
+    stamp.textContent='UNDERWEB // 0.7.9.4';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3197,7 +3220,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.9.3-hard-access-gate"></div>
+<div style="display:none" data-underweb-build="0.7.9.4-desktop-navigation"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -5080,5 +5103,17 @@ body[data-network-access="locked"] [data-page]:not([data-page="home"]):not([data
  document.addEventListener('DOMContentLoaded',()=>setTimeout(enforce,1800));
  setInterval(()=>{if(document.visibilityState==='visible')uw792CheckAccess()},15000);
 })();
+</script>
+<script id="uw794DesktopNav">
+document.addEventListener('click',e=>{
+ const n=e.target.closest('[data-page]');
+ if(!n)return;
+ const pg=n.dataset.page;
+ setTimeout(()=>{
+   document.querySelectorAll('.uw794-desktopnav button').forEach(b=>{
+     b.classList.toggle('active',b.dataset.page===pg);
+   });
+ },0);
+},false);
 </script>
 </body></html>
