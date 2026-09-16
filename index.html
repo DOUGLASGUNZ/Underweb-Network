@@ -2974,7 +2974,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.9.5';
+    stamp.textContent='UNDERWEB // 0.7.9.6';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3040,6 +3040,8 @@ async function uw72LoadPartners(){
 async function uw72LoadConnections(){
  const input=document.getElementById('uw72VrcUrl'),state=document.getElementById('uw72VrcState'),box=document.getElementById('uw721VerifyBox'),codeEl=document.getElementById('uw721VerifyCode'),note=document.getElementById('uw72VrcNote');
  if(!input||!state)return;
+ const sess=(typeof currentSession!=='undefined'&&currentSession)?currentSession:null;
+ if(!sess?.user?.id){state.textContent='SIGN IN REQUIRED';if(box)box.hidden=true;return}
  const {data,error}=await uwSupabase.from('network_connections').select('*').eq('user_id',sess.user.id).eq('provider','vrchat').maybeSingle();
  if(error){if(note)note.textContent=error.message;return}
  if(!data){state.textContent='NOT CLAIMED';if(box)box.hidden=true;return}
@@ -3051,6 +3053,7 @@ async function uw72LoadConnections(){
 }
 async function uw72SaveVrc(){
  const input=document.getElementById('uw72VrcUrl'),note=document.getElementById('uw72VrcNote');const url=(input?.value||'').trim();
+ if(typeof currentSession==='undefined'||!currentSession?.user?.id){note.textContent='Sign in first.';return}
  if(!/^https:\/\/(www\.)?vrchat\.com\/home\/user\/usr_[A-Za-z0-9_-]+/i.test(url)){note.textContent='Paste a VRChat user profile URL.';return}
  note.textContent='CREATING VERIFICATION CHALLENGE…';
  const {data,error}=await uwSupabase.rpc('uw_claim_vrchat_profile',{p_profile_url:url});
@@ -3059,6 +3062,7 @@ async function uw72SaveVrc(){
 }
 async function uw721RequestVerify(){
  const note=document.getElementById('uw72VrcNote');
+ if(typeof currentSession==='undefined'||!currentSession?.user?.id){note.textContent='Sign in first.';return}
  const {error}=await uwSupabase.rpc('uw_request_vrchat_verification');
  note.textContent=error?error.message:'Verification submitted to staff.';
  if(!error)uw72LoadConnections();
@@ -3252,7 +3256,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.9.5-pc-menu-creator-commissions"></div>
+<div style="display:none" data-underweb-build="0.7.9.6-vrchat-verification-fix"></div>
 
 
 <script id="uw743CreatorShowcase">
