@@ -1369,6 +1369,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   <label class="full"><span>Commission / shop URL</span><input class="input" id="uw744ShopUrl" type="url" placeholder="https://..."/></label>
   <label class="full"><span>Button label</span><input class="input" id="uw744ShopLabel" maxlength="40" placeholder="COMMISSIONS OPEN"/></label>
  </div>
+ <div class="uw40-save"><button class="btn hot" id="uw744SaveCommission" type="button">SAVE COMMISSION LINK</button><small id="uw744CommissionState">Saved links appear on your public Network profile.</small></div>
 </div>
 <div class="uw40-save"><button class="btn hot" id="saveProfileBtn033" type="button">SAVE PROFILE</button><small>Images save to your private upload folder and display publicly on your network profile.</small></div>
 </section>
@@ -3363,15 +3364,26 @@ async function uw744LoadMine(){
  if(u)u.value=data?.shop_url||''; if(l)l.value=data?.shop_label||'SHOP / COMMISSIONS';
 }
 async function uw744SaveShop(){
- if(!currentSession)return;
+ if(!currentSession)return passwordlessSignIn();
+ const state=document.getElementById('uw744CommissionState');
  const shop_url=document.getElementById('uw744ShopUrl')?.value.trim()||null;
  const shop_label=document.getElementById('uw744ShopLabel')?.value.trim()||'SHOP / COMMISSIONS';
  if(shop_url && !/^https?:\/\//i.test(shop_url))return toast('Shop link must start with http:// or https://');
- const {error}=await uwSupabase.from('creator_profiles').update({shop_url,shop_label}).eq('user_id',currentSession.user.id);
- if(error)toast(error.message);
+ if(!await uw795ConfirmedCreator(currentSession.user.id))return toast('An active creator role is required to publish commission links.');
+ if(state)state.textContent='SAVING…';
+ const {data,error}=await uwSupabase.from('creator_profiles')
+   .update({shop_url,shop_label})
+   .eq('user_id',currentSession.user.id)
+   .select('shop_url,shop_label')
+   .maybeSingle();
+ if(error){if(state)state.textContent='SAVE FAILED';return toast('Commission save failed: '+error.message);}
+ if(shop_url && !data?.shop_url){if(state)state.textContent='NOT SAVED';return toast('Commission URL was not persisted.');}
+ if(state)state.textContent=shop_url?'SAVED — PUBLIC PROFILE':'LINK REMOVED';
+ toast(shop_url?'Commission link saved to public profile.':'Commission link removed.');
 }
+document.getElementById('uw744SaveCommission')?.addEventListener('click',uw744SaveShop);
 
-/* Commission fields are saved atomically by the canonical saveMyProfile() payload. */
+/* Commission links have an explicit verified save path. The normal profile save also carries these fields. */
 
 /* Use the site's existing role application RPC/table flow, not a second approval system. */
 async function uw744ApplyRole(slug){
@@ -3836,10 +3848,32 @@ async function uw758Open(uid){
  const av=by('uw621Avatar');if(av){av.style.backgroundImage=c.avatar_url?`url("${c.avatar_url}")`:'';av.textContent=c.avatar_url?'':(c.display_name||'C').charAt(0).toUpperCase()}
  const cover=by('uw621Cover');if(cover)cover.style.backgroundImage=c.banner_url?`linear-gradient(90deg,rgba(0,0,0,.18),rgba(0,0,0,.5)),url("${c.banner_url}")`:'';
  if(by('uw621Portfolio'))by('uw621Portfolio').style.display='none';
+ /* Render creator commerce directly in the canonical profile opener.
+    Do not depend on the older decorator chain or a cached directory row. */
+ const shopBox=by('uw744CreatorShop');
+ if(shopBox){
+   shopBox.hidden=true;shopBox.innerHTML='';
+   try{
+     const shop=await uwSupabase.from('creator_profiles')
+       .select('shop_url,shop_label')
+       .eq('user_id',uid)
+       .maybeSingle();
+     if(shop.error)throw shop.error;
+     const raw=String(shop.data?.shop_url||'').trim();
+     if(raw){
+       let safe='';
+       try{const u=new URL(raw);if(u.protocol==='http:'||u.protocol==='https:')safe=u.href}catch(_){ }
+       if(safe){
+         const label=String(shop.data?.shop_label||'SHOP / COMMISSIONS').replace(/[<>&]/g,'').slice(0,40);
+         shopBox.innerHTML=`<a href="${safe.replace(/"/g,'&quot;')}" target="_blank" rel="noopener noreferrer"><strong>${label}</strong><span>OPEN CREATOR SHOP ↗</span></a>`;
+         shopBox.hidden=false;
+       }
+     }
+   }catch(e){console.warn('Creator shop render failed:',e)}
+ }
  window.uw621ActiveCreator=uid;window.uw744ViewedUid=uid;
  modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
  try{if(typeof uw743LoadPublic==='function')await uw743LoadPublic(uid)}catch(e){console.warn(e)}
- try{if(typeof uw744DecoratePublic==='function')await uw744DecoratePublic(uid)}catch(e){console.warn(e)}
 }
 ['creatorSearch','creatorCommunity','creatorDiscipline','creatorAvailability'].forEach(id=>{
  const el=document.getElementById(id);if(el)el.addEventListener(id==='creatorSearch'?'input':'change',uw758Render);
