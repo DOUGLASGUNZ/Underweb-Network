@@ -2819,7 +2819,7 @@ setTimeout(uw70RenderHomeFeeds,800);setInterval(uw70RenderHomeFeeds,15000);</scr
   document.addEventListener('DOMContentLoaded',function(){
     const stamp=document.createElement('div');
     stamp.className='uw70-buildstamp';
-    stamp.textContent='UNDERWEB // 0.7.8.3.1';
+    stamp.textContent='UNDERWEB // 0.7.8.3.2';
     document.body.appendChild(stamp);
 
     // Prevent accidental double-submit on real submit buttons while preserving existing handlers.
@@ -3097,7 +3097,7 @@ const uw74OldIdentity=window.uw50RenderIdentity;if(uw74OldIdentity)window.uw50Re
 document.addEventListener('pointerdown',e=>{const c=e.target.closest('.uw74-showcase .uw74-card');if(c)uw74Animate(c)});
 window.addEventListener('pageshow',()=>setTimeout(uw74Render,850));
 </script>
-<div style="display:none" data-underweb-build="0.7.8.3.1-people-search-rls-fix"></div>
+<div style="display:none" data-underweb-build="0.7.8.3.2-people-search-rpc"></div>
 
 
 <script id="uw743CreatorShowcase">
@@ -4595,20 +4595,22 @@ async function uw783LoadPeople(){
  if(raw.length<1){out.innerHTML='<div class="uw70-empty">Type a name to search the Network.</div>';return}
  out.innerHTML='<div class="uw70-empty">Searching Network…</div>';
 
- /* 0.7.8.3.1: do NOT try to read the entire profiles table and filter it in-browser.
-    RLS commonly exposes only the signed-in profile. Ask Supabase for matches instead. */
+ /* 0.7.8.3.2: canonical People Search uses the security-definer uw_search_people RPC. */
  const safe=raw.replace(/[%_,]/g,' ').trim();
- const pr=await uwSupabase.from('profiles')
-   .select('id,display_name,username')
-   .or(`display_name.ilike.%${safe}%,username.ilike.%${safe}%`)
-   .order('display_name',{ascending:true})
-   .limit(40);
+ const pr=await uwSupabase.rpc('uw_search_people',{
+   p_query: raw,
+   p_limit: 40
+ });
 
  if(pr.error){
    out.innerHTML=`<div class="uw70-empty">PEOPLE SEARCH ERROR: ${uw783Safe(pr.error.message)}</div>`;
    return;
  }
- const matched=pr.data||[];
+ const matched=(pr.data||[]).map(x=>({
+   id:x.user_id,
+   display_name:x.display_name,
+   username:x.username
+ }));
  const ids=matched.map(x=>x.id);
  let cps={},roles={};
  if(ids.length){
