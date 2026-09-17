@@ -1442,6 +1442,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  </div>
  <div class="uw40-save"><button class="btn hot" id="uw744SaveCommission" type="button">SAVE COMMISSION LINK</button><small id="uw744CommissionState">Saved links appear on your public Network profile.</small></div>
 </div>
+<div class="uwext-editor" id="uwExternalLinksEditor">
+ <div class="uw40-title"><div><span>SOCIALS + LINKS</span><h3>External Links</h3></div><small>PUBLIC PROFILE</small></div>
+ <p class="meta">Add SoundCloud, YouTube, Twitch, Spotify, Bandcamp, Instagram, TikTok, X, VRChat, a portfolio, or any other public link.</p>
+ <div id="uwExternalLinksRows"></div>
+ <div class="uwext-actions"><button class="btn" id="uwExternalAdd" type="button">+ ADD LINK</button><button class="btn hot" id="uwExternalSave" type="button">SAVE LINKS</button></div>
+ <small class="meta" id="uwExternalState">Up to 12 links. Only http/https links are accepted.</small>
+</div>
 <div class="uw40-save"><button class="btn hot" id="saveProfileBtn033" type="button">SAVE PROFILE</button><small>Images save to your private upload folder and display publicly on your network profile.</small></div>
 </section>
 </div>
@@ -2336,7 +2343,7 @@ async function loadCreatorDirectory(){
     const {data,error}=await uwSupabase.from('creator_profiles').select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url').eq('public_visible',true).eq('approval_status','approved').order('display_name',{ascending:true}).limit(100);
     if(error)throw error; uwRealCreators=data||[]; uw62RoleMap={};
     const ids=uwRealCreators.map(x=>x.user_id).filter(Boolean);
-    if(ids.length){const rr=await uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active');if(!rr.error){const defs={};try{const rd=await uwSupabase.from('role_definitions').select('slug,name');if(!rd.error)(rd.data||[]).forEach(d=>defs[d.slug]=d.name)}catch(_){};(rr.data||[]).forEach(r=>(uw62RoleMap[r.user_id]??=[]).push({slug:r.role_slug,name:defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),scope:r.group_scope||'underweb'}));}}
+    if(ids.length){const rr=await uwSupabase.from('user_roles').select('user_id,role_slug,group_scope,status').in('user_id',ids).eq('status','active');if(!rr.error){const defs={};try{const rd=await uwSupabase.from('role_definitions').select('slug,name');if(!rd.error)(rd.data||[]).forEach(d=>defs[d.slug]=d.name)}catch(_){};(rr.data||[]).forEach(r=>{const a=(uw62RoleMap[r.user_id]??=[]);if(!a.some(x=>String(x.slug)===String(r.role_slug)))a.push({slug:r.role_slug,name:defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),scope:r.group_scope||'underweb'});});}}
     renderCreatorDirectory();
   }catch(err){console.error('Creator directory load failed:',err);list.innerHTML='<div class="uw-empty" style="grid-column:1/-1">Creator directory is empty or not available yet.</div>';}
 }
@@ -3975,11 +3982,11 @@ async function uw758Load(){
 
    uw758Creators=cp.data||[];
    if(!rd.error)(rd.data||[]).forEach(d=>uw758Defs[d.slug]=d.name);
-   (allRoles.data||[]).forEach(r=>(uw758Roles[r.user_id]??=[]).push({
+   (allRoles.data||[]).forEach(r=>{const a=(uw758Roles[r.user_id]??=[]);if(!a.some(x=>String(x.slug)===String(r.role_slug)))a.push({
      slug:r.role_slug,
      name:uw758Defs[r.role_slug]||String(r.role_slug||'').replaceAll('_',' '),
      scope:r.group_scope||'underweb'
-   }));
+   });});
 
    window.uwRealCreators=uw758Creators;
    window.uw62RoleMap=uw758Roles;
@@ -4012,7 +4019,7 @@ async function uw758Open(uid){
  if(!c)return toast('Creator profile not found.');
 
  const modal=document.getElementById('uw621ProfileModal');if(!modal)return toast('Creator profile viewer missing.');
- const roles=uw758Roles[uid]||[],skills=uw758Skills(c.specialties),by=id=>document.getElementById(id);
+ const roles=[...new Map((uw758Roles[uid]||[]).map(r=>[String(r.slug||r.role_slug||'').toLowerCase(),r])).values()],skills=uw758Skills(c.specialties),by=id=>document.getElementById(id);
  if(by('uw621Name'))by('uw621Name').textContent=c.display_name||'Creator';
  if(by('uw621Headline'))by('uw621Headline').textContent=c.headline||'UnderWeb Network Creator';
  if(by('uw621Scope'))by('uw621Scope').textContent=uw758Community(uid);
@@ -5072,7 +5079,7 @@ async function uw783LoadPeople(){
    out.innerHTML='<div class="uw70-empty">No registered users match that name.</div>';return;
  }
  out.innerHTML=matched.map(p=>{
-   const c=cps[p.id]||{},rs=roles[p.id]||[],av=c.avatar_url?`style="background-image:url('${uw783Safe(c.avatar_url)}')"`:'';
+   const c=cps[p.id]||{},rs=[...new Map((roles[p.id]||[]).map(r=>[String(r.role_slug||'').toLowerCase(),r])).values()],av=c.avatar_url?`style="background-image:url('${uw783Safe(c.avatar_url)}')"`:'';
    return `<article class="uw783-person"><div class="uw783-personhead"><div class="uw783-avatar" ${av}>${c.avatar_url?'':uw783Safe((p.display_name||p.username||'U').charAt(0).toUpperCase())}</div>
    <div><h3>${uw783Safe(p.display_name||p.username||'UnderWeb Member')}</h3><div class="meta">${uw783Safe(c.headline||'UNDERWEB NETWORK MEMBER')}</div></div></div>
    <div class="uw783-roles">${rs.length?rs.slice(0,6).map(r=>`<span class="uw783-role">${uw783Safe(String(r.role_slug||'').replaceAll('_',' '))}</span>`).join(''):'<span class="meta">MEMBER</span>'}</div>
@@ -5093,7 +5100,7 @@ async function uw783OpenPerson(uid){
  if(ur.error)console.warn('Member roles unavailable:',ur.error);
  if(!cached)return toast('Member profile is unavailable. Refresh Network and try again.');
  const modal=document.getElementById('uw621ProfileModal'),by=id=>document.getElementById(id);if(!modal)return;
- const roles=ur.data||uw783Roles?.[uid]||[];
+ const roles=[...new Map(((ur.data||uw783Roles?.[uid]||[])).map(r=>[String(r.role_slug||r.slug||'').toLowerCase(),r])).values()];
  by('uw621Name').textContent=cached.display_name||cached.username||'UnderWeb Member';
  by('uw621Headline').textContent='UnderWeb Network Member';
  by('uw621Scope').textContent='NETWORK';
@@ -5656,4 +5663,22 @@ async function uwFeedbackStatus(id,status){const {error}=await uwSupabase.rpc('u
 document.addEventListener('click',e=>{const b=e.target.closest('[data-feedback-reply]');if(b)uwFeedbackReply(b.dataset.feedbackReply)});
 document.addEventListener('change',e=>{const s=e.target.closest('[data-feedback-status-select]');if(s)uwFeedbackStatus(s.dataset.feedbackStatusSelect,s.value)});
 setTimeout(loadNetworkPulse,900);
-</script>\n</body></html>
+</script>\n\n<style id="uwExternalLinksStyle">
+.uwext-editor{margin-top:20px;padding-top:18px;border-top:1px solid var(--l)}.uwext-row{display:grid;grid-template-columns:160px 1fr 1.4fr auto;gap:8px;margin:9px 0}.uwext-row input,.uwext-row select{width:100%}.uwext-actions{display:flex;gap:8px;margin-top:12px}.uwext-public{margin-top:18px}.uwext-public-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.uwext-public-links a{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(31,255,95,.35);color:var(--g);padding:8px 11px;border-radius:999px;text-decoration:none;font-size:9px;font-weight:1000;letter-spacing:.06em;text-transform:uppercase}.uwext-public-links a:hover{background:rgba(31,255,95,.08)}
+@media(max-width:700px){.uwext-row{grid-template-columns:1fr 1fr}.uwext-row .uwext-url{grid-column:1/-1}.uwext-row .uwext-remove{grid-column:2;justify-self:end}.uwext-actions{flex-wrap:wrap}.uwext-actions .btn{flex:1}}
+</style>
+<script id="uwExternalLinksFeature">
+const UWEXT_PLATFORMS=['SoundCloud','YouTube','Twitch','Spotify','Bandcamp','Instagram','TikTok','X','VRChat','Portfolio','Website','Other'];
+const uwExtSafe=v=>String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));
+function uwExtValidUrl(raw){try{const u=new URL(String(raw||'').trim());return ['http:','https:'].includes(u.protocol)?u.href:''}catch(_){return ''}}
+function uwExtRow(x={}){const host=document.getElementById('uwExternalLinksRows');if(!host)return;const row=document.createElement('div');row.className='uwext-row';row.innerHTML=`<select class="select uwext-platform">${UWEXT_PLATFORMS.map(p=>`<option ${String(x.platform||'').toLowerCase()===p.toLowerCase()?'selected':''}>${p}</option>`).join('')}</select><input class="input uwext-label" maxlength="40" placeholder="Label (optional)" value="${uwExtSafe(x.label||'')}"><input class="input uwext-url" type="url" placeholder="https://..." value="${uwExtSafe(x.url||'')}"><button class="uw50-mini danger uwext-remove" type="button">REMOVE</button>`;host.appendChild(row)}
+async function uwExtLoadMine(){if(!currentSession)return;const host=document.getElementById('uwExternalLinksRows');if(!host)return;host.innerHTML='';const q=await uwSupabase.from('profile_external_links').select('platform,label,url,sort_order').eq('user_id',currentSession.user.id).order('sort_order');if(q.error){console.warn('External links table unavailable:',q.error.message);uwExtRow();return}(q.data||[]).forEach(uwExtRow);if(!q.data?.length)uwExtRow()}
+async function uwExtSaveMine(){if(!currentSession)return;const state=document.getElementById('uwExternalState');const rows=[...document.querySelectorAll('#uwExternalLinksRows .uwext-row')].map((r,i)=>({user_id:currentSession.user.id,platform:r.querySelector('.uwext-platform').value.toLowerCase(),label:r.querySelector('.uwext-label').value.trim()||null,url:uwExtValidUrl(r.querySelector('.uwext-url').value),sort_order:i})).filter(x=>x.url).slice(0,12);if(state)state.textContent='SAVING…';const del=await uwSupabase.from('profile_external_links').delete().eq('user_id',currentSession.user.id);if(del.error){if(state)state.textContent='SAVE FAILED: '+del.error.message;return toast(del.error.message)}if(rows.length){const ins=await uwSupabase.from('profile_external_links').insert(rows);if(ins.error){if(state)state.textContent='SAVE FAILED: '+ins.error.message;return toast(ins.error.message)}}if(state)state.textContent='SAVED';toast('External links saved.')}
+async function uwExtRenderPublic(uid){let host=document.getElementById('uwExternalPublic');if(!host){const roles=document.getElementById('uw621Roles');if(!roles)return;host=document.createElement('div');host.id='uwExternalPublic';host.className='uwext-public';roles.closest('.uw621-panel')?.appendChild(host)}host.innerHTML='';const q=await uwSupabase.from('profile_external_links').select('platform,label,url,sort_order').eq('user_id',uid).order('sort_order');if(q.error||!q.data?.length){host.hidden=true;return}const links=q.data.map(x=>{const url=uwExtValidUrl(x.url);if(!url)return '';const label=x.label||x.platform||'Link';return `<a href="${uwExtSafe(url)}" target="_blank" rel="noopener noreferrer">${uwExtSafe(label)} ↗</a>`}).join('');if(!links){host.hidden=true;return}host.hidden=false;host.innerHTML=`<div class="uw621-kicker">FIND ME ONLINE</div><div class="uwext-public-links">${links}</div>`}
+document.addEventListener('click',e=>{if(e.target.closest('#uwExternalAdd'))uwExtRow();if(e.target.closest('.uwext-remove')){const rows=document.querySelectorAll('#uwExternalLinksRows .uwext-row');if(rows.length>1)e.target.closest('.uwext-row')?.remove();else{e.target.closest('.uwext-row').querySelector('.uwext-url').value='';e.target.closest('.uwext-row').querySelector('.uwext-label').value=''}}if(e.target.closest('#uwExternalSave'))uwExtSaveMine()});
+const _uwExtLoadProfile=window.loadMyProfile;if(_uwExtLoadProfile)window.loadMyProfile=async function(){const r=await _uwExtLoadProfile.apply(this,arguments);await uwExtLoadMine();return r};
+const uwExtModal=document.getElementById('uw621ProfileModal');if(uwExtModal)new MutationObserver(()=>{if(uwExtModal.classList.contains('open')&&window.uw621ActiveCreator)setTimeout(()=>uwExtRenderPublic(String(window.uw621ActiveCreator)),50)}).observe(uwExtModal,{attributes:true,attributeFilter:['class']});
+window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLoadMine()},3000));
+</script>
+
+</body></html>
