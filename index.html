@@ -5820,7 +5820,15 @@ async function uwLoadPublicCosmetics(uid){
  try{
    const q=await uwSupabase.rpc('uw_public_cosmetics',{p_user_id:uid});
    if(q.error)return;
-   const rows=Array.isArray(q.data)?q.data:(q.data?[q.data]:[]);
+   let rows=Array.isArray(q.data)?q.data:(q.data?[q.data]:[]);
+   // If this is your own profile and the public RPC returns nothing, use the locker as the
+   // authoritative owner-side fallback so an equipped frame never disappears from your profile.
+   if(!rows.some(x=>x&&x.is_equipped!==false) && String(uid)===String(currentSession?.user?.id||'')){
+     try{
+       const mine=await uwSupabase.rpc('uw_my_cosmetic_locker');
+       if(!mine.error) rows=Array.isArray(mine.data)?mine.data:(mine.data?[mine.data]:[]);
+     }catch(_){}
+   }
    rows.filter(x=>x&&x.is_equipped!==false).forEach(x=>{const slug=String(x.cosmetic_slug||x.slug||'');if(['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'].includes(slug))avatar.classList.add('uwcos-'+slug)});
  }catch(_){/* cosmetics migration is optional until deployed */}
 }
@@ -6190,12 +6198,18 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
    if(q.error){console.error(q.error);return typeof toast==='function'&&toast(q.error.message)}
    typeof toast==='function'&&toast(on?'COSMETIC EQUIPPED':'COSMETIC UNEQUIPPED');
    await uwLoadCosmeticsLocker();
-   // Keep the currently-open profile in sync immediately after equip/unequip.
-   // Previously the DB changed but the public profile renderer only refreshed when the modal reopened.
+   // Update the visible profile immediately from the successful equip action.
+   // Do NOT immediately call uw_public_cosmetics here: on some deployments that RPC can lag or
+   // return an empty set and would strip the class we just equipped.
    try{
-     const uid=String(window.uw621ActiveCreator||currentSession?.user?.id||'');
-     if(uid&&typeof uwLoadPublicCosmetics==='function') await uwLoadPublicCosmetics(uid);
-   }catch(e){console.warn('[UW cosmetic profile refresh]',e)}
+     const avatar=document.getElementById('uw621Avatar');
+     const viewed=String(window.uw621ActiveCreator||'');
+     const me=String(currentSession?.user?.id||'');
+     if(avatar && (!viewed || !me || viewed===me)){
+       known.forEach(s=>avatar.classList.remove('uwcos-'+s));
+       if(on && known.includes(slug)) avatar.classList.add('uwcos-'+slug);
+     }
+   }catch(e){console.warn('[UW cosmetic immediate profile sync]',e)}
  };
  document.addEventListener('click',e=>{
    if(e.target.closest('#uwCosReload,[data-uwcos-retry]')){e.preventDefault();uwLoadCosmeticsLocker();return}
