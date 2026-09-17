@@ -6130,92 +6130,137 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 
 
 
-<style id="uw-webwalker-production-frame">
+
+<style id="uw-webwalker-approved-frame">
+.uw621-avatar.uwcos-webwalker{
+ position:relative!important;overflow:visible!important;isolation:isolate!important;
+}
 .uw621-avatar.uwcos-webwalker::before{
  content:""!important;display:block!important;position:absolute!important;
- inset:-18px!important;width:auto!important;height:auto!important;left:auto!important;top:auto!important;
- transform:none!important;background:none!important;clip-path:none!important;
- border:8px solid #020403!important;border-radius:34px!important;
- box-shadow:
-   0 0 0 1px rgba(57,255,104,.75),
-   0 0 18px rgba(57,255,104,.42),
-   inset 0 0 14px rgba(57,255,104,.22)!important;
- opacity:1!important;mix-blend-mode:normal!important;z-index:18!important;
- pointer-events:none!important;
- animation:uwWebFramePulse 3.6s ease-in-out infinite!important;
+ inset:-20px!important;width:auto!important;height:auto!important;left:auto!important;top:auto!important;
+ z-index:18!important;pointer-events:none!important;border-radius:38%!important;
+ background:
+   radial-gradient(circle at 50% 1%,#050a07 0 5px,transparent 6px),
+   radial-gradient(circle at 99% 50%,#050a07 0 5px,transparent 6px),
+   radial-gradient(circle at 50% 99%,#050a07 0 5px,transparent 6px),
+   radial-gradient(circle at 1% 50%,#050a07 0 5px,transparent 6px),
+   conic-gradient(from 0deg,
+      #020403 0 7deg,#0b1a10 8deg 12deg,#020403 13deg 31deg,
+      #06120a 32deg 39deg,#020403 40deg 57deg,#0b1a10 58deg 63deg,
+      #020403 64deg 89deg,#07150b 90deg 98deg,#020403 99deg 121deg,
+      #0b1a10 122deg 128deg,#020403 129deg 155deg,#07150b 156deg 164deg,
+      #020403 165deg 199deg,#0b1a10 200deg 207deg,#020403 208deg 239deg,
+      #07150b 240deg 248deg,#020403 249deg 279deg,#0b1a10 280deg 287deg,
+      #020403 288deg 319deg,#07150b 320deg 328deg,#020403 329deg 360deg)!important;
+ -webkit-mask:radial-gradient(closest-side,transparent calc(100% - 18px),#000 calc(100% - 17px))!important;
+ mask:radial-gradient(closest-side,transparent calc(100% - 18px),#000 calc(100% - 17px))!important;
+ filter:drop-shadow(0 0 5px rgba(57,255,104,.65)) drop-shadow(0 0 13px rgba(57,255,104,.25))!important;
+ animation:uwApprovedWebBreath 4.2s ease-in-out infinite!important;
+ transform:none!important;border:0!important;box-shadow:none!important;
 }
 .uw621-avatar.uwcos-webwalker::after{
  content:""!important;display:block!important;position:absolute!important;
- inset:-27px!important;border-radius:42px!important;z-index:19!important;pointer-events:none!important;
+ inset:-30px!important;z-index:19!important;pointer-events:none!important;border-radius:42%!important;
  background:
-   radial-gradient(ellipse at 5% 16%,#39ff68 0 3px,#07100a 4px 9px,transparent 10px),
-   radial-gradient(ellipse at 96% 28%,#39ff68 0 3px,#07100a 4px 10px,transparent 11px),
-   radial-gradient(ellipse at 13% 91%,#39ff68 0 3px,#07100a 4px 9px,transparent 10px),
-   radial-gradient(ellipse at 88% 87%,#39ff68 0 3px,#07100a 4px 10px,transparent 11px),
-   repeating-conic-gradient(from 7deg,transparent 0 15deg,rgba(57,255,104,.5) 16deg 16.7deg,transparent 17.4deg 31deg)!important;
- mask:radial-gradient(ellipse,#0000 0 55%,#000 59% 68%,#0000 72%)!important;
- filter:drop-shadow(0 0 5px rgba(57,255,104,.75))!important;
- animation:uwWebFrameCrawl 15s linear infinite!important;
+   radial-gradient(circle at 15% 20%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
+   radial-gradient(circle at 84% 18%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
+   radial-gradient(circle at 95% 58%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
+   radial-gradient(circle at 76% 91%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
+   radial-gradient(circle at 24% 91%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
+   radial-gradient(circle at 4% 57%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
+   conic-gradient(from -5deg,
+      transparent 0 4deg,#07110a 5deg 8deg,transparent 9deg 39deg,
+      #07110a 40deg 44deg,transparent 45deg 83deg,#07110a 84deg 88deg,
+      transparent 89deg 128deg,#07110a 129deg 134deg,transparent 135deg 173deg,
+      #07110a 174deg 179deg,transparent 180deg 218deg,#07110a 219deg 224deg,
+      transparent 225deg 263deg,#07110a 264deg 269deg,transparent 270deg 308deg,
+      #07110a 309deg 314deg,transparent 315deg 360deg)!important;
+ -webkit-mask:radial-gradient(closest-side,transparent 0 64%,#000 66% 76%,transparent 78%)!important;
+ mask:radial-gradient(closest-side,transparent 0 64%,#000 66% 76%,transparent 78%)!important;
+ filter:drop-shadow(0 0 6px rgba(57,255,104,.72))!important;
+ animation:uwApprovedEyes 3.1s ease-in-out infinite!important;
+ transform:none!important;border:0!important;box-shadow:none!important;
 }
-@keyframes uwWebFramePulse{50%{border-color:#07100a;box-shadow:0 0 0 1px #39ff68,0 0 27px rgba(57,255,104,.62),inset 0 0 18px rgba(57,255,104,.3)}}
-@keyframes uwWebFrameCrawl{to{transform:rotate(360deg)}}
+@keyframes uwApprovedWebBreath{
+ 0%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(57,255,104,.55)) drop-shadow(0 0 11px rgba(57,255,104,.2))}
+ 50%{transform:scale(1.018);filter:drop-shadow(0 0 8px rgba(57,255,104,.82)) drop-shadow(0 0 18px rgba(57,255,104,.34))}
+}
+@keyframes uwApprovedEyes{
+ 0%,42%,48%,100%{opacity:1;filter:drop-shadow(0 0 6px rgba(57,255,104,.8))}
+ 45%{opacity:.28;filter:drop-shadow(0 0 2px rgba(57,255,104,.3))}
+ 72%{filter:drop-shadow(0 0 11px rgba(57,255,104,1))}
+}
 </style>
 
 
-<script id="uw-cosmetics-locker-real">
+<style id="uw-cosmetics-locker-approved-style">
+#uwCosLockerGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px!important}
+.uwcos-locker-card{padding:14px;border:1px solid rgba(57,255,104,.22);border-radius:14px;background:linear-gradient(180deg,rgba(4,13,8,.96),rgba(1,6,3,.96));min-width:0}
+.uwcos-locker-card.equipped{border-color:#39ff68;box-shadow:inset 0 0 0 1px #39ff68,0 0 18px rgba(57,255,104,.12)}
+.uwcos-locker-card h4{margin:7px 0 5px;font-size:15px}.uwcos-locker-card p{margin:0 0 12px;opacity:.62;font-size:12px}
+.uwcos-locker-card footer{display:flex;align-items:center;justify-content:space-between;gap:8px}.uwcos-locker-card .rarity{font-size:10px;letter-spacing:.12em;color:#39ff68}
+</style>
+
+
+<script id="uw-cosmetics-locker-approved">
 (()=>{
- const escCos=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const known=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];
  const grid=()=>document.getElementById('uwCosLockerGrid');
  const count=()=>document.getElementById('uwCosDiscoveryCount');
-
- window.uwLoadCosmeticsLocker=async function(){
+ const getSession=async()=>{
+   try{
+     if(typeof currentSession!=='undefined' && currentSession?.user?.id)return currentSession;
+     const r=await uwSupabase.auth.getSession();
+     if(r?.data?.session){
+       try{currentSession=r.data.session}catch(_){}
+       return r.data.session;
+     }
+   }catch(e){console.error('[UW locker session]',e)}
+   return null;
+ };
+ window.uwLoadCosmeticsLocker=async()=>{
    const g=grid(); if(!g)return;
-   if(!window.uwSupabase||!window.currentSession?.user?.id){
-     g.innerHTML='<div class="uw-empty">Sign in to view unlocked cosmetics.</div>'; return;
-   }
    g.innerHTML='<div class="uw-empty">Loading unlocked cosmetics…</div>';
    try{
-     const {data,error}=await uwSupabase.rpc('uw_my_cosmetic_locker');
-     if(error)throw error;
-     const rows=Array.isArray(data)?data:(data?[data]:[]);
-     const unlocked=rows.filter(x=>x && (x.cosmetic_slug||x.slug));
-     if(count())count().textContent=`${unlocked.length} / ${known.length} SECRETS DISCOVERED`;
-     g.innerHTML=unlocked.length?unlocked.map(x=>{
+     const session=await getSession();
+     if(!session?.user?.id){
+       g.innerHTML='<div class="uw-empty">Session unavailable. Refresh the page and sign in again.</div>';return;
+     }
+     const q=await uwSupabase.rpc('uw_my_cosmetic_locker');
+     if(q.error)throw q.error;
+     const rows=Array.isArray(q.data)?q.data:(q.data?[q.data]:[]);
+     if(count())count().textContent=`${rows.length} / ${known.length} SECRETS DISCOVERED`;
+     g.innerHTML=rows.length?rows.map(x=>{
        const slug=String(x.cosmetic_slug||x.slug||'');
        const name=x.cosmetic_name||x.name||slug.replaceAll('_',' ').toUpperCase();
-       const type=x.cosmetic_type||'profile_frame';
-       const rarity=x.rarity||'SECRET';
-       const eq=x.is_equipped===true;
+       const rarity=x.rarity||'SECRET', eq=!!x.is_equipped;
        return `<article class="uwcos-locker-card ${eq?'equipped':''}">
-         <span class="type">${escCos(String(type).replaceAll('_',' ').toUpperCase())}</span>
-         <h4>${escCos(name)}</h4>
-         <p>${eq?'Currently active on your public profile.':'Unlocked permanently.'}</p>
-         <footer><span class="rarity">${escCos(String(rarity).toUpperCase())}</span>
-         <button class="uw50-mini ${eq?'equipped':''}" type="button" data-uwcos-equip="${escCos(slug)}" data-equipped="${eq?'1':'0'}">${eq?'UNEQUIP':'EQUIP'}</button></footer>
+         <div class="eyebrow">${esc((x.cosmetic_type||'profile_frame').replaceAll('_',' ').toUpperCase())}</div>
+         <h4>${esc(name)}</h4><p>${eq?'ACTIVE ON PROFILE':'UNLOCKED'}</p>
+         <footer><span class="rarity">${esc(String(rarity).toUpperCase())}</span>
+         <button class="uw50-mini" type="button" data-uwcos-equip="${esc(slug)}" data-equipped="${eq?'1':'0'}">${eq?'UNEQUIP':'EQUIP'}</button></footer>
        </article>`;
      }).join(''):'<div class="uw-empty">No secret cosmetics discovered yet.</div>';
-   }catch(err){
-     console.error('[UW locker]',err);
-     g.innerHTML=`<div class="uw-empty">Could not load unlocked cosmetics.<br><small>${escCos(err?.message||'RPC unavailable')}</small></div>`;
+   }catch(e){
+     console.error('[UW locker RPC]',e);
+     g.innerHTML=`<div class="uw-empty">Could not load cosmetics.<br><small>${esc(e?.message||'Unknown error')}</small><br><button class="uw50-mini" type="button" data-uwcos-retry>RETRY</button></div>`;
    }
  };
-
- async function setEquipped(slug,on){
-   try{
-     const {error}=await uwSupabase.rpc('uw_set_cosmetic_equipped',{p_cosmetic_slug:slug,p_is_equipped:on});
-     if(error)throw error;
-     if(typeof toast==='function')toast(on?'COSMETIC EQUIPPED':'COSMETIC UNEQUIPPED');
-     await uwLoadCosmeticsLocker();
-   }catch(err){console.error('[UW cosmetic equip]',err);if(typeof toast==='function')toast(err?.message||'Could not update cosmetic.')}
- }
+ const equip=async(slug,on)=>{
+   const q=await uwSupabase.rpc('uw_set_cosmetic_equipped',{p_cosmetic_slug:slug,p_is_equipped:on});
+   if(q.error){console.error(q.error);return typeof toast==='function'&&toast(q.error.message)}
+   typeof toast==='function'&&toast(on?'COSMETIC EQUIPPED':'COSMETIC UNEQUIPPED');
+   await uwLoadCosmeticsLocker();
+ };
  document.addEventListener('click',e=>{
-   if(e.target.closest('#uwCosReload')){e.preventDefault();uwLoadCosmeticsLocker();return}
-   const b=e.target.closest('[data-uwcos-equip]'); if(b){e.preventDefault();setEquipped(b.dataset.uwcosEquip,b.dataset.equipped!=='1')}
+   if(e.target.closest('#uwCosReload,[data-uwcos-retry]')){e.preventDefault();uwLoadCosmeticsLocker();return}
+   const b=e.target.closest('[data-uwcos-equip]');
+   if(b){e.preventDefault();equip(b.dataset.uwcosEquip,b.dataset.equipped!=='1')}
  });
- const boot=()=>setTimeout(()=>uwLoadCosmeticsLocker(),700);
+ const boot=()=>setTimeout(()=>uwLoadCosmeticsLocker(),900);
  window.addEventListener('load',boot);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden&&grid())uwLoadCosmeticsLocker()});
+ try{uwSupabase.auth.onAuthStateChange(()=>setTimeout(()=>uwLoadCosmeticsLocker(),350))}catch(_){}
 })();
 </script>
 
