@@ -2596,7 +2596,7 @@ function uwEventRow(x,archived=false){const creator=uwEventProfiles[x.created_by
 function renderEvents(){
   const body=document.getElementById('eventsTableBody'),archive=document.getElementById('eventsArchiveBody'),empty=document.getElementById('eventsEmptyCard');
   const grid=document.getElementById('uw70EventsGrid'),archiveGrid=document.getElementById('uw70EventsArchive');
-  const all=uwBeta.events||[], archived=all.filter(x=>x.status==='archived'), visible=all.filter(x=>x.status!=='archived');
+  const all=uwBeta.events||[], archived=all.filter(x=>x.status==='archived'), visible=all.filter(x=>x.status!=='archived' && x.status!=='rejected' && x.status!=='cancelled' && x.status!=='canceled' && !x.cancelled_at);
   const active=visible.filter(uwEventIsActive);
   if(empty)empty.style.display=active.length?'none':'block';
   const card=(x,isArchived=false)=>{
@@ -2645,7 +2645,7 @@ async function loadEvents(){
   if(!currentSession){uwBeta.events=[];uwEventProfiles={};renderEvents();return;}
   try{
     try{await uwSupabase.rpc('uw_archive_finished_events')}catch(_){}
-    let q=uwSupabase.from('network_events').select('id,title,group_scope,starts_at,ends_at,archived_at,location,description,cover_url,status,created_by,approved_by,approved_at,approval_note,created_at,updated_at').order('starts_at',{ascending:true,nullsFirst:false}).limit(100);
+    let q=uwSupabase.from('network_events').select('id,title,group_scope,starts_at,ends_at,archived_at,cancelled_at,location,description,cover_url,status,created_by,approved_by,approved_at,approval_note,created_at,updated_at').order('starts_at',{ascending:true,nullsFirst:false}).limit(100);
     if(!hasStaffAccess())q=q.eq('status','published');
     const {data,error}=await q;if(error)throw error;
     uwBeta.events=data||[];
