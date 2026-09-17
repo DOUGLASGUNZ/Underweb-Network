@@ -6129,51 +6129,93 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 </style>
 
 
-<style id="uw-webwalker-final-geometry">
-.uw621-avatar.uwcos-webwalker{position:relative!important;overflow:visible!important}
+
+<style id="uw-webwalker-production-frame">
 .uw621-avatar.uwcos-webwalker::before{
  content:""!important;display:block!important;position:absolute!important;
- left:50%!important;top:50%!important;inset:auto!important;
- width:calc(100% + 54px)!important;height:calc(100% + 54px)!important;
- transform:translate(-50%,-50%)!important;
- background-position:center!important;background-size:contain!important;background-repeat:no-repeat!important;
- border:0!important;border-radius:0!important;clip-path:none!important;
- z-index:20!important;pointer-events:none!important;mix-blend-mode:normal!important;opacity:1!important;
- filter:drop-shadow(0 0 8px rgba(57,255,104,.55))!important;
- animation:uwWebFinal 5.2s ease-in-out infinite!important;
+ inset:-18px!important;width:auto!important;height:auto!important;left:auto!important;top:auto!important;
+ transform:none!important;background:none!important;clip-path:none!important;
+ border:8px solid #020403!important;border-radius:34px!important;
+ box-shadow:
+   0 0 0 1px rgba(57,255,104,.75),
+   0 0 18px rgba(57,255,104,.42),
+   inset 0 0 14px rgba(57,255,104,.22)!important;
+ opacity:1!important;mix-blend-mode:normal!important;z-index:18!important;
+ pointer-events:none!important;
+ animation:uwWebFramePulse 3.6s ease-in-out infinite!important;
 }
-.uw621-avatar.uwcos-webwalker::after{content:""!important;display:none!important}
-@keyframes uwWebFinal{
- 0%,100%{transform:translate(-50%,-50%) scale(1);filter:drop-shadow(0 0 7px rgba(57,255,104,.48))}
- 50%{transform:translate(-50%,-50%) scale(1.025);filter:drop-shadow(0 0 14px rgba(57,255,104,.82))}
+.uw621-avatar.uwcos-webwalker::after{
+ content:""!important;display:block!important;position:absolute!important;
+ inset:-27px!important;border-radius:42px!important;z-index:19!important;pointer-events:none!important;
+ background:
+   radial-gradient(ellipse at 5% 16%,#39ff68 0 3px,#07100a 4px 9px,transparent 10px),
+   radial-gradient(ellipse at 96% 28%,#39ff68 0 3px,#07100a 4px 10px,transparent 11px),
+   radial-gradient(ellipse at 13% 91%,#39ff68 0 3px,#07100a 4px 9px,transparent 10px),
+   radial-gradient(ellipse at 88% 87%,#39ff68 0 3px,#07100a 4px 10px,transparent 11px),
+   repeating-conic-gradient(from 7deg,transparent 0 15deg,rgba(57,255,104,.5) 16deg 16.7deg,transparent 17.4deg 31deg)!important;
+ mask:radial-gradient(ellipse,#0000 0 55%,#000 59% 68%,#0000 72%)!important;
+ filter:drop-shadow(0 0 5px rgba(57,255,104,.75))!important;
+ animation:uwWebFrameCrawl 15s linear infinite!important;
 }
+@keyframes uwWebFramePulse{50%{border-color:#07100a;box-shadow:0 0 0 1px #39ff68,0 0 27px rgba(57,255,104,.62),inset 0 0 18px rgba(57,255,104,.3)}}
+@keyframes uwWebFrameCrawl{to{transform:rotate(360deg)}}
 </style>
 
 
-<script id="uw-cosmetics-locker-resilience">
+<script id="uw-cosmetics-locker-real">
 (()=>{
- const findLocker=()=>document.querySelector('#uwCosmeticsLocker,#cosmeticsLocker,[data-cosmetics-locker],.uw-cosmetics-locker');
- const loadingNode=()=>{
-   const root=findLocker()||document;
-   return [...root.querySelectorAll('div,p,span')].find(x=>/Loading unlocked cosmetics/i.test(x.textContent||''));
- };
- const recover=async()=>{
-   const n=loadingNode(); if(!n)return;
+ const escCos=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const known=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];
+ const grid=()=>document.getElementById('uwCosLockerGrid');
+ const count=()=>document.getElementById('uwCosDiscoveryCount');
+
+ window.uwLoadCosmeticsLocker=async function(){
+   const g=grid(); if(!g)return;
+   if(!window.uwSupabase||!window.currentSession?.user?.id){
+     g.innerHTML='<div class="uw-empty">Sign in to view unlocked cosmetics.</div>'; return;
+   }
+   g.innerHTML='<div class="uw-empty">Loading unlocked cosmetics…</div>';
    try{
-     if(typeof window.loadCosmeticsLocker==='function') await window.loadCosmeticsLocker();
-     else if(typeof window.uwLoadCosmeticsLocker==='function') await window.uwLoadCosmeticsLocker();
-     else if(typeof window.loadMyCosmetics==='function') await window.loadMyCosmetics();
-   }catch(e){ console.warn('[UW cosmetics locker retry]',e); }
-   setTimeout(()=>{
-     const stuck=loadingNode();
-     if(stuck){
-       stuck.innerHTML='<div style="padding:18px;text-align:center"><b style="color:#39ff68">COSMETICS LOCKER</b><br><span style="opacity:.72">Could not load unlocked cosmetics.</span><br><button type="button" id="uwCosmeticRetryBtn" style="margin-top:12px;padding:9px 14px;background:#031008;color:#39ff68;border:1px solid #39ff68">RETRY</button></div>';
-       document.getElementById('uwCosmeticRetryBtn')?.addEventListener('click',()=>{location.reload()});
-     }
-   },5000);
+     const {data,error}=await uwSupabase.rpc('uw_my_cosmetic_locker');
+     if(error)throw error;
+     const rows=Array.isArray(data)?data:(data?[data]:[]);
+     const unlocked=rows.filter(x=>x && (x.cosmetic_slug||x.slug));
+     if(count())count().textContent=`${unlocked.length} / ${known.length} SECRETS DISCOVERED`;
+     g.innerHTML=unlocked.length?unlocked.map(x=>{
+       const slug=String(x.cosmetic_slug||x.slug||'');
+       const name=x.cosmetic_name||x.name||slug.replaceAll('_',' ').toUpperCase();
+       const type=x.cosmetic_type||'profile_frame';
+       const rarity=x.rarity||'SECRET';
+       const eq=x.is_equipped===true;
+       return `<article class="uwcos-locker-card ${eq?'equipped':''}">
+         <span class="type">${escCos(String(type).replaceAll('_',' ').toUpperCase())}</span>
+         <h4>${escCos(name)}</h4>
+         <p>${eq?'Currently active on your public profile.':'Unlocked permanently.'}</p>
+         <footer><span class="rarity">${escCos(String(rarity).toUpperCase())}</span>
+         <button class="uw50-mini ${eq?'equipped':''}" type="button" data-uwcos-equip="${escCos(slug)}" data-equipped="${eq?'1':'0'}">${eq?'UNEQUIP':'EQUIP'}</button></footer>
+       </article>`;
+     }).join(''):'<div class="uw-empty">No secret cosmetics discovered yet.</div>';
+   }catch(err){
+     console.error('[UW locker]',err);
+     g.innerHTML=`<div class="uw-empty">Could not load unlocked cosmetics.<br><small>${escCos(err?.message||'RPC unavailable')}</small></div>`;
+   }
  };
- window.addEventListener('load',()=>setTimeout(recover,1200));
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(recover,500)});
+
+ async function setEquipped(slug,on){
+   try{
+     const {error}=await uwSupabase.rpc('uw_set_cosmetic_equipped',{p_cosmetic_slug:slug,p_is_equipped:on});
+     if(error)throw error;
+     if(typeof toast==='function')toast(on?'COSMETIC EQUIPPED':'COSMETIC UNEQUIPPED');
+     await uwLoadCosmeticsLocker();
+   }catch(err){console.error('[UW cosmetic equip]',err);if(typeof toast==='function')toast(err?.message||'Could not update cosmetic.')}
+ }
+ document.addEventListener('click',e=>{
+   if(e.target.closest('#uwCosReload')){e.preventDefault();uwLoadCosmeticsLocker();return}
+   const b=e.target.closest('[data-uwcos-equip]'); if(b){e.preventDefault();setEquipped(b.dataset.uwcosEquip,b.dataset.equipped!=='1')}
+ });
+ const boot=()=>setTimeout(()=>uwLoadCosmeticsLocker(),700);
+ window.addEventListener('load',boot);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&grid())uwLoadCosmeticsLocker()});
 })();
 </script>
 
