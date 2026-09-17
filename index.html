@@ -6679,7 +6679,7 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 
 
 <script id="uw-cosmetic-qa-cleanup-20260917">
-(()=>{try{sessionStorage.removeItem('uw_cosmetic_qa_slug')}catch(_){};try{delete window.uwCosmeticQASlug}catch(_){};try{if(typeof window.uwFrameV2SetTest==='function')window.uwFrameV2SetTest(null)}catch(_){}})();
+(()=>{try{sessionStorage.removeItem('uw_cosmetic_qa_slug')}catch(_){};try{delete window.uwCosmeticQASlug}catch(_){};/* Production: never clear the authoritative renderer here. QA cleanup removes only QA state; the equipped cosmetic is hydrated by uwFrameV2Refresh. */try{setTimeout(()=>{if(typeof window.uwFrameV2Refresh==='function')window.uwFrameV2Refresh()},0)}catch(_){}})();
 </script>
 </body></html>
 <!-- 0.8.0.2 — member profile editing: remove creator-role dependency -->
