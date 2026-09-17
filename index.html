@@ -6677,6 +6677,10 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 (()=>{const fix=()=>document.querySelectorAll('#uwCosLockerGrid h4').forEach(h=>{const n=h.textContent.trim().toUpperCase();if(n==='GHOST PROTOCOL'||n==='WEB PROTOCOL')h.textContent='BLACKFLAME PROTOCOL'});new MutationObserver(fix).observe(document.documentElement,{subtree:true,childList:true});fix()})();
 </script>
 
+
+<script id="uw-cosmetic-qa-cleanup-20260917">
+(()=>{try{sessionStorage.removeItem('uw_cosmetic_qa_slug')}catch(_){};try{delete window.uwCosmeticQASlug}catch(_){};try{if(typeof window.uwFrameV2SetTest==='function')window.uwFrameV2SetTest(null)}catch(_){}})();
+</script>
 </body></html>
 <!-- 0.8.0.2 — member profile editing: remove creator-role dependency -->
 <script id="uw802MemberProfileEditing">
@@ -6793,68 +6797,7 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 </script>
 
 
-<!-- TEMP OWNER COSMETIC QA MODE — remove after frame validation -->
-<style id="uw-cosmetic-qa-style">
-#uwCosLockerGrid .uwqa-card{outline:1px dashed rgba(57,255,104,.35)}
-#uwCosLockerGrid .uwqa-tag{font:900 9px/1 monospace;letter-spacing:.14em;color:#39ff68;opacity:.8}
-</style>
-<script id="uw-cosmetic-owner-qa-mode">
-(()=>{
- const items=[
-  ['webwalker','WEBWALKER'],['void_signal','VOID SIGNAL'],['parasite','PARASITE'],
-  ['black_web_crown','EVENT HORIZON'],['ghost_protocol','BLACKFLAME PROTOCOL'],
-  ['devoured_signal','DEVOURED SIGNAL'],['network_zero','NETWORK ZERO']
- ];
- const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const owner=()=>{try{return typeof isOwner==='function'&&isOwner()}catch(_){return false}};
- const selected=()=>sessionStorage.getItem('uw_cosmetic_qa_slug')||'';
- function apply(slug){
-   sessionStorage.setItem('uw_cosmetic_qa_slug',slug||'');
-   window.uwCosmeticQASlug=slug||'';
-   if(typeof window.uwFrameV2SetTest==='function')window.uwFrameV2SetTest(slug||null);
-   const a=document.getElementById('uw621Avatar');
-   if(a){items.forEach(([s])=>a.classList.remove('uwcos-'+s));if(slug)a.classList.add('uwcos-'+slug)}
-   renderLocker();
- }
- function renderLocker(){
-   if(!owner())return false;
-   const g=document.getElementById('uwCosLockerGrid');if(!g)return false;
-   const cur=selected();
-   const c=document.getElementById('uwCosDiscoveryCount');if(c)c.textContent='7 / 7 QA COSMETICS AVAILABLE';
-   g.innerHTML=items.map(([slug,name])=>`<article class="uwcos-locker-card uwqa-card ${cur===slug?'equipped':''}">
-    <div class="eyebrow">PROFILE FRAME <span class="uwqa-tag">// QA</span></div><h4>${esc(name)}</h4>
-    <p>${cur===slug?'QA ACTIVE ON PROFILE':'TEMPORARILY AVAILABLE FOR TESTING'}</p>
-    <footer><span class="rarity">SECRET</span><button class="uw50-mini" type="button" data-uwqa-equip="${esc(slug)}">${cur===slug?'UNEQUIP':'TEST FRAME'}</button></footer>
-   </article>`).join('');
-   return true;
- }
- // Owner-only, session-only: no unlock RPC and no ownership rows are changed.
- document.addEventListener('click',e=>{
-   const b=e.target.closest('[data-uwqa-equip]');if(!b||!owner())return;
-   e.preventDefault();e.stopImmediatePropagation();
-   const slug=b.dataset.uwqaEquip;apply(selected()===slug?'':slug);
-   if(typeof toast==='function')toast(selected()?`QA FRAME ACTIVE // ${items.find(x=>x[0]===selected())?.[1]||selected()}`:'QA FRAME CLEARED');
- },true);
- const base=window.uwLoadCosmeticsLocker;
- window.uwLoadCosmeticsLocker=async function(){
-   if(owner()){renderLocker();return}
-   return typeof base==='function'?base.apply(this,arguments):undefined;
- };
- function tick(){
-   if(!owner())return;
-   renderLocker();
-   const slug=selected();window.uwCosmeticQASlug=slug;
-   const modal=document.getElementById('uw621ProfileModal');
-   if(slug&&modal?.classList.contains('open')){
-     const uid=String(window.uw621ActiveCreator||window.uw744ViewedUid||'');
-     const me=String(window.currentSession?.user?.id||'');
-     if(!uid||!me||uid===me){if(typeof window.uwFrameV2SetTest==='function')window.uwFrameV2SetTest(slug)}
-   }
- }
- window.addEventListener('load',()=>setTimeout(tick,1300));
- setInterval(tick,900);
-})();
-</script>
+<!-- Owner cosmetic QA bypass removed after successful mobile validation. -->
 
 <style id="uw-cosmetic-mobile-qa-fixes-20260917">
 /* QA fixes from Darko mobile pass: keep effects framed around the avatar, not over profile content. */
