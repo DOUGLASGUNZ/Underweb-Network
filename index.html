@@ -5523,6 +5523,26 @@ uw786LoadVerifiedVrc=async function(uid){
 .uw621-avatar.uwcos-webwalker:after{inset:-11px;border-radius:31px;background:repeating-conic-gradient(from 0deg,rgba(57,255,104,.8) 0 1deg,transparent 1deg 22.5deg);mask:radial-gradient(circle,transparent 62%,#000 64% 69%,transparent 71%);animation:uwCosSpin 16s linear infinite;filter:drop-shadow(0 0 5px rgba(57,255,104,.55))}
 .uw621-avatar.uwcos-void_signal:after{inset:-9px;border-radius:29px;border:2px solid #818cf8;box-shadow:4px 0 0 rgba(57,255,104,.55),-4px 0 0 rgba(129,140,248,.45);animation:uwCosGlitch 3.4s steps(1,end) infinite}
 .uw621-avatar.uwcos-parasite:after{inset:-10px;border-radius:30px;border:1px solid rgba(57,255,104,.75);clip-path:polygon(0 12%,36% 12%,45% 0,54% 12%,100% 12%,100% 88%,64% 88%,55% 100%,46% 88%,0 88%);box-shadow:inset 0 0 14px rgba(57,255,104,.24),0 0 16px rgba(57,255,104,.2);animation:uwCosPulse 2.1s ease-in-out infinite}
+/* 0.8.0 secret cosmetic expansion — intentionally loud, rare profile signatures */
+.uw621-avatar.uwcos-black_web_crown:before{inset:-18px -14px -8px;border-radius:34px;background:
+ conic-gradient(from 210deg at 50% 54%,transparent 0 7%,#020403 7.5% 10%,transparent 10.5% 15%,#39ff68 15.5% 16%,transparent 16.5% 24%,#020403 24.5% 29%,transparent 29.5% 100%);
+ filter:drop-shadow(0 -7px 7px rgba(57,255,104,.48));animation:uwCosCrownBreath 2.7s ease-in-out infinite}
+.uw621-avatar.uwcos-black_web_crown:after{inset:-13px;border-radius:34px;background:repeating-conic-gradient(from 8deg,rgba(57,255,104,.95) 0 .8deg,transparent 1deg 14deg);mask:radial-gradient(circle,transparent 57%,#000 59% 61%,transparent 63%);filter:drop-shadow(0 0 8px rgba(57,255,104,.75));animation:uwCosSpin 22s linear infinite}
+.uw621-avatar.uwcos-ghost_protocol:before{inset:-8px;border:1px solid rgba(193,255,209,.75);border-radius:28px;box-shadow:-6px 0 rgba(57,255,104,.25),6px 0 rgba(210,255,222,.15);animation:uwGhostSkew 2.6s steps(1,end) infinite}
+.uw621-avatar.uwcos-ghost_protocol:after{inset:-15px;border-radius:34px;background:repeating-linear-gradient(0deg,transparent 0 6px,rgba(57,255,104,.38) 7px,transparent 8px);mask:linear-gradient(#000,transparent 18%,#000 48%,transparent 68%,#000);animation:uwGhostScan 1.7s linear infinite}
+.uw621-avatar.uwcos-devoured_signal:before{inset:-15px;border-radius:36% 64% 42% 58%/55% 38% 62% 45%;border:4px solid #010302;box-shadow:0 0 0 1px rgba(57,255,104,.65),0 0 24px rgba(57,255,104,.35),inset 0 0 20px #000;animation:uwDevour 3.2s ease-in-out infinite}
+.uw621-avatar.uwcos-devoured_signal:after{inset:-24px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 7%,#020403 8% 12%,transparent 13% 25%,#39ff68 26% 27%,transparent 28% 44%,#020403 45% 53%,transparent 54% 72%,#39ff68 73% 74%,transparent 75%);filter:drop-shadow(0 0 6px rgba(57,255,104,.55));animation:uwCosSpin 11s linear infinite reverse}
+.uw621-avatar.uwcos-network_zero:before{inset:-22px;border-radius:50%;background:
+ repeating-conic-gradient(from 0deg,rgba(57,255,104,.9) 0 .6deg,transparent .8deg 11.25deg);
+ mask:radial-gradient(circle,transparent 49%,#000 50% 51%,transparent 52% 63%,#000 64% 65%,transparent 66%);
+ filter:drop-shadow(0 0 9px rgba(57,255,104,.9));animation:uwCosSpin 28s linear infinite}
+.uw621-avatar.uwcos-network_zero:after{inset:-10px;border-radius:50%;border:1px solid #39ff68;box-shadow:0 0 10px #39ff68,0 0 38px rgba(57,255,104,.55),inset 0 0 28px rgba(57,255,104,.16);animation:uwZeroPulse 1.8s ease-in-out infinite}
+@keyframes uwCosCrownBreath{50%{transform:translateY(-3px) scale(1.035);filter:drop-shadow(0 -10px 10px rgba(57,255,104,.72))}}
+@keyframes uwGhostSkew{0%,88%,100%{transform:none;opacity:1}89%{transform:translateX(-7px) skewX(9deg);opacity:.45}91%{transform:translateX(5px) skewX(-6deg)}94%{transform:none}}
+@keyframes uwGhostScan{to{transform:translateY(12px)}}
+@keyframes uwDevour{0%,100%{transform:rotate(-2deg) scale(1)}50%{transform:rotate(3deg) scale(1.055);border-radius:58% 42% 64% 36%/38% 62% 42% 58%}}
+@keyframes uwZeroPulse{50%{box-shadow:0 0 16px #39ff68,0 0 55px rgba(57,255,104,.72),inset 0 0 36px rgba(57,255,104,.24)}}
+
 @keyframes uwCosPulse{50%{opacity:.55;filter:brightness(1.5)}}@keyframes uwCosSpin{to{transform:rotate(360deg)}}@keyframes uwCosGlitch{0%,88%,100%{transform:none}90%{transform:translate(2px,-1px)}93%{transform:translate(-2px,1px)}96%{transform:translate(1px,1px)}}
 .uw-secret-hotspot{position:fixed;right:5px;bottom:68px;width:12px;height:12px;border:0;background:transparent;color:rgba(57,255,104,.12);font-size:9px;z-index:58;padding:0;cursor:pointer}.uw-secret-hotspot:hover{color:rgba(57,255,104,.5)}
 @media(max-width:700px){.uw-public-authority{max-width:none}.uw-public-authority .uw74-card{transform-origin:left top}.uw621-avatar.uwcos-webwalker:after,.uw621-avatar.uwcos-void_signal:after,.uw621-avatar.uwcos-parasite:after{inset:-7px}}
@@ -5562,12 +5582,12 @@ async function uwRenderPublicAuthority(uid,name){
 }
 async function uwLoadPublicCosmetics(uid){
  const avatar=document.getElementById('uw621Avatar');if(!avatar||!uid)return;
- ['uwcos-webwalker','uwcos-void_signal','uwcos-parasite'].forEach(c=>avatar.classList.remove(c));
+ ['uwcos-webwalker','uwcos-void_signal','uwcos-parasite','uwcos-black_web_crown','uwcos-ghost_protocol','uwcos-devoured_signal','uwcos-network_zero'].forEach(c=>avatar.classList.remove(c));
  try{
    const q=await uwSupabase.rpc('uw_public_cosmetics',{p_user_id:uid});
    if(q.error)return;
    const rows=Array.isArray(q.data)?q.data:(q.data?[q.data]:[]);
-   rows.filter(x=>x&&x.is_equipped!==false).forEach(x=>{const slug=String(x.cosmetic_slug||x.slug||'');if(['webwalker','void_signal','parasite'].includes(slug))avatar.classList.add('uwcos-'+slug)});
+   rows.filter(x=>x&&x.is_equipped!==false).forEach(x=>{const slug=String(x.cosmetic_slug||x.slug||'');if(['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'].includes(slug))avatar.classList.add('uwcos-'+slug)});
  }catch(_){/* cosmetics migration is optional until deployed */}
 }
 async function uwHydratePublicIdentity(uid){
@@ -5594,17 +5614,66 @@ async function uwDiscoverCosmetic(secret){
   return true;
  }catch(err){console.error('UnderWeb secret unlock exception:',secret,err);toast('SECRET SIGNAL FAILED // Check the console for details.');return false}
 }
-// Tiny opt-in Easter eggs. Each counter resets after firing so a failed backend attempt can be retried without a page refresh.
-let uwLogoTaps=0,uwVersionTaps=0,uwSecretTaps=0;
+// Secret discovery layer.
+// Legacy WEBWALKER remains seven logo signals. New secrets use distinct puzzles instead of repeated-click counters.
+let uwLogoTaps=0;
 document.addEventListener('click',e=>{
  if(e.target.closest('.logo-img-wrap,.logo')){uwLogoTaps++;if(uwLogoTaps>=7){uwLogoTaps=0;uwDiscoverCosmetic('seven_signals')}}
- if(e.target.closest('.uw50-version-pill')){uwVersionTaps++;if(uwVersionTaps>=5){uwVersionTaps=0;uwDiscoverCosmetic('rc1_signal')}}
- if(e.target.closest('#uwSecretHotspot')){uwSecretTaps++;if(uwSecretTaps>=3){uwSecretTaps=0;uwDiscoverCosmetic('under_the_web')}}
 });
-document.body.insertAdjacentHTML('beforeend','<button id="uwSecretHotspot" class="uw-secret-hotspot" aria-label="">·</button>');
+
+// EASY // LOST PACKET:
+// A deliberate "404" search in the Network directory discovers a corrupted packet.
+document.addEventListener('keydown',e=>{
+ const q=e.target?.closest?.('#uw783PeopleQuery');
+ if(q&&e.key==='Enter'&&String(q.value||'').trim()==='404'){
+   e.preventDefault(); uwDiscoverCosmetic('lost_packet');
+ }
+});
+
+// MEDIUM // WALK THE WEB:
+// Traverse the public network in the correct route without unrelated page hops.
+const UW_WEB_ROUTE=['people','discover','events','projects','profile'];
+let uwWebRouteAt=0;
+document.addEventListener('click',e=>{
+ const nav=e.target.closest?.('[data-page]');
+ if(!nav)return;
+ const pg=String(nav.dataset.page||'');
+ if(pg===UW_WEB_ROUTE[uwWebRouteAt]){
+   uwWebRouteAt++;
+   if(uwWebRouteAt===UW_WEB_ROUTE.length){uwWebRouteAt=0;uwDiscoverCosmetic('walk_the_web')}
+ }else if(pg===UW_WEB_ROUTE[0]) uwWebRouteAt=1;
+ else if(UW_WEB_ROUTE.includes(pg)) uwWebRouteAt=0;
+});
+
+// HARD // GHOST PROTOCOL:
+// The phrase must be typed while the page itself has focus; inputs/textareas never count.
+let uwGhostBuffer='';
+const UW_GHOST_PHRASE='thereisnoweb';
+document.addEventListener('keydown',e=>{
+ const tag=String(e.target?.tagName||'').toLowerCase();
+ if(['input','textarea','select'].includes(tag)||e.ctrlKey||e.metaKey||e.altKey)return;
+ if(e.key.length!==1)return;
+ uwGhostBuffer=(uwGhostBuffer+e.key.toLowerCase()).slice(-UW_GHOST_PHRASE.length);
+ if(uwGhostBuffer===UW_GHOST_PHRASE){uwGhostBuffer='';uwDiscoverCosmetic('ghost_protocol')}
+});
+
+// VERY HARD // NETWORK ZERO:
+// A directional handshake: ↑ ↑ ↓ ↓ ← → ← → then U W.
+// No clicks, no visible hotspot, and typing fields are ignored.
+const UW_ZERO=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','u','w'];
+let uwZeroAt=0;
+document.addEventListener('keydown',e=>{
+ const tag=String(e.target?.tagName||'').toLowerCase();
+ if(['input','textarea','select'].includes(tag))return;
+ const k=e.key.length===1?e.key.toLowerCase():e.key;
+ if(k===UW_ZERO[uwZeroAt]){
+   uwZeroAt++;
+   if(uwZeroAt===UW_ZERO.length){uwZeroAt=0;uwDiscoverCosmetic('network_zero')}
+ }else uwZeroAt=(k===UW_ZERO[0]?1:0);
+});
 
 // Cosmetics Locker: reads only the current user's unlocked cosmetics and equips through a guarded RPC.
-const UW_COSMETIC_CLASSES=['uwcos-webwalker','uwcos-void_signal','uwcos-parasite'];
+const UW_COSMETIC_CLASSES=['uwcos-webwalker','uwcos-void_signal','uwcos-parasite','uwcos-black_web_crown','uwcos-ghost_protocol','uwcos-devoured_signal','uwcos-network_zero'];
 function uwCosApplyOwnFrame(rows){
  const avatar=document.getElementById('liveProfileAvatar');if(!avatar)return;
  UW_COSMETIC_CLASSES.forEach(c=>avatar.classList.remove(c));
@@ -5619,7 +5688,16 @@ async function uwLoadCosmeticsLocker(){
   if(r.error){grid.innerHTML='<div class="uw-empty">Cosmetics Locker needs the latest SQL migration.</div>';return}
   const rows=Array.isArray(r.data)?r.data:[];uwCosApplyOwnFrame(rows);
   if(count)count.textContent=`${rows.length} / ??? SECRETS DISCOVERED`;
-  const cards=rows.map(x=>`<article class="uwcos-locker-card ${x.is_equipped?'equipped':''}"><span class="type">${uwCosEsc(String(x.cosmetic_type||'COSMETIC').replaceAll('_',' ').toUpperCase())}</span><h4>${uwCosEsc(x.cosmetic_name||'UNLOCKED COSMETIC')}</h4><p>Discovered. Permanently bound to your UnderWeb account.</p><footer><span class="rarity">${uwCosEsc(String(x.rarity||'SECRET').toUpperCase())}</span><button class="uw50-mini ${x.is_equipped?'equipped hot':''}" data-uwcos-equip="${uwCosEsc(x.cosmetic_slug)}" data-equipped="${x.is_equipped?'1':'0'}">${x.is_equipped?'EQUIPPED':'EQUIP'}</button></footer></article>`).join('');
+  const uwCosCopy={
+  webwalker:'Living UnderWeb signal-web. The first infection.',
+  void_signal:'Corrupted transmission halo with unstable signal tearing.',
+  parasite:'Organic Symbiote infection bound to your profile.',
+  black_web_crown:'FORBIDDEN // A living crown of black web-spikes and green signal veins.',
+  ghost_protocol:'CORRUPTED // Your profile desyncs, tears and leaves signal ghosts behind.',
+  devoured_signal:'ABYSSAL // Black tendrils consume the signal ring and reshape it while watched.',
+  network_zero:'MYTHIC // Dual network sigils, zero-point pulse and an unmistakable founder-tier presence.'
+ };
+ const cards=rows.map(x=>`<article class="uwcos-locker-card ${x.is_equipped?'equipped':''}"><span class="type">${uwCosEsc(String(x.cosmetic_type||'COSMETIC').replaceAll('_',' ').toUpperCase())}</span><h4>${uwCosEsc(x.cosmetic_name||'UNLOCKED COSMETIC')}</h4><p>${uwCosEsc(uwCosCopy[String(x.cosmetic_slug||'')]||'Discovered. Permanently bound to your UnderWeb account.')}</p><footer><span class="rarity">${uwCosEsc(String(x.rarity||'SECRET').toUpperCase())}</span><button class="uw50-mini ${x.is_equipped?'equipped hot':''}" data-uwcos-equip="${uwCosEsc(x.cosmetic_slug)}" data-equipped="${x.is_equipped?'1':'0'}">${x.is_equipped?'EQUIPPED':'EQUIP'}</button></footer></article>`).join('');
   grid.innerHTML=cards+`<article class="uwcos-locker-card mystery"><span class="type">UNDISCOVERED</span><h4>???</h4><p>Something is still hiding in the Network.</p><footer><span class="rarity">SECRET</span><span class="meta">LOCKED</span></footer></article>`;
  }catch(e){console.warn('Cosmetics locker unavailable',e);grid.innerHTML='<div class="uw-empty">Could not load cosmetics right now.</div>'}
 }
