@@ -6287,7 +6287,8 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 /* UnderWeb procedural secret frames — production pass. The avatar itself is never filtered or transformed. */
 .uw621-avatar[class*="uwcos-"]{position:relative!important;overflow:visible!important;isolation:isolate!important}
 .uw621-avatar[class*="uwcos-"]::before,.uw621-avatar[class*="uwcos-"]::after{display:none!important;content:none!important;background:none!important;animation:none!important}
-.uwpf{--g:#39ff68;position:absolute;inset:0;z-index:24;pointer-events:none;overflow:visible;transform:translateZ(0)}
+.uw621-head{position:relative!important;overflow:visible!important}
+.uwpf{--g:#39ff68;position:absolute;z-index:24;pointer-events:none;overflow:visible;transform:translateZ(0)}
 .uwpf>*{position:absolute;box-sizing:border-box;pointer-events:none}.uwpf i{display:block}
 /* WEBWALKER */
 .uwpf-webwalker .web{inset:-15px;border:9px solid #020604;border-radius:31% 42% 35% 45%;box-shadow:0 0 0 2px #173d22,0 0 18px #39ff6855;animation:uwpf-breathe 4.6s ease-in-out infinite}
@@ -6345,16 +6346,19 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
  function sync(a){
    if(!(a instanceof Element)||!a.matches('.uw621-avatar'))return;
    const slug=known.find(s=>a.classList.contains('uwcos-'+s));
-   let f=a.querySelector(':scope > .uwpf');
+   const host=a.closest('.uw621-head')||a.parentElement;if(!host)return;
+   let f=host.querySelector(':scope > .uwpf[data-avatar-frame="1"]');
    if(!slug){if(f)f.remove();return}
-   if(f?.dataset.slug===slug)return;
-   if(f)f.remove();
-   f=document.createElement('span');f.className='uwpf uwpf-'+slug;f.dataset.slug=slug;f.setAttribute('aria-hidden','true');f.innerHTML=parts[slug]||'';a.appendChild(f);
+   if(!f){f=document.createElement('span');f.dataset.avatarFrame='1';f.setAttribute('aria-hidden','true');host.appendChild(f)}
+   if(f.dataset.slug!==slug){f.className='uwpf uwpf-'+slug;f.dataset.slug=slug;f.innerHTML=parts[slug]||''}
+   // Anchor to the avatar as a SIBLING. Profile code can freely replace avatar.textContent/background without deleting the frame.
+   f.style.left=a.offsetLeft+'px';f.style.top=a.offsetTop+'px';f.style.width=a.offsetWidth+'px';f.style.height=a.offsetHeight+'px';
  }
  function all(){document.querySelectorAll('.uw621-avatar').forEach(sync)}
- new MutationObserver(ms=>{for(const m of ms){if(m.type==='attributes')sync(m.target);for(const n of m.addedNodes){if(n.nodeType===1){sync(n);n.querySelectorAll?.('.uw621-avatar').forEach(sync)}}}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+ const obs=new MutationObserver(()=>requestAnimationFrame(all));obs.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
+ window.addEventListener('resize',all,{passive:true});
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',all);else all();
- // Preserve backend slug/unlocks while presenting the retired crown cosmetic as EVENT HORIZON in the locker UI.
+ setInterval(all,750);
  const rename=()=>document.querySelectorAll('.uwcos-locker-card h4').forEach(h=>{if(h.textContent.trim().toUpperCase()==='BLACK WEB CROWN')h.textContent='EVENT HORIZON'});
  new MutationObserver(rename).observe(document.documentElement,{subtree:true,childList:true});rename();
 })();
@@ -6364,8 +6368,8 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 <style id="uw-cosmetics-fun-pass-v1">
 /* Cosmetic fun pass: discovery cinematic, equip/profile entrances, and reactive frames. */
 .uwpf{--uw-react-x:0px;--uw-react-y:0px;transform:translate(var(--uw-react-x),var(--uw-react-y));transition:filter .18s ease}
-.uw621-avatar.uwfx-enter>.uwpf{animation:uwFxManifest .85s cubic-bezier(.16,.9,.18,1) both}
-.uw621-avatar.uwfx-react>.uwpf{filter:brightness(1.16) drop-shadow(0 0 9px #39ff6877)}
+.uw621-head:has(.uw621-avatar.uwfx-enter)>.uwpf{animation:uwFxManifest .85s cubic-bezier(.16,.9,.18,1) both}
+.uw621-head:has(.uw621-avatar.uwfx-react)>.uwpf{filter:brightness(1.16) drop-shadow(0 0 9px #39ff6877)}
 .uw621-avatar.uwfx-react.uwcos-webwalker .eye{filter:brightness(1.8);box-shadow:0 0 13px #39ff68}
 .uw621-avatar.uwfx-react.uwcos-ghost_protocol .ghost{opacity:1!important;filter:drop-shadow(0 0 15px #d9ffe7)}
 .uw621-avatar.uwfx-react.uwcos-network_zero .shard{animation-duration:2.8s!important}
@@ -6389,7 +6393,7 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 @keyframes uwDiscSigil{50%{transform:scale(1.08);box-shadow:0 0 38px #39ff6890,inset 0 0 32px #39ff6830}}
 @keyframes uwDiscScan{to{transform:translateY(7px)}}
 @keyframes uwDiscGlitch{0%,9%,17%,75%,100%{opacity:0;transform:none}10%{opacity:1;transform:translateX(12px)}12%{opacity:.5;transform:translateX(-9px)}15%{opacity:.8;transform:none}76%{opacity:.5;transform:translateX(6px)}78%{opacity:0}}
-@media(prefers-reduced-motion:reduce){.uw621-avatar.uwfx-enter>.uwpf,#uwDiscoveryFx *{animation:none!important}#uwDiscoveryFx.show{animation:uwDiscBackdrop 3s both}}
+@media(prefers-reduced-motion:reduce){.uw621-head:has(.uw621-avatar.uwfx-enter)>.uwpf,#uwDiscoveryFx *{animation:none!important}#uwDiscoveryFx.show{animation:uwDiscBackdrop 3s both}}
 </style>
 <script id="uw-cosmetics-fun-pass-v1-js">
 (()=>{
@@ -6402,11 +6406,11 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
  window.uwCosmeticDiscoverySequence=function(name){const x=ensureDiscovery();x.querySelector('h2').textContent=pretty(name);x.classList.remove('show');void x.offsetWidth;x.classList.add('show');clearTimeout(x._t);x._t=setTimeout(()=>x.classList.remove('show'),3400)};
  function enter(a){if(!a?.querySelector(':scope > .uwpf'))return;a.classList.remove('uwfx-enter');void a.offsetWidth;a.classList.add('uwfx-enter');clearTimeout(a._uwEnter);a._uwEnter=setTimeout(()=>a.classList.remove('uwfx-enter'),950)}
  function bind(a){if(!(a instanceof Element)||!a.matches('.uw621-avatar')||a.dataset.uwFunBound)return;a.dataset.uwFunBound='1';
-  a.addEventListener('pointermove',e=>{const f=a.querySelector(':scope > .uwpf');if(!f)return;const r=a.getBoundingClientRect(),x=((e.clientX-r.left)/r.width-.5)*7,y=((e.clientY-r.top)/r.height-.5)*7;f.style.setProperty('--uw-react-x',x.toFixed(1)+'px');f.style.setProperty('--uw-react-y',y.toFixed(1)+'px');a.classList.add('uwfx-react')});
-  a.addEventListener('pointerleave',()=>{const f=a.querySelector(':scope > .uwpf');if(f){f.style.setProperty('--uw-react-x','0px');f.style.setProperty('--uw-react-y','0px')}a.classList.remove('uwfx-react')});
+  a.addEventListener('pointermove',e=>{const f=(a.closest('.uw621-head')||a.parentElement)?.querySelector(':scope > .uwpf[data-avatar-frame="1"]');if(!f)return;const r=a.getBoundingClientRect(),x=((e.clientX-r.left)/r.width-.5)*7,y=((e.clientY-r.top)/r.height-.5)*7;f.style.setProperty('--uw-react-x',x.toFixed(1)+'px');f.style.setProperty('--uw-react-y',y.toFixed(1)+'px');a.classList.add('uwfx-react')});
+  a.addEventListener('pointerleave',()=>{const f=(a.closest('.uw621-head')||a.parentElement)?.querySelector(':scope > .uwpf[data-avatar-frame="1"]');if(f){f.style.setProperty('--uw-react-x','0px');f.style.setProperty('--uw-react-y','0px')}a.classList.remove('uwfx-react')});
   a.addEventListener('pointerdown',()=>{a.classList.add('uwfx-react');setTimeout(()=>a.classList.remove('uwfx-react'),650)});
  }
- function scan(){document.querySelectorAll('.uw621-avatar').forEach(a=>{bind(a);if(a.querySelector(':scope > .uwpf')&&!a.dataset.uwFunSeen){a.dataset.uwFunSeen='1';enter(a)}})}
+ function scan(){document.querySelectorAll('.uw621-avatar').forEach(a=>{bind(a);if((a.closest('.uw621-head')||a.parentElement)?.querySelector(':scope > .uwpf[data-avatar-frame="1"]')&&!a.dataset.uwFunSeen){a.dataset.uwFunSeen='1';enter(a)}})}
  new MutationObserver(ms=>{for(const m of ms){if(m.type==='attributes'&&m.target.matches?.('.uw621-avatar')){const a=m.target;bind(a);const has=cosmeticClasses.some(s=>a.classList.contains('uwcos-'+s));if(has){setTimeout(()=>enter(a),40)}else a.dataset.uwFunSeen=''}for(const n of m.addedNodes)if(n.nodeType===1){bind(n);n.querySelectorAll?.('.uw621-avatar').forEach(bind)}}setTimeout(scan,30)}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan);else scan();
  // Wrap the existing discovery RPC UI without touching or exposing any secret trigger logic.
