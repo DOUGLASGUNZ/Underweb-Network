@@ -5582,15 +5582,24 @@ if(typeof window.uw758Open==='function'){
  const _uw758Open=window.uw758Open;window.uw758Open=async function(uid){const r=await _uw758Open.apply(this,arguments);await uwHydratePublicIdentity(String(uid));return r};
 }
 async function uwDiscoverCosmetic(secret){
- if(!currentSession)return;
- try{const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:secret});if(r.error)return;const row=Array.isArray(r.data)?r.data[0]:r.data;if(row?.new_unlock)toast(`SECRET FOUND // ${row.cosmetic_name||'COSMETIC UNLOCKED'}`)}catch(_){ }
+ if(!currentSession){toast('Sign in to discover Network secrets.');return false}
+ try{
+  const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:secret});
+  if(r.error){console.error('UnderWeb secret unlock failed:',secret,r.error);toast('SECRET SIGNAL FAILED // Refresh after the latest cosmetics SQL is deployed.');return false}
+  const row=Array.isArray(r.data)?r.data[0]:r.data;
+  if(!row){console.error('UnderWeb secret unlock returned no result:',secret,r.data);toast('SECRET SIGNAL FAILED // No unlock response received.');return false}
+  const name=row.cosmetic_name||'COSMETIC';
+  toast(row.new_unlock?`SECRET FOUND // ${name}`:`SECRET ALREADY DISCOVERED // ${name}`);
+  if(typeof uwLoadCosmeticsLocker==='function')await uwLoadCosmeticsLocker();
+  return true;
+ }catch(err){console.error('UnderWeb secret unlock exception:',secret,err);toast('SECRET SIGNAL FAILED // Check the console for details.');return false}
 }
-// Tiny opt-in Easter eggs. Server RPC decides whether a reward is legitimate and records it once.
+// Tiny opt-in Easter eggs. Each counter resets after firing so a failed backend attempt can be retried without a page refresh.
 let uwLogoTaps=0,uwVersionTaps=0,uwSecretTaps=0;
 document.addEventListener('click',e=>{
- if(e.target.closest('.logo-img-wrap,.logo')){uwLogoTaps++;if(uwLogoTaps===7)uwDiscoverCosmetic('seven_signals')}
- if(e.target.closest('.uw50-version-pill')){uwVersionTaps++;if(uwVersionTaps===5)uwDiscoverCosmetic('rc1_signal')}
- if(e.target.closest('#uwSecretHotspot')){uwSecretTaps++;if(uwSecretTaps===3)uwDiscoverCosmetic('under_the_web')}
+ if(e.target.closest('.logo-img-wrap,.logo')){uwLogoTaps++;if(uwLogoTaps>=7){uwLogoTaps=0;uwDiscoverCosmetic('seven_signals')}}
+ if(e.target.closest('.uw50-version-pill')){uwVersionTaps++;if(uwVersionTaps>=5){uwVersionTaps=0;uwDiscoverCosmetic('rc1_signal')}}
+ if(e.target.closest('#uwSecretHotspot')){uwSecretTaps++;if(uwSecretTaps>=3){uwSecretTaps=0;uwDiscoverCosmetic('under_the_web')}}
 });
 document.body.insertAdjacentHTML('beforeend','<button id="uwSecretHotspot" class="uw-secret-hotspot" aria-label="">·</button>');
 
