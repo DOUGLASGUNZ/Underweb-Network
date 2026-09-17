@@ -1159,12 +1159,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .uw795-commission[hidden]{display:none!important}
 </style>
 <!-- RC1 commission consolidation: canonical profile save/load/view only -->
-\n<style id="uwNetworkPulseFeedbackStyles">
+<style id="uwNetworkPulseFeedbackStyles">
 .uw-pulse-item{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:14px;align-items:center;padding:18px 4px;border-bottom:1px solid rgba(91,255,145,.11)}
 .uw-pulse-item:last-child{border-bottom:0}.uw-pulse-icon{width:34px;height:34px;border:1px solid rgba(61,255,119,.3);display:grid;place-items:center;border-radius:10px;color:#42ff79;background:rgba(40,255,105,.045);font-size:16px}.uw-pulse-copy b{display:block;color:#f4f7f4;font-size:15px;line-height:1.35}.uw-pulse-copy small{display:block;color:#77837c;margin-top:4px;line-height:1.35}.uw-pulse-time{font-size:11px;color:#69736d;white-space:nowrap}.uw-pulse-item.secret .uw-pulse-icon{box-shadow:0 0 20px rgba(61,255,119,.12)}
 .uw-feedback-card{border:1px solid rgba(61,255,119,.16);padding:18px;margin-bottom:14px;background:rgba(2,12,6,.72)}.uw-feedback-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}.uw-feedback-chip{font:700 10px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(61,255,119,.25);padding:6px 8px;color:#8d9b92}.uw-feedback-chip.status{color:#42ff79}.uw-feedback-card h4{margin:0 0 8px;font-size:18px}.uw-feedback-body{white-space:pre-wrap;color:#c4ccc7;line-height:1.55}.uw-feedback-by{color:#7f8c84;font-size:12px;margin:0 0 12px}.uw-dev-thread{margin-top:16px;padding-top:14px;border-top:1px solid rgba(61,255,119,.14)}.uw-dev-thread-title{font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.15em;color:#42ff79;margin-bottom:10px}.uw-dev-comment{border-left:2px solid #31ef72;padding:8px 12px;margin:8px 0;background:rgba(49,239,114,.035)}.uw-dev-comment b{font-size:12px}.uw-dev-comment p{margin:5px 0;color:#c8d0cb}.uw-dev-comment small{color:#6f7a73}.uw-feedback-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.uw-feedback-actions select{min-width:150px}.uw-feedback-page{font-size:11px;color:#657168;overflow-wrap:anywhere;margin-top:8px}
 @media(max-width:640px){.uw-pulse-item{grid-template-columns:32px minmax(0,1fr);padding:15px 0}.uw-pulse-time{grid-column:2;font-size:10px}.uw-feedback-card{padding:14px}.uw-feedback-actions .uw-mini-btn,.uw-feedback-actions .uw-select{width:100%}}
-</style>\n</head>
+</style>
+</head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
   <button aria-label="Open menu" class="btn drawer-btn" id="drawerBtn">☰</button>
@@ -5368,7 +5369,7 @@ document.addEventListener('click',e=>{
 });
 window.addEventListener('pageshow',()=>setTimeout(uw795RefreshCommissionEditor,1500));
 </script>
-\n<style id="uwVerifyBadgesCSS">
+<style id="uwVerifyBadgesCSS">
 .uwverify-badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;min-height:0}
 .uwverify-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid rgba(69,255,114,.42);border-radius:999px;background:rgba(69,255,114,.075);box-shadow:0 0 18px rgba(69,255,114,.08);color:#dfffe7;font-size:10px;font-weight:900;letter-spacing:.08em;line-height:1;white-space:nowrap}
 .uwverify-badge .uwverify-check{display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#45ff72;color:#041108;font-size:11px;box-shadow:0 0 12px rgba(69,255,114,.5)}
@@ -5564,7 +5565,7 @@ async function uwOpenMyPublicProfile(){
 }
 document.addEventListener('click',e=>{if(e.target.closest('#uwViewMyPublicProfile')){e.preventDefault();uwOpenMyPublicProfile();}});
 </script>
-\n<script id="uwNetworkPulseFeedbackScript">
+<script id="uwNetworkPulseFeedbackScript">
 let uwPulseLoading=false;
 function uwPulseIcon(t){return ({announcement:'📢',event:'◆',profile_picture:'◎',secret:'⌁',creator:'✦',showcase:'▣',project:'◇'})[t]||'↳'}
 function uwPulseRelative(ts){try{const d=new Date(ts),s=Math.max(0,(Date.now()-d.getTime())/1000);if(s<60)return 'now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';if(s<604800)return Math.floor(s/86400)+'d';return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}catch{return ''}}
