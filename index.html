@@ -3024,7 +3024,7 @@ function uw033Init(){
   ['profileDisplayName','profileHeadline','profileBio','profileAvailability','profileSkills'].forEach(id=>uw033El(id)?.addEventListener('input',uw033RenderLiveProfile));
   uw033El('profileAvatarInput')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f){const u=URL.createObjectURL(f);uw033SetPreview(uw033El('avatarPreview'),u);uw033SetPreview(uw033El('liveProfileAvatar'),u)}});
   uw033El('profileBannerInput')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f){const u=URL.createObjectURL(f);uw033SetPreview(uw033El('bannerPreview'),u);uw033SetPreview(uw033El('liveProfileBanner'),u)}});
-  uw033El('saveProfileBtn033')?.addEventListener('click',saveMyProfile);
+  uw033El('saveProfileBtn033')?.addEventListener('click',e=>{e.preventDefault();window.saveMyProfile?.()});
   uw033El('editAvailabilityBtn')?.addEventListener('click',uw033OpenAvailability);uw033El('closeAvailabilityEditor')?.addEventListener('click',uw033CloseAvailability);uw033El('cancelAvailabilityBtn')?.addEventListener('click',uw033CloseAvailability);uw033El('saveAvailabilityBtn')?.addEventListener('click',uw033SaveAvailability);uw033El('availabilityGroupFilter')?.addEventListener('change',uw033RenderAvailability);
   uw033El('previewDiscordBtn')?.addEventListener('click',uw033OpenDiscord);uw033El('copyDiscordBtn')?.addEventListener('click',uw033CopyDiscord);uw033El('copyDiscordPreviewBtn')?.addEventListener('click',uw033CopyDiscord);uw033El('closeDiscordPreview')?.addEventListener('click',uw033CloseDiscord);uw033El('closeDiscordPreview2')?.addEventListener('click',uw033CloseDiscord);
   uw033El('availabilityEditor')?.addEventListener('click',e=>{if(e.target.id==='availabilityEditor')uw033CloseAvailability()});uw033El('discordPreviewOverlay')?.addEventListener('click',e=>{if(e.target.id==='discordPreviewOverlay')uw033CloseDiscord()});
@@ -6064,14 +6064,17 @@ setTimeout(loadNetworkPulse,900);
 const UWEXT_PLATFORMS=['SoundCloud','YouTube','Twitch','Spotify','Bandcamp','Instagram','TikTok','X','VRChat','Portfolio','Website','Other'];
 const uwExtSafe=v=>String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));
 function uwExtValidUrl(raw){try{const u=new URL(String(raw||'').trim());return ['http:','https:'].includes(u.protocol)?u.href:''}catch(_){return ''}}
+let uwExtDirty=false,uwExtLoading=false,uwExtSaving=false;
 function uwExtRow(x={}){const host=document.getElementById('uwExternalLinksRows');if(!host)return;const row=document.createElement('div');row.className='uwext-row';row.innerHTML=`<select class="select uwext-platform">${UWEXT_PLATFORMS.map(p=>`<option ${String(x.platform||'').toLowerCase()===p.toLowerCase()?'selected':''}>${p}</option>`).join('')}</select><input class="input uwext-label" maxlength="40" placeholder="Label (optional)" value="${uwExtSafe(x.label||'')}"><input class="input uwext-url" type="url" placeholder="https://..." value="${uwExtSafe(x.url||'')}"><button class="uw50-mini danger uwext-remove" type="button">REMOVE</button>`;host.appendChild(row)}
-async function uwExtLoadMine(){if(!currentSession)return;const host=document.getElementById('uwExternalLinksRows');if(!host)return;host.innerHTML='';const q=await uwSupabase.from('profile_external_links').select('platform,label,url,sort_order').eq('user_id',currentSession.user.id).order('sort_order');if(q.error){console.warn('External links table unavailable:',q.error.message);uwExtRow();return}(q.data||[]).forEach(uwExtRow);if(!q.data?.length)uwExtRow()}
-async function uwExtSaveMine(){if(!currentSession)return;const state=document.getElementById('uwExternalState');const rows=[...document.querySelectorAll('#uwExternalLinksRows .uwext-row')].map((r,i)=>({user_id:currentSession.user.id,platform:r.querySelector('.uwext-platform').value.toLowerCase(),label:r.querySelector('.uwext-label').value.trim()||null,url:uwExtValidUrl(r.querySelector('.uwext-url').value),sort_order:i})).filter(x=>x.url).slice(0,12);if(state)state.textContent='SAVING…';const del=await uwSupabase.from('profile_external_links').delete().eq('user_id',currentSession.user.id);if(del.error){if(state)state.textContent='SAVE FAILED: '+del.error.message;return toast(del.error.message)}if(rows.length){const ins=await uwSupabase.from('profile_external_links').insert(rows);if(ins.error){if(state)state.textContent='SAVE FAILED: '+ins.error.message;return toast(ins.error.message)}}if(state)state.textContent='SAVED';toast('External links saved.')}
+async function uwExtLoadMine(force=false){if(!currentSession||uwExtLoading||(!force&&uwExtDirty))return;const host=document.getElementById('uwExternalLinksRows');if(!host)return;uwExtLoading=true;try{const q=await uwSupabase.from('profile_external_links').select('platform,label,url,sort_order').eq('user_id',currentSession.user.id).order('sort_order');if(q.error){console.warn('External links table unavailable:',q.error.message);if(!host.children.length)uwExtRow();return}host.innerHTML='';(q.data||[]).forEach(uwExtRow);if(!q.data?.length)uwExtRow();uwExtDirty=false}finally{uwExtLoading=false}}
+async function uwExtSaveMine(){if(!currentSession||uwExtSaving)return;uwExtSaving=true;const state=document.getElementById('uwExternalState');try{const rows=[...document.querySelectorAll('#uwExternalLinksRows .uwext-row')].map((r,i)=>({user_id:currentSession.user.id,platform:r.querySelector('.uwext-platform').value.toLowerCase(),label:r.querySelector('.uwext-label').value.trim()||null,url:uwExtValidUrl(r.querySelector('.uwext-url').value),sort_order:i})).filter(x=>x.url).slice(0,12);if(state)state.textContent='SAVING…';const del=await uwSupabase.from('profile_external_links').delete().eq('user_id',currentSession.user.id);if(del.error){if(state)state.textContent='SAVE FAILED: '+del.error.message;return toast(del.error.message)}if(rows.length){const ins=await uwSupabase.from('profile_external_links').insert(rows);if(ins.error){if(state)state.textContent='SAVE FAILED: '+ins.error.message;return toast(ins.error.message)}}uwExtDirty=false;if(state)state.textContent='SAVED';toast('External links saved.')}finally{uwExtSaving=false}}
 async function uwExtRenderPublic(uid){let host=document.getElementById('uwExternalPublic');if(!host){const roles=document.getElementById('uw621Roles');if(!roles)return;host=document.createElement('div');host.id='uwExternalPublic';host.className='uwext-public';roles.closest('.uw621-panel')?.appendChild(host)}host.innerHTML='';const q=await uwSupabase.from('profile_external_links').select('platform,label,url,sort_order').eq('user_id',uid).order('sort_order');if(q.error||!q.data?.length){host.hidden=true;return}const links=q.data.map(x=>{const url=uwExtValidUrl(x.url);if(!url)return '';const label=x.label||x.platform||'Link';return `<a href="${uwExtSafe(url)}" target="_blank" rel="noopener noreferrer">${uwExtSafe(label)} ↗</a>`}).join('');if(!links){host.hidden=true;return}host.hidden=false;host.innerHTML=`<div class="uw621-kicker">FIND ME ONLINE</div><div class="uwext-public-links">${links}</div>`}
-document.addEventListener('click',e=>{if(e.target.closest('#uwExternalAdd'))uwExtRow();if(e.target.closest('.uwext-remove')){const rows=document.querySelectorAll('#uwExternalLinksRows .uwext-row');if(rows.length>1)e.target.closest('.uwext-row')?.remove();else{e.target.closest('.uwext-row').querySelector('.uwext-url').value='';e.target.closest('.uwext-row').querySelector('.uwext-label').value=''}}if(e.target.closest('#uwExternalSave'))uwExtSaveMine()});
-const _uwExtLoadProfile=window.loadMyProfile;if(_uwExtLoadProfile)window.loadMyProfile=async function(){const r=await _uwExtLoadProfile.apply(this,arguments);await uwExtLoadMine();return r};
+document.addEventListener('input',e=>{if(e.target.closest('#uwExternalLinksRows'))uwExtDirty=true});
+document.addEventListener('change',e=>{if(e.target.closest('#uwExternalLinksRows'))uwExtDirty=true});
+document.addEventListener('click',e=>{const add=e.target.closest('#uwExternalAdd'),rem=e.target.closest('.uwext-remove'),save=e.target.closest('#uwExternalSave');if(add){e.preventDefault();uwExtDirty=true;uwExtRow();return}if(rem){e.preventDefault();uwExtDirty=true;const rows=document.querySelectorAll('#uwExternalLinksRows .uwext-row');if(rows.length>1)rem.closest('.uwext-row')?.remove();else{rem.closest('.uwext-row').querySelector('.uwext-url').value='';rem.closest('.uwext-row').querySelector('.uwext-label').value=''}return}if(save){e.preventDefault();uwExtSaveMine()}});
+const _uwExtLoadProfile=window.loadMyProfile;if(_uwExtLoadProfile)window.loadMyProfile=async function(){const r=await _uwExtLoadProfile.apply(this,arguments);if(!uwExtDirty)await uwExtLoadMine();return r};
 const uwExtModal=document.getElementById('uw621ProfileModal');if(uwExtModal)new MutationObserver(()=>{if(uwExtModal.classList.contains('open')&&window.uw621ActiveCreator)setTimeout(()=>uwExtRenderPublic(String(window.uw621ActiveCreator)),50)}).observe(uwExtModal,{attributes:true,attributeFilter:['class']});
-window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLoadMine()},3000));
+window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExtDirty)uwExtLoadMine()},3000));
 </script>
 
 
@@ -6689,23 +6692,31 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 
       /* Creator-specific persistence only when the account is actually provisioned
          with a creator profile. Never create one merely because the member edited. */
-      const existing=await uwSupabase.from('creator_profiles').select('id').eq('user_id',uid).maybeSingle();
-      if(existing.error)console.warn('Creator profile lookup:',existing.error.message);
-      if(existing.data?.id){
-        const c=await uwSupabase.from('creator_profiles').update({
-          display_name:display,headline,bio,availability,specialties,avatar_url:avatar,banner_url:banner
-        }).eq('id',existing.data.id);
-        if(c.error)throw c.error;
+      /* A stale/legacy creator_profiles row must NOT make a normal member/staff
+         profile save pass through creator-only RLS. Confirm the active creator role
+         first; otherwise keep the editable member fields on the member-safe path. */
+      let creatorWritable=false, existing={data:null,error:null};
+      try{ creatorWritable=(typeof uw795ConfirmedCreator==='function') ? await uw795ConfirmedCreator(uid) : false; }
+      catch(_){ creatorWritable=false; }
+      if(creatorWritable){
+        existing=await uwSupabase.from('creator_profiles').select('id').eq('user_id',uid).maybeSingle();
+        if(existing.error)throw existing.error;
+        if(existing.data?.id){
+          const c=await uwSupabase.from('creator_profiles').update({
+            display_name:display,headline,bio,availability,specialties,avatar_url:avatar,banner_url:banner
+          }).eq('id',existing.data.id);
+          if(c.error)throw c.error;
+        }
       }
 
       uw033Profile={...uw033Profile,display_name:display,headline,bio,availability,avatar_url:avatar,banner_url:banner,
-        specialties:existing.data?.id?specialties:(uw033Profile.specialties||[])};
+        specialties:creatorWritable&&existing.data?.id?specialties:(uw033Profile.specialties||[])};
       if(currentAccountProfile)currentAccountProfile.display_name=display;
       uw033SetPreview(document.getElementById('avatarPreview'),avatar);
       uw033SetPreview(document.getElementById('bannerPreview'),banner);
       uw033RenderLiveProfile();
       if(state)state.textContent='SAVED';
-      toast(existing.data?.id?'Profile saved.':'Member profile saved.');
+      toast(creatorWritable&&existing.data?.id?'Profile saved.':'Member profile saved.');
       if(typeof loadNetworkPulse==='function'){try{await loadNetworkPulse()}catch(_){}}
     }catch(err){console.error(err);if(state)state.textContent='ERROR';toast('Profile save failed: '+(err?.message||err));}
     finally{if(btn)btn.disabled=false;}
