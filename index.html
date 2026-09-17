@@ -4880,6 +4880,28 @@ async function uw780SaveProfile(){
  }
  uw780Profile={...uw780Profile,headline,bio,availability};uw780Step++;uw780Render();
 }
+async function uw780RoleDiagnostic(slug,insertError){
+ const uid=currentSession?.user?.id||null;
+ let networkAccess=null,role=null;
+ try{
+   const na=await uwSupabase.rpc('uw_has_network_access');
+   networkAccess=na.error?'RPC ERROR: '+na.error.message:!!na.data;
+ }catch(err){networkAccess='RPC ERROR: '+(err?.message||err)}
+ try{
+   const rd=await uwSupabase.from('role_definitions').select('slug,active,is_application_role,is_assignment_only').eq('slug',slug).maybeSingle();
+   role=rd.error?{error:rd.error.message}:rd.data;
+ }catch(err){role={error:err?.message||String(err)}}
+ const report={uid,slug,network_access:networkAccess,role_definition:role,insert_error:insertError?.message||String(insertError||'unknown')};
+ console.error('[UNDERWEB ONBOARDING ROLE DIAGNOSTIC]',report);
+ let reason='RLS rejected the application.';
+ if(networkAccess===false)reason='NETWORK ACCESS CHECK FAILED (uw_has_network_access = false).';
+ else if(role?.active!==true)reason='ROLE IS NOT ACTIVE.';
+ else if(role?.is_application_role!==true)reason='ROLE IS NOT ENABLED FOR APPLICATIONS.';
+ else if(role?.is_assignment_only===true)reason='ROLE IS ASSIGNMENT-ONLY.';
+ else if(networkAccess===true)reason='NETWORK ACCESS PASSED + ROLE PASSED. The remaining failure is the role_applications INSERT policy/payload.';
+ toast('APPLICATION DEBUG: '+reason);
+ return report;
+}
 async function uw780Roles(){
  const chosen=[...document.querySelectorAll('[data-uw780-role]:checked')].map(x=>x.dataset.uw780Role);
  /* Selection is onboarding intent, not an approval gate. Submit requests, then move on. */
@@ -4891,10 +4913,10 @@ async function uw780Roles(){
      if(r.error)return toast(r.error.message);
    }else{
      const exists=await uwSupabase.from('role_applications').select('id').eq('user_id',currentSession.user.id).eq('role_slug',slug).in('status',['pending','reviewing','accepted']).limit(1);
-     if(exists.error)return toast(exists.error.message);
+     if(exists.error){await uw780RoleDiagnostic(slug,exists.error);return}
      if(!exists.data?.length){
        const ins=await uwSupabase.from('role_applications').insert({user_id:currentSession.user.id,role_slug:slug,group_scope:'underweb',applicant_note:'Selected during Open Beta onboarding.',status:'pending'});
-       if(ins.error)return toast(ins.error.message);
+       if(ins.error){await uw780RoleDiagnostic(slug,ins.error);return}
      }
    }
  }
