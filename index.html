@@ -2601,8 +2601,15 @@ function renderEvents(){
   if(archiveGrid)archiveGrid.innerHTML=archived.length?archived.sort((a,b)=>new Date(b.ends_at||b.starts_at)-new Date(a.ends_at||a.starts_at)).map(x=>card(x,true)).join(''):'<div class="uw70-empty">No archived events yet.</div>';
   if(body)body.innerHTML=visible.length?visible.map(x=>uwEventRow(x,false)).join(''):'';
   if(archive)archive.innerHTML=archived.length?archived.map(x=>uwEventRow(x,true)).join(''):'';
-  setText('uwUpcomingCount',active.length);
-  const next=[...active].sort((a,b)=>new Date(a.starts_at||'9999-12-31')-new Date(b.starts_at||'9999-12-31'))[0];
+  // Home counters + Featured Event: prefer the nearest event that has NOT started yet.
+  // If nothing future exists, fall back to an event that is genuinely in progress.
+  // This prevents an older long-running/bad-end-time event from permanently occupying UP NEXT.
+  const nowMs=Date.now();
+  const upcoming=active.filter(x=>{const t=new Date(x.starts_at).getTime();return Number.isFinite(t)&&t>nowMs;});
+  const ongoing=active.filter(x=>{const t=new Date(x.starts_at).getTime();return Number.isFinite(t)&&t<=nowMs;});
+  setText('uwUpcomingCount',upcoming.length);
+  const next=[...upcoming].sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at))[0]
+    || [...ongoing].sort((a,b)=>new Date(b.starts_at)-new Date(a.starts_at))[0];
   setText('uwNextEventTitle',next?next.title:'No published event');
   setText('uwNextEventMeta',next?`${eventGroupLabel(next.group_scope)} • ${formatEventDate(next.starts_at)} • ${next.location||'Location TBD'}`:'Only active/upcoming published events appear here.');
 }
