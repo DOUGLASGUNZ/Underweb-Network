@@ -6190,6 +6190,12 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
    if(q.error){console.error(q.error);return typeof toast==='function'&&toast(q.error.message)}
    typeof toast==='function'&&toast(on?'COSMETIC EQUIPPED':'COSMETIC UNEQUIPPED');
    await uwLoadCosmeticsLocker();
+   // Keep the currently-open profile in sync immediately after equip/unequip.
+   // Previously the DB changed but the public profile renderer only refreshed when the modal reopened.
+   try{
+     const uid=String(window.uw621ActiveCreator||currentSession?.user?.id||'');
+     if(uid&&typeof uwLoadPublicCosmetics==='function') await uwLoadPublicCosmetics(uid);
+   }catch(e){console.warn('[UW cosmetic profile refresh]',e)}
  };
  document.addEventListener('click',e=>{
    if(e.target.closest('#uwCosReload,[data-uwcos-retry]')){e.preventDefault();uwLoadCosmeticsLocker();return}
@@ -6198,6 +6204,8 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
  });
  const boot=()=>setTimeout(()=>uwLoadCosmeticsLocker(),900);
  window.addEventListener('load',boot);
+ // If the profile modal is already open after a reload/auth refresh, hydrate its cosmetic state too.
+ window.addEventListener('load',()=>setTimeout(()=>{try{const uid=String(window.uw621ActiveCreator||'');if(uid&&typeof uwLoadPublicCosmetics==='function')uwLoadPublicCosmetics(uid)}catch(_){}},1200));
  try{uwSupabase.auth.onAuthStateChange(()=>setTimeout(()=>uwLoadCosmeticsLocker(),350))}catch(_){}
 })();
 </script>
