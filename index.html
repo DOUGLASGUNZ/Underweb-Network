@@ -6131,68 +6131,6 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 
 
 
-<style id="uw-webwalker-approved-frame">
-.uw621-avatar.uwcos-webwalker{
- position:relative!important;overflow:visible!important;isolation:isolate!important;
-}
-.uw621-avatar.uwcos-webwalker::before{
- content:""!important;display:block!important;position:absolute!important;
- inset:-20px!important;width:auto!important;height:auto!important;left:auto!important;top:auto!important;
- z-index:18!important;pointer-events:none!important;border-radius:38%!important;
- background:
-   radial-gradient(circle at 50% 1%,#050a07 0 5px,transparent 6px),
-   radial-gradient(circle at 99% 50%,#050a07 0 5px,transparent 6px),
-   radial-gradient(circle at 50% 99%,#050a07 0 5px,transparent 6px),
-   radial-gradient(circle at 1% 50%,#050a07 0 5px,transparent 6px),
-   conic-gradient(from 0deg,
-      #020403 0 7deg,#0b1a10 8deg 12deg,#020403 13deg 31deg,
-      #06120a 32deg 39deg,#020403 40deg 57deg,#0b1a10 58deg 63deg,
-      #020403 64deg 89deg,#07150b 90deg 98deg,#020403 99deg 121deg,
-      #0b1a10 122deg 128deg,#020403 129deg 155deg,#07150b 156deg 164deg,
-      #020403 165deg 199deg,#0b1a10 200deg 207deg,#020403 208deg 239deg,
-      #07150b 240deg 248deg,#020403 249deg 279deg,#0b1a10 280deg 287deg,
-      #020403 288deg 319deg,#07150b 320deg 328deg,#020403 329deg 360deg)!important;
- -webkit-mask:radial-gradient(closest-side,transparent calc(100% - 18px),#000 calc(100% - 17px))!important;
- mask:radial-gradient(closest-side,transparent calc(100% - 18px),#000 calc(100% - 17px))!important;
- filter:drop-shadow(0 0 5px rgba(57,255,104,.65)) drop-shadow(0 0 13px rgba(57,255,104,.25))!important;
- animation:uwApprovedWebBreath 4.2s ease-in-out infinite!important;
- transform:none!important;border:0!important;box-shadow:none!important;
-}
-.uw621-avatar.uwcos-webwalker::after{
- content:""!important;display:block!important;position:absolute!important;
- inset:-30px!important;z-index:19!important;pointer-events:none!important;border-radius:42%!important;
- background:
-   radial-gradient(circle at 15% 20%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
-   radial-gradient(circle at 84% 18%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
-   radial-gradient(circle at 95% 58%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
-   radial-gradient(circle at 76% 91%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
-   radial-gradient(circle at 24% 91%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
-   radial-gradient(circle at 4% 57%,#d8ffe0 0 1.5px,#39ff68 2px 4px,#07110a 5px 9px,transparent 10px),
-   conic-gradient(from -5deg,
-      transparent 0 4deg,#07110a 5deg 8deg,transparent 9deg 39deg,
-      #07110a 40deg 44deg,transparent 45deg 83deg,#07110a 84deg 88deg,
-      transparent 89deg 128deg,#07110a 129deg 134deg,transparent 135deg 173deg,
-      #07110a 174deg 179deg,transparent 180deg 218deg,#07110a 219deg 224deg,
-      transparent 225deg 263deg,#07110a 264deg 269deg,transparent 270deg 308deg,
-      #07110a 309deg 314deg,transparent 315deg 360deg)!important;
- -webkit-mask:radial-gradient(closest-side,transparent 0 64%,#000 66% 76%,transparent 78%)!important;
- mask:radial-gradient(closest-side,transparent 0 64%,#000 66% 76%,transparent 78%)!important;
- filter:drop-shadow(0 0 6px rgba(57,255,104,.72))!important;
- animation:uwApprovedEyes 3.1s ease-in-out infinite!important;
- transform:none!important;border:0!important;box-shadow:none!important;
-}
-@keyframes uwApprovedWebBreath{
- 0%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(57,255,104,.55)) drop-shadow(0 0 11px rgba(57,255,104,.2))}
- 50%{transform:scale(1.018);filter:drop-shadow(0 0 8px rgba(57,255,104,.82)) drop-shadow(0 0 18px rgba(57,255,104,.34))}
-}
-@keyframes uwApprovedEyes{
- 0%,42%,48%,100%{opacity:1;filter:drop-shadow(0 0 6px rgba(57,255,104,.8))}
- 45%{opacity:.28;filter:drop-shadow(0 0 2px rgba(57,255,104,.3))}
- 72%{filter:drop-shadow(0 0 11px rgba(57,255,104,1))}
-}
-</style>
-
-
 <style id="uw-cosmetics-locker-approved-style">
 #uwCosLockerGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px!important}
 .uwcos-locker-card{padding:14px;border:1px solid rgba(57,255,104,.22);border-radius:14px;background:linear-gradient(180deg,rgba(4,13,8,.96),rgba(1,6,3,.96));min-width:0}
@@ -6263,5 +6201,64 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
  try{uwSupabase.auth.onAuthStateChange(()=>setTimeout(()=>uwLoadCosmeticsLocker(),350))}catch(_){}
 })();
 </script>
+
+
+<style id="uw-approved-frames-clean-only">
+/* APPROVED SECRET FRAMES — artwork only. No generated eyes, rays, circles, labels or extra junk. */
+.uw621-avatar[class*="uwcos-"]{
+  position:relative!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+}
+.uw621-avatar[class*="uwcos-"]::after{
+  content:""!important;
+  display:none!important;
+  background:none!important;
+  border:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+  animation:none!important;
+}
+.uw621-avatar.uwcos-webwalker::before,
+.uw621-avatar.uwcos-void_signal::before,
+.uw621-avatar.uwcos-parasite::before,
+.uw621-avatar.uwcos-black_web_crown::before,
+.uw621-avatar.uwcos-ghost_protocol::before,
+.uw621-avatar.uwcos-devoured_signal::before,
+.uw621-avatar.uwcos-network_zero::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  inset:auto!important;
+  width:calc(100% + 42px)!important;
+  height:calc(100% + 42px)!important;
+  transform:translate(-50%,-50%)!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  background-size:contain!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  clip-path:none!important;
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+  pointer-events:none!important;
+  z-index:20!important;
+  filter:drop-shadow(0 0 7px rgba(57,255,104,.38))!important;
+  animation:uwApprovedFrameIdle 4.8s ease-in-out infinite!important;
+}
+/* Crown / Zero need a little more silhouette room, but remain centered on avatar. */
+.uw621-avatar.uwcos-black_web_crown::before,
+.uw621-avatar.uwcos-network_zero::before{
+  width:calc(100% + 58px)!important;
+  height:calc(100% + 58px)!important;
+}
+@keyframes uwApprovedFrameIdle{
+  0%,100%{transform:translate(-50%,-50%) scale(1)}
+  50%{transform:translate(-50%,-50%) scale(1.018)}
+}
+</style>
 
 </body></html>
