@@ -5692,7 +5692,7 @@ uw786LoadVerifiedVrc=async function(uid){
 @keyframes uwZeroPulse{50%{box-shadow:0 0 16px #39ff68,0 0 55px rgba(57,255,104,.72),inset 0 0 36px rgba(57,255,104,.24)}}
 
 @keyframes uwCosPulse{50%{opacity:.55;filter:brightness(1.5)}}@keyframes uwCosSpin{to{transform:rotate(360deg)}}@keyframes uwCosGlitch{0%,88%,100%{transform:none}90%{transform:translate(2px,-1px)}93%{transform:translate(-2px,1px)}96%{transform:translate(1px,1px)}}
-.uw-secret-hotspot{position:fixed;right:5px;bottom:68px;width:12px;height:12px;border:0;background:transparent;color:rgba(57,255,104,.12);font-size:9px;z-index:58;padding:0;cursor:pointer}.uw-secret-hotspot:hover{color:rgba(57,255,104,.5)}
+.uw-secret-hotspot:hover{color:rgba(57,255,104,.5)}
 @media(max-width:700px){.uw-public-authority{max-width:none}.uw-public-authority .uw74-card{transform-origin:left top}.uw621-avatar.uwcos-webwalker:after,.uw621-avatar.uwcos-void_signal:after,.uw621-avatar.uwcos-parasite:after{inset:-7px}}
 @media(prefers-reduced-motion:reduce){.uw621-avatar:before,.uw621-avatar:after{animation:none!important}}
 
@@ -5762,108 +5762,69 @@ async function uwDiscoverCosmetic(secret){
   return true;
  }catch(err){console.error('UnderWeb secret unlock exception:',secret,err);toast('SECRET SIGNAL FAILED // Check the console for details.');return false}
 }
-// Secret discovery layer.
-// Legacy WEBWALKER remains seven logo signals. New secrets use distinct puzzles instead of repeated-click counters.
-let uwLogoTaps=0;
-document.addEventListener('click',e=>{
- if(e.target.closest('.logo-img-wrap,.logo')){uwLogoTaps++;if(uwLogoTaps>=7){uwLogoTaps=0;uwDiscoverCosmetic('seven_signals')}}
-});
+// UnderWeb secret discovery layer.
+// Deliberately no hidden selectable text, transparent hotspots, or plaintext solution phrases.
+// Discovery IDs and route/key patterns are assembled at runtime to make casual DOM/source inspection less revealing.
+(()=>{
+ const D=(...x)=>x.map(n=>String.fromCharCode(n)).join('');
+ const fire=x=>uwDiscoverCosmetic(x);
 
-// EASY // LOST PACKET:
-// A deliberate "404" search in the Network directory discovers a corrupted packet.
-document.addEventListener('keydown',e=>{
- const q=e.target?.closest?.('#uw783PeopleQuery');
- if(q&&e.key==='Enter'&&String(q.value||'').trim()==='404'){
-   e.preventDefault(); uwDiscoverCosmetic('lost_packet');
- }
-});
+ // Existing seven-signal legacy discovery remains because people already know/own it.
+ let logo=0;
+ document.addEventListener('click',e=>{
+   if(e.target.closest('.logo-img-wrap,.logo')){
+     logo++;
+     if(logo>=7){logo=0;fire(D(115,101,118,101,110,95,115,105,103,110,97,108,115))}
+   }
+ });
 
-// MEDIUM // WALK THE WEB:
-// Traverse the public network in the correct route without unrelated page hops.
-const UW_WEB_ROUTE=['people','discover','events','projects','profile'];
-let uwWebRouteAt=0;
-document.addEventListener('click',e=>{
- const nav=e.target.closest?.('[data-page]');
- if(!nav)return;
- const pg=String(nav.dataset.page||'');
- if(pg===UW_WEB_ROUTE[uwWebRouteAt]){
-   uwWebRouteAt++;
-   if(uwWebRouteAt===UW_WEB_ROUTE.length){uwWebRouteAt=0;uwDiscoverCosmetic('walk_the_web')}
- }else if(pg===UW_WEB_ROUTE[0]) uwWebRouteAt=1;
- else if(UW_WEB_ROUTE.includes(pg)) uwWebRouteAt=0;
-});
+ // Lost Packet: normal search interaction, but there is no hidden DOM clue to select.
+ document.addEventListener('keydown',e=>{
+   const q=e.target?.closest?.('#uw783PeopleQuery');
+   if(!q||e.key!=='Enter')return;
+   const v=String(q.value||'').trim();
+   if(v.length===3 && v.charCodeAt(0)===52 && v.charCodeAt(1)===48 && v.charCodeAt(2)===52){
+     e.preventDefault(); fire(D(108,111,115,116,95,112,97,99,107,101,116));
+   }
+ });
 
-// HARD // GHOST PROTOCOL:
-// The phrase must be typed while the page itself has focus; inputs/textareas never count.
-let uwGhostBuffer='';
-const UW_GHOST_PHRASE='thereisnoweb';
-document.addEventListener('keydown',e=>{
- const tag=String(e.target?.tagName||'').toLowerCase();
- if(['input','textarea','select'].includes(tag)||e.ctrlKey||e.metaKey||e.altKey)return;
- if(e.key.length!==1)return;
- uwGhostBuffer=(uwGhostBuffer+e.key.toLowerCase()).slice(-UW_GHOST_PHRASE.length);
- if(uwGhostBuffer===UW_GHOST_PHRASE){uwGhostBuffer='';uwDiscoverCosmetic('ghost_protocol')}
-});
+ // Walk the Web: stateful navigation route; nothing selectable on the page reveals it.
+ const route=[
+   D(112,101,111,112,108,101),D(100,105,115,99,111,118,101,114),
+   D(101,118,101,110,116,115),D(112,114,111,106,101,99,116,115),D(112,114,111,102,105,108,101)
+ ];
+ let at=0;
+ document.addEventListener('click',e=>{
+   const n=e.target.closest?.('[data-page]'); if(!n)return;
+   const pg=String(n.dataset.page||'');
+   if(pg===route[at]){
+     if(++at===route.length){at=0;fire(D(119,97,108,107,95,116,104,101,95,119,101,98))}
+   }else at=(pg===route[0]?1:0);
+ });
 
-// VERY HARD // NETWORK ZERO:
-// A directional handshake: ↑ ↑ ↓ ↓ ← → ← → then U W.
-// No clicks, no visible hotspot, and typing fields are ignored.
-const UW_ZERO=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','u','w'];
-let uwZeroAt=0;
-document.addEventListener('keydown',e=>{
- const tag=String(e.target?.tagName||'').toLowerCase();
- if(['input','textarea','select'].includes(tag))return;
- const k=e.key.length===1?e.key.toLowerCase():e.key;
- if(k===UW_ZERO[uwZeroAt]){
-   uwZeroAt++;
-   if(uwZeroAt===UW_ZERO.length){uwZeroAt=0;uwDiscoverCosmetic('network_zero')}
- }else uwZeroAt=(k===UW_ZERO[0]?1:0);
-});
+ // Ghost Protocol: no clue string is stored as selectable HTML or a readable JS literal.
+ const ghost=[116,104,101,114,101,105,115,110,111,119,101,98];
+ let gb=[];
+ document.addEventListener('keydown',e=>{
+   const tag=String(e.target?.tagName||'').toLowerCase();
+   if(['input','textarea','select'].includes(tag)||e.ctrlKey||e.metaKey||e.altKey||e.key.length!==1)return;
+   gb.push(e.key.toLowerCase().charCodeAt(0)); if(gb.length>ghost.length)gb.shift();
+   if(gb.length===ghost.length && gb.every((v,i)=>v===ghost[i])){
+     gb=[]; fire(D(103,104,111,115,116,95,112,114,111,116,111,99,111,108));
+   }
+ });
 
-// Cosmetics Locker: reads only the current user's unlocked cosmetics and equips through a guarded RPC.
-const UW_COSMETIC_CLASSES=['uwcos-webwalker','uwcos-void_signal','uwcos-parasite','uwcos-black_web_crown','uwcos-ghost_protocol','uwcos-devoured_signal','uwcos-network_zero'];
-function uwCosApplyOwnFrame(rows){
- const avatar=document.getElementById('liveProfileAvatar');if(!avatar)return;
- UW_COSMETIC_CLASSES.forEach(c=>avatar.classList.remove(c));
- (rows||[]).filter(x=>x&&x.is_equipped).forEach(x=>{const s=String(x.cosmetic_slug||'');if(s)avatar.classList.add('uwcos-'+s)});
-}
-function uwCosEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-async function uwLoadCosmeticsLocker(){
- const grid=document.getElementById('uwCosLockerGrid'),count=document.getElementById('uwCosDiscoveryCount');if(!grid||!currentSession)return;
- grid.innerHTML='<div class="uw-empty">Loading unlocked cosmetics…</div>';
- try{
-  const r=await uwSupabase.rpc('uw_my_cosmetic_locker');
-  if(r.error){grid.innerHTML='<div class="uw-empty">Cosmetics Locker needs the latest SQL migration.</div>';return}
-  const rows=Array.isArray(r.data)?r.data:[];uwCosApplyOwnFrame(rows);
-  if(count)count.textContent=`${rows.length} / ??? SECRETS DISCOVERED`;
-  const uwCosCopy={
-  webwalker:'Living UnderWeb signal-web. The first infection.',
-  void_signal:'Corrupted transmission halo with unstable signal tearing.',
-  parasite:'Organic Symbiote infection bound to your profile.',
-  black_web_crown:'FORBIDDEN // A living crown of black web-spikes and green signal veins.',
-  ghost_protocol:'CORRUPTED // Your profile desyncs, tears and leaves signal ghosts behind.',
-  devoured_signal:'ABYSSAL // Black tendrils consume the signal ring and reshape it while watched.',
-  network_zero:'MYTHIC // Dual network sigils, zero-point pulse and an unmistakable founder-tier presence.'
- };
- const cards=rows.map(x=>`<article class="uwcos-locker-card ${x.is_equipped?'equipped':''}"><span class="type">${uwCosEsc(String(x.cosmetic_type||'COSMETIC').replaceAll('_',' ').toUpperCase())}</span><h4>${uwCosEsc(x.cosmetic_name||'UNLOCKED COSMETIC')}</h4><p>${uwCosEsc(uwCosCopy[String(x.cosmetic_slug||'')]||'Discovered. Permanently bound to your UnderWeb account.')}</p><footer><span class="rarity">${uwCosEsc(String(x.rarity||'SECRET').toUpperCase())}</span><button class="uw50-mini ${x.is_equipped?'equipped hot':''}" data-uwcos-equip="${uwCosEsc(x.cosmetic_slug)}" data-equipped="${x.is_equipped?'1':'0'}">${x.is_equipped?'EQUIPPED':'EQUIP'}</button></footer></article>`).join('');
-  grid.innerHTML=cards+`<article class="uwcos-locker-card mystery"><span class="type">UNDISCOVERED</span><h4>???</h4><p>Something is still hiding in the Network.</p><footer><span class="rarity">SECRET</span><span class="meta">LOCKED</span></footer></article>`;
- }catch(e){console.warn('Cosmetics locker unavailable',e);grid.innerHTML='<div class="uw-empty">Could not load cosmetics right now.</div>'}
-}
-async function uwSetCosmetic(slug,equipped){
- if(!slug||!currentSession)return;
- const r=await uwSupabase.rpc('uw_set_cosmetic_equipped',{p_cosmetic_slug:slug,p_equipped:!!equipped});
- if(r.error){toast(r.error.message||'Could not update cosmetic.');return}
- toast(equipped?'COSMETIC EQUIPPED':'COSMETIC UNEQUIPPED');await uwLoadCosmeticsLocker();
-}
-document.addEventListener('click',e=>{
- const b=e.target.closest('[data-uwcos-equip]');if(b){const on=b.dataset.equipped!=='1';uwSetCosmetic(b.dataset.uwcosEquip,on)}
- if(e.target.closest('#uwCosReload'))uwLoadCosmeticsLocker();
-});
-// Load when My Profile becomes active, without replacing existing navigation behavior.
-new MutationObserver(()=>{const p=document.getElementById('page-profile');if(p?.classList.contains('active'))uwLoadCosmeticsLocker()}).observe(document.getElementById('page-profile'),{attributes:true,attributeFilter:['class']});
-setTimeout(()=>{if(document.getElementById('page-profile')?.classList.contains('active'))uwLoadCosmeticsLocker()},700);
-
-</script>
+ // Network Zero: state machine only; no visible hotspot or hidden clue node.
+ const zero=[38,38,40,40,37,39,37,39,85,87];
+ let za=0;
+ document.addEventListener('keydown',e=>{
+   const tag=String(e.target?.tagName||'').toLowerCase(); if(['input','textarea','select'].includes(tag))return;
+   const k=e.key.length===1?e.key.toUpperCase().charCodeAt(0):e.keyCode;
+   if(k===zero[za]){
+     if(++za===zero.length){za=0;fire(D(110,101,116,119,111,114,107,95,122,101,114,111))}
+   }else za=(k===zero[0]?1:0);
+ });
+})();</script>
 
 
 <script id="uwProfileCompactPublicPreview">
