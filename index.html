@@ -6338,4 +6338,62 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 })();
 </script>
 
+
+<style id="uw-cosmetics-fun-pass-v1">
+/* Cosmetic fun pass: discovery cinematic, equip/profile entrances, and reactive frames. */
+.uwpf{--uw-react-x:0px;--uw-react-y:0px;transform:translate(var(--uw-react-x),var(--uw-react-y));transition:filter .18s ease}
+.uw621-avatar.uwfx-enter>.uwpf{animation:uwFxManifest .85s cubic-bezier(.16,.9,.18,1) both}
+.uw621-avatar.uwfx-react>.uwpf{filter:brightness(1.16) drop-shadow(0 0 9px #39ff6877)}
+.uw621-avatar.uwfx-react.uwcos-webwalker .eye{filter:brightness(1.8);box-shadow:0 0 13px #39ff68}
+.uw621-avatar.uwfx-react.uwcos-ghost_protocol .ghost{opacity:1!important;filter:drop-shadow(0 0 15px #d9ffe7)}
+.uw621-avatar.uwfx-react.uwcos-network_zero .shard{animation-duration:2.8s!important}
+.uw621-avatar.uwfx-react.uwcos-black_web_crown .bh:before{animation-duration:1.8s!important}
+.uw621-avatar.uwfx-react.uwcos-devoured_signal .rift{filter:drop-shadow(0 0 14px #39ff68)}
+@keyframes uwFxManifest{0%{opacity:0;scale:.58;filter:blur(8px) brightness(2.3)}42%{opacity:1;scale:1.09;filter:blur(0) brightness(1.8) drop-shadow(0 0 18px #39ff68)}72%{scale:.97}100%{opacity:1;scale:1;filter:none}}
+#uwDiscoveryFx{position:fixed;inset:0;z-index:2147483000;display:none;place-items:center;pointer-events:none;background:radial-gradient(circle at 50% 48%,rgba(9,30,16,.36),rgba(0,0,0,.88) 64%);overflow:hidden}
+#uwDiscoveryFx.show{display:grid;animation:uwDiscBackdrop 3.35s both}
+#uwDiscoveryFx:before{content:"";position:absolute;inset:-25%;background:repeating-linear-gradient(0deg,transparent 0 5px,rgba(57,255,104,.07) 6px,transparent 7px);mix-blend-mode:screen;animation:uwDiscScan .35s steps(2) infinite}
+#uwDiscoveryFx .uwdisc-glitch{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 46%,rgba(57,255,104,.12) 47% 49%,transparent 50%);opacity:0;animation:uwDiscGlitch 3.2s steps(1) both}
+#uwDiscoveryFx .uwdisc-card{position:relative;width:min(88vw,520px);padding:36px 26px 31px;text-align:center;border:1px solid rgba(57,255,104,.42);background:linear-gradient(180deg,rgba(3,10,6,.96),rgba(0,3,2,.98));box-shadow:0 0 0 1px #000,0 0 70px rgba(57,255,104,.17);clip-path:polygon(0 9px,9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px));animation:uwDiscCard 3.25s both}
+#uwDiscoveryFx .uwdisc-sigil{width:86px;height:86px;margin:0 auto 22px;border-radius:50%;border:1px solid #39ff68;box-shadow:0 0 20px #39ff6866,inset 0 0 25px #39ff6822;position:relative;animation:uwDiscSigil 1.8s ease-in-out infinite}
+#uwDiscoveryFx .uwdisc-sigil:before,#uwDiscoveryFx .uwdisc-sigil:after{content:"";position:absolute;inset:12px;border:2px dashed rgba(57,255,104,.8);border-radius:50%;animation:uwpf-zero 4s linear infinite}
+#uwDiscoveryFx .uwdisc-sigil:after{inset:28px;border-style:solid;animation-direction:reverse;animation-duration:2s}
+#uwDiscoveryFx .kicker{font:900 10px/1 monospace;letter-spacing:.28em;color:#39ff68;margin-bottom:12px}
+#uwDiscoveryFx h2{margin:0;color:#f2fff6;font:900 clamp(25px,7vw,42px)/.95 sans-serif;letter-spacing:.035em;text-shadow:0 0 20px rgba(57,255,104,.3)}
+#uwDiscoveryFx p{margin:13px 0 0;color:#91a89a;font:800 10px/1.5 monospace;letter-spacing:.12em}
+#uwDiscoveryFx .locker{margin-top:23px;color:#39ff68;font:900 9px/1 monospace;letter-spacing:.18em}
+@keyframes uwDiscBackdrop{0%{opacity:0}8%,88%{opacity:1}100%{opacity:0}}
+@keyframes uwDiscCard{0%{opacity:0;transform:scale(.72);filter:blur(10px)}13%{opacity:1;transform:scale(1.04);filter:none}20%{transform:scale(.99)}82%{opacity:1;transform:none}100%{opacity:0;transform:scale(1.04);filter:blur(5px)}}
+@keyframes uwDiscSigil{50%{transform:scale(1.08);box-shadow:0 0 38px #39ff6890,inset 0 0 32px #39ff6830}}
+@keyframes uwDiscScan{to{transform:translateY(7px)}}
+@keyframes uwDiscGlitch{0%,9%,17%,75%,100%{opacity:0;transform:none}10%{opacity:1;transform:translateX(12px)}12%{opacity:.5;transform:translateX(-9px)}15%{opacity:.8;transform:none}76%{opacity:.5;transform:translateX(6px)}78%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.uw621-avatar.uwfx-enter>.uwpf,#uwDiscoveryFx *{animation:none!important}#uwDiscoveryFx.show{animation:uwDiscBackdrop 3s both}}
+</style>
+<script id="uw-cosmetics-fun-pass-v1-js">
+(()=>{
+ const cosmeticClasses=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];
+ const pretty=n=>String(n||'COSMETIC').replace(/^BLACK WEB CROWN$/i,'EVENT HORIZON');
+ function ensureDiscovery(){
+  let x=document.getElementById('uwDiscoveryFx');if(x)return x;
+  x=document.createElement('div');x.id='uwDiscoveryFx';x.setAttribute('aria-live','polite');x.innerHTML='<i class="uwdisc-glitch"></i><div class="uwdisc-card"><div class="uwdisc-sigil"></div><div class="kicker">SIGNAL DETECTED</div><h2></h2><p>SOMETHING FOUND YOU.</p><div class="locker">ADDED TO COSMETIC LOCKER</div></div>';document.body.appendChild(x);return x;
+ }
+ window.uwCosmeticDiscoverySequence=function(name){const x=ensureDiscovery();x.querySelector('h2').textContent=pretty(name);x.classList.remove('show');void x.offsetWidth;x.classList.add('show');clearTimeout(x._t);x._t=setTimeout(()=>x.classList.remove('show'),3400)};
+ function enter(a){if(!a?.querySelector(':scope > .uwpf'))return;a.classList.remove('uwfx-enter');void a.offsetWidth;a.classList.add('uwfx-enter');clearTimeout(a._uwEnter);a._uwEnter=setTimeout(()=>a.classList.remove('uwfx-enter'),950)}
+ function bind(a){if(!(a instanceof Element)||!a.matches('.uw621-avatar')||a.dataset.uwFunBound)return;a.dataset.uwFunBound='1';
+  a.addEventListener('pointermove',e=>{const f=a.querySelector(':scope > .uwpf');if(!f)return;const r=a.getBoundingClientRect(),x=((e.clientX-r.left)/r.width-.5)*7,y=((e.clientY-r.top)/r.height-.5)*7;f.style.setProperty('--uw-react-x',x.toFixed(1)+'px');f.style.setProperty('--uw-react-y',y.toFixed(1)+'px');a.classList.add('uwfx-react')});
+  a.addEventListener('pointerleave',()=>{const f=a.querySelector(':scope > .uwpf');if(f){f.style.setProperty('--uw-react-x','0px');f.style.setProperty('--uw-react-y','0px')}a.classList.remove('uwfx-react')});
+  a.addEventListener('pointerdown',()=>{a.classList.add('uwfx-react');setTimeout(()=>a.classList.remove('uwfx-react'),650)});
+ }
+ function scan(){document.querySelectorAll('.uw621-avatar').forEach(a=>{bind(a);if(a.querySelector(':scope > .uwpf')&&!a.dataset.uwFunSeen){a.dataset.uwFunSeen='1';enter(a)}})}
+ new MutationObserver(ms=>{for(const m of ms){if(m.type==='attributes'&&m.target.matches?.('.uw621-avatar')){const a=m.target;bind(a);const has=cosmeticClasses.some(s=>a.classList.contains('uwcos-'+s));if(has){setTimeout(()=>enter(a),40)}else a.dataset.uwFunSeen=''}for(const n of m.addedNodes)if(n.nodeType===1){bind(n);n.querySelectorAll?.('.uw621-avatar').forEach(bind)}}setTimeout(scan,30)}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan);else scan();
+ // Wrap the existing discovery RPC UI without touching or exposing any secret trigger logic.
+ const hook=()=>{if(typeof uwDiscoverCosmetic!=='function'||uwDiscoverCosmetic.__uwFun)return false;const base=uwDiscoverCosmetic;const wrapped=async function(secret){
+   if(!currentSession)return base.apply(this,arguments);
+   try{const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:secret});if(r.error){console.error('UnderWeb secret unlock failed:',secret,r.error);toast('SECRET SIGNAL FAILED // Refresh after the latest cosmetics SQL is deployed.');return false}const row=Array.isArray(r.data)?r.data[0]:r.data;if(!row){toast('SECRET SIGNAL FAILED // No unlock response received.');return false}const name=pretty(row.cosmetic_name||'COSMETIC');if(row.new_unlock){window.uwCosmeticDiscoverySequence(name)}else toast(`SECRET ALREADY DISCOVERED // ${name}`);if(typeof uwLoadCosmeticsLocker==='function')await uwLoadCosmeticsLocker();return true}catch(err){console.error('UnderWeb secret unlock exception:',err);toast('SECRET SIGNAL FAILED // Check the console for details.');return false}
+  };wrapped.__uwFun=true;try{uwDiscoverCosmetic=wrapped}catch(_){window.uwDiscoverCosmetic=wrapped}return true};
+ hook();setTimeout(hook,0);
+})();
+</script>
+
 </body></html>
