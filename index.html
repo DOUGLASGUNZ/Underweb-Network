@@ -5853,6 +5853,9 @@ async function uwDiscoverCosmetic(secret){
   const name=row.cosmetic_name||'COSMETIC';
   toast(row.new_unlock?`SECRET FOUND // ${name}`:`SECRET ALREADY DISCOVERED // ${name}`);
   if(typeof uwLoadCosmeticsLocker==='function')await uwLoadCosmeticsLocker();
+  // Refresh Network Pulse immediately after a newly discovered cosmetic. The backend pulse RPC
+  // remains the authority for what is public, so this never fabricates an activity item client-side.
+  if(row.new_unlock&&typeof loadNetworkPulse==='function'){try{await loadNetworkPulse()}catch(_){}}
   return true;
  }catch(err){console.error('UnderWeb secret unlock exception:',secret,err);toast('SECRET SIGNAL FAILED // Check the console for details.');return false}
 }
@@ -5984,11 +5987,11 @@ document.addEventListener('click',e=>{if(e.target.closest('#uwViewMyPublicProfil
 </script>
 <script id="uwNetworkPulseFeedbackScript">
 let uwPulseLoading=false;
-function uwPulseIcon(t){return ({announcement:'📢',event:'◆',profile_picture:'◎',secret:'⌁',creator:'✦',showcase:'▣',project:'◇'})[t]||'↳'}
+function uwPulseIcon(t){return ({announcement:'📢',event:'◆',profile_picture:'◎',secret:'⌁',cosmetic:'✧',cosmetic_unlock:'✧',secret_cosmetic:'✧',creator:'✦',showcase:'▣',project:'◇'})[t]||'↳'}
 function uwPulseRelative(ts){try{const d=new Date(ts),s=Math.max(0,(Date.now()-d.getTime())/1000);if(s<60)return 'now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';if(s<604800)return Math.floor(s/86400)+'d';return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}catch{return ''}}
 async function loadNetworkPulse(){
  const l=document.getElementById('uwRecentActivity'); if(!l||!currentSession||uwPulseLoading)return; uwPulseLoading=true;
- try{const {data,error}=await uwSupabase.rpc('uw_network_pulse',{p_limit:7});if(error)throw error;const rows=data||[];l.innerHTML=rows.length?rows.map(x=>`<div class="uw-pulse-item ${x.event_type==='secret'?'secret':''}"><div class="uw-pulse-icon">${uwPulseIcon(x.event_type)}</div><div class="uw-pulse-copy"><b>${esc(x.headline||'Network update')}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}</div><div class="uw-pulse-time">${uwPulseRelative(x.created_at)}</div></div>`).join(''):'<div class="uw-empty">The Network is quiet right now.</div>'}catch(e){l.innerHTML='<div class="uw-empty">Network Pulse will appear after the beta activity migration is installed.</div>'}finally{uwPulseLoading=false}
+ try{const {data,error}=await uwSupabase.rpc('uw_network_pulse',{p_limit:7});if(error)throw error;const rows=data||[];l.innerHTML=rows.length?rows.map(x=>`<div class="uw-pulse-item ${['secret','cosmetic','cosmetic_unlock','secret_cosmetic'].includes(String(x.event_type||''))?'secret':''}"><div class="uw-pulse-icon">${uwPulseIcon(x.event_type)}</div><div class="uw-pulse-copy"><b>${esc(x.headline||'Network update')}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}</div><div class="uw-pulse-time">${uwPulseRelative(x.created_at)}</div></div>`).join(''):'<div class="uw-empty">The Network is quiet right now.</div>'}catch(e){l.innerHTML='<div class="uw-empty">Network Pulse will appear after the beta activity migration is installed.</div>'}finally{uwPulseLoading=false}
 }
 function uwFeedbackComments(x){const a=Array.isArray(x.comments)?x.comments:[];return a.length?a.map(c=>`<div class="uw-dev-comment"><b>${esc(c.author_name||'Developer')}</b><p>${esc(c.body||'')}</p><small>${niceTime(c.created_at)}</small></div>`).join(''):'<div class="uw-empty">No developer response yet.</div>'}
 function renderFeedbackV2(){
