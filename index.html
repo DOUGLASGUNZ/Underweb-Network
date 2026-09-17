@@ -6942,3 +6942,67 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
  #uw621ProfileModal .uwpf-ghost_protocol .spider{width:7px!important;height:10px!important}
 }
 </style>
+
+<style id="uw-blackflame-continuous-v2-20260917">
+/* BLACKFLAME PROTOCOL v2 — continuous avatar-local fire. No detached flame capsules. */
+#uw621ProfileModal .uwpf-ghost_protocol>.blackflame-stage{
+  position:absolute!important; inset:-9px!important; display:block!important;
+  overflow:visible!important; pointer-events:none!important; z-index:3!important;
+  border-radius:24%!important; isolation:isolate!important;
+}
+#uw621ProfileModal .uwpf-ghost_protocol .bf-flame{display:none!important}
+#uw621ProfileModal .uwpf-ghost_protocol .bf-border{
+  position:absolute!important; inset:7px!important; border:0!important; border-radius:21%!important;
+  background:
+    radial-gradient(ellipse at 10% 0%,#8aff9f 0 2%,#39ff68 3% 7%,transparent 12%),
+    radial-gradient(ellipse at 28% 0%,#39ff68 0 5%,transparent 11%),
+    radial-gradient(ellipse at 48% 0%,#a5ffb7 0 2%,#39ff68 3% 8%,transparent 13%),
+    radial-gradient(ellipse at 69% 0%,#39ff68 0 5%,transparent 11%),
+    radial-gradient(ellipse at 90% 0%,#8aff9f 0 2%,#39ff68 3% 7%,transparent 12%),
+    radial-gradient(ellipse at 0% 18%,#39ff68 0 5%,transparent 11%),
+    radial-gradient(ellipse at 0% 48%,#8aff9f 0 2%,#39ff68 3% 7%,transparent 12%),
+    radial-gradient(ellipse at 0% 78%,#39ff68 0 5%,transparent 11%),
+    radial-gradient(ellipse at 100% 22%,#39ff68 0 5%,transparent 11%),
+    radial-gradient(ellipse at 100% 52%,#8aff9f 0 2%,#39ff68 3% 7%,transparent 12%),
+    radial-gradient(ellipse at 100% 82%,#39ff68 0 5%,transparent 11%),
+    radial-gradient(ellipse at 18% 100%,#39ff68 0 4%,transparent 10%),
+    radial-gradient(ellipse at 52% 100%,#8aff9f 0 2%,#39ff68 3% 6%,transparent 11%),
+    radial-gradient(ellipse at 82% 100%,#39ff68 0 4%,transparent 10%)!important;
+  box-shadow:0 0 0 2px #39ff68,0 0 8px #39ff68,0 0 18px #39ff6866,inset 0 0 10px #39ff6844!important;
+  filter:none!important; opacity:.95!important;
+  animation:uwBFContinuousBorder 2.2s ease-in-out infinite!important;
+}
+#uw621ProfileModal .uwpf-ghost_protocol .blackflame-stage:before,
+#uw621ProfileModal .uwpf-ghost_protocol .blackflame-stage:after{
+  content:""; position:absolute; pointer-events:none; z-index:-1;
+}
+/* Pointed flame crown is one connected layer, not separate pills. */
+#uw621ProfileModal .uwpf-ghost_protocol .blackflame-stage:before{
+  left:9px; right:9px; top:-17px; height:31px;
+  background:linear-gradient(180deg,#07110a 0%,#102d18 34%,#39ff68 72%,#8aff9f 100%);
+  clip-path:polygon(0 100%,4% 57%,8% 100%,13% 30%,17% 100%,23% 48%,28% 100%,34% 12%,39% 100%,45% 42%,50% 100%,56% 18%,61% 100%,68% 49%,73% 100%,80% 24%,85% 100%,91% 52%,96% 100%,100% 63%,100% 100%);
+  transform-origin:50% 100%; filter:drop-shadow(0 0 5px #39ff68);
+  animation:uwBFCrown 1.45s ease-in-out infinite alternate;
+}
+/* Connected side/bottom glow gives the fire mass instead of floating objects. */
+#uw621ProfileModal .uwpf-ghost_protocol .blackflame-stage:after{
+  inset:3px; border-radius:23%; border:5px solid transparent;
+  background:conic-gradient(from 12deg,#020503,#39ff68 8%,#07110a 17%,#39ff68 29%,#020503 42%,#39ff68 55%,#07110a 69%,#39ff68 82%,#020503) border-box;
+  -webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  opacity:.62; filter:blur(1px) drop-shadow(0 0 6px #39ff68);
+  animation:uwBFMass 3.8s linear infinite;
+}
+#uw621ProfileModal .uwpf-ghost_protocol .bf-ember{
+  width:3px!important;height:3px!important;background:#b5ffc2!important;border-radius:50%!important;
+  box-shadow:0 0 5px #39ff68!important;animation-duration:3.8s!important;
+}
+@keyframes uwBFContinuousBorder{0%,100%{transform:scale(.99);opacity:.78}38%{transform:scale(1.015);opacity:1}64%{transform:scale(.995);opacity:.86}}
+@keyframes uwBFCrown{0%{transform:scaleY(.76) skewX(-2deg);opacity:.72}48%{transform:scaleY(1.08) skewX(2deg);opacity:1}100%{transform:scaleY(.9) skewX(-1deg);opacity:.86}}
+@keyframes uwBFMass{to{transform:rotate(360deg)}}
+@media(max-width:700px){
+ #uw621ProfileModal .uwpf-ghost_protocol>.blackflame-stage{inset:-7px!important}
+ #uw621ProfileModal .uwpf-ghost_protocol .blackflame-stage:before{top:-13px;height:25px;left:7px;right:7px}
+ #uw621ProfileModal .uwpf-ghost_protocol .bf-border{inset:6px!important}
+}
+</style>
