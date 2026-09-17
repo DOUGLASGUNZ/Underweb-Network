@@ -6866,3 +6866,34 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
   #uw621ProfileModal .uwpf-devoured_signal .f1{left:-12%!important}.uwpf-devoured_signal .f2{right:-13%!important}.uwpf-devoured_signal .f3{bottom:-12%!important}.uwpf-devoured_signal .f4{top:-11%!important}.uwpf-devoured_signal .f5{left:-10%!important}
 }
 </style>
+
+
+<style id="uw-cosmetic-mobile-qa-fixes-v2-20260917">
+/* Mobile QA patch: approved VOID SIGNAL V3 + WEB PROTOCOL containment. */
+#uw621ProfileModal .uwpf-void_signal{overflow:visible!important;isolation:isolate}
+#uw621ProfileModal .uwpf-void_signal .vshard{display:block!important;width:28%!important;height:12%!important;background:#010403!important;border:1.5px solid #39ff68!important;box-shadow:0 0 5px #39ff6866!important;opacity:.92!important;z-index:3!important}
+#uw621ProfileModal .uwpf-void_signal .v1{left:-18%!important;top:2%!important}.uwpf-void_signal .v2{right:-19%!important;top:20%!important}.uwpf-void_signal .v3{left:-20%!important;top:55%!important}.uwpf-void_signal .v4{right:-18%!important;bottom:7%!important}.uwpf-void_signal .v5{left:17%!important;top:-14%!important}.uwpf-void_signal .v6{right:14%!important;bottom:-13%!important}
+#uw621ProfileModal .uwpf-void_signal .vecho{display:block!important;width:30%!important;height:19%!important;background:linear-gradient(135deg,#effff426,#39ff6822)!important;border:1px solid #effff4aa!important;z-index:2!important}
+#uw621ProfileModal .uwpf-void_signal .vpix{display:block!important;width:5px!important;height:5px!important;background:#39ff68!important;box-shadow:0 0 8px #39ff68!important;z-index:4!important}
+@keyframes uwVoidFracture{0%,100%{opacity:.28;transform:rotate(var(--r)) scale(.86)}9%{opacity:1;transform:rotate(calc(var(--r) + 9deg)) scale(1.12)}17%{opacity:.5;transform:rotate(calc(var(--r) - 5deg)) scale(.94)}31%{opacity:.95;transform:rotate(calc(var(--r) + 4deg)) scale(1.04)}44%{opacity:.22;transform:rotate(var(--r)) scale(.8)}61%{opacity:1;transform:rotate(calc(var(--r) - 8deg)) scale(1.1)}73%{opacity:.4;transform:rotate(calc(var(--r) + 3deg)) scale(.9)}86%{opacity:.9;transform:rotate(var(--r)) scale(1.03)}}
+@keyframes uwVoidEcho{0%,58%,100%{opacity:0;transform:translate(0,0) rotate(0)}62%{opacity:.9;transform:translate(10px,-7px) rotate(5deg)}68%{opacity:.32;transform:translate(-7px,5px) rotate(-4deg)}73%{opacity:.72;transform:translate(5px,2px) rotate(2deg)}79%{opacity:0}}
+
+/* WEB PROTOCOL stays in a tight halo around the avatar. No profile-content wandering. */
+#uw621ProfileModal .uwpf-ghost_protocol{overflow:visible!important;clip-path:none!important;isolation:isolate}
+#uw621ProfileModal .uwpf-ghost_protocol .webnet{max-width:none!important;opacity:.78!important;z-index:2!important}
+#uw621ProfileModal .uwpf-ghost_protocol .wn1{left:-7%!important;top:7%!important;width:72%!important}.uwpf-ghost_protocol .wn2{left:21%!important;top:-6%!important;width:72%!important}.uwpf-ghost_protocol .wn3{right:-7%!important;top:19%!important;width:70%!important}.uwpf-ghost_protocol .wn4{right:-6%!important;bottom:16%!important;width:72%!important}.uwpf-ghost_protocol .wn5{left:20%!important;bottom:-5%!important;width:70%!important}.uwpf-ghost_protocol .wn6{left:-6%!important;bottom:22%!important;width:68%!important}
+#uw621ProfileModal .uwpf-ghost_protocol .spider{offset-path:none!important;offset-distance:0!important;width:8px!important;height:11px!important;z-index:5!important;will-change:transform;animation-timing-function:linear!important;animation-iteration-count:infinite!important}
+#uw621ProfileModal .uwpf-ghost_protocol .sp1{left:0!important;top:8%!important;animation-name:uwWebSpider1!important;animation-duration:7.2s!important}
+#uw621ProfileModal .uwpf-ghost_protocol .sp2{left:90%!important;top:18%!important;animation-name:uwWebSpider2!important;animation-duration:8.4s!important}
+#uw621ProfileModal .uwpf-ghost_protocol .sp3{left:82%!important;top:88%!important;animation-name:uwWebSpider3!important;animation-duration:9.1s!important}
+#uw621ProfileModal .uwpf-ghost_protocol .sp4{left:7%!important;top:82%!important;animation-name:uwWebSpider4!important;animation-duration:10.2s!important}
+@keyframes uwWebSpider1{0%{transform:translate(-10%,-8%) rotate(20deg)}24%{transform:translate(58%,-20%) rotate(70deg)}49%{transform:translate(108%,52%) rotate(135deg)}74%{transform:translate(54%,108%) rotate(220deg)}100%{transform:translate(-10%,-8%) rotate(380deg)}}
+@keyframes uwWebSpider2{0%{transform:translate(0,0) rotate(150deg)}25%{transform:translate(-72%,18%) rotate(205deg)}50%{transform:translate(-92%,70%) rotate(270deg)}75%{transform:translate(-42%,92%) rotate(330deg)}100%{transform:translate(0,0) rotate(510deg)}}
+@keyframes uwWebSpider3{0%{transform:translate(0,0) rotate(235deg)}28%{transform:translate(-62%,-4%) rotate(285deg)}52%{transform:translate(-92%,-54%) rotate(340deg)}78%{transform:translate(-38%,-92%) rotate(410deg)}100%{transform:translate(0,0) rotate(595deg)}}
+@keyframes uwWebSpider4{0%{transform:translate(0,0) rotate(-40deg)}26%{transform:translate(48%,-58%) rotate(25deg)}52%{transform:translate(92%,-76%) rotate(80deg)}77%{transform:translate(82%,-18%) rotate(145deg)}100%{transform:translate(0,0) rotate(320deg)}}
+@media(max-width:700px){
+ #uw621ProfileModal .uwpf-ghost_protocol{transform:scale(.96)!important;transform-origin:center!important}
+ #uw621ProfileModal .uwpf-ghost_protocol .spider:before,#uw621ProfileModal .uwpf-ghost_protocol .spider:after{left:-5px!important;width:18px!important;height:9px!important}
+ #uw621ProfileModal .uwpf-void_signal .vshard{width:30%!important;height:13%!important}
+}
+</style>
