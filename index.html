@@ -5908,6 +5908,21 @@ async function uwDiscoverCosmetic(secret){
    }
  });
 
+ // Mobile Ghost Protocol path: phones rarely emit page-level key events.
+ // Reuse the visible Network people search as a legitimate text-entry surface; no hidden
+ // hotspot, clue text, or new UI is added. The same runtime-built phrase is required.
+ let gmobile='';
+ document.addEventListener('input',e=>{
+   const q=e.target?.closest?.('#uw783PeopleQuery'); if(!q)return;
+   const raw=String(q.value||'').toLowerCase();
+   gmobile=raw.slice(-ghost.length);
+   if(gmobile.length===ghost.length && [...gmobile].every((c,i)=>c.charCodeAt(0)===ghost[i])){
+     gmobile=''; q.value='';
+     try{q.dispatchEvent(new Event('input',{bubbles:true}))}catch(_){}
+     fire(D(103,104,111,115,116,95,112,114,111,116,111,99,111,108));
+   }
+ });
+
  // Network Zero: state machine only; no visible hotspot or hidden clue node.
  const zero=[38,38,40,40,37,39,37,39,85,87];
  let za=0;
