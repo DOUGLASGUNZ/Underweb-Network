@@ -6418,4 +6418,37 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 })();
 </script>
 
+
+<script id="uw-cosmetic-owner-authority-fix">
+(()=>{
+ const known=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];
+ const clear=a=>known.forEach(s=>a.classList.remove('uwcos-'+s));
+ const apply=(a,rows)=>{
+   if(!a)return;
+   clear(a);
+   const row=(Array.isArray(rows)?rows:[]).find(x=>x&&x.is_equipped!==false&&known.includes(String(x.cosmetic_slug||x.slug||'')));
+   if(row)a.classList.add('uwcos-'+String(row.cosmetic_slug||row.slug));
+ };
+ async function ownerRows(){
+   try{const q=await uwSupabase.rpc('uw_my_cosmetic_locker');return q.error?null:(Array.isArray(q.data)?q.data:(q.data?[q.data]:[]))}catch(_){return null}
+ }
+ async function me(){
+   try{const r=await uwSupabase.auth.getSession();return String(r?.data?.session?.user?.id||'')}catch(_){return ''}
+ }
+ window.uwForceCosmeticHydrate=async function(){
+   const a=document.getElementById('uw621Avatar'); if(!a)return;
+   const uid=String(window.uw621ActiveCreator||''); const myid=await me();
+   if(uid&&myid&&uid===myid){const rows=await ownerRows();if(rows!==null)apply(a,rows);return}
+   if(!uid)return;
+   try{const q=await uwSupabase.rpc('uw_public_cosmetics',{p_user_id:uid});if(!q.error)apply(a,Array.isArray(q.data)?q.data:(q.data?[q.data]:[]))}catch(_){}
+ };
+ // Replace the earlier hydrator with a version that does not depend on the lexical currentSession variable.
+ window.uwLoadPublicCosmetics=window.uwForceCosmeticHydrate;
+ const modal=document.getElementById('uw621ProfileModal');
+ if(modal)new MutationObserver(()=>{if(modal.classList.contains('open'))setTimeout(window.uwForceCosmeticHydrate,120)}).observe(modal,{attributes:true,attributeFilter:['class']});
+ document.addEventListener('click',e=>{if(e.target.closest('[data-uwcos-equip]'))setTimeout(window.uwForceCosmeticHydrate,500)},true);
+ window.addEventListener('load',()=>setTimeout(window.uwForceCosmeticHydrate,1200));
+})();
+</script>
+
 </body></html>
