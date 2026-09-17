@@ -6455,4 +6455,60 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 })();
 </script>
 
-</body></html>
+\n<style id="uw-profile-frame-recode-v2-css">
+/* Authoritative frame host. Frame DOM is a sibling of the avatar and cannot be erased by profile image rendering. */
+#uw621ProfileModal .uw621-head{position:relative!important;overflow:visible!important}
+#uw621ProfileModal #uw621Avatar{position:relative!important;overflow:visible!important}
+#uw621ProfileModal .uwpf[data-uw-frame-v2="1"]{position:absolute!important;z-index:40!important;pointer-events:none!important;overflow:visible!important;margin:0!important}
+</style>
+<script id="uw-profile-frame-recode-v2-js">
+(()=>{
+ const slugs=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];
+ const parts={
+  webwalker:'<i class="web"></i><i class="eye e1"></i><i class="eye e2"></i><i class="eye e3"></i><i class="eye e4"></i><i class="t t1"></i><i class="t t2"></i><i class="t t3"></i>',
+  void_signal:'<i class="slice s1"></i><i class="slice s2"></i><i class="slice s3"></i><i class="slice s4"></i><i class="corner c1"></i><i class="corner c2"></i>',
+  parasite:'<i class="flesh"></i><i class="peye p1"></i><i class="peye p2"></i><i class="peye p3"></i><i class="peye p4"></i>',
+  ghost_protocol:'<i class="ghost g1"></i><i class="ghost g2"></i><i class="ghost g3"></i><i class="tear r1"></i><i class="tear r2"></i>',
+  devoured_signal:'<i class="rift r1"></i><i class="rift r2"></i><i class="rift r3"></i><i class="rift r4"></i><i class="frag f1"></i><i class="frag f2"></i><i class="frag f3"></i>',
+  black_web_crown:'<i class="bh"></i><i class="matter m1"></i><i class="matter m2"></i><i class="matter m3"></i>',
+  network_zero:'<i class="zero"></i><i class="shard z1"></i><i class="shard z2"></i><i class="shard z3"></i><i class="shard z4"></i><i class="shard z5"></i><i class="shard z6"></i>'
+ };
+ let wanted=null,lastUid='',busy=false;
+ function avatar(){return document.getElementById('uw621Avatar')}
+ function modalOpen(){return document.getElementById('uw621ProfileModal')?.classList.contains('open')}
+ function viewedUid(){return String(window.uw621ActiveCreator||window.uw744ViewedUid||'')}
+ function setClass(slug){const a=avatar();if(!a)return;slugs.forEach(x=>a.classList.remove('uwcos-'+x));if(slug)a.classList.add('uwcos-'+slug);wanted=slug||null;render()}
+ function render(){
+  const a=avatar();if(!a)return;const host=a.closest('.uw621-head')||a.parentElement;if(!host)return;
+  let f=host.querySelector(':scope > .uwpf[data-uw-frame-v2="1"]');
+  if(!wanted){f?.remove();return}
+  if(!f){f=document.createElement('span');f.dataset.uwFrameV2='1';f.dataset.avatarFrame='1';f.setAttribute('aria-hidden','true');host.appendChild(f)}
+  if(f.dataset.slug!==wanted){f.className='uwpf uwpf-'+wanted;f.dataset.slug=wanted;f.innerHTML=parts[wanted]||''}
+  const ar=a.getBoundingClientRect(),hr=host.getBoundingClientRect();
+  f.style.left=(ar.left-hr.left)+'px';f.style.top=(ar.top-hr.top)+'px';f.style.width=ar.width+'px';f.style.height=ar.height+'px';
+ }
+ async function fetchEquipped(){
+  if(busy||!modalOpen()||!window.uwSupabase)return;busy=true;
+  try{
+   const uid=viewedUid(); if(!uid)return;
+   const auth=await uwSupabase.auth.getSession();const me=String(auth?.data?.session?.user?.id||'');
+   let q;
+   if(me&&uid===me) q=await uwSupabase.rpc('uw_my_cosmetic_locker');
+   else q=await uwSupabase.rpc('uw_public_cosmetics',{p_user_id:uid});
+   if(q?.error){console.warn('UW frame hydrate:',q.error);return}
+   const rows=Array.isArray(q?.data)?q.data:(q?.data?[q.data]:[]);
+   const row=rows.find(r=>r&&r.is_equipped===true&&slugs.includes(String(r.cosmetic_slug||r.slug||'')));
+   setClass(row?String(row.cosmetic_slug||row.slug):null);lastUid=uid;
+  }catch(e){console.warn('UW frame hydrate exception:',e)}finally{busy=false}
+ }
+ // One renderer owns the visible frame. Remove stale overlays made by older attempts.
+ function cleanOld(){const h=avatar()?.closest('.uw621-head');h?.querySelectorAll(':scope > .uwpf:not([data-uw-frame-v2="1"])').forEach(n=>n.remove())}
+ async function tick(){if(!modalOpen())return;cleanOld();const uid=viewedUid();if(uid!==lastUid||wanted===null)await fetchEquipped();render()}
+ const mo=new MutationObserver(()=>{if(modalOpen()){setTimeout(fetchEquipped,40);setTimeout(render,90)}});
+ const m=document.getElementById('uw621ProfileModal');if(m)mo.observe(m,{attributes:true,attributeFilter:['class']});
+ document.addEventListener('click',e=>{if(e.target.closest('[data-uwcos-equip]')){setTimeout(fetchEquipped,250);setTimeout(fetchEquipped,800)}},true);
+ window.addEventListener('resize',render,{passive:true});
+ setInterval(tick,350);
+ window.uwFrameV2Refresh=fetchEquipped;
+})();
+</script>\n</body></html>
