@@ -491,6 +491,10 @@ body[data-theme="symbiotes"] .uw61-card{border-color:#16385f;background:linear-g
  #page-profile .uw743-uploadrow{gap:7px}
  #page-profile .uw743-uploadrow .meta{font-size:9px;line-height:1.35}
 }
+
+/* 0.8.0 RC1 hotfix — role-derived profile identity + showcase save */
+#uw772Download{right:18px;top:70px;padding:9px 12px;font:900 10px/1 monospace;letter-spacing:.08em;color:var(--g);border:1px solid color-mix(in srgb,var(--g) 45%,transparent);background:#020503dd}
+#profileModeDerived{cursor:default;user-select:none}
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -1428,7 +1432,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </section>
 <section class="uw40-block">
 <div class="uw40-title"><div><span>IDENTITY</span><h3>Profile Details</h3></div></div>
-<div class="uw40-fields"><label><span>Display name</span><input class="input" id="profileDisplayName" placeholder="Display name"/></label><label><span>Headline</span><input class="input" id="profileHeadline" placeholder="DJ • Unity Artist • Community Owner"/></label><label class="full"><span>Bio</span><textarea class="textarea" id="profileBio" placeholder="Tell the network what you make, perform, or do."></textarea></label><label><span>Profile type</span><select class="select" id="profileMode"><option value="creator_staff">Creator + Staff</option><option value="creator">Creator</option><option value="staff">Staff</option><option value="community">Community Member</option></select></label><label><span>Availability</span><select class="select" id="profileAvailability"><option value="available">Available</option><option value="limited">Limited</option><option value="by_request">Available by request</option><option value="booked">Booked / Busy</option><option value="unavailable">Unavailable</option></select></label><label class="full"><span>Specialties / skills</span><input class="input" id="profileSkills" placeholder="Unity, World Design, DJ, Blender, Photography"/></label></div>
+<div class="uw40-fields"><label><span>Display name</span><input class="input" id="profileDisplayName" placeholder="Display name"/></label><label><span>Headline</span><input class="input" id="profileHeadline" placeholder="DJ • Unity Artist • Community Owner"/></label><label class="full"><span>Bio</span><textarea class="textarea" id="profileBio" placeholder="Tell the network what you make, perform, or do."></textarea></label><label><span>Profile type</span><div class="input" id="profileModeDerived" style="display:flex;align-items:center;min-height:42px;color:var(--g);font-weight:900">COMMUNITY MEMBER</div><small class="meta">Automatically derived from your active Network roles.</small></label><label><span>Availability</span><select class="select" id="profileAvailability"><option value="available">Available</option><option value="limited">Limited</option><option value="by_request">Available by request</option><option value="booked">Booked / Busy</option><option value="unavailable">Unavailable</option></select></label><label class="full"><span>Specialties / skills</span><input class="input" id="profileSkills" placeholder="Unity, World Design, DJ, Blender, Photography"/></label></div>
 <div id="uw795CommissionEditor" class="uw795-commission" hidden>
  <div class="uw40-title"><div><span>CONFIRMED CREATOR</span><h3>Commission Link</h3></div><small>PUBLIC PROFILE</small></div>
  <p class="meta">Approved creators can link an external commission page, shop, Carrd, Ko-fi, Gumroad, Booth, portfolio booking page, or similar creator destination.</p>
@@ -2535,7 +2539,7 @@ const UW033_DAYS=['monday','tuesday','wednesday','thursday','friday','saturday',
 const UW033_DAY_LABELS={monday:'MON',tuesday:'TUE',wednesday:'WED',thursday:'THU',friday:'FRI',saturday:'SAT',sunday:'SUN'};
 const UW033_STATE_LABELS={available:'Available',limited:'Limited',by_request:'By Request',unavailable:'Unavailable'};
 const UW033_ET_ZONE='America/New_York';
-let uw033Profile={avatar_url:'',banner_url:'',profile_mode:'creator_staff',availability:'by_request',specialties:[]};
+let uw033Profile={avatar_url:'',banner_url:'',profile_mode:'community',availability:'by_request',specialties:[]};
 let uw033Availability=[];
 
 function uw033El(id){return document.getElementById(id)}
@@ -2543,11 +2547,30 @@ function uw033Safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','
 function uw033ModeLabel(v){return ({creator:'Creator',staff:'Staff',creator_staff:'Creator + Staff',community:'Community Member'})[v]||'Creator + Staff'}
 function uw033AvailabilityLabel(v){return ({available:'Available',limited:'Limited',by_request:'Available by request',booked:'Booked / Busy',unavailable:'Unavailable'})[v]||'Available by request'}
 function uw033SetPreview(el,url){if(!el)return;el.style.backgroundImage=url?`linear-gradient(rgba(0,0,0,.08),rgba(0,0,0,.08)),url("${String(url).replace(/"/g,'')}")`:'';el.classList.toggle('has-image',!!url)}
+async function uw033DerivedProfileMode(uid){
+  uid=String(uid||currentSession?.user?.id||'').trim();
+  if(!uid)return 'community';
+  try{
+    const [roles,defs]=await Promise.all([
+      uwSupabase.from('user_roles').select('role_slug,status').eq('user_id',uid).eq('status','active'),
+      uwSupabase.from('role_definitions').select('slug,category,active').eq('active',true)
+    ]);
+    if(roles.error)throw roles.error;if(defs.error)throw defs.error;
+    const cats=new Set((roles.data||[]).map(r=>(defs.data||[]).find(d=>d.slug===r.role_slug)?.category).filter(Boolean));
+    const creator=cats.has('creator');
+    const staff=['staff','operations','leadership'].some(c=>cats.has(c));
+    return creator&&staff?'creator_staff':creator?'creator':staff?'staff':'community';
+  }catch(e){console.warn('Profile type derivation failed:',e);return 'community'}
+}
+function uw033SetDerivedMode(mode){
+  uw033Profile.profile_mode=mode||'community';
+  const el=uw033El('profileModeDerived');if(el)el.textContent=uw033ModeLabel(uw033Profile.profile_mode).toUpperCase();
+}
 function uw033RenderLiveProfile(){
   const name=uw033El('profileDisplayName')?.value?.trim()||currentAccountProfile?.display_name||'Your Name';
   const headline=uw033El('profileHeadline')?.value?.trim()||'Your headline';
   const bio=uw033El('profileBio')?.value?.trim()||'Your profile bio will show here.';
-  const mode=uw033El('profileMode')?.value||'creator_staff';
+  const mode=uw033Profile.profile_mode||'community';
   const availability=uw033El('profileAvailability')?.value||'by_request';
   const skills=(uw033El('profileSkills')?.value||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,8);
   if(uw033El('liveProfileName'))uw033El('liveProfileName').textContent=name; const af=uw033El('liveProfileAvatarFallback'); if(af)af.textContent='';
@@ -2568,7 +2591,7 @@ async function loadMyProfile(){
   if(uw033El('profileDisplayName'))uw033El('profileDisplayName').value=data?.display_name||currentAccountProfile?.display_name||'';
   if(uw033El('profileHeadline'))uw033El('profileHeadline').value=data?.headline||'';
   if(uw033El('profileBio'))uw033El('profileBio').value=data?.bio||'';
-  if(uw033El('profileMode'))uw033El('profileMode').value=data?.profile_mode||'creator_staff';
+  uw033SetDerivedMode(await uw033DerivedProfileMode(uid));
   if(uw033El('profileAvailability'))uw033El('profileAvailability').value=data?.availability||'by_request';
   if(uw033El('profileSkills'))uw033El('profileSkills').value=Array.isArray(data?.specialties)?data.specialties.join(', '):'';
   if(uw033El('uw744ShopUrl'))uw033El('uw744ShopUrl').value=data?.shop_url||'';
@@ -2596,7 +2619,7 @@ async function saveMyProfile(){
     // Commission fields are intentionally NOT written by the general profile save.
     // They have their own verified writer (uw744SaveShop). This prevents an unrelated
     // profile save from clobbering a previously saved commission URL with NULL.
-    const payload={user_id:uid,display_name:display,headline,bio,availability:uw033El('profileAvailability')?.value||'by_request',profile_mode:uw033El('profileMode')?.value||'creator_staff',specialties,avatar_url:avatar,banner_url:banner};
+    const payload={user_id:uid,display_name:display,headline,bio,availability:uw033El('profileAvailability')?.value||'by_request',specialties,avatar_url:avatar,banner_url:banner};
     const accountUpdate=await uwSupabase.from('profiles').update({display_name:display}).eq('id',uid);if(accountUpdate.error)throw accountUpdate.error;
     const existing=await uwSupabase.from('creator_profiles').select('id').eq('user_id',uid).maybeSingle();if(existing.error)throw existing.error;
     let result;if(existing.data?.id)result=await uwSupabase.from('creator_profiles').update(payload).eq('id',existing.data.id);else result=await uwSupabase.from('creator_profiles').insert({...payload,approval_status:'pending',public_visible:false,created_by:uid});if(result.error)throw result.error;
@@ -2706,7 +2729,7 @@ async function uw033CopyDiscord(){try{await navigator.clipboard.writeText(uw033D
 
 function uw033Init(){
   document.querySelectorAll('[data-pick-file]').forEach(b=>b.addEventListener('click',()=>uw033El(b.dataset.pickFile)?.click()));
-  ['profileDisplayName','profileHeadline','profileBio','profileMode','profileAvailability','profileSkills'].forEach(id=>uw033El(id)?.addEventListener('input',uw033RenderLiveProfile));
+  ['profileDisplayName','profileHeadline','profileBio','profileAvailability','profileSkills'].forEach(id=>uw033El(id)?.addEventListener('input',uw033RenderLiveProfile));
   uw033El('profileAvatarInput')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f){const u=URL.createObjectURL(f);uw033SetPreview(uw033El('avatarPreview'),u);uw033SetPreview(uw033El('liveProfileAvatar'),u)}});
   uw033El('profileBannerInput')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f){const u=URL.createObjectURL(f);uw033SetPreview(uw033El('bannerPreview'),u);uw033SetPreview(uw033El('liveProfileBanner'),u)}});
   uw033El('saveProfileBtn033')?.addEventListener('click',saveMyProfile);
@@ -4395,6 +4418,7 @@ function uw772Render(){
   ?`<video id="uw772Video" src="${uw743Esc(x.media_url)}" controls autoplay playsinline></video>`
   :`<img id="uw772Image" src="${uw743Esc(x.media_url)}" alt="${uw743Esc(x.title||'Creator media')}">`;
  document.getElementById('uw772Meta').innerHTML=`<small>${uw772Index+1} / ${uw772Items.length}</small>${uw743Esc(x.title||'Untitled Work')}`;
+ const dl=document.getElementById('uw772Download');if(dl)dl.style.display=x.media_type==='video'?'none':'';
  uw772Apply();
 }
 function uw772Apply(){
@@ -4411,10 +4435,25 @@ function uw772Open(items,index){
   <div id="uw772Canvas"></div>
   <button id="uw772Close" class="uw772-ui">×</button>
   <div id="uw772Zoom" class="uw772-ui"><button data-z="-">−</button><button data-z="reset">1×</button><button data-z="+">＋</button></div>
+  <button id="uw772Download" class="uw772-ui" type="button" title="Save image">↓ SAVE</button>
   <button id="uw772Prev" class="uw772-ui">‹</button><button id="uw772Next" class="uw772-ui">›</button>
   <div id="uw772Meta"></div>
  </div>`);
  uw772Render();
+}
+
+async function uw772DownloadCurrent(){
+ const x=uw772Items[uw772Index];if(!x||x.media_type==='video')return toast('Image downloads are available for images.');
+ const url=String(x.media_url||'');if(!url)return;
+ const safe=(String(x.title||'underweb-image').replace(/[^a-z0-9_-]+/gi,'-').replace(/^-+|-+$/g,'')||'underweb-image')+'.jpg';
+ try{
+   const r=await fetch(url);if(!r.ok)throw new Error('Download failed');
+   const blob=await r.blob();const obj=URL.createObjectURL(blob);
+   const a=document.createElement('a');a.href=obj;a.download=safe;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(obj),1500);
+ }catch(err){
+   const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+   toast('Opened the image — use your browser save option.');
+ }
 }
 
 document.addEventListener('click',e=>{
@@ -4426,6 +4465,7 @@ document.addEventListener('click',e=>{
   if(i>=0)uw772Open(items,i);return;
  }
  if(e.target.closest('#uw772Close'))document.getElementById('uw772Viewer')?.remove();
+ if(e.target.closest('#uw772Download'))uw772DownloadCurrent();
  if(e.target.closest('#uw772Prev'))uw772Move(-1);
  if(e.target.closest('#uw772Next'))uw772Move(1);
  const z=e.target.closest('[data-z]');
