@@ -4811,8 +4811,7 @@ if(uw776Modal)new MutationObserver(()=>{
 
 
 <script id="uw780FreshAccountOnboarding">
-/* 0.7.8.0 — Fresh account onboarding. Uses existing profiles,
-   creator_profiles and role application/direct-role flows. No fake data. */
+/* 0.7.8.1 — Fresh account onboarding. Regular members can complete setup without creator_profiles access; creator role applications remain approval-gated. No fake data. */
 const UW780_KEY='underweb-onboarding-v1';
 let uw780Step=0,uw780Profile=null,uw780Defs=[];
 
@@ -4862,22 +4861,23 @@ async function uw780SaveIdentity(){
  const name=document.getElementById('uw780Name')?.value.trim();
  if(!name)return toast('Choose a display name first.');
  const uid=currentSession.user.id;
- const a=await uwSupabase.from('profiles').update({display_name:name}).eq('id',uid);if(a.error)return toast(a.error.message);
- const existing=await uwSupabase.from('creator_profiles').select('id').eq('user_id',uid).maybeSingle();if(existing.error)return toast(existing.error.message);
- const payload={user_id:uid,display_name:name,profile_mode:'creator_staff',availability:'by_request',specialties:[]};
- const b=existing.data?.id
-   ?await uwSupabase.from('creator_profiles').update({display_name:name}).eq('id',existing.data.id)
-   :await uwSupabase.from('creator_profiles').insert({...payload,approval_status:'pending',public_visible:false,created_by:uid});
- if(b.error)return toast(b.error.message);
- uw780Profile={...uw780Profile,...payload};uw780Step++;uw780Render();
+ /* 0.7.8.1: onboarding identity is account-level. Never create a creator profile here. */
+ const a=await uwSupabase.from('profiles').update({display_name:name}).eq('id',uid);
+ if(a.error)return toast(a.error.message);
+ uw780Profile={...uw780Profile,display_name:name};uw780Step++;uw780Render();
 }
 async function uw780SaveProfile(){
  const uid=currentSession.user.id;
  const headline=document.getElementById('uw780Headline')?.value.trim()||'';
  const bio=document.getElementById('uw780Bio')?.value.trim()||'';
  const availability=document.getElementById('uw780Availability')?.value||'by_request';
- const {error}=await uwSupabase.from('creator_profiles').update({headline,bio,availability}).eq('user_id',uid);
- if(error)return toast(error.message);
+ /* Regular members do not own creator_profiles rows. Only update one if it already exists. */
+ const existing=await uwSupabase.from('creator_profiles').select('id').eq('user_id',uid).maybeSingle();
+ if(existing.error)return toast(existing.error.message);
+ if(existing.data?.id){
+   const {error}=await uwSupabase.from('creator_profiles').update({headline,bio,availability}).eq('id',existing.data.id);
+   if(error)return toast(error.message);
+ }
  uw780Profile={...uw780Profile,headline,bio,availability};uw780Step++;uw780Render();
 }
 async function uw780Roles(){
