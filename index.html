@@ -6795,3 +6795,36 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
  setInterval(tick,900);
 })();
 </script>
+
+<style id="uw-cosmetic-mobile-qa-fixes-20260917">
+/* QA fixes from Darko mobile pass: keep effects framed around the avatar, not over profile content. */
+@media (max-width:700px){
+  /* VOID SIGNAL — compact fragmented signal frame, no oversized corner brackets. */
+  #uw621ProfileModal .uwpf-void_signal .voidcore{inset:-7%!important;border-width:1.5px!important;border-radius:18%!important;}
+  #uw621ProfileModal .uwpf-void_signal .corner{width:20%!important;height:20%!important;border-width:3px!important;}
+  #uw621ProfileModal .uwpf-void_signal .c1{left:-7%!important;top:-7%!important;}
+  #uw621ProfileModal .uwpf-void_signal .c2{right:-7%!important;bottom:-7%!important;}
+  #uw621ProfileModal .uwpf-void_signal .slice{height:3%!important;min-height:2px!important;}
+  #uw621ProfileModal .uwpf-void_signal .s1{left:-10%!important;width:34%!important}.uwpf-void_signal .s2{right:-11%!important;width:35%!important}.uwpf-void_signal .s3{left:-12%!important;width:38%!important}.uwpf-void_signal .s4{right:-10%!important;width:33%!important}
+  #uw621ProfileModal .uwpf-void_signal .s5{top:-7%!important}.uwpf-void_signal .s6{bottom:-7%!important}
+
+  /* EVENT HORIZON — black hole floats above avatar; disk no longer swallows banner/avatar. */
+  #uw621ProfileModal .uwpf-black_web_crown .bh{left:50%!important;top:-43%!important;width:46%!important;max-width:62px!important;box-shadow:0 0 0 2px #07120b,0 0 15px #39ff6855!important;}
+  #uw621ProfileModal .uwpf-black_web_crown .bh:before{left:-42%!important;right:-42%!important;top:37%!important;height:25%!important;border-width:3px!important;}
+  #uw621ProfileModal .uwpf-black_web_crown .bh:after{left:-25%!important;right:-25%!important;top:46%!important;}
+  #uw621ProfileModal .uwpf-black_web_crown .disk{left:50%!important;top:-30%!important;width:70%!important;height:11%!important;}
+  #uw621ProfileModal .uwpf-black_web_crown .d2{top:-27%!important;width:56%!important;}
+  #uw621ProfileModal .uwpf-black_web_crown .matter{width:3.5%!important;height:3.5%!important;}
+
+  /* GHOST PROTOCOL — spectral presences hug the perimeter instead of floating over text. */
+  #uw621ProfileModal .uwpf-ghost_protocol .ghost{width:21%!important;height:34%!important;border-width:1.5px!important;opacity:.42!important;}
+  #uw621ProfileModal .uwpf-ghost_protocol .g1{left:-13%!important;top:-8%!important}.uwpf-ghost_protocol .g2{right:-13%!important;top:8%!important}.uwpf-ghost_protocol .g3{left:-12%!important;bottom:-8%!important}.uwpf-ghost_protocol .g4{right:-10%!important;bottom:-9%!important}
+  #uw621ProfileModal .uwpf-ghost_protocol .tear{left:-8%!important;right:-8%!important;height:2px!important;opacity:.7!important;}
+
+  /* DEVOURED SIGNAL — smaller dimensional fissures around edges; never cover the avatar. */
+  #uw621ProfileModal .uwpf-devoured_signal .rift{width:25%!important;height:9%!important;box-shadow:inset 0 0 0 1px #39ff68!important;}
+  #uw621ProfileModal .uwpf-devoured_signal .r1{left:-15%!important;top:2%!important}.uwpf-devoured_signal .r2{right:-15%!important;top:22%!important}.uwpf-devoured_signal .r3{right:-14%!important;bottom:10%!important}.uwpf-devoured_signal .r4{left:-15%!important;bottom:15%!important}.uwpf-devoured_signal .r5{left:23%!important;top:-8%!important}.uwpf-devoured_signal .r6{right:18%!important;bottom:-8%!important}
+  #uw621ProfileModal .uwpf-devoured_signal .frag{width:5%!important;height:4%!important;}
+  #uw621ProfileModal .uwpf-devoured_signal .f1{left:-12%!important}.uwpf-devoured_signal .f2{right:-13%!important}.uwpf-devoured_signal .f3{bottom:-12%!important}.uwpf-devoured_signal .f4{top:-11%!important}.uwpf-devoured_signal .f5{left:-10%!important}
+}
+</style>
