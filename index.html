@@ -2647,7 +2647,27 @@ async function loadEvents(){
     try{await uwSupabase.rpc('uw_archive_finished_events')}catch(_){}
     let q=uwSupabase.from('network_events').select('id,title,group_scope,starts_at,ends_at,archived_at,location,description,cover_url,status,created_by,approved_by,approved_at,approval_note,created_at,updated_at').order('starts_at',{ascending:true,nullsFirst:false}).limit(100);
     if(!hasStaffAccess())q=q.eq('status','published');
-    const {data,error}=await q;if(error)throw error;uwBeta.events=data||[];await loadEventProfiles();renderEvents();
+    const {data,error}=await q;if(error)throw error;
+    uwBeta.events=data||[];
+
+    // Recover event covers from the same network-media storage location used by the
+    // event uploader. Older/partially-saved events can have a null cover_url even
+    // though the poster upload itself succeeded. This keeps Events + Home using
+    // the exact same poster source instead of leaving Featured Event on fallback art.
+    await Promise.all(uwBeta.events.map(async ev=>{
+      if(ev?.cover_url || !ev?.id || !ev?.created_by)return;
+      try{
+        const folder=`${ev.created_by}/events/${ev.id}`;
+        const {data:files,error:listErr}=await uwSupabase.storage.from('network-media').list(folder,{limit:20,sortBy:{column:'created_at',order:'desc'}});
+        if(listErr)throw listErr;
+        const image=(files||[]).find(f=>f?.name && /\.(?:jpe?g|png|webp)$/i.test(f.name));
+        if(!image)return;
+        const {data:pub}=uwSupabase.storage.from('network-media').getPublicUrl(`${folder}/${image.name}`);
+        if(pub?.publicUrl)ev.cover_url=pub.publicUrl;
+      }catch(storageErr){console.warn('Event cover recovery failed:',ev.id,storageErr);}
+    }));
+
+    await loadEventProfiles();renderEvents();
   }catch(err){console.error('Events load failed:',err);uwBeta.events=[];renderEvents();const body=document.getElementById('eventsTableBody');if(body)body.innerHTML='<tr><td colspan="8" class="meta">Events backend needs the 0.5.1 operations SQL patch.</td></tr>';}
 }
 
