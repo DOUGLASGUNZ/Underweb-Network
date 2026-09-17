@@ -6127,4 +6127,56 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 @keyframes uwCanonZero{0%,100%{transform:translate(-50%,-50%) rotate(0) scale(1);filter:drop-shadow(0 0 8px #66ffb066)}45%{transform:translate(-50%,-50%) rotate(1.2deg) scale(1.025);filter:drop-shadow(0 0 20px #a0ffd8bb)}53%{transform:translate(-50%,-50%) rotate(-.8deg) scale(.985)}}
 @media(prefers-reduced-motion:reduce){.uw621-avatar[class*="uwcos-"]::before{animation:none!important}}
 </style>
+
+<style id="uw-webwalker-mobile-geometry-fix">
+/* WEBWALKER geometry hotfix:
+   frame is centered on the REAL avatar and may extend only 32px around it. */
+.uw621-avatar.uwcos-webwalker{
+  position:relative!important;
+  overflow:visible!important;
+}
+.uw621-avatar.uwcos-webwalker::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  inset:auto!important;
+
+  /* Avatar-relative footprint: no giant percentage canvas. */
+  width:calc(100% + 64px)!important;
+  height:calc(100% + 64px)!important;
+  transform:translate(-50%,-50%)!important;
+
+  background-position:center!important;
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+
+  /* Kill spill from the source-art square while keeping the organic frame. */
+  clip-path:inset(0 round 28%)!important;
+  border-radius:30%!important;
+
+  z-index:20!important;
+  pointer-events:none!important;
+  opacity:1!important;
+  mix-blend-mode:screen!important;
+  animation:uwWebwalkerTight 5.4s ease-in-out infinite!important;
+  filter:drop-shadow(0 0 8px rgba(57,255,104,.58))!important;
+}
+.uw621-avatar.uwcos-webwalker::after{
+  content:""!important;
+  display:none!important;
+}
+@keyframes uwWebwalkerTight{
+  0%,100%{
+    transform:translate(-50%,-50%) scale(1);
+    filter:drop-shadow(0 0 7px rgba(57,255,104,.48));
+  }
+  50%{
+    transform:translate(-50%,-50%) scale(1.025);
+    filter:drop-shadow(0 0 14px rgba(57,255,104,.78));
+  }
+}
+</style>
+
 </body></html>
