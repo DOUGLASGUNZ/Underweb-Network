@@ -5923,6 +5923,38 @@ async function uwDiscoverCosmetic(secret){
    }
  });
 
+ // Mobile parity: restore two mapped secrets that had no listener, and provide touch-safe fallbacks.
+ let lpMobileArmed=true;
+ document.addEventListener('input',e=>{
+   const q=e.target?.closest?.('#uw783PeopleQuery'); if(!q)return;
+   const v=String(q.value||'').trim();
+   const match=v.length===3&&v.charCodeAt(0)===52&&v.charCodeAt(1)===48&&v.charCodeAt(2)===52;
+   if(match&&lpMobileArmed){lpMobileArmed=false;fire(D(108,111,115,116,95,112,97,99,107,101,116))}
+   else if(!match)lpMobileArmed=true;
+ });
+ let holdTimer=0;
+ document.addEventListener('pointerdown',e=>{
+   if(!e.target.closest?.('.logo-img-wrap,.logo'))return; clearTimeout(holdTimer);
+   holdTimer=setTimeout(()=>fire(D(117,110,100,101,114,95,116,104,101,95,119,101,98)),1800);
+ });
+ ['pointerup','pointercancel','pointerleave'].forEach(type=>document.addEventListener(type,()=>clearTimeout(holdTimer)));
+ let vt=0,vn=0;
+ document.addEventListener('pointerup',e=>{
+   if(!e.target.closest?.('.uw50-version-pill'))return; const now=Date.now(); vn=(now-vt<650)?vn+1:1; vt=now;
+   if(vn>=3){vn=0;fire(D(114,99,49,95,115,105,103,110,97,108))}
+ });
+ const ztouch=[38,38,40,40,37,39,37,39]; let zti=0,zready=0,zsx=0,zsy=0,zfinish=0;
+ document.addEventListener('touchstart',e=>{const t=e.changedTouches?.[0];if(t){zsx=t.clientX;zsy=t.clientY}},{passive:true});
+ document.addEventListener('touchend',e=>{
+   const t=e.changedTouches?.[0];if(!t)return;const dx=t.clientX-zsx,dy=t.clientY-zsy;if(Math.max(Math.abs(dx),Math.abs(dy))<34)return;
+   const k=Math.abs(dx)>Math.abs(dy)?(dx>0?39:37):(dy>0?40:38);
+   if(k===ztouch[zti]){if(++zti===ztouch.length){zti=0;zready=Date.now()+5000}}else zti=(k===ztouch[0]?1:0);
+ },{passive:true});
+ document.addEventListener('click',e=>{
+   if(Date.now()>zready||!e.target.closest?.('.logo-img-wrap,.logo'))return;
+   if(++zfinish>=2){zfinish=0;zready=0;fire(D(110,101,116,119,111,114,107,95,122,101,114,111))}
+ });
+
  // Network Zero: state machine only; no visible hotspot or hidden clue node.
  const zero=[38,38,40,40,37,39,37,39,85,87];
  let za=0;
