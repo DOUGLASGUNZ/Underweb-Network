@@ -495,6 +495,154 @@ body[data-theme="symbiotes"] .uw61-card{border-color:#16385f;background:linear-g
 /* 0.8.0 RC1 hotfix — role-derived profile identity + showcase save */
 #uw772Download{right:18px;top:70px;padding:9px 12px;font:900 10px/1 monospace;letter-spacing:.08em;color:var(--g);border:1px solid color-mix(in srgb,var(--g) 45%,transparent);background:#020503dd}
 #profileModeDerived{cursor:default;user-select:none}
+
+/* ============================================================
+   WEBWALKER V3 — living UnderWeb x Symbiote infection
+   Existing slug: webwalker. Existing owners inherit automatically.
+   ============================================================ */
+.uw621-avatar.uwcos-webwalker{
+  isolation:isolate;
+  overflow:visible!important;
+  filter:drop-shadow(0 0 8px rgba(57,255,104,.38));
+  animation:uwWebHostBreath 3.8s ease-in-out infinite;
+}
+.uw621-avatar.uwcos-webwalker:before{
+  content:""!important;
+  position:absolute!important;
+  z-index:4!important;
+  pointer-events:none!important;
+  inset:-20px!important;
+  border:0!important;
+  border-radius:42% 58% 46% 54%/55% 43% 57% 45%!important;
+  background:
+    radial-gradient(ellipse at 13% 24%,#000 0 5%,transparent 6%),
+    radial-gradient(ellipse at 87% 68%,#000 0 7%,transparent 8%),
+    conic-gradient(from 214deg at 50% 50%,
+      transparent 0 5%,#000 5.5% 9%,transparent 9.5% 17%,
+      #050806 17.5% 22%,transparent 22.5% 31%,
+      #000 31.5% 36%,transparent 36.5% 48%,
+      #050806 48.5% 55%,transparent 55.5% 67%,
+      #000 67.5% 72%,transparent 72.5% 84%,
+      #050806 84.5% 90%,transparent 90.5%);
+  filter:
+    drop-shadow(0 0 1px #39ff68)
+    drop-shadow(0 0 9px rgba(57,255,104,.5))!important;
+  animation:uwWebFlesh 4.7s ease-in-out infinite!important;
+}
+.uw621-avatar.uwcos-webwalker:after{
+  content:""!important;
+  position:absolute!important;
+  z-index:5!important;
+  pointer-events:none!important;
+  inset:-27px!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:
+    repeating-conic-gradient(from 7deg,
+      transparent 0 7deg,
+      rgba(57,255,104,.96) 7.4deg 8deg,
+      transparent 8.5deg 21deg);
+  -webkit-mask:radial-gradient(circle,transparent 0 58%,#000 59% 60%,transparent 61% 69%,#000 70% 70.8%,transparent 72%);
+  mask:radial-gradient(circle,transparent 0 58%,#000 59% 60%,transparent 61% 69%,#000 70% 70.8%,transparent 72%);
+  filter:drop-shadow(0 0 5px #39ff68)!important;
+  opacity:.88;
+  animation:uwWebNerve 18s linear infinite!important;
+}
+@keyframes uwWebHostBreath{
+  0%,100%{filter:drop-shadow(0 0 7px rgba(57,255,104,.32))}
+  50%{filter:drop-shadow(0 0 17px rgba(57,255,104,.72))}
+}
+@keyframes uwWebFlesh{
+  0%,100%{transform:rotate(-2deg) scale(1);border-radius:42% 58% 46% 54%/55% 43% 57% 45%}
+  34%{transform:rotate(2deg) scale(1.045,1.015);border-radius:61% 39% 55% 45%/43% 63% 37% 57%}
+  67%{transform:rotate(-1deg) scale(.99,1.04);border-radius:37% 63% 41% 59%/62% 38% 58% 42%}
+}
+@keyframes uwWebNerve{to{transform:rotate(360deg)}}
+
+/* Profile-wide infection is attached at runtime when an equipped WEBWALKER is rendered. */
+.uw-webwalker-host{
+  position:relative!important;
+  isolation:isolate;
+  overflow:visible!important;
+  box-shadow:
+    0 0 0 1px rgba(57,255,104,.34),
+    0 0 42px rgba(57,255,104,.10),
+    inset 0 0 70px rgba(0,0,0,.48)!important;
+}
+.uw-webwalker-host:before{
+  content:"";
+  position:absolute;
+  z-index:8;
+  pointer-events:none;
+  inset:-2px;
+  border-radius:inherit;
+  opacity:.72;
+  background:
+    linear-gradient(117deg,transparent 0 14%,rgba(57,255,104,.55) 14.2% 14.45%,transparent 14.7% 29%,rgba(57,255,104,.26) 29.2% 29.45%,transparent 29.7% 100%),
+    linear-gradient(27deg,transparent 0 67%,rgba(57,255,104,.48) 67.2% 67.45%,transparent 67.7%),
+    radial-gradient(circle at 14% 19%,rgba(57,255,104,.95) 0 2px,transparent 3px),
+    radial-gradient(circle at 83% 74%,rgba(57,255,104,.9) 0 2px,transparent 3px),
+    radial-gradient(circle at 61% 14%,rgba(57,255,104,.7) 0 1px,transparent 2px);
+  filter:drop-shadow(0 0 4px rgba(57,255,104,.55));
+  animation:uwWebSignal 4.2s ease-in-out infinite;
+}
+.uw-webwalker-host:after{
+  content:"";
+  position:absolute;
+  z-index:9;
+  pointer-events:none;
+  inset:-12px;
+  border-radius:inherit;
+  background:
+    radial-gradient(ellipse at 0 16%,#010201 0 2.8%,transparent 3.2%),
+    radial-gradient(ellipse at 100% 31%,#000 0 4%,transparent 4.5%),
+    radial-gradient(ellipse at 0 79%,#000 0 4.7%,transparent 5.2%),
+    radial-gradient(ellipse at 100% 88%,#010201 0 3.2%,transparent 3.7%),
+    conic-gradient(from 70deg at 0 18%,#000 0 5deg,transparent 6deg 19deg,#020302 20deg 24deg,transparent 25deg),
+    conic-gradient(from 245deg at 100% 72%,#000 0 7deg,transparent 8deg 21deg,#020302 22deg 27deg,transparent 28deg);
+  filter:drop-shadow(0 0 1px #39ff68);
+  animation:uwWebTendrils 5.3s ease-in-out infinite;
+}
+@keyframes uwWebSignal{50%{opacity:1;filter:drop-shadow(0 0 8px rgba(57,255,104,.85))}}
+@keyframes uwWebTendrils{
+  0%,100%{transform:scale(1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+  50%{transform:scale(1.012,1.035);clip-path:polygon(0 3%,98% 0,100% 97%,2% 100%)}
+}
+.uw-webwalker-host .uw-webwalker-glitch{
+  text-shadow:-2px 0 rgba(57,255,104,.65),2px 0 rgba(255,255,255,.16);
+  animation:uwWebTextGlitch 4.8s steps(1,end) infinite;
+}
+@keyframes uwWebTextGlitch{
+  0%,91%,94%,100%{transform:none;filter:none}
+  92%{transform:translateX(-3px) skewX(5deg);filter:contrast(1.5)}
+  93%{transform:translateX(2px);filter:brightness(1.35)}
+}
+.uw-webwalker-infection{
+  position:fixed;inset:0;z-index:2147483000;pointer-events:none;
+  display:grid;place-items:center;background:#000;
+  animation:uwWebInfectExit 2.65s forwards;
+}
+.uw-webwalker-infection .uw-wi-core{
+  color:#39ff68;text-align:center;font-weight:1000;letter-spacing:.16em;
+  text-shadow:0 0 8px #39ff68,0 0 30px rgba(57,255,104,.6);
+  animation:uwWebInfectGlitch .17s steps(2,end) 8;
+}
+.uw-webwalker-infection .uw-wi-core strong{display:block;font-size:clamp(30px,7vw,86px)}
+.uw-webwalker-infection .uw-wi-core small{display:block;margin-top:13px;font:600 10px/1.5 ui-monospace,monospace;letter-spacing:.42em;color:#9affb3}
+.uw-webwalker-infection .uw-wi-web{
+  position:absolute;width:14px;height:14px;border-radius:50%;background:#39ff68;
+  box-shadow:0 0 16px #39ff68,0 0 80px #39ff68;
+  animation:uwWebInfectBloom 1.25s forwards;
+}
+@keyframes uwWebInfectBloom{75%{transform:scale(1)}100%{transform:scale(120);opacity:.07}}
+@keyframes uwWebInfectGlitch{50%{transform:translate(7px,-2px) skewX(-7deg)}}
+@keyframes uwWebInfectExit{0%,72%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media(prefers-reduced-motion:reduce){
+ .uw621-avatar.uwcos-webwalker,.uw621-avatar.uwcos-webwalker:before,.uw621-avatar.uwcos-webwalker:after,
+ .uw-webwalker-host:before,.uw-webwalker-host:after,.uw-webwalker-host .uw-webwalker-glitch{animation:none!important}
+ .uw-webwalker-infection{display:none!important}
+}
+
 </style>
 <style id="uw033Styles">
 /* Staff Beta 0.3.3: visual depth + real profile/availability tools */
@@ -5766,6 +5914,42 @@ document.addEventListener('click',e=>{if(e.target.closest('#uwExternalAdd'))uwEx
 const _uwExtLoadProfile=window.loadMyProfile;if(_uwExtLoadProfile)window.loadMyProfile=async function(){const r=await _uwExtLoadProfile.apply(this,arguments);await uwExtLoadMine();return r};
 const uwExtModal=document.getElementById('uw621ProfileModal');if(uwExtModal)new MutationObserver(()=>{if(uwExtModal.classList.contains('open')&&window.uw621ActiveCreator)setTimeout(()=>uwExtRenderPublic(String(window.uw621ActiveCreator)),50)}).observe(uwExtModal,{attributes:true,attributeFilter:['class']});
 window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLoadMine()},3000));
+</script>
+
+
+<script id="uw-webwalker-v3-runtime">
+(()=>{
+ const HOST_SELECTORS=['.uw621-profile-shell','.uw621-profile','.uw-profile-modal','.uw50-profile-modal','.profile-modal','.uw621-card'];
+ let lastEntrance='';
+ function infect(){
+   document.querySelectorAll('.uw621-avatar.uwcos-webwalker').forEach(av=>{
+     let host=null;
+     for(const sel of HOST_SELECTORS){host=av.closest(sel);if(host)break}
+     if(!host)host=av.parentElement?.parentElement||av.parentElement;
+     if(!host)return;
+     host.classList.add('uw-webwalker-host');
+     const name=host.querySelector('h1,h2,h3,.uw621-name,.uw-profile-name,.display-name');
+     if(name)name.classList.add('uw-webwalker-glitch');
+   });
+ }
+ function entrance(){
+   const av=document.querySelector('.uw621-avatar.uwcos-webwalker');
+   if(!av)return;
+   const key=location.pathname+location.hash;
+   if(lastEntrance===key)return;
+   lastEntrance=key;
+   const el=document.createElement('div');
+   el.className='uw-webwalker-infection';
+   el.innerHTML='<div class="uw-wi-web"></div><div class="uw-wi-core"><strong>WEBWALKER</strong><small>HOST ACCEPTED // NETWORK INFECTED</small></div>';
+   document.body.appendChild(el);
+   setTimeout(()=>el.remove(),2850);
+ }
+ let queued=false;
+ const run=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;infect();entrance()})};
+ new MutationObserver(run).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+ document.addEventListener('click',()=>setTimeout(run,80));
+ run();
+})();
 </script>
 
 </body></html>
