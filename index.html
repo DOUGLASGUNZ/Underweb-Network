@@ -6261,4 +6261,81 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession)uwExtLo
 }
 </style>
 
+<style id="uw-procedural-secret-frames-v1">
+/* UnderWeb procedural secret frames — production pass. The avatar itself is never filtered or transformed. */
+.uw621-avatar[class*="uwcos-"]{position:relative!important;overflow:visible!important;isolation:isolate!important}
+.uw621-avatar[class*="uwcos-"]::before,.uw621-avatar[class*="uwcos-"]::after{display:none!important;content:none!important;background:none!important;animation:none!important}
+.uwpf{--g:#39ff68;position:absolute;inset:0;z-index:24;pointer-events:none;overflow:visible;transform:translateZ(0)}
+.uwpf>*{position:absolute;box-sizing:border-box;pointer-events:none}.uwpf i{display:block}
+/* WEBWALKER */
+.uwpf-webwalker .web{inset:-15px;border:9px solid #020604;border-radius:31% 42% 35% 45%;box-shadow:0 0 0 2px #173d22,0 0 18px #39ff6855;animation:uwpf-breathe 4.6s ease-in-out infinite}
+.uwpf-webwalker .web:before,.uwpf-webwalker .web:after{content:"";position:absolute;inset:-15px;border:2px solid #39ff6877;border-radius:44% 31% 47% 35%;transform:rotate(13deg)}
+.uwpf-webwalker .web:after{inset:-7px;transform:rotate(-17deg);border-color:#39ff6838}
+.uwpf-webwalker .eye{width:20px;height:12px;border-radius:60% 40%;background:#39ff68;box-shadow:0 0 9px #39ff68;animation:uwpf-blink 4.1s infinite}.uwpf-webwalker .eye:after{content:"";position:absolute;left:8px;top:1px;width:4px;height:10px;border-radius:50%;background:#001b08}
+.uwpf-webwalker .e1{left:-11px;top:8%}.uwpf-webwalker .e2{right:-14px;top:20%;animation-delay:-1.2s}.uwpf-webwalker .e3{right:-10px;bottom:10%;animation-delay:-2.3s}.uwpf-webwalker .e4{left:-13px;bottom:22%;animation-delay:-3.1s}
+.uwpf-webwalker .t{width:5px;height:58px;background:linear-gradient(#020604,#163b21 75%,#39ff68);border-radius:100% 0;transform-origin:50% 100%;filter:drop-shadow(0 0 3px #39ff6866);animation:uwpf-sway 4s ease-in-out infinite}.uwpf-webwalker .t1{left:5%;top:-51px;transform:rotate(-24deg)}.uwpf-webwalker .t2{right:2%;top:-45px;transform:rotate(31deg);animation-delay:-1s}.uwpf-webwalker .t3{right:-33px;bottom:5%;transform:rotate(74deg);animation-delay:-2s}
+/* VOID SIGNAL */
+.uwpf-void_signal .slice{height:5px;background:linear-gradient(90deg,#effff4 0 28%,#39ff68 28% 55%,transparent 55%);box-shadow:0 0 7px #39ff68;animation:uwpf-glitch 2.8s steps(1) infinite}.uwpf-void_signal .s1{left:-20px;right:34%;top:-9px}.uwpf-void_signal .s2{left:30%;right:-25px;top:21%;animation-delay:-.5s}.uwpf-void_signal .s3{left:-27px;right:45%;bottom:16%;animation-delay:-1.1s}.uwpf-void_signal .s4{left:38%;right:-18px;bottom:-8px;animation-delay:-1.8s}
+.uwpf-void_signal .corner{width:45px;height:45px;border:5px solid #effff4;filter:drop-shadow(0 0 5px #39ff68);animation:uwpf-flicker 3.3s steps(1) infinite}.uwpf-void_signal .c1{left:-13px;top:-13px;border-right:0;border-bottom:0}.uwpf-void_signal .c2{right:-13px;bottom:-13px;border-left:0;border-top:0;animation-delay:-1.3s}
+/* PARASITE */
+.uwpf-parasite .flesh{inset:-16px;border:12px solid #2b061f;border-radius:38% 52% 43% 49%;box-shadow:0 0 0 3px #a51b7b,0 0 18px #e23ca966;animation:uwpf-breathe 3.7s ease-in-out infinite}.uwpf-parasite .flesh:after{content:"";position:absolute;inset:-8px;border:2px solid #ff63c1aa;border-radius:52% 38% 55% 42%}
+.uwpf-parasite .peye{width:17px;height:12px;border-radius:50%;background:#ff86d0;box-shadow:0 0 7px #ff3caf;animation:uwpf-blink 3.4s infinite}.uwpf-parasite .peye:after{content:"";position:absolute;left:7px;top:1px;width:3px;height:10px;background:#16000f;border-radius:50%}.uwpf-parasite .p1{left:-14px;top:17%}.uwpf-parasite .p2{right:-13px;top:9%;animation-delay:-1.1s}.uwpf-parasite .p3{right:-17px;bottom:22%;animation-delay:-2s}.uwpf-parasite .p4{left:8%;bottom:-14px;animation-delay:-2.7s}
+/* GHOST PROTOCOL */
+.uwpf-ghost_protocol .ghost{width:46px;height:75px;border:2px solid #d9ffe7aa;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 35% 27%,#effff4cc 0 3px,transparent 4px),radial-gradient(circle at 65% 27%,#effff4cc 0 3px,transparent 4px),linear-gradient(#d9ffe722,transparent);filter:drop-shadow(0 0 8px #caffdc88);animation:uwpf-phase 4.5s ease-in-out infinite}.uwpf-ghost_protocol .g1{left:-40px;top:-19px}.uwpf-ghost_protocol .g2{right:-38px;top:28%;animation-delay:-1.6s}.uwpf-ghost_protocol .g3{left:20%;bottom:-55px;animation-delay:-2.7s}
+.uwpf-ghost_protocol .tear{left:-20px;right:-20px;height:3px;background:#d9ffe7aa;box-shadow:0 0 7px #39ff68;animation:uwpf-glitch 3s steps(1) infinite}.uwpf-ghost_protocol .r1{top:31%}.uwpf-ghost_protocol .r2{top:66%;animation-delay:-1.4s}
+/* DEVOURED SIGNAL V3 — dimensional tears */
+.uwpf-devoured_signal .rift{width:74px;height:24px;background:#010302;clip-path:polygon(0 42%,22% 8%,39% 36%,61% 0,78% 37%,100% 19%,84% 61%,100% 86%,64% 69%,43% 100%,27% 66%,0 79%);box-shadow:inset 0 0 0 2px #39ff68;filter:drop-shadow(0 0 7px #39ff68aa);animation:uwpf-rift 3.2s ease-in-out infinite}.uwpf-devoured_signal .r1{left:-48px;top:5%;transform:rotate(-28deg)}.uwpf-devoured_signal .r2{right:-48px;top:31%;transform:rotate(78deg);animation-delay:-.8s}.uwpf-devoured_signal .r3{left:-42px;bottom:8%;transform:rotate(22deg);animation-delay:-1.6s}.uwpf-devoured_signal .r4{right:4%;bottom:-30px;transform:rotate(-10deg);animation-delay:-2.2s}
+.uwpf-devoured_signal .frag{width:12px;height:8px;background:#07150c;border:1px solid #39ff68;clip-path:polygon(0 0,100% 20%,64% 100%,15% 75%);animation:uwpf-suck 2.7s linear infinite}.uwpf-devoured_signal .f1{right:-35px;top:8%}.uwpf-devoured_signal .f2{left:-30px;bottom:30%;animation-delay:-1s}.uwpf-devoured_signal .f3{right:10%;bottom:-38px;animation-delay:-1.8s}
+/* EVENT HORIZON — backend slug remains black_web_crown to preserve unlock ownership */
+.uwpf-black_web_crown{z-index:23}.uwpf-black_web_crown .bh{left:54%;top:-78px;width:104px;height:104px;transform:translateX(-50%);border-radius:50%;background:#000;box-shadow:0 0 0 3px #07110a,0 0 24px #39ff6855;animation:uwpf-hole 6s ease-in-out infinite}.uwpf-black_web_crown .bh:before{content:"";position:absolute;left:-43px;right:-43px;top:38px;height:27px;border:5px solid #39ff68;border-left-color:transparent;border-right-color:transparent;border-radius:50%;transform:rotate(-8deg);filter:drop-shadow(0 0 7px #39ff68);animation:uwpf-disk 5s linear infinite}.uwpf-black_web_crown .bh:after{content:"";position:absolute;left:-29px;right:-29px;top:46px;height:13px;border-top:2px solid #eaffef;border-radius:50%;transform:rotate(-8deg);filter:drop-shadow(0 0 5px #dfffe9)}
+.uwpf-black_web_crown .matter{width:8px;height:3px;background:#39ff68;box-shadow:0 0 6px #39ff68;animation:uwpf-matter 2.8s linear infinite}.uwpf-black_web_crown .m1{left:8%;top:-15px}.uwpf-black_web_crown .m2{right:5%;top:-8px;animation-delay:-.9s}.uwpf-black_web_crown .m3{right:-10px;top:20%;animation-delay:-1.7s}
+/* NETWORK ZERO */
+.uwpf-network_zero .shard{width:37px;height:16px;background:#06100a;border:1px solid #39ff68;clip-path:polygon(0 40%,70% 0,100% 35%,66% 100%,18% 82%);filter:drop-shadow(0 0 4px #39ff6877);animation:uwpf-orbit 7s linear infinite}.uwpf-network_zero .z1{left:-35px;top:4%}.uwpf-network_zero .z2{right:-39px;top:12%;animation-delay:-1.2s}.uwpf-network_zero .z3{right:-35px;bottom:6%;animation-delay:-2.4s}.uwpf-network_zero .z4{left:-32px;bottom:9%;animation-delay:-3.6s}.uwpf-network_zero .z5{left:37%;top:-35px;animation-delay:-4.8s}.uwpf-network_zero .z6{left:45%;bottom:-34px;animation-delay:-5.7s}
+.uwpf-network_zero .zero{inset:-12px;border:2px solid #39ff68;clip-path:polygon(50% 0,91% 15%,100% 50%,86% 88%,50% 100%,13% 86%,0 50%,16% 14%);box-shadow:0 0 13px #39ff6855;animation:uwpf-zero 8s linear infinite}
+@keyframes uwpf-breathe{50%{transform:scale(1.035);filter:drop-shadow(0 0 8px #39ff6866)}}
+@keyframes uwpf-blink{0%,43%,48%,100%{transform:scaleY(1)}45%,46%{transform:scaleY(.08)}}
+@keyframes uwpf-sway{50%{margin-left:7px;filter:drop-shadow(0 0 7px #39ff68)}}
+@keyframes uwpf-glitch{0%,86%,100%{transform:translate(0)}88%{transform:translate(8px,-2px)}91%{transform:translate(-6px,1px)}94%{transform:translate(3px)}}
+@keyframes uwpf-flicker{0%,84%,100%{opacity:1}86%{opacity:.18}88%{opacity:1}91%{opacity:.35}}
+@keyframes uwpf-phase{0%,100%{opacity:.18;transform:translateY(7px) scale(.94)}45%{opacity:.85;transform:translateY(-4px) scale(1.05)}70%{opacity:.35;transform:translateX(6px)}}
+@keyframes uwpf-rift{50%{scale:1.14 .85;filter:drop-shadow(0 0 13px #39ff68)}}
+@keyframes uwpf-suck{0%{translate:0 0;opacity:1}100%{translate:35px -55px;scale:.25;opacity:0}}
+@keyframes uwpf-hole{50%{scale:1.035;box-shadow:0 0 0 3px #07110a,0 0 34px #39ff6877}}
+@keyframes uwpf-disk{to{transform:rotate(352deg)}}
+@keyframes uwpf-matter{0%{translate:0 0;opacity:0}20%{opacity:1}100%{translate:55px -62px;scale:.2;opacity:0}}
+@keyframes uwpf-orbit{50%{transform:translate(8px,-7px) rotate(180deg)}to{transform:rotate(360deg)}}
+@keyframes uwpf-zero{to{transform:rotate(360deg)}}
+@media(max-width:700px){.uwpf-black_web_crown .bh{top:-61px;width:84px;height:84px}.uwpf-black_web_crown .bh:before{left:-31px;right:-31px;top:31px;height:22px}.uwpf-black_web_crown .bh:after{top:38px}.uwpf-ghost_protocol .ghost{scale:.82}.uwpf-webwalker .t{height:45px}}
+@media(prefers-reduced-motion:reduce){.uwpf *{animation:none!important}}
+</style>
+<script id="uw-procedural-secret-frames-v1-js">
+(()=>{
+ const known=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];
+ const parts={
+  webwalker:'<i class="web"></i><i class="eye e1"></i><i class="eye e2"></i><i class="eye e3"></i><i class="eye e4"></i><i class="t t1"></i><i class="t t2"></i><i class="t t3"></i>',
+  void_signal:'<i class="slice s1"></i><i class="slice s2"></i><i class="slice s3"></i><i class="slice s4"></i><i class="corner c1"></i><i class="corner c2"></i>',
+  parasite:'<i class="flesh"></i><i class="peye p1"></i><i class="peye p2"></i><i class="peye p3"></i><i class="peye p4"></i>',
+  ghost_protocol:'<i class="ghost g1"></i><i class="ghost g2"></i><i class="ghost g3"></i><i class="tear r1"></i><i class="tear r2"></i>',
+  devoured_signal:'<i class="rift r1"></i><i class="rift r2"></i><i class="rift r3"></i><i class="rift r4"></i><i class="frag f1"></i><i class="frag f2"></i><i class="frag f3"></i>',
+  black_web_crown:'<i class="bh"></i><i class="matter m1"></i><i class="matter m2"></i><i class="matter m3"></i>',
+  network_zero:'<i class="zero"></i><i class="shard z1"></i><i class="shard z2"></i><i class="shard z3"></i><i class="shard z4"></i><i class="shard z5"></i><i class="shard z6"></i>'
+ };
+ function sync(a){
+   if(!(a instanceof Element)||!a.matches('.uw621-avatar'))return;
+   const slug=known.find(s=>a.classList.contains('uwcos-'+s));
+   let f=a.querySelector(':scope > .uwpf');
+   if(!slug){if(f)f.remove();return}
+   if(f?.dataset.slug===slug)return;
+   if(f)f.remove();
+   f=document.createElement('span');f.className='uwpf uwpf-'+slug;f.dataset.slug=slug;f.setAttribute('aria-hidden','true');f.innerHTML=parts[slug]||'';a.appendChild(f);
+ }
+ function all(){document.querySelectorAll('.uw621-avatar').forEach(sync)}
+ new MutationObserver(ms=>{for(const m of ms){if(m.type==='attributes')sync(m.target);for(const n of m.addedNodes){if(n.nodeType===1){sync(n);n.querySelectorAll?.('.uw621-avatar').forEach(sync)}}}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',all);else all();
+ // Preserve backend slug/unlocks while presenting the retired crown cosmetic as EVENT HORIZON in the locker UI.
+ const rename=()=>document.querySelectorAll('.uwcos-locker-card h4').forEach(h=>{if(h.textContent.trim().toUpperCase()==='BLACK WEB CROWN')h.textContent='EVENT HORIZON'});
+ new MutationObserver(rename).observe(document.documentElement,{subtree:true,childList:true});rename();
+})();
+</script>
+
 </body></html>
