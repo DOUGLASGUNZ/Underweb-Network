@@ -3165,6 +3165,15 @@ async function uw72SaveVrc(){
  const input=document.getElementById('uw72VrcUrl'),note=document.getElementById('uw72VrcNote');const url=(input?.value||'').trim();
  if(typeof currentSession==='undefined'||!currentSession?.user?.id){note.textContent='Sign in first.';return}
  if(!/^https:\/\/(www\.)?vrchat\.com\/home\/user\/usr_[A-Za-z0-9_-]+/i.test(url)){note.textContent='Paste a VRChat user profile URL.';return}
+ /* Never re-claim an already verified connection. Re-claiming can reset verification_status. */
+ const current=await uwSupabase.from('network_connections').select('profile_url,verification_status').eq('user_id',currentSession.user.id).eq('provider','vrchat').maybeSingle();
+ if(current.error){note.textContent=current.error.message;return}
+ if(String(current.data?.verification_status||'').toLowerCase()==='verified'){
+   note.textContent='✓ Your VRChat account is already verified. Verification was not changed.';
+   note.classList.add('uw722-verified');
+   if(current.data?.profile_url&&input)input.value=current.data.profile_url;
+   return;
+ }
  note.textContent='CREATING VERIFICATION CHALLENGE…';
  const {data,error}=await uwSupabase.rpc('uw_claim_vrchat_profile',{p_profile_url:url});
  note.textContent=error?error.message:'Claim saved. Add the code to your VRChat bio/status.';
@@ -4810,6 +4819,7 @@ if(uw776Modal)new MutationObserver(()=>{
 </script>
 
 
+<!-- 0.8.0 member profile + VRChat verification safety patch -->
 <script id="uw780FreshAccountOnboarding">
 /* 0.7.8.1 — Fresh account onboarding. Regular members can complete setup without creator_profiles access; creator role applications remain approval-gated. No fake data. */
 const UW780_KEY='underweb-onboarding-v1';
@@ -5076,21 +5086,22 @@ async function uw783OpenPerson(uid){
  if(cp.error)return toast(cp.error.message);
  if(cp.data){return uw758Open(uid)}
  /* Non-creator: seed the same viewer with account identity + active roles. */
- const [p,ur]=await Promise.all([
-   uwSupabase.from('profiles').select('id,display_name,username').eq('id',uid).maybeSingle(),
-   uwSupabase.from('user_roles').select('role_slug,group_scope,status').eq('user_id',uid).eq('status','active')
- ]);
- if(p.error)return toast(p.error.message);if(!p.data)return toast('Member profile not found.');
+ /* The directory already has the member identity. Reuse it instead of requiring
+    a second direct profiles SELECT, which member-to-member RLS may intentionally block. */
+ const cached=(uw783People||[]).find(x=>String(x.id)===uid)||null;
+ const ur=await uwSupabase.from('user_roles').select('role_slug,group_scope,status').eq('user_id',uid).eq('status','active');
+ if(ur.error)console.warn('Member roles unavailable:',ur.error);
+ if(!cached)return toast('Member profile is unavailable. Refresh Network and try again.');
  const modal=document.getElementById('uw621ProfileModal'),by=id=>document.getElementById(id);if(!modal)return;
- const roles=ur.data||[];
- by('uw621Name').textContent=p.data.display_name||p.data.username||'UnderWeb Member';
+ const roles=ur.data||uw783Roles?.[uid]||[];
+ by('uw621Name').textContent=cached.display_name||cached.username||'UnderWeb Member';
  by('uw621Headline').textContent='UnderWeb Network Member';
  by('uw621Scope').textContent='NETWORK';
  by('uw621Bio').textContent='This member has not created a public creator profile.';
  by('uw621Availability').textContent='—';
  by('uw621Skills').innerHTML='<span class="uw621-empty">No creator specialties listed.</span>';
  by('uw621Roles').innerHTML=roles.length?roles.map(r=>`<span class="uw621-role">${uw783Safe(String(r.role_slug||'').replaceAll('_',' '))}</span>`).join(''):'<span class="uw621-empty">Member</span>';
- const av=by('uw621Avatar');if(av){av.style.backgroundImage='';av.textContent=(p.data.display_name||p.data.username||'U').charAt(0).toUpperCase()}
+ const av=by('uw621Avatar');if(av){av.style.backgroundImage='';av.textContent=(cached.display_name||cached.username||'U').charAt(0).toUpperCase()}
  const cover=by('uw621Cover');if(cover)cover.style.backgroundImage='';
  by('uw621Portfolio').style.display='none';
  const showcase=by('uw743PublicShowcase');if(showcase)showcase.innerHTML='<span class="uw621-empty">No public showcase.</span>';
