@@ -1245,7 +1245,7 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 <button class="side-item" data-page="tickets" data-requires-staff="true">Tickets <span class="badge" id="navTicketCount">—</span></button>
 <button class="side-item" data-page="announcements" data-requires-staff="true">Announcements</button>
 <button class="side-item" data-page="activity" data-requires-staff="true">Audit &amp; Activity</button>
-<button class="side-item" data-page="feedback">Beta Feedback</button>
+
 <button class="side-item" data-page="updates">Platform Updates <span class="uw50-version-pill">0.8.0 RC1</span></button>
 <button class="side-item" data-page="permissions" data-requires-owner="true">Roles &amp; Permissions</button>
 </aside>
@@ -1681,7 +1681,7 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
     <div class="uwhelp-hero-actions"><button class="btn hot" data-uwhelp-jump="submit">OPEN A REQUEST</button><button class="btn" data-uwhelp-jump="mine">MY REQUESTS</button></div>
   </div>
   <div class="uwhelp-searchbox"><span>⌕</span><input id="uwHelpSearch" placeholder="Search login, creator access, media review, events, partners…" autocomplete="off"/></div>
-  <div class="uwhelp-tabs"><button class="active" data-uwhelp-tab="faq">FAQ</button><button data-uwhelp-tab="issues">KNOWN ISSUES</button><button data-uwhelp-tab="submit">APPLY / GET HELP</button><button data-uwhelp-tab="mine">MY REQUESTS <span id="uwHelpOpenPill">0</span></button></div>
+  <div class="uwhelp-tabs"><button class="active" data-uwhelp-tab="faq">FAQ</button><button data-uwhelp-tab="issues">KNOWN ISSUES</button><button data-uwhelp-tab="feedback">REPORT A BUG</button><button data-uwhelp-tab="submit">APPLY / GET HELP</button><button data-uwhelp-tab="mine">MY REQUESTS <span id="uwHelpOpenPill">0</span></button></div>
 
   <section class="uwhelp-panel active" data-uwhelp-panel="faq">
     <div class="uwhelp-sectionhead"><div><div class="eyebrow">START HERE</div><h2>Common questions & fixes</h2></div><small>Searchable · built for the beta</small></div>
@@ -1691,6 +1691,12 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
   <section class="uwhelp-panel" data-uwhelp-panel="issues">
     <div class="uwhelp-sectionhead"><div><div class="eyebrow">OPEN BETA STATUS</div><h2>Known Issues</h2></div><button class="uw-mini-btn" id="uwHelpReloadIssues">REFRESH</button></div>
     <div class="uwhelp-issues" id="uwHelpIssues"><div class="uw-empty">Loading known issues…</div></div>
+  </section>
+
+  <section class="uwhelp-panel" data-uwhelp-panel="feedback">
+    <div class="uwhelp-sectionhead"><div><div class="eyebrow">OPEN BETA FEEDBACK</div><h2>Report a Bug</h2></div><button class="uw-mini-btn" id="reloadFeedbackBtnHelp" type="button">REFRESH</button></div>
+    <p class="meta" style="margin:0 0 14px">Bugs and beta feedback now live here in Help Center. Tell us what happened and what you expected.</p>
+    <div class="uw-two-col"><section class="uw-section"><div class="uw-section-head"><h3>New Report</h3><small>Beta testers</small></div><div class="uw-form-grid"><select class="uw-select" id="feedbackTypeHelp"><option value="bug">Bug</option><option value="ux">UX / Confusing</option><option value="feature">Feature Request</option><option value="visual">Visual / Polish</option><option value="other">Other</option></select><select class="uw-select" id="feedbackSeverityHelp"><option value="low">Low</option><option selected value="medium">Medium</option><option value="high">High</option><option value="blocker">Blocker</option></select><input class="uw-input full" id="feedbackTitleHelp" placeholder="Short title"/><textarea class="uw-textarea full" id="feedbackBodyHelp" placeholder="What happened? What did you expect?"></textarea><div class="full"><button class="btn hot" id="submitFeedbackBtnHelp" type="button">SUBMIT BUG / FEEDBACK</button></div></div></section><section class="uw-section"><div class="uw-section-head"><h3>Reports</h3><small>Existing beta feedback</small></div><div class="uw-list" id="feedbackListHelp"></div></section></div>
   </section>
 
   <section class="uwhelp-panel" data-uwhelp-panel="submit">
@@ -1982,8 +1988,10 @@ async function loadAccountProfile(){
     .maybeSingle();
   if(error){
     console.error("Account profile load failed:", error);
+    window.__uwProfileLoadError = error;
     return null;
   }
+  window.__uwProfileLoadError = null;
   currentAccountProfile = data || null;
   return currentAccountProfile;
 }
@@ -1997,7 +2005,14 @@ async function ensureOnboarding(){
     await new Promise(r => setTimeout(r, 500));
     const retry = await loadAccountProfile();
     if(!retry){
-      // Fail closed: an authenticated user with no readable profile must never bypass onboarding.
+      // A network/profile read failure is NOT the same thing as a brand-new account.
+      // Never throw an existing member into first-sign-in onboarding just because Supabase is unreachable.
+      if(window.__uwProfileLoadError || navigator.onLine === false){
+        closeOnboarding();
+        toast('Connection issue — profile check could not complete. Reconnect and try again.');
+        return false;
+      }
+      // Supabase answered successfully and there truly is no readable profile row.
       currentAccountProfile = null;
       openOnboarding(null);
       return false;
@@ -6589,5 +6604,34 @@ window.uwHelpRefresh=()=>{renderFaq();loadMine();loadIssues();};
   document.addEventListener('click',function(e){if(e.target.closest('[data-page="help"]'))setTimeout(sync,50);});
 })();
 </script>
+\n<style id="uw-help-feedback-merge-v2-style">
+#page-feedback{display:none!important}
+.uwhelp-tabs{flex-wrap:wrap}
+@media(max-width:760px){.uwhelp-tabs button{min-width:calc(50% - 5px);flex:1}.uwhelp-panel[data-uwhelp-panel="feedback"] .uw-two-col{grid-template-columns:1fr}}
+</style>
+<script id="uw-help-feedback-merge-v2-js">
+(function(){
+ const E=id=>document.getElementById(id);
+ const KNOWN=[
+  {title:'Connection loss can interrupt profile verification',description:'If the site loses service while checking your account, profile data may be unavailable. The site should no longer treat a failed profile lookup as a brand-new account or show Claim Your Identity just because you are offline.',status:'identified',affected_area:'Account / Connectivity',updated_at:new Date().toISOString()},
+  {title:'Refresh or browser Back can return you to Home',description:'Refreshing the site or using browser Back may lose the current in-app page and return you to the main Home screen. Route/history persistence is being tracked for the beta.',status:'identified',affected_area:'Navigation',updated_at:new Date().toISOString()}
+ ];
+ function esc(v){return String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+ function issueHTML(x){return `<article class="uwhelp-issue"><div class="uwhelp-issuetop"><div><div class="eyebrow">${esc(x.affected_area||'PLATFORM')}</div><h3>${esc(x.title)}</h3></div><span class="uwhelp-status ${esc(String(x.status||'').toLowerCase())}">${esc(String(x.status||'unknown').toUpperCase())}</span></div><p>${esc(x.description||'')}</p>${x.resolution?`<p><b>Resolution:</b> ${esc(x.resolution)}</p>`:''}<div class="uwhelp-meta"><span>Updated ${new Date(x.updated_at||Date.now()).toLocaleString()}</span></div></article>`;}
+ const originalIssues=window.uwHelpRefresh;
+ async function injectKnown(){const box=E('uwHelpIssues');if(!box)return;await new Promise(r=>setTimeout(r,80));const html=box.innerHTML||'';const extras=KNOWN.filter(k=>!html.toLowerCase().includes(k.title.toLowerCase())).map(issueHTML).join('');if(extras)box.insertAdjacentHTML('afterbegin',extras);}
+ document.addEventListener('click',e=>{
+   const legacy=e.target.closest('[data-page="feedback"]');if(legacy){e.preventDefault();if(typeof showPage==='function')showPage('help');setTimeout(()=>document.querySelector('[data-uwhelp-tab="feedback"]')?.click(),20);}
+   if(e.target.closest('[data-uwhelp-tab="issues"],[data-uwhelp-jump="issues"]'))setTimeout(injectKnown,140);
+   if(e.target.closest('[data-uwhelp-tab="feedback"]'))setTimeout(()=>{if(typeof loadFeedback==='function')loadFeedback().then?.(()=>renderHelpFeedback());else renderHelpFeedback();},40);
+ });
+ function renderHelpFeedback(){const dst=E('feedbackListHelp'),src=E('feedbackList');if(!dst)return;if(typeof renderFeedbackV2==='function')renderFeedbackV2();dst.innerHTML=src?.innerHTML||'<div class="uw-empty">No beta feedback submitted yet.</div>';}
+ async function submitHelpFeedback(){if(!currentSession)return passwordlessSignIn();const type=E('feedbackTypeHelp').value,severity=E('feedbackSeverityHelp').value,title=E('feedbackTitleHelp').value.trim(),body=E('feedbackBodyHelp').value.trim();if(!title||!body)return toast('Add a title and details.');const btn=E('submitFeedbackBtnHelp');btn.disabled=true;btn.textContent='SUBMITTING…';const {error}=await uwSupabase.from('beta_feedback').insert({reporter_user_id:currentSession.user.id,type,severity,title,body,page_url:location.href});btn.disabled=false;btn.textContent='SUBMIT BUG / FEEDBACK';if(error)return toast(error.message);E('feedbackTitleHelp').value='';E('feedbackBodyHelp').value='';toast('Feedback submitted.');if(typeof loadFeedback==='function')await loadFeedback();renderHelpFeedback();}
+ E('submitFeedbackBtnHelp')?.addEventListener('click',submitHelpFeedback);E('reloadFeedbackBtnHelp')?.addEventListener('click',async()=>{if(typeof loadFeedback==='function')await loadFeedback();renderHelpFeedback();});
+ const mo=new MutationObserver(()=>{if(document.getElementById('page-help')?.classList.contains('active')&&document.querySelector('[data-uwhelp-panel="feedback"]')?.classList.contains('active'))renderHelpFeedback();});const src=E('feedbackList');if(src)mo.observe(src,{childList:true,subtree:true});
+ window.addEventListener('online',()=>toast('Connection restored.'));
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(injectKnown,250));
+})();
+</script>\n
 </body>
 </html>
