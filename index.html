@@ -6329,65 +6329,55 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 }
 </style>
 
-<!-- BLACKFLAME mobile trigger reliability patch v2 — 2026-09-17 -->
-<script id="uw-blackflame-mobile-trigger-fix-20260917">
+
+
+<!-- BLACKFLAME trigger v3 — five rapid taps on the visible UnderWeb Network side label -->
+<script id="uw-blackflame-trigger-v3-20260917">
 (()=>{
-  const TARGET='thereisnoweb';
   const SECRET='ghost_protocol';
-  let firing=false, typed='';
-  const clean=v=>String(v||'').toLowerCase().replace(/[^a-z]/g,'');
-  const field=el=>el?.id==='uw783PeopleQuery'?el:el?.closest?.('#uw783PeopleQuery');
+  const REQUIRED=5;
+  const WINDOW_MS=2600;
+  let taps=[];
+  let firing=false;
 
-  async function unlock(q){
+  async function ignite(){
     if(firing)return;
-    firing=true; typed='';
-    if(q){q.value='';try{q.dispatchEvent(new Event('input',{bubbles:true}))}catch(_){}}
+    firing=true;
+    taps=[];
     try{
-      // Call the RPC directly so this trigger does not depend on any later wrapper/rebinding
-      // of uwDiscoverCosmetic.
-      const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:SECRET});
-      if(r.error){console.error('[BLACKFLAME unlock]',r.error);toast?.('BLACKFLAME SIGNAL FAILED');return}
-      const row=Array.isArray(r.data)?r.data[0]:r.data;
-      if(!row){toast?.('BLACKFLAME SIGNAL FAILED');return}
-      const name='BLACKFLAME PROTOCOL';
-      if(row.new_unlock && typeof window.uwCosmeticDiscoverySequence==='function'){
-        window.uwCosmeticDiscoverySequence(name);
+      if(typeof uwDiscoverCosmetic==='function'){
+        await uwDiscoverCosmetic(SECRET);
       }else{
-        toast?.(row.new_unlock?`SECRET FOUND // ${name}`:`SECRET ALREADY DISCOVERED // ${name}`);
+        const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:SECRET});
+        if(r.error)throw r.error;
+        const row=Array.isArray(r.data)?r.data[0]:r.data;
+        if(!row)throw new Error('No unlock response');
+        if(row.new_unlock&&typeof window.uwCosmeticDiscoverySequence==='function'){
+          window.uwCosmeticDiscoverySequence('BLACKFLAME PROTOCOL');
+        }else if(typeof toast==='function'){
+          toast(row.new_unlock?'SECRET FOUND // BLACKFLAME PROTOCOL':'SECRET ALREADY DISCOVERED // BLACKFLAME PROTOCOL');
+        }
+        try{if(typeof uwLoadCosmeticsLocker==='function')await uwLoadCosmeticsLocker()}catch(_){}
       }
-      try{if(typeof uwLoadCosmeticsLocker==='function')await uwLoadCosmeticsLocker()}catch(_){}
-      try{if(row.new_unlock&&typeof loadNetworkPulse==='function')await loadNetworkPulse()}catch(_){}
-    }catch(err){console.error('[BLACKFLAME unlock exception]',err);toast?.('BLACKFLAME SIGNAL FAILED')}
-    finally{setTimeout(()=>{firing=false},500)}
+    }catch(err){
+      console.error('[BLACKFLAME trigger v3]',err);
+      if(typeof toast==='function')toast('BLACKFLAME SIGNAL FAILED');
+    }finally{
+      setTimeout(()=>{firing=false},500);
+    }
   }
 
-  function inspect(q){
-    if(!q)return;
-    const v=clean(q.value);
-    if(v.includes(TARGET))unlock(q);
-  }
-
-  // Normal Android/iOS/browser input path.
-  document.addEventListener('input',e=>{const q=field(e.target);if(q)inspect(q)},true);
-  document.addEventListener('change',e=>{const q=field(e.target);if(q)inspect(q)},true);
-  document.addEventListener('compositionend',e=>{const q=field(e.target);if(q)inspect(q)},true);
-
-  // Independent character buffer. This survives search code that rewrites/clears the field
-  // between input events and also handles mobile keyboards using beforeinput.
-  document.addEventListener('beforeinput',e=>{
-    const q=field(e.target); if(!q)return;
-    if(e.inputType==='deleteContentBackward'){typed=typed.slice(0,-1);return}
-    const chars=clean(e.data);
-    if(!chars)return;
-    typed=(typed+chars).slice(-TARGET.length);
-    if(typed===TARGET)setTimeout(()=>unlock(q),0);
-  },true);
-
-  // Physical-key fallback for desktop testing.
-  document.addEventListener('keydown',e=>{
-    const q=field(e.target);if(!q||e.ctrlKey||e.metaKey||e.altKey||e.key.length!==1)return;
-    typed=(typed+clean(e.key)).slice(-TARGET.length);
-    if(typed===TARGET)setTimeout(()=>unlock(q),0);
+  // Pointerup works for touch, pen, and mouse and avoids mobile click-delay/selection weirdness.
+  document.addEventListener('pointerup',e=>{
+    const hit=e.target?.closest?.('#networkSideLabel');
+    if(!hit)return;
+    const now=Date.now();
+    taps=taps.filter(t=>now-t<=WINDOW_MS);
+    taps.push(now);
+    // Tiny visual acknowledgement without revealing the secret.
+    hit.style.filter='brightness(1.8) drop-shadow(0 0 7px #39ff68)';
+    setTimeout(()=>{hit.style.filter=''},120);
+    if(taps.length>=REQUIRED)ignite();
   },true);
 })();
 </script>
