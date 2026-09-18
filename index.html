@@ -496,152 +496,6 @@ body[data-theme="symbiotes"] .uw61-card{border-color:#16385f;background:linear-g
 #uw772Download{right:18px;top:70px;padding:9px 12px;font:900 10px/1 monospace;letter-spacing:.08em;color:var(--g);border:1px solid color-mix(in srgb,var(--g) 45%,transparent);background:#020503dd}
 #profileModeDerived{cursor:default;user-select:none}
 
-/* ============================================================
-   WEBWALKER V3 — living UnderWeb x Symbiote infection
-   Existing slug: webwalker. Existing owners inherit automatically.
-   ============================================================ */
-.uw621-avatar.uwcos-webwalker{
-  isolation:isolate;
-  overflow:visible!important;
-  filter:drop-shadow(0 0 8px rgba(57,255,104,.38));
-  animation:uwWebHostBreath 3.8s ease-in-out infinite;
-}
-.uw621-avatar.uwcos-webwalker:before{
-  content:""!important;
-  position:absolute!important;
-  z-index:4!important;
-  pointer-events:none!important;
-  inset:-20px!important;
-  border:0!important;
-  border-radius:42% 58% 46% 54%/55% 43% 57% 45%!important;
-  background:
-    radial-gradient(ellipse at 13% 24%,#000 0 5%,transparent 6%),
-    radial-gradient(ellipse at 87% 68%,#000 0 7%,transparent 8%),
-    conic-gradient(from 214deg at 50% 50%,
-      transparent 0 5%,#000 5.5% 9%,transparent 9.5% 17%,
-      #050806 17.5% 22%,transparent 22.5% 31%,
-      #000 31.5% 36%,transparent 36.5% 48%,
-      #050806 48.5% 55%,transparent 55.5% 67%,
-      #000 67.5% 72%,transparent 72.5% 84%,
-      #050806 84.5% 90%,transparent 90.5%);
-  filter:
-    drop-shadow(0 0 1px #39ff68)
-    drop-shadow(0 0 9px rgba(57,255,104,.5))!important;
-  animation:uwWebFlesh 4.7s ease-in-out infinite!important;
-}
-.uw621-avatar.uwcos-webwalker:after{
-  content:""!important;
-  position:absolute!important;
-  z-index:5!important;
-  pointer-events:none!important;
-  inset:-27px!important;
-  border:0!important;
-  border-radius:50%!important;
-  background:
-    repeating-conic-gradient(from 7deg,
-      transparent 0 7deg,
-      rgba(57,255,104,.96) 7.4deg 8deg,
-      transparent 8.5deg 21deg);
-  -webkit-mask:radial-gradient(circle,transparent 0 58%,#000 59% 60%,transparent 61% 69%,#000 70% 70.8%,transparent 72%);
-  mask:radial-gradient(circle,transparent 0 58%,#000 59% 60%,transparent 61% 69%,#000 70% 70.8%,transparent 72%);
-  filter:drop-shadow(0 0 5px #39ff68)!important;
-  opacity:.88;
-  animation:uwWebNerve 18s linear infinite!important;
-}
-@keyframes uwWebHostBreath{
-  0%,100%{filter:drop-shadow(0 0 7px rgba(57,255,104,.32))}
-  50%{filter:drop-shadow(0 0 17px rgba(57,255,104,.72))}
-}
-@keyframes uwWebFlesh{
-  0%,100%{transform:rotate(-2deg) scale(1);border-radius:42% 58% 46% 54%/55% 43% 57% 45%}
-  34%{transform:rotate(2deg) scale(1.045,1.015);border-radius:61% 39% 55% 45%/43% 63% 37% 57%}
-  67%{transform:rotate(-1deg) scale(.99,1.04);border-radius:37% 63% 41% 59%/62% 38% 58% 42%}
-}
-@keyframes uwWebNerve{to{transform:rotate(360deg)}}
-
-/* Profile-wide infection is attached at runtime when an equipped WEBWALKER is rendered. */
-.uw-webwalker-host{
-  position:relative!important;
-  isolation:isolate;
-  overflow:visible!important;
-  box-shadow:
-    0 0 0 1px rgba(57,255,104,.34),
-    0 0 42px rgba(57,255,104,.10),
-    inset 0 0 70px rgba(0,0,0,.48)!important;
-}
-.uw-webwalker-host:before{
-  content:"";
-  position:absolute;
-  z-index:8;
-  pointer-events:none;
-  inset:-2px;
-  border-radius:inherit;
-  opacity:.72;
-  background:
-    linear-gradient(117deg,transparent 0 14%,rgba(57,255,104,.55) 14.2% 14.45%,transparent 14.7% 29%,rgba(57,255,104,.26) 29.2% 29.45%,transparent 29.7% 100%),
-    linear-gradient(27deg,transparent 0 67%,rgba(57,255,104,.48) 67.2% 67.45%,transparent 67.7%),
-    radial-gradient(circle at 14% 19%,rgba(57,255,104,.95) 0 2px,transparent 3px),
-    radial-gradient(circle at 83% 74%,rgba(57,255,104,.9) 0 2px,transparent 3px),
-    radial-gradient(circle at 61% 14%,rgba(57,255,104,.7) 0 1px,transparent 2px);
-  filter:drop-shadow(0 0 4px rgba(57,255,104,.55));
-  animation:uwWebSignal 4.2s ease-in-out infinite;
-}
-.uw-webwalker-host:after{
-  content:"";
-  position:absolute;
-  z-index:9;
-  pointer-events:none;
-  inset:-12px;
-  border-radius:inherit;
-  background:
-    radial-gradient(ellipse at 0 16%,#010201 0 2.8%,transparent 3.2%),
-    radial-gradient(ellipse at 100% 31%,#000 0 4%,transparent 4.5%),
-    radial-gradient(ellipse at 0 79%,#000 0 4.7%,transparent 5.2%),
-    radial-gradient(ellipse at 100% 88%,#010201 0 3.2%,transparent 3.7%),
-    conic-gradient(from 70deg at 0 18%,#000 0 5deg,transparent 6deg 19deg,#020302 20deg 24deg,transparent 25deg),
-    conic-gradient(from 245deg at 100% 72%,#000 0 7deg,transparent 8deg 21deg,#020302 22deg 27deg,transparent 28deg);
-  filter:drop-shadow(0 0 1px #39ff68);
-  animation:uwWebTendrils 5.3s ease-in-out infinite;
-}
-@keyframes uwWebSignal{50%{opacity:1;filter:drop-shadow(0 0 8px rgba(57,255,104,.85))}}
-@keyframes uwWebTendrils{
-  0%,100%{transform:scale(1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
-  50%{transform:scale(1.012,1.035);clip-path:polygon(0 3%,98% 0,100% 97%,2% 100%)}
-}
-.uw-webwalker-host .uw-webwalker-glitch{
-  text-shadow:-2px 0 rgba(57,255,104,.65),2px 0 rgba(255,255,255,.16);
-  animation:uwWebTextGlitch 4.8s steps(1,end) infinite;
-}
-@keyframes uwWebTextGlitch{
-  0%,91%,94%,100%{transform:none;filter:none}
-  92%{transform:translateX(-3px) skewX(5deg);filter:contrast(1.5)}
-  93%{transform:translateX(2px);filter:brightness(1.35)}
-}
-.uw-webwalker-infection{
-  position:fixed;inset:0;z-index:2147483000;pointer-events:none;
-  display:grid;place-items:center;background:#000;
-  animation:uwWebInfectExit 2.65s forwards;
-}
-.uw-webwalker-infection .uw-wi-core{
-  color:#39ff68;text-align:center;font-weight:1000;letter-spacing:.16em;
-  text-shadow:0 0 8px #39ff68,0 0 30px rgba(57,255,104,.6);
-  animation:uwWebInfectGlitch .17s steps(2,end) 8;
-}
-.uw-webwalker-infection .uw-wi-core strong{display:block;font-size:clamp(30px,7vw,86px)}
-.uw-webwalker-infection .uw-wi-core small{display:block;margin-top:13px;font:600 10px/1.5 ui-monospace,monospace;letter-spacing:.42em;color:#9affb3}
-.uw-webwalker-infection .uw-wi-web{
-  position:absolute;width:14px;height:14px;border-radius:50%;background:#39ff68;
-  box-shadow:0 0 16px #39ff68,0 0 80px #39ff68;
-  animation:uwWebInfectBloom 1.25s forwards;
-}
-@keyframes uwWebInfectBloom{75%{transform:scale(1)}100%{transform:scale(120);opacity:.07}}
-@keyframes uwWebInfectGlitch{50%{transform:translate(7px,-2px) skewX(-7deg)}}
-@keyframes uwWebInfectExit{0%,72%{opacity:1}100%{opacity:0;visibility:hidden}}
-@media(prefers-reduced-motion:reduce){
- .uw621-avatar.uwcos-webwalker,.uw621-avatar.uwcos-webwalker:before,.uw621-avatar.uwcos-webwalker:after,
- .uw-webwalker-host:before,.uw-webwalker-host:after,.uw-webwalker-host .uw-webwalker-glitch{animation:none!important}
- .uw-webwalker-infection{display:none!important}
-}
 
 </style>
 <style id="uw033Styles">
@@ -5720,38 +5574,16 @@ uw786LoadVerifiedVrc=async function(uid){
 .uw621-avatar.uwcos-authority-director:before{inset:-6px;border-radius:26px;border:1px solid rgba(57,255,104,.48);box-shadow:0 0 20px rgba(57,255,104,.16)}
 .uw621-avatar.uwcos-authority-event_lead:before,.uw621-avatar.uwcos-authority-artist_coordinator:before{inset:-5px;border-radius:25px;border:1px dashed rgba(57,255,104,.46);animation:uwCosSpin 10s linear infinite}
 .uw621-avatar.uwcos-authority-moderator:before{inset:-4px;border-radius:24px;border:1px solid rgba(57,255,104,.28)}
-.uw621-avatar.uwcos-webwalker:after{inset:-11px;border-radius:31px;background:repeating-conic-gradient(from 0deg,rgba(57,255,104,.8) 0 1deg,transparent 1deg 22.5deg);mask:radial-gradient(circle,transparent 62%,#000 64% 69%,transparent 71%);animation:uwCosSpin 16s linear infinite;filter:drop-shadow(0 0 5px rgba(57,255,104,.55))}
-.uw621-avatar.uwcos-void_signal:after{inset:-9px;border-radius:29px;border:2px solid #818cf8;box-shadow:4px 0 0 rgba(57,255,104,.55),-4px 0 0 rgba(129,140,248,.45);animation:uwCosGlitch 3.4s steps(1,end) infinite}
-.uw621-avatar.uwcos-parasite:after{inset:-10px;border-radius:30px;border:1px solid rgba(57,255,104,.75);clip-path:polygon(0 12%,36% 12%,45% 0,54% 12%,100% 12%,100% 88%,64% 88%,55% 100%,46% 88%,0 88%);box-shadow:inset 0 0 14px rgba(57,255,104,.24),0 0 16px rgba(57,255,104,.2);animation:uwCosPulse 2.1s ease-in-out infinite}
-/* 0.8.0 secret cosmetic expansion — intentionally loud, rare profile signatures */
-.uw621-avatar.uwcos-black_web_crown:before{inset:-18px -14px -8px;border-radius:34px;background:
- conic-gradient(from 210deg at 50% 54%,transparent 0 7%,#020403 7.5% 10%,transparent 10.5% 15%,#39ff68 15.5% 16%,transparent 16.5% 24%,#020403 24.5% 29%,transparent 29.5% 100%);
- filter:drop-shadow(0 -7px 7px rgba(57,255,104,.48));animation:uwCosCrownBreath 2.7s ease-in-out infinite}
-.uw621-avatar.uwcos-black_web_crown:after{inset:-13px;border-radius:34px;background:repeating-conic-gradient(from 8deg,rgba(57,255,104,.95) 0 .8deg,transparent 1deg 14deg);mask:radial-gradient(circle,transparent 57%,#000 59% 61%,transparent 63%);filter:drop-shadow(0 0 8px rgba(57,255,104,.75));animation:uwCosSpin 22s linear infinite}
-.uw621-avatar.uwcos-ghost_protocol:before{inset:-8px;border:1px solid rgba(193,255,209,.75);border-radius:28px;box-shadow:-6px 0 rgba(57,255,104,.25),6px 0 rgba(210,255,222,.15);animation:uwGhostSkew 2.6s steps(1,end) infinite}
-.uw621-avatar.uwcos-ghost_protocol:after{inset:-15px;border-radius:34px;background:repeating-linear-gradient(0deg,transparent 0 6px,rgba(57,255,104,.38) 7px,transparent 8px);mask:linear-gradient(#000,transparent 18%,#000 48%,transparent 68%,#000);animation:uwGhostScan 1.7s linear infinite}
-.uw621-avatar.uwcos-devoured_signal:before{inset:-15px;border-radius:36% 64% 42% 58%/55% 38% 62% 45%;border:4px solid #010302;box-shadow:0 0 0 1px rgba(57,255,104,.65),0 0 24px rgba(57,255,104,.35),inset 0 0 20px #000;animation:uwDevour 3.2s ease-in-out infinite}
-.uw621-avatar.uwcos-devoured_signal:after{inset:-24px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 7%,#020403 8% 12%,transparent 13% 25%,#39ff68 26% 27%,transparent 28% 44%,#020403 45% 53%,transparent 54% 72%,#39ff68 73% 74%,transparent 75%);filter:drop-shadow(0 0 6px rgba(57,255,104,.55));animation:uwCosSpin 11s linear infinite reverse}
-.uw621-avatar.uwcos-network_zero:before{inset:-22px;border-radius:50%;background:
- repeating-conic-gradient(from 0deg,rgba(57,255,104,.9) 0 .6deg,transparent .8deg 11.25deg);
- mask:radial-gradient(circle,transparent 49%,#000 50% 51%,transparent 52% 63%,#000 64% 65%,transparent 66%);
- filter:drop-shadow(0 0 9px rgba(57,255,104,.9));animation:uwCosSpin 28s linear infinite}
-.uw621-avatar.uwcos-network_zero:after{inset:-10px;border-radius:50%;border:1px solid #39ff68;box-shadow:0 0 10px #39ff68,0 0 38px rgba(57,255,104,.55),inset 0 0 28px rgba(57,255,104,.16);animation:uwZeroPulse 1.8s ease-in-out infinite}
-@keyframes uwCosCrownBreath{50%{transform:translateY(-3px) scale(1.035);filter:drop-shadow(0 -10px 10px rgba(57,255,104,.72))}}
-@keyframes uwGhostSkew{0%,88%,100%{transform:none;opacity:1}89%{transform:translateX(-7px) skewX(9deg);opacity:.45}91%{transform:translateX(5px) skewX(-6deg)}94%{transform:none}}
-@keyframes uwGhostScan{to{transform:translateY(12px)}}
-@keyframes uwDevour{0%,100%{transform:rotate(-2deg) scale(1)}50%{transform:rotate(3deg) scale(1.055);border-radius:58% 42% 64% 36%/38% 62% 42% 58%}}
-@keyframes uwZeroPulse{50%{box-shadow:0 0 16px #39ff68,0 0 55px rgba(57,255,104,.72),inset 0 0 36px rgba(57,255,104,.24)}}
 
 @keyframes uwCosPulse{50%{opacity:.55;filter:brightness(1.5)}}@keyframes uwCosSpin{to{transform:rotate(360deg)}}@keyframes uwCosGlitch{0%,88%,100%{transform:none}90%{transform:translate(2px,-1px)}93%{transform:translate(-2px,1px)}96%{transform:translate(1px,1px)}}
 .uw-secret-hotspot:hover{color:rgba(57,255,104,.5)}
-@media(max-width:700px){.uw-public-authority{max-width:none}.uw-public-authority .uw74-card{transform-origin:left top}.uw621-avatar.uwcos-webwalker:after,.uw621-avatar.uwcos-void_signal:after,.uw621-avatar.uwcos-parasite:after{inset:-7px}}
+@media(max-width:700px){.uw-public-authority{max-width:none}.uw-public-authority .uw74-card{transform-origin:left top}}
 @media(prefers-reduced-motion:reduce){.uw621-avatar:before,.uw621-avatar:after{animation:none!important}}
 
 /* ===== RC1 COSMETICS LOCKER ===== */
 .uwcos-locker{margin:0 0 18px}.uwcos-locker-status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:-3px 0 13px;color:var(--m);font:800 9px/1.4 monospace;letter-spacing:.08em}.uwcos-locker-status span:first-child{color:var(--g)}
 .uwcos-locker-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.uwcos-locker-card{position:relative;min-height:148px;border:1px solid var(--l);background:linear-gradient(145deg,#040806,#020403);padding:14px;overflow:hidden}.uwcos-locker-card.equipped{border-color:rgba(57,255,104,.65);box-shadow:inset 0 0 0 1px rgba(57,255,104,.14),0 0 24px rgba(57,255,104,.06)}.uwcos-locker-card.mystery{border-style:dashed;opacity:.58}.uwcos-locker-card .type{color:var(--g);font:900 8px/1 monospace;letter-spacing:.14em}.uwcos-locker-card h4{margin:9px 0 5px;font-size:16px}.uwcos-locker-card p{margin:0;color:var(--m);font-size:11px;line-height:1.5}.uwcos-locker-card footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:17px}.uwcos-locker-card .rarity{font:900 8px/1 monospace;letter-spacing:.1em;color:#9daaa1}.uwcos-locker-card .uw50-mini{min-width:72px}.uwcos-locker-card .uw50-mini.equipped{color:#001807;background:var(--g);border-color:var(--g)}
-.uw40-avatar{position:relative;isolation:isolate;overflow:visible!important}.uw40-avatar:before,.uw40-avatar:after{content:"";position:absolute;pointer-events:none;z-index:-1}.uw40-avatar.uwcos-webwalker:after{inset:-8px;border-radius:22px;background:repeating-conic-gradient(from 0deg,rgba(57,255,104,.8) 0 1deg,transparent 1deg 22.5deg);mask:radial-gradient(circle,transparent 62%,#000 64% 69%,transparent 71%);animation:uwCosSpin 16s linear infinite;filter:drop-shadow(0 0 5px rgba(57,255,104,.55))}.uw40-avatar.uwcos-void_signal:after{inset:-7px;border-radius:21px;border:2px solid #818cf8;box-shadow:4px 0 0 rgba(57,255,104,.55),-4px 0 0 rgba(129,140,248,.45);animation:uwCosGlitch 3.4s steps(1,end) infinite}.uw40-avatar.uwcos-parasite:after{inset:-8px;border-radius:22px;border:1px solid rgba(57,255,104,.75);clip-path:polygon(0 12%,36% 12%,45% 0,54% 12%,100% 12%,100% 88%,64% 88%,55% 100%,46% 88%,0 88%);box-shadow:inset 0 0 14px rgba(57,255,104,.24),0 0 16px rgba(57,255,104,.2);animation:uwCosPulse 2.1s ease-in-out infinite}
+.uw40-avatar{position:relative;isolation:isolate;overflow:visible!important}
 @media(max-width:800px){.uwcos-locker-grid{grid-template-columns:1fr}.uwcos-locker-card{min-height:128px}}
 </style>
 <script id="uwSharedPublicIdentityCosmetics">
@@ -5782,7 +5614,6 @@ async function uwRenderPublicAuthority(uid,name){
 }
 async function uwLoadPublicCosmetics(uid){
  const avatar=document.getElementById('uw621Avatar');if(!avatar||!uid)return;
- ['uwcos-webwalker','uwcos-void_signal','uwcos-parasite','uwcos-black_web_crown','uwcos-ghost_protocol','uwcos-devoured_signal','uwcos-network_zero'].forEach(c=>avatar.classList.remove(c));
  try{
    const q=await uwSupabase.rpc('uw_public_cosmetics',{p_user_id:uid});
    if(q.error)return;
@@ -5795,7 +5626,6 @@ async function uwLoadPublicCosmetics(uid){
        if(!mine.error) rows=Array.isArray(mine.data)?mine.data:(mine.data?[mine.data]:[]);
      }catch(_){}
    }
-   rows.filter(x=>x&&x.is_equipped!==false).forEach(x=>{const slug=String(x.cosmetic_slug||x.slug||'');if(['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'].includes(slug))avatar.classList.add('uwcos-'+slug)});
  }catch(_){/* cosmetics migration is optional until deployed */}
 }
 async function uwHydratePublicIdentity(uid){
@@ -6141,13 +5971,8 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 <script id="uw-cosmetic-owner-authority-fix">
 (()=>{
  const known=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];
- const clear=a=>known.forEach(s=>a.classList.remove('uwcos-'+s));
- const apply=(a,rows)=>{
-   if(!a)return;
-   clear(a);
-   const row=(Array.isArray(rows)?rows:[]).find(x=>x&&x.is_equipped!==false&&known.includes(String(x.cosmetic_slug||x.slug||'')));
-   if(row)a.classList.add('uwcos-'+String(row.cosmetic_slug||row.slug));
- };
+ const clear=a=>{};
+ const apply=(a,rows)=>{}; // legacy avatar-class renderer removed; sibling renderer owns cosmetics
  async function ownerRows(){
    try{const q=await uwSupabase.rpc('uw_my_cosmetic_locker');return q.error?null:(Array.isArray(q.data)?q.data:(q.data?[q.data]:[]))}catch(_){return null}
  }
@@ -6422,24 +6247,6 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 @keyframes uwVoidFracture{0%,100%{opacity:.28;transform:rotate(var(--r)) scale(.86)}9%{opacity:1;transform:rotate(calc(var(--r) + 9deg)) scale(1.12)}17%{opacity:.5;transform:rotate(calc(var(--r) - 5deg)) scale(.94)}31%{opacity:.95;transform:rotate(calc(var(--r) + 4deg)) scale(1.04)}44%{opacity:.22;transform:rotate(var(--r)) scale(.8)}61%{opacity:1;transform:rotate(calc(var(--r) - 8deg)) scale(1.1)}73%{opacity:.4;transform:rotate(calc(var(--r) + 3deg)) scale(.9)}86%{opacity:.9;transform:rotate(var(--r)) scale(1.03)}}
 @keyframes uwVoidEcho{0%,58%,100%{opacity:0;transform:translate(0,0) rotate(0)}62%{opacity:.9;transform:translate(10px,-7px) rotate(5deg)}68%{opacity:.32;transform:translate(-7px,5px) rotate(-4deg)}73%{opacity:.72;transform:translate(5px,2px) rotate(2deg)}79%{opacity:0}}
 
-/* WEB PROTOCOL stays in a tight halo around the avatar. No profile-content wandering. */
-#uw621ProfileModal .uwpf-ghost_protocol{overflow:visible!important;clip-path:none!important;isolation:isolate}
-#uw621ProfileModal .uwpf-ghost_protocol .webnet{max-width:none!important;opacity:.78!important;z-index:2!important}
-#uw621ProfileModal .uwpf-ghost_protocol .wn1{left:-7%!important;top:7%!important;width:72%!important}.uwpf-ghost_protocol .wn2{left:21%!important;top:-6%!important;width:72%!important}.uwpf-ghost_protocol .wn3{right:-7%!important;top:19%!important;width:70%!important}.uwpf-ghost_protocol .wn4{right:-6%!important;bottom:16%!important;width:72%!important}.uwpf-ghost_protocol .wn5{left:20%!important;bottom:-5%!important;width:70%!important}.uwpf-ghost_protocol .wn6{left:-6%!important;bottom:22%!important;width:68%!important}
-#uw621ProfileModal .uwpf-ghost_protocol .spider{offset-path:none!important;offset-distance:0!important;width:8px!important;height:11px!important;z-index:5!important;will-change:transform;animation-timing-function:linear!important;animation-iteration-count:infinite!important}
-#uw621ProfileModal .uwpf-ghost_protocol .sp1{left:0!important;top:8%!important;animation-name:uwWebSpider1!important;animation-duration:7.2s!important}
-#uw621ProfileModal .uwpf-ghost_protocol .sp2{left:90%!important;top:18%!important;animation-name:uwWebSpider2!important;animation-duration:8.4s!important}
-#uw621ProfileModal .uwpf-ghost_protocol .sp3{left:82%!important;top:88%!important;animation-name:uwWebSpider3!important;animation-duration:9.1s!important}
-#uw621ProfileModal .uwpf-ghost_protocol .sp4{left:7%!important;top:82%!important;animation-name:uwWebSpider4!important;animation-duration:10.2s!important}
-@keyframes uwWebSpider1{0%{transform:translate(-10%,-8%) rotate(20deg)}24%{transform:translate(58%,-20%) rotate(70deg)}49%{transform:translate(108%,52%) rotate(135deg)}74%{transform:translate(54%,108%) rotate(220deg)}100%{transform:translate(-10%,-8%) rotate(380deg)}}
-@keyframes uwWebSpider2{0%{transform:translate(0,0) rotate(150deg)}25%{transform:translate(-72%,18%) rotate(205deg)}50%{transform:translate(-92%,70%) rotate(270deg)}75%{transform:translate(-42%,92%) rotate(330deg)}100%{transform:translate(0,0) rotate(510deg)}}
-@keyframes uwWebSpider3{0%{transform:translate(0,0) rotate(235deg)}28%{transform:translate(-62%,-4%) rotate(285deg)}52%{transform:translate(-92%,-54%) rotate(340deg)}78%{transform:translate(-38%,-92%) rotate(410deg)}100%{transform:translate(0,0) rotate(595deg)}}
-@keyframes uwWebSpider4{0%{transform:translate(0,0) rotate(-40deg)}26%{transform:translate(48%,-58%) rotate(25deg)}52%{transform:translate(92%,-76%) rotate(80deg)}77%{transform:translate(82%,-18%) rotate(145deg)}100%{transform:translate(0,0) rotate(320deg)}}
-@media(max-width:700px){
- #uw621ProfileModal .uwpf-ghost_protocol{transform:scale(.96)!important;transform-origin:center!important}
- #uw621ProfileModal .uwpf-ghost_protocol .spider:before,#uw621ProfileModal .uwpf-ghost_protocol .spider:after{left:-5px!important;width:18px!important;height:9px!important}
- #uw621ProfileModal .uwpf-void_signal .vshard{width:30%!important;height:13%!important}
-}
 </style>
 
 <style id="uw-blackflame-continuous-v2-20260917">
