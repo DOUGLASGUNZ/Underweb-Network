@@ -2217,9 +2217,14 @@ if(drawerBtn) drawerBtn.addEventListener('click',()=>sidebar.classList.contains(
 if(drawerOverlay) drawerOverlay.addEventListener('click',closeDrawer);
 const pages=[...document.querySelectorAll('.page')];
 const pageButtons=[...document.querySelectorAll('[data-page]')];
+let uwNavLastName='',uwNavLastAt=0;
 function showPage(name){
   const target=document.getElementById('page-'+name);
   if(!target)return;
+  const now=performance.now();
+  if(target.classList.contains('active')){closeDrawer();return;}
+  if(name===uwNavLastName && now-uwNavLastAt<180)return;
+  uwNavLastName=name;uwNavLastAt=now;
   const trigger=pageButtons.find(b=>b.dataset.page===name);
   const needsOwner=trigger?.dataset.requiresOwner === "true";
   const needsStaff=trigger?.dataset.requiresStaff === "true" || needsOwner;
@@ -2236,7 +2241,7 @@ function showPage(name){
   pages.forEach(p=>p.classList.toggle('active',p===target));
   pageButtons.forEach(b=>b.classList.toggle('active',b.dataset.page===name));
   closeDrawer();
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top:0,behavior:'auto'});
 }
 pageButtons.forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 
@@ -2542,7 +2547,7 @@ function uw60Render(){
   const tickets=(uwBeta.tickets||[]).filter(x=>['open','claimed','reviewing'].includes(x.status));
   const rolePending=(UW50?.review||[]).filter(x=>['pending','reviewing'].includes(x.status));
   const eventPending=(uwBeta.events||[]).filter(x=>x.status==='pending'&&uw60GroupMatch(x.group_scope));
-  const upcoming=(uwBeta.events||[]).filter(x=>uwEventIsActive(x)&&uw60GroupMatch(x.group_scope)).sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
+  const upcoming=(uwBeta.events||[]).filter(x=>{const st=String(x?.status||'').toLowerCase();return st==='published'&&!x?.cancelled_at&&uwEventIsActive(x)&&uw60GroupMatch(x.group_scope)}).sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
   const projects=(uwProjects||[]).filter(x=>x.status==='open'&&uw60GroupMatch(x.group_scope));
   const av=(uw033Availability||[]).filter(x=>uw60GroupMatch(x.group_scope));
   const staffIds=new Set(av.map(x=>x.user_id).filter(Boolean));
@@ -3632,7 +3637,11 @@ async function uw744ApplyRole(slug){
  try{
    if(typeof uw50ApplyRole==='function'){await uw50ApplyRole(slug);return;}
    if(typeof uwApplyForRole==='function'){await uwApplyForRole(slug);return;}
-   const {error}=await uwSupabase.rpc('uw_apply_for_role',{p_role_slug:slug});
+   const uid=currentSession.user.id;
+   const exists=await uwSupabase.from('role_applications').select('id,status').eq('user_id',uid).eq('role_slug',slug).in('status',['pending','reviewing','accepted']).limit(1);
+   if(exists.error)throw exists.error;
+   if(exists.data?.length){toast('You already have an active or pending application for this role.');return;}
+   const {error}=await uwSupabase.from('role_applications').insert({user_id:uid,role_slug:slug,group_scope:'underweb',applicant_note:'Submitted from creator role application.',status:'pending'});
    if(error)throw error;
    toast('Creator role application submitted.');
  }catch(err){toast(err?.message||'Could not submit creator role application.');}
@@ -6383,5 +6392,21 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 </script>
 
 
+
+<!-- 0.8.0.3 beta stabilization: review visibility -->
+<script id="uw803BetaStabilization">
+(function(){
+ async function syncMediaReviewVisibility(){
+  const buttons=[...document.querySelectorAll('[data-uw790-media-review]')];
+  if(!buttons.length||typeof uwSupabase==='undefined')return;
+  let allowed=false;
+  try{const r=await uwSupabase.rpc('uw_can_review_media');allowed=!r.error&&r.data===true}catch(_){}
+  buttons.forEach(b=>{b.hidden=!allowed;b.style.display=allowed?'':'none'});
+ }
+ window.uw803SyncMediaReviewVisibility=syncMediaReviewVisibility;
+ window.addEventListener('pageshow',()=>setTimeout(syncMediaReviewVisibility,1000));
+ document.addEventListener('click',e=>{if(e.target.closest('[data-page="command"]'))setTimeout(syncMediaReviewVisibility,120)},true);
+})();
+</script>
 </body>
 </html>
