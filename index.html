@@ -1223,7 +1223,7 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 <button class="side-item" data-page="events">Events</button>
 <button class="side-item" data-page="projects">Projects &amp; Collabs</button>
 <div class="side-label">Creator Tools</div>
-<button class="side-item" data-page="matching">Creator Matching</button>
+
 <button class="side-item" data-page="bookings">Bookings</button>
 <button class="side-item" data-page="profile">My Profile</button>
 <button class="side-item" data-page="identity">Network Identity</button>
@@ -1238,11 +1238,12 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 <button class="side-item" data-page="staff" data-requires-staff="true">Staff Dashboard</button>
 <button class="side-item" data-page="availability" data-requires-staff="true">Staff Availability</button>
 <button class="side-item" data-page="recruiting" data-requires-staff="true">Recruiting Pipeline</button>
-<button class="side-item" data-page="eventbuilder">Event Builder</button>
+
 <button class="side-item" data-page="eventcontrol" data-requires-staff="true">Event Control</button>
 <button class="side-item" data-page="applications" data-requires-staff="true">Applications <span class="badge" id="navApplicationCount">—</span></button>
 <button class="side-item" data-page="role-review" data-requires-staff="true">Role Review <span class="badge" id="uw50RoleReviewCount">—</span></button>
 <button class="side-item" data-page="tickets" data-requires-staff="true">Tickets <span class="badge" id="navTicketCount">—</span></button>
+<button class="side-item" data-page="moderation" data-requires-staff="true" data-uw-mod-nav="true">Moderation</button>
 <button class="side-item" data-page="announcements" data-requires-staff="true">Announcements</button>
 <button class="side-item" data-page="activity" data-requires-staff="true">Audit &amp; Activity</button>
 
@@ -1323,7 +1324,7 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
     <div class="uw70-commandstatus"><span>NETWORK COMMAND</span><b>● LIVE DATA</b></div>
   </section>
   <div class="uw70-commandnav">
-    <button class="active">OVERVIEW</button><button data-page="roster">STAFF</button><button data-page="availability">AVAILABILITY</button><button data-page="recruiting">RECRUITING</button><button data-page="eventbuilder">EVENT CONTROL</button><button data-page="applications">APPLICATIONS</button><button data-page="partner-admin">PARTNERS</button><button data-uw790-media-review="true">MEDIA REVIEW <span id="uw790MediaBadge"></span></button><button data-page="role-review">ROLE REVIEW</button><button data-page="tickets">TICKETS</button><button data-page="announcements">ANNOUNCEMENTS</button><button data-page="activity">AUDIT</button>
+    <button class="active">OVERVIEW</button><button data-page="roster">STAFF</button><button data-page="availability">AVAILABILITY</button><button data-page="recruiting">RECRUITING</button><button data-page="eventcontrol">EVENT CONTROL</button><button data-page="applications">APPLICATIONS</button><button data-page="partner-admin">PARTNERS</button><button data-uw790-media-review="true">MEDIA REVIEW <span id="uw790MediaBadge"></span></button><button data-page="role-review">ROLE REVIEW</button><button data-page="tickets">TICKETS</button><button data-page="moderation" data-uw-mod-nav="true">MODERATION</button><button data-page="announcements">ANNOUNCEMENTS</button><button data-page="activity">AUDIT</button>
   </div>
   <div class="uw70-commandbar">
     <div><span>NEEDS ACTION</span><b id="uw60NeedsAction">0</b></div><div><span>UPCOMING EVENTS</span><b id="uw60Events">0</b></div><div><span>OPEN PROJECTS</span><b id="uw60Projects">0</b></div><div><span>STAFF WITH COVERAGE</span><b id="uw60Coverage">0</b></div>
@@ -1388,7 +1389,7 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 <section class="page" id="page-events"><div class="wrap uw70-wrap">
   <section class="uw70-pagehero">
     <div><div class="uw70-kicker">UNDERWEB NETWORK // EVENTS</div><h1>EXPERIENCE<br><span>TOGETHER.</span></h1><p>Official events rendered from the real network database. Finished events move into the archive automatically.</p></div>
-    <button class="btn hot" data-page="eventbuilder" data-requires-staff="true">+ CREATE EVENT</button>
+    <button class="btn hot" data-page="eventcontrol" data-requires-staff="true">EVENT CONTROL</button>
   </section>
   <div id="eventsEmptyCard" class="uw70-emptycard"><div class="uw70-kicker">NO PUBLISHED EVENTS</div><h3>Nothing scheduled yet.</h3><p>Only real events saved to the UnderWeb database appear here.</p></div>
   <div class="uw70-sectionhead"><div><span>UPCOMING + CURRENT</span><h2>Event Network</h2></div></div>
@@ -1551,8 +1552,16 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 </div>
 </div></section>
 
+<section class="page" id="page-moderation"><div class="wrap uw72-shell uwmod-shell">
+  <div class="uw72-head"><div><span>COMMAND // TRUST &amp; SAFETY</span><h1>MODERATION.</h1><p>Owner and Director controls for warnings, temporary restrictions, suspensions and bans. Every action keeps a history.</p></div></div>
+  <div id="uwModDenied" class="uw-empty" hidden>Owner or Director authority required.</div>
+  <div id="uwModBody" hidden>
+    <section class="uwmod-panel"><div class="uwmod-head"><div><span>MEMBER LOOKUP</span><h3>Find a Network account</h3></div></div><div class="uwmod-search"><input class="input" id="uwModSearch" placeholder="Search username or display name…"><button class="btn hot" id="uwModSearchBtn" type="button">SEARCH</button></div><div id="uwModResults" class="uwmod-results"><div class="uw-empty">Search for a member to begin.</div></div></section>
+    <section class="uwmod-grid"><div class="uwmod-panel"><div class="uwmod-head"><div><span>ACTIVE RESTRICTIONS</span><h3>Restricted accounts</h3></div><button class="uw-mini-btn" id="uwModReload" type="button">REFRESH</button></div><div id="uwModRestrictions"><div class="uw-empty">Loading…</div></div></div><div class="uwmod-panel"><div class="uwmod-head"><div><span>ACTION HISTORY</span><h3>Recent moderation</h3></div></div><div id="uwModHistory"><div class="uw-empty">Loading…</div></div></div></section>
+  </div>
+</div></section>
 <section class="page" id="page-eventcontrol"><div class="wrap uw72-shell">
-  <div class="uw72-head"><div><span>COMMAND // EVENT CONTROL</span><h1>RUN THE NIGHT.</h1><p>Real approved/upcoming events, staffing notes, instance links and post-event wrap-up in one place.</p></div><button class="btn hot" data-page="eventbuilder">+ CREATE EVENT</button></div>
+  <div class="uw72-head"><div><span>COMMAND // EVENT CONTROL</span><h1>RUN THE NIGHT.</h1><p>Real approved/upcoming events, staffing notes, instance links and post-event wrap-up in one place.</p></div><button class="btn hot" data-page="eventcontrol">EVENT CONTROL</button></div>
   <div id="uw72EventControl" class="uw72-grid"><div class="uw-empty">Loading event control…</div></div>
 </div></section>
 
@@ -6633,5 +6642,40 @@ window.uwHelpRefresh=()=>{renderFaq();loadMine();loadIssues();};
  document.addEventListener('DOMContentLoaded',()=>setTimeout(injectKnown,250));
 })();
 </script>\n
+
+<style id="uw-moderation-cleanup-v1-style">
+/* Retire duplicate tools without deleting their legacy code yet. */
+#page-matching,#page-eventbuilder{display:none!important}
+[data-page="matching"],[data-page="eventbuilder"]{display:none!important}
+/* The old beta feedback floating control is retired; Help owns bug reporting. */
+#feedbackFab,.feedback-fab,.uw-feedback-fab,[data-feedback-fab]{display:none!important}
+.uwmod-shell{padding-bottom:120px}.uwmod-panel{border:1px solid rgba(85,255,145,.22);background:rgba(2,12,6,.72);padding:22px;margin:0 0 18px}.uwmod-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:16px}.uwmod-head span{font:800 11px monospace;letter-spacing:.18em;color:#55ff91}.uwmod-head h3{margin:5px 0 0;font-size:24px}.uwmod-search{display:grid;grid-template-columns:1fr auto;gap:10px}.uwmod-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.uwmod-results,.uwmod-list{display:grid;gap:10px;margin-top:14px}.uwmod-user,.uwmod-row{border:1px solid rgba(85,255,145,.16);padding:14px;background:rgba(0,0,0,.28)}.uwmod-userhead,.uwmod-rowtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.uwmod-user h4,.uwmod-row h4{margin:0;font-size:18px}.uwmod-user small,.uwmod-row small{opacity:.58}.uwmod-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.uwmod-actions button{border:1px solid rgba(85,255,145,.3);background:#031008;color:#dce7df;padding:9px 11px;font:800 10px monospace;letter-spacing:.08em}.uwmod-actions button.danger{border-color:rgba(255,85,85,.5);color:#ff8c8c}.uwmod-status{font:900 10px monospace;letter-spacing:.12em;color:#55ff91}.uwmod-reason{width:100%;margin-top:10px}.uwmod-duration{min-width:145px}
+@media(max-width:760px){.uwmod-grid{grid-template-columns:1fr}.uwmod-search{grid-template-columns:1fr}.uwmod-panel{padding:16px}.uwhelp-tabs{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible!important}.uwhelp-tabs button{min-width:0!important;width:100%!important;white-space:normal}.uwhelp-tabs button:last-child{grid-column:1/-1}}
+</style>
+<script id="uw-moderation-cleanup-v1-js">
+(function(){
+ const E=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function canModerate(){return isOwner()||uw50Roles.some(r=>r.status==='active'&&r.role_slug==='director')||currentMemberships.some(m=>m.status==='approved'&&m.role_name==='Director');}
+ function retire(){document.querySelectorAll('[data-page="matching"]').forEach(b=>b.dataset.page='discover');document.querySelectorAll('[data-page="eventbuilder"]').forEach(b=>b.dataset.page='eventcontrol');document.querySelectorAll('[data-uw-mod-nav]').forEach(b=>{b.style.display=canModerate()?'':'none';});}
+ async function search(){if(!canModerate())return;const q=(E('uwModSearch')?.value||'').trim();if(q.length<2)return toast('Type at least 2 characters.');const box=E('uwModResults');box.innerHTML='<div class="uw-empty">Searching…</div>';let a=await uwSupabase.from('profiles').select('id,username,display_name').ilike('display_name','%'+q+'%').limit(20);let rows=a.error?[]:(a.data||[]);if(rows.length<20){const b=await uwSupabase.from('profiles').select('id,username,display_name').ilike('username','%'+q+'%').limit(20);if(!b.error)rows=[...rows,...b.data.filter(x=>!rows.some(y=>y.id===x.id))].slice(0,20);}box.innerHTML=rows.length?rows.map(userCard).join(''):'<div class="uw-empty">No matching member found.</div>';}
+ function userCard(u){return `<article class="uwmod-user" data-uid="${esc(u.id)}"><div class="uwmod-userhead"><div><h4>${esc(u.display_name||u.username||'Member')}</h4><small>@${esc(u.username||'unknown')}</small></div></div><input class="input uwmod-reason" data-mod-reason placeholder="Reason required…"><div class="uwmod-actions"><button data-mod="warn">WARN</button><select class="select uwmod-duration" data-mod-duration><option value="60">1 HOUR</option><option value="360">6 HOURS</option><option value="1440">24 HOURS</option><option value="4320">3 DAYS</option><option value="10080">7 DAYS</option></select><button data-mod="timeout">TIMEOUT</button><button data-mod="suspend">SUSPEND</button><button class="danger" data-mod="ban">BAN</button><button data-mod="lift">LIFT RESTRICTION</button></div></article>`;}
+ async function act(card,type){const uid=card.dataset.uid,reason=card.querySelector('[data-mod-reason]')?.value.trim();if(!reason)return toast('Add a moderation reason first.');let mins=null;if(type==='timeout'||type==='suspend')mins=Number(card.querySelector('[data-mod-duration]')?.value||1440);if(type==='ban'&&!confirm('Ban this Network account?'))return;if(type==='lift'&&!confirm('Lift the active restriction on this account?'))return;const {error}=await uwSupabase.rpc('uw_moderate_user',{p_target_user_id:uid,p_action_type:type,p_reason:reason,p_duration_minutes:mins});if(error)return toast(error.message);toast(type==='lift'?'Restriction lifted.':type.toUpperCase()+' recorded.');await load();}
+ async function load(){if(!E('uwModBody'))return;const ok=canModerate();E('uwModDenied').hidden=ok;E('uwModBody').hidden=!ok;if(!ok)return;const [r,a]=await Promise.all([uwSupabase.from('user_restrictions').select('user_id,restriction_type,reason,imposed_at,expires_at,active').eq('active',true).order('imposed_at',{ascending:false}).limit(50),uwSupabase.from('moderation_actions').select('target_user_id,moderator_user_id,action_type,reason,expires_at,created_at').order('created_at',{ascending:false}).limit(75)]);const ids=[...new Set([...(r.data||[]).map(x=>x.user_id),...(a.data||[]).flatMap(x=>[x.target_user_id,x.moderator_user_id])])];let names={};if(ids.length){const p=await uwSupabase.from('profiles').select('id,username,display_name').in('id',ids);(p.data||[]).forEach(x=>names[x.id]=x.display_name||x.username||x.id.slice(0,8));}E('uwModRestrictions').innerHTML=(r.data||[]).length?(r.data||[]).map(x=>`<div class="uwmod-row"><div class="uwmod-rowtop"><h4>${esc(names[x.user_id]||x.user_id.slice(0,8))}</h4><span class="uwmod-status">${esc(x.restriction_type.toUpperCase())}</span></div><p>${esc(x.reason)}</p><small>${x.expires_at?'Expires '+new Date(x.expires_at).toLocaleString():'No automatic expiry'}</small></div>`).join(''):'<div class="uw-empty">No active restrictions.</div>';E('uwModHistory').innerHTML=(a.data||[]).length?(a.data||[]).map(x=>`<div class="uwmod-row"><div class="uwmod-rowtop"><h4>${esc(names[x.target_user_id]||x.target_user_id.slice(0,8))}</h4><span class="uwmod-status">${esc(x.action_type.toUpperCase())}</span></div><p>${esc(x.reason)}</p><small>By ${esc(names[x.moderator_user_id]||'staff')} · ${new Date(x.created_at).toLocaleString()}</small></div>`).join(''):'<div class="uw-empty">No moderation history yet.</div>';}
+ E('uwModSearchBtn')?.addEventListener('click',search);E('uwModSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')search();});E('uwModReload')?.addEventListener('click',load);E('uwModResults')?.addEventListener('click',e=>{const b=e.target.closest('[data-mod]'),card=e.target.closest('[data-uid]');if(b&&card)act(card,b.dataset.mod);});
+ document.addEventListener('click',e=>{if(e.target.closest('[data-page="moderation"]'))setTimeout(load,80);});
+ const KNOWN=[
+  {title:'Profile edits can appear to save and then revert',description:'Some member profile edits currently return to the previous value after Save. The profile persistence path is under investigation.',status:'investigating',affected_area:'Profiles'},
+  {title:'Rapid repeated navigation can make a desktop page unresponsive',description:'Repeatedly switching pages quickly can cause the current UnderWeb tab to stop responding on some desktop browsers. Other browser tabs remain usable.',status:'investigating',affected_area:'Performance / Navigation'},
+  {title:'Connection loss can interrupt profile verification',description:'Losing service while account/profile data is loading can interrupt verification. The frontend now avoids treating a failed lookup as a new account, but offline handling is still being monitored.',status:'monitoring',affected_area:'Account / Connectivity'},
+  {title:'Refresh or browser Back can return you to Home',description:'Refreshing the site or using browser Back can lose the current in-app route and return to Home. Route/history persistence is not complete yet.',status:'identified',affected_area:'Navigation'}
+ ];
+ function issueHTML(x){return `<article class="uwhelp-issue"><div class="uwhelp-issuetop"><div><div class="eyebrow">${esc(x.affected_area)}</div><h3>${esc(x.title)}</h3></div><span class="uwhelp-status ${esc(x.status)}">${esc(x.status.toUpperCase())}</span></div><p>${esc(x.description)}</p><div class="uwhelp-meta"><span>Tracked in Open Beta</span></div></article>`;}
+ async function injectKnown(){const box=E('uwHelpIssues');if(!box)return;await new Promise(r=>setTimeout(r,120));const old=box.querySelector('.uw-empty')?.closest('.uwhelp-issue');if(old&&/No active published issues/i.test(old.textContent))old.remove();const html=box.innerHTML.toLowerCase();KNOWN.filter(k=>!html.includes(k.title.toLowerCase())).reverse().forEach(k=>box.insertAdjacentHTML('afterbegin',issueHTML(k)));}
+ document.addEventListener('click',e=>{if(e.target.closest('[data-uwhelp-tab="issues"]'))setTimeout(injectKnown,180);});
+ const oldRefresh=window.uwHelpRefresh;window.uwHelpRefresh=()=>{oldRefresh?.();setTimeout(injectKnown,220);};
+ setInterval(retire,1500);retire();document.addEventListener('DOMContentLoaded',()=>{retire();setTimeout(injectKnown,350);});
+})();
+</script>
+
 </body>
 </html>
