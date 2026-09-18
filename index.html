@@ -6949,3 +6949,20 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
  #uw621ProfileModal .uwpf-ghost_protocol .bf-border{inset:6px!important}
 }
 </style>
+
+<style id="uw-production-frame-authority-fix-20260917">
+/* Production authority fix: legacy avatar pseudo-element cosmetics are permanently disabled.
+   The sibling .uwpf[data-uw-frame-v2] renderer is the only visible profile-frame renderer. */
+#uw621ProfileModal #uw621Avatar.uw621-avatar[class*="uwcos-"]::before,
+#uw621ProfileModal #uw621Avatar.uw621-avatar[class*="uwcos-"]::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  background-image:none!important;
+  border:0!important;
+  box-shadow:none!important;
+  animation:none!important;
+  filter:none!important;
+}
+#uw621ProfileModal .uwpf[data-uw-frame-v2="1"]{display:block!important;}
+</style>
