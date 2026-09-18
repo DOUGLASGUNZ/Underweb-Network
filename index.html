@@ -1206,7 +1206,16 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 .uw-side-version button{width:100%;border:0;background:transparent;color:#627369;text-align:left;font:800 10px/1.4 monospace;letter-spacing:.08em;cursor:pointer}.uw-side-version b{color:#55ff91;font-weight:900}
 .uw-hub-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.uw-hub-links .btn{min-height:38px}
 @media(max-width:760px){.uw-hub-links{width:100%}.uw-hub-links .btn{flex:1}}
-</style></head>
+</style>
+<style id="uw-staff-sidebar-v2">
+.uw-staff-submenu{margin:2px 0 10px 18px;padding:5px 0 7px 15px;border-left:1px solid rgba(69,255,114,.22);display:grid;gap:1px}
+.uw-staff-submenu button{appearance:none;border:0;background:transparent;color:var(--m);text-align:left;padding:10px 12px;font:inherit;font-size:14px;cursor:pointer;border-radius:4px}
+.uw-staff-submenu button:hover,.uw-staff-submenu button:focus-visible{color:var(--g);background:rgba(69,255,114,.055);outline:none}
+.uw-staff-submenu button.active{color:var(--g);background:rgba(69,255,114,.075)}
+.uw-staff-submenu [data-requires-owner="true"]{border-top:1px solid rgba(69,255,114,.1);margin-top:5px;padding-top:13px}
+@media(max-width:760px){.uw-staff-submenu{margin-left:20px}.uw-staff-submenu button{font-size:15px;padding:11px 10px}}
+</style>
+</head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
   <button aria-label="Open menu" class="btn drawer-btn" id="drawerBtn">☰</button>
@@ -1244,7 +1253,24 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 <button class="side-item" data-page="gallery">Network</button>
 <button class="side-item" data-page="help">Help &amp; Support <span class="badge" id="uwHelpMyOpen">—</span></button>
 <div class="side-label" data-requires-staff="true">Staff</div>
-<button class="side-item" data-page="command" data-requires-staff="true">Command Center <span class="badge" id="uw60CommandCount">—</span></button>
+<div class="uw-staff-side" data-requires-staff="true">
+<button class="side-item uw-staff-toggle" data-page="command" type="button">Command Center <span class="badge" id="uw60CommandCount">—</span></button>
+<div class="uw-staff-submenu" aria-label="Staff tools">
+<button data-page="command">Overview</button>
+<button data-page="roster">Staff Roster</button>
+<button data-page="availability">Staff Availability</button>
+<button data-page="eventcontrol">Event Control</button>
+<button data-page="applications">Applications</button>
+<button data-page="role-review">Role Review</button>
+<button data-page="tickets">Tickets &amp; Support</button>
+<button data-page="partner-admin">Partners</button>
+<button data-uw790-media-review="true">Media Review <span id="uwStaffMediaBadge"></span></button>
+<button data-page="moderation" data-uw-mod-nav="true">Moderation</button>
+<button data-page="announcements">Announcements</button>
+<button data-page="activity">Audit &amp; Activity</button>
+<button data-page="permissions" data-requires-owner="true">Roles &amp; Permissions</button>
+</div>
+</div>
 <div class="uw-side-version"><button type="button" data-page="updates">OPEN BETA <b>0.8.0 RC1</b></button></div>
 </aside>
 <main class="content">
