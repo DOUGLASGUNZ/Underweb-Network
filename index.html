@@ -1188,6 +1188,10 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 @media(max-width:1050px){.uw-help-fab{display:flex}}
 @media(max-width:420px){.uw-help-fab{right:10px;bottom:72px;height:40px;padding:0 11px}}
 </style>
+
+<style id="uw-remove-floating-help-feedback-v1">
+.uw-help-fab,#feedbackFab,.feedback-fab,.uw-feedback-fab,[data-feedback-fab]{display:none!important}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -1758,7 +1762,7 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 </div></section></main></div>
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <div class="mobilebar"><button class="active" data-page="home"><span>⌂</span>HOME</button><button data-page="discover"><span>◎</span>NETWORK</button><button data-page="events"><span>▣</span>EVENTS</button><button data-page="command" data-requires-staff="true"><span>◇</span>STAFF</button><button data-page="profile"><span>◉</span>PROFILE</button></div>
-<button class="uw-help-fab" data-page="help" type="button" aria-label="Open Help and Support"><span>?</span><b>HELP</b><i id="uwHelpFabCount"></i></button>
+
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal"><div class="modalbox">
 <div class="modalhead"><div><div class="eyebrow">CREATOR PROFILE</div><h2 style="margin:4px 0">Creator</h2></div><button class="close" onclick="closeModal()">×</button></div>
