@@ -1201,7 +1201,12 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgba(98,170,255,.35)}
 @media(max-width:380px){#uwCreateFab::before{right:62px;font-size:9px;padding:8px 9px}}
 </style>
-</head>
+<style id="uw-sidebar-consolidation-v1">
+.uw-side-version{margin-top:auto;padding:16px 10px 8px;border-top:1px solid rgba(85,255,145,.12)}
+.uw-side-version button{width:100%;border:0;background:transparent;color:#627369;text-align:left;font:800 10px/1.4 monospace;letter-spacing:.08em;cursor:pointer}.uw-side-version b{color:#55ff91;font-weight:900}
+.uw-hub-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.uw-hub-links .btn{min-height:38px}
+@media(max-width:760px){.uw-hub-links{width:100%}.uw-hub-links .btn{flex:1}}
+</style></head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
   <button aria-label="Open menu" class="btn drawer-btn" id="drawerBtn">☰</button>
@@ -1232,36 +1237,15 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 <div class="side-label" id="networkSideLabel">UnderWeb Network</div>
 <button class="side-item active" data-page="home">Home <span>⌂</span></button>
 <button class="side-item" data-page="live">Live VRChat</button>
-<button class="side-item" data-page="people">Find People</button><button class="side-item" data-page="discover">Discover Creators</button>
+<button class="side-item" data-page="people">People &amp; Creators</button>
 <button class="side-item" data-page="events">Events</button>
 <button class="side-item" data-page="projects">Projects &amp; Collabs</button>
-<div class="side-label">Creator Tools</div>
-
-<button class="side-item" data-page="bookings">Bookings</button>
 <button class="side-item" data-page="profile">My Profile</button>
-<button class="side-item" data-page="identity">Network Identity</button>
-<button class="side-item" data-page="connections">Connected Accounts</button>
-<button class="side-item" data-page="gallery">Network Gallery</button>
-<button class="side-item" data-page="partners">Partner Hub</button><button class="side-item" data-page="partner-admin" data-requires-staff="true">Partner Management</button>
-<button class="side-item" data-page="notifications">Notifications</button>
+<button class="side-item" data-page="gallery">Network</button>
 <button class="side-item" data-page="help">Help &amp; Support <span class="badge" id="uwHelpMyOpen">—</span></button>
-<div class="side-label">Community Ops</div>
+<div class="side-label" data-requires-staff="true">Staff</div>
 <button class="side-item" data-page="command" data-requires-staff="true">Command Center <span class="badge" id="uw60CommandCount">—</span></button>
-<button class="side-item" data-page="roster" data-requires-staff="true">Staff Roster</button>
-<button class="side-item" data-page="staff" data-requires-staff="true">Staff Dashboard</button>
-<button class="side-item" data-page="availability" data-requires-staff="true">Staff Availability</button>
-<button class="side-item" data-page="recruiting" data-requires-staff="true">Recruiting Pipeline</button>
-
-<button class="side-item" data-page="eventcontrol" data-requires-staff="true">Event Control</button>
-<button class="side-item" data-page="applications" data-requires-staff="true">Applications <span class="badge" id="navApplicationCount">—</span></button>
-<button class="side-item" data-page="role-review" data-requires-staff="true">Role Review <span class="badge" id="uw50RoleReviewCount">—</span></button>
-<button class="side-item" data-page="tickets" data-requires-staff="true">Tickets <span class="badge" id="navTicketCount">—</span></button>
-<button class="side-item" data-page="moderation" data-requires-staff="true" data-uw-mod-nav="true">Moderation</button>
-<button class="side-item" data-page="announcements" data-requires-staff="true">Announcements</button>
-<button class="side-item" data-page="activity" data-requires-staff="true">Audit &amp; Activity</button>
-
-<button class="side-item" data-page="updates">Platform Updates <span class="uw50-version-pill">0.8.0 RC1</span></button>
-<button class="side-item" data-page="permissions" data-requires-owner="true">Roles &amp; Permissions</button>
+<div class="uw-side-version"><button type="button" data-page="updates">OPEN BETA <b>0.8.0 RC1</b></button></div>
 </aside>
 <main class="content">
 <section class="page active" id="page-home"><div class="wrap uw70-wrap">
@@ -1370,7 +1354,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 <section class="page" id="page-people"><div class="wrap uw70-wrap">
   <section class="uw70-pagehero">
     <div><div class="uw70-kicker">UNDERWEB NETWORK // PEOPLE</div><h1>FIND ANYONE<br><span>ON THE NETWORK.</span></h1>
-    <p>Search registered UnderWeb members by display name. Creators, members and staff all live here.</p></div>
+    <p>Search registered UnderWeb members by display name. Creators, members and staff all live here.</p><div class="uw-hub-links"><button class="btn hot" data-page="people">FIND PEOPLE</button><button class="btn" data-page="discover">DISCOVER CREATORS</button></div></div>
     <div class="uw70-dircounts"><span><b id="uw783PeopleCount">—</b>PEOPLE</span></div>
   </section>
   <div class="uw783-search">
@@ -1434,7 +1418,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 <div class="tablewrap"><table><thead><tr><th>Creator</th><th>Type</th><th>Event / Project</th><th>Date</th><th>Status</th><th>Owner</th></tr></thead><tbody><tr><td colspan="6" class="meta">No booking records yet.</td></tr></tbody></table></div>
 </div></section>
 <section class="page" id="page-profile"><div class="wrap uw40-shell uw40-profile-page">
-<div class="uw40-pagehead uw-profile-edit-head"><div><span>YOUR NETWORK IDENTITY</span><h1>My Profile</h1><p>Edit your public identity, then preview exactly what everyone else sees.</p></div><div class="uw-profile-head-actions"><button class="btn hot" id="uwViewMyPublicProfile" type="button">VIEW PUBLIC PROFILE →</button><span class="uw40-chip" id="profileSaveState">READY</span></div></div>
+<div class="uw40-pagehead uw-profile-edit-head"><div><span>YOUR NETWORK IDENTITY</span><h1>My Profile</h1><p>Edit your public identity, then preview exactly what everyone else sees.</p><div class="uw-hub-links"><button class="btn" data-page="bookings">BOOKINGS</button><button class="btn" data-page="connections">CONNECTED ACCOUNTS</button></div></div><div class="uw-profile-head-actions"><button class="btn hot" id="uwViewMyPublicProfile" type="button">VIEW PUBLIC PROFILE →</button><span class="uw40-chip" id="profileSaveState">READY</span></div></div>
 <section class="uw40-profile-preview">
 <div class="uw40-profile-banner" id="liveProfileBanner"><div class="uw40-profile-noise"></div></div>
 <div class="uw40-profile-header">
@@ -1579,7 +1563,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 </div></section>
 
 <section class="page" id="page-gallery"><div class="wrap uw72-shell">
-  <div class="uw72-head"><div><span>NETWORK MEDIA</span><h1>GALLERY.</h1><p>Real event flyers, project artwork and creator portfolio media from the network.</p></div></div>
+  <div class="uw72-head"><div><span>NETWORK</span><h1>NETWORK.</h1><p>Media, creators, partners and collaboration across UnderWeb.</p><div class="uw-hub-links"><button class="btn hot" data-page="gallery">GALLERY</button><button class="btn" data-page="partners">PARTNER HUB</button></div></div></div>
   <div class="uw72-tabs"><button class="active" data-uw72-gallery="all">ALL</button><button data-uw72-gallery="events">EVENTS</button><button data-uw72-gallery="projects">PROJECTS</button><button data-uw72-gallery="creators">CREATORS</button></div>
   <div id="uw72Gallery" class="uw72-gallery"><div class="uw-empty">Loading media…</div></div>
 </div></section>
@@ -6608,7 +6592,7 @@ const E=id=>document.getElementById(id), safe=v=>typeof esc==='function'?esc(Str
 function tab(name){document.querySelectorAll('[data-uwhelp-tab]').forEach(b=>b.classList.toggle('active',b.dataset.uwhelpTab===name));document.querySelectorAll('[data-uwhelp-panel]').forEach(p=>p.classList.toggle('active',p.dataset.uwhelpPanel===name));if(name==='mine')loadMine();if(name==='issues')loadIssues();}
 function renderFaq(){const q=(E('uwHelpSearch')?.value||'').trim().toLowerCase();const rows=FAQ.filter(x=>!q||x.join(' ').toLowerCase().includes(q));E('uwHelpFaq').innerHTML=rows.length?rows.map((x,i)=>`<article class="uwhelp-faq"><button type="button" data-uwhelp-faq="${i}"><span><small class="eyebrow">${safe(x[0])}</small><br>${safe(x[1])}</span><i>+</i></button><div class="uwhelp-answer">${safe(x[2])}</div></article>`).join(''):'<div class="uw-empty">No FAQ matches that search. Try a shorter phrase or open a support request.</div>';}
 async function loadIssues(){const box=E('uwHelpIssues');if(!box)return;let rows=[];try{const r=await uwSupabase.from('help_known_issues').select('id,title,description,status,affected_area,resolution,updated_at').order('updated_at',{ascending:false});if(!r.error)rows=r.data||[];}catch(e){}if(!rows.length)rows=[{title:'No active published issues',description:'Staff has not published any current known issues here yet.',status:'resolved',affected_area:'Platform',updated_at:new Date().toISOString()}];box.innerHTML=rows.map(x=>`<article class="uwhelp-issue"><div class="uwhelp-issuetop"><div><div class="eyebrow">${safe(x.affected_area||'PLATFORM')}</div><h3>${safe(x.title)}</h3></div><span class="uwhelp-status ${safe(String(x.status||'').toLowerCase())}">${safe(String(x.status||'unknown').toUpperCase())}</span></div><p>${safe(x.description||'')}</p>${x.resolution?`<p><b>Resolution:</b> ${safe(x.resolution)}</p>`:''}<div class="uwhelp-meta"><span>Updated ${new Date(x.updated_at||Date.now()).toLocaleString()}</span></div></article>`).join('');}
-function choose(type){if(!TYPE[type])return;if(!currentSession){toast('Sign in to submit a request.');passwordlessSignIn();return;}chosen=type;const [kind,sub,label]=TYPE[type];E('uwHelpForm').hidden=false;E('uwHelpFormKind').textContent=type==='idea'?'COMMUNITY IDEA':(kind==='application'?'APPLICATION':'SUPPORT TICKET');E('uwHelpFormTitle').textContent=label;E('uwHelpSubject').value=type==='idea'?'':label;E('uwHelpSubject').placeholder=type==='idea'?'Give your idea a short title':'Short subject';E('uwHelpPriority').closest('select').disabled=kind==='application'||type==='idea';E('uwHelpIdeaCategory').hidden=type!=='idea';E('uwHelpBody').placeholder=type==='idea'?'What is your idea, how would it work, and why would it make UnderWeb better? Add any useful details here.':'Tell staff what you need. Include what you tried, what happened, and any useful details.';E('uwHelpSubmitHint').textContent=type==='idea'?'Your idea will appear under My Requests so you can track its status.':'Your request will appear under My Requests after submission.';E('uwHelpForm').scrollIntoView({behavior:'smooth',block:'center'});}
+function choose(type){if(!TYPE[type])return;if(!currentSession){toast('Sign in to submit a request.');passwordlessSignIn();return;}chosen=type;const [kind,sub,label]=TYPE[type];E('uwHelpForm').hidden=false;E('uwHelpFormKind').textContent=type==='idea'?'COMMUNITY IDEA':(kind==='application'?'APPLICATION':'SUPPORT TICKET');E('uwHelpFormTitle').textContent=label;E('uwHelpSubject').value=type==='idea'?'':label;E('uwHelpSubject').placeholder=type==='idea'?'Give your idea a short title':'Short subject';E('uwHelpPriority').closest('select').disabled=kind==='application'||type==='idea';E('uwHelpIdeaCategory').hidden=type!=='idea';E('uwHelpBody').placeholder=type==='idea'?'What is your idea, how would it work, and why would it make UnderWeb better? Add any useful details here.':'Tell staff what you need. Include what you tried, what happened, and any useful details.';E('uwHelpSubmitHint').textContent=type==='idea'?'Your idea will appear under My Requests so you can track its status.':'Your request will appear under My Requests after submission.';E('uwHelpForm').scrollIntoView({behavior:'auto',block:'start'});}
 async function submit(){if(!chosen||!TYPE[chosen])return; if(!currentSession){toast('Sign in first.');return passwordlessSignIn();}const [kind,sub,label]=TYPE[chosen],subject=E('uwHelpSubject').value.trim(),body=E('uwHelpBody').value.trim(),scope=E('uwHelpScope').value;if(!subject||body.length<10)return toast('Add a subject and a little more detail.');const btn=E('uwHelpSubmitBtn');btn.disabled=true;btn.textContent='SUBMITTING…';let error;if(kind==='application'){({error}=await uwSupabase.from('applications').insert({applicant_user_id:currentSession.user.id,type:sub,title:subject,body:`[Scope: ${scope}]\n${body}`,status:'pending'}));}else{const ideaMeta=chosen==='idea'?`[Category: ${E('uwHelpIdeaCategory').value}]\n`:'';({error}=await uwSupabase.from('tickets').insert({requester_user_id:currentSession.user.id,type:sub,subject,body:`[Scope: ${scope}]\n${ideaMeta}${body}`,status:'open',priority:chosen==='idea'?'normal':(E('uwHelpPriority').value||'normal')}));}btn.disabled=false;btn.textContent='SUBMIT REQUEST';if(error)return toast(error.message);E('uwHelpBody').value='';E('uwHelpForm').hidden=true;chosen=null;toast(`${label} submitted.`);tab('mine');await loadMine();}
 async function loadMine(){const box=E('uwHelpMine');if(!box)return;if(!currentSession){box.innerHTML='<div class="uw-empty">Sign in to see your applications and tickets.</div>';return;}box.innerHTML='<div class="uw-empty">Loading your requests…</div>';const uid=currentSession.user.id;const [a,t]=await Promise.all([uwSupabase.from('applications').select('id,type,title,body,status,staff_notes,created_at,updated_at').eq('applicant_user_id',uid).order('created_at',{ascending:false}).limit(50),uwSupabase.from('tickets').select('id,type,subject,body,status,priority,created_at,updated_at').eq('requester_user_id',uid).order('created_at',{ascending:false}).limit(50)]);myApps=a.error?[]:(a.data||[]);myTickets=t.error?[]:(t.data||[]);const rows=[...myApps.map(x=>({...x,_kind:'Application',_title:x.title})),...myTickets.map(x=>({...x,_kind:'Ticket',_title:x.subject}))].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at));const open=rows.filter(x=>!['accepted','denied','resolved','closed'].includes(String(x.status).toLowerCase())).length;E('uwHelpOpenPill').textContent=open;E('uwHelpMyOpen').textContent=open||'0';box.innerHTML=rows.length?rows.map(x=>`<article class="uwhelp-mycard"><div class="uwhelp-mytop"><div><div class="eyebrow">${safe(x._kind)} • ${safe(String(x.type||'request').replaceAll('_',' '))}</div><h3>${safe(x._title||'Untitled request')}</h3></div><span class="uwhelp-status ${safe(String(x.status||'').toLowerCase())}">${safe(String(x.status||'unknown').toUpperCase())}</span></div><p>${safe(x.body||'')}</p>${x.staff_notes?`<p><b>Staff note:</b> ${safe(x.staff_notes)}</p>`:''}<div class="uwhelp-meta"><span>Submitted ${new Date(x.created_at).toLocaleString()}</span>${x.priority?`<span>${safe(x.priority)} priority</span>`:''}</div></article>`).join(''):'<div class="uw-empty">You have not submitted any applications or support tickets yet.</div>';}
 document.addEventListener('click',e=>{const pg=e.target.closest('[data-page="help"]');if(pg)setTimeout(()=>{renderFaq();loadMine();},0);const ideaShortcut=e.target.closest('[data-uwhelp-idea-shortcut]');if(ideaShortcut){tab('submit');choose('idea');return;}const tb=e.target.closest('[data-uwhelp-tab]');if(tb){tab(tb.dataset.uwhelpTab);return;}const jump=e.target.closest('[data-uwhelp-jump]');if(jump){tab(jump.dataset.uwhelpJump);return;}const rq=e.target.closest('[data-uwhelp-type]');if(rq){choose(rq.dataset.uwhelpType);return;}const fq=e.target.closest('[data-uwhelp-faq]');if(fq){fq.closest('.uwhelp-faq')?.classList.toggle('open');return;}});
@@ -6656,7 +6640,8 @@ window.uwHelpRefresh=()=>{renderFaq();loadMine();loadIssues();};
  function renderHelpFeedback(){const dst=E('feedbackListHelp'),src=E('feedbackList');if(!dst)return;if(typeof renderFeedbackV2==='function')renderFeedbackV2();dst.innerHTML=src?.innerHTML||'<div class="uw-empty">No beta feedback submitted yet.</div>';}
  async function submitHelpFeedback(){if(!currentSession)return passwordlessSignIn();const type=E('feedbackTypeHelp').value,severity=E('feedbackSeverityHelp').value,title=E('feedbackTitleHelp').value.trim(),body=E('feedbackBodyHelp').value.trim();if(!title||!body)return toast('Add a title and details.');const btn=E('submitFeedbackBtnHelp');btn.disabled=true;btn.textContent='SUBMITTING…';const {error}=await uwSupabase.from('beta_feedback').insert({reporter_user_id:currentSession.user.id,type,severity,title,body,page_url:location.href});btn.disabled=false;btn.textContent='SUBMIT BUG / FEEDBACK';if(error)return toast(error.message);E('feedbackTitleHelp').value='';E('feedbackBodyHelp').value='';toast('Feedback submitted.');if(typeof loadFeedback==='function')await loadFeedback();renderHelpFeedback();}
  E('submitFeedbackBtnHelp')?.addEventListener('click',submitHelpFeedback);E('reloadFeedbackBtnHelp')?.addEventListener('click',async()=>{if(typeof loadFeedback==='function')await loadFeedback();renderHelpFeedback();});
- const mo=new MutationObserver(()=>{if(document.getElementById('page-help')?.classList.contains('active')&&document.querySelector('[data-uwhelp-panel="feedback"]')?.classList.contains('active'))renderHelpFeedback();});const src=E('feedbackList');if(src)mo.observe(src,{childList:true,subtree:true});
+ // Mobile stability: feedback is refreshed explicitly on tab open / submit / refresh.
+ // Do not observe feedbackList and re-render it from its own mutation cycle.
  window.addEventListener('online',()=>toast('Connection restored.'));
  document.addEventListener('DOMContentLoaded',()=>setTimeout(injectKnown,250));
 })();
