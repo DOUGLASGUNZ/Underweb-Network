@@ -6029,7 +6029,7 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
   f.style.left=(ar.left-hr.left)+'px';f.style.top=(ar.top-hr.top)+'px';f.style.width=ar.width+'px';f.style.height=ar.height+'px';
  }
  async function fetchEquipped(){
-  if(busy||!modalOpen()||!window.uwSupabase)return;busy=true;
+  if(busy||!modalOpen()||typeof uwSupabase==='undefined')return;busy=true;
   try{
    const auth=await uwSupabase.auth.getSession();const me=String(auth?.data?.session?.user?.id||'');
    // Production-safe fallback: member/self profiles do not always populate uw621ActiveCreator.
@@ -6121,60 +6121,21 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 #uw621ProfileModal #uw621Avatar::before,
 #uw621ProfileModal #uw621Avatar::after{content:none!important;display:none!important;background:none!important;background-image:none!important;animation:none!important;box-shadow:none!important;filter:none!important;}
 </style>
-\n<style id="uw-cosmetic-production-bridge-20260917">\n/* Production cosmetic host: keep the sibling renderer anchored to the real avatar. */\n#uw621ProfileModal .uw621-head{position:relative!important}\n#uw621ProfileModal .uwpf[data-uw-frame-v2="1"]{position:absolute!important;display:block!important;z-index:40!important;pointer-events:none!important;overflow:visible!important}\n</style>\n<script id="uw-cosmetic-production-bridge-js-20260917">\n(()=>{\n const slugs=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];\n let last='';\n function fromAvatar(){\n   const a=document.getElementById('uw621Avatar'); if(!a)return null;\n   for(const s of slugs) if(a.classList.contains('uwcos-'+s)) return s;\n   return null;\n }\n function sync(){\n   const modal=document.getElementById('uw621ProfileModal');\n   if(!modal?.classList.contains('open'))return;\n   const slug=fromAvatar();\n   if(slug && slug!==last && typeof window.uwFrameV2SetTest==='function'){\n     last=slug; window.uwFrameV2SetTest(slug);\n   }\n   if(typeof window.uwFrameV2Refresh==='function') window.uwFrameV2Refresh();\n }\n const a=document.getElementById('uw621Avatar');\n if(a)new MutationObserver(()=>{const slug=fromAvatar();if(slug&&slug!==last&&typeof window.uwFrameV2SetTest==='function'){last=slug;window.uwFrameV2SetTest(slug)}}).observe(a,{attributes:true,attributeFilter:['class']});\n const m=document.getElementById('uw621ProfileModal');\n if(m)new MutationObserver(()=>{if(m.classList.contains('open')){setTimeout(sync,80);setTimeout(sync,350);setTimeout(sync,900)}}).observe(m,{attributes:true,attributeFilter:['class']});\n document.addEventListener('click',e=>{if(e.target.closest('[data-uwcos-equip]')){setTimeout(sync,250);setTimeout(sync,900)}},true);\n})();\n</script>\n\n<style id="uw-cosmetic-diagnostic-css">
-#uwCosDiag{position:fixed;left:10px;right:10px;bottom:76px;z-index:2147483646;background:#050807f2;border:1px solid #39ff68;color:#dfffe7;padding:10px 12px;font:11px/1.35 monospace;white-space:pre-wrap;word-break:break-word;max-height:31vh;overflow:auto;box-shadow:0 0 22px #39ff6830}
-#uwCosDiag b{color:#39ff68}#uwCosDiag .bad{color:#ff6b78}
-</style>
-<script id="uw-cosmetic-production-diagnostic">
+\n<style id="uw-cosmetic-production-bridge-20260917">\n/* Production cosmetic host: keep the sibling renderer anchored to the real avatar. */\n#uw621ProfileModal .uw621-head{position:relative!important}\n#uw621ProfileModal .uwpf[data-uw-frame-v2="1"]{position:absolute!important;display:block!important;z-index:40!important;pointer-events:none!important;overflow:visible!important}\n</style>\n<script id="uw-cosmetic-production-bridge-js-20260917">\n(()=>{\n const slugs=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];\n let last='';\n function fromAvatar(){\n   const a=document.getElementById('uw621Avatar'); if(!a)return null;\n   for(const s of slugs) if(a.classList.contains('uwcos-'+s)) return s;\n   return null;\n }\n function sync(){\n   const modal=document.getElementById('uw621ProfileModal');\n   if(!modal?.classList.contains('open'))return;\n   const slug=fromAvatar();\n   if(slug && slug!==last && typeof window.uwFrameV2SetTest==='function'){\n     last=slug; window.uwFrameV2SetTest(slug);\n   }\n   if(typeof window.uwFrameV2Refresh==='function') window.uwFrameV2Refresh();\n }\n const a=document.getElementById('uw621Avatar');\n if(a)new MutationObserver(()=>{const slug=fromAvatar();if(slug&&slug!==last&&typeof window.uwFrameV2SetTest==='function'){last=slug;window.uwFrameV2SetTest(slug)}}).observe(a,{attributes:true,attributeFilter:['class']});\n const m=document.getElementById('uw621ProfileModal');\n if(m)new MutationObserver(()=>{if(m.classList.contains('open')){setTimeout(sync,80);setTimeout(sync,350);setTimeout(sync,900)}}).observe(m,{attributes:true,attributeFilter:['class']});\n document.addEventListener('click',e=>{if(e.target.closest('[data-uwcos-equip]')){setTimeout(sync,250);setTimeout(sync,900)}},true);\n})();\n</script>\n\n\n
+<script id="uw-cosmetic-production-hydration-fix-20260917">
 (()=>{
- const slugs=['webwalker','void_signal','parasite','black_web_crown','ghost_protocol','devoured_signal','network_zero'];
- const box=()=>{let b=document.getElementById('uwCosDiag');if(!b){b=document.createElement('div');b.id='uwCosDiag';document.body.appendChild(b)}return b};
- const esc=v=>String(v??'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
- async function trace(){
-   const modal=document.getElementById('uw621ProfileModal');
-   if(!modal?.classList.contains('open')){document.getElementById('uwCosDiag')?.remove();return}
-   const b=box(); b.innerHTML='<b>COSMETIC TRACE</b> // reading production state…';
-   try{
-     const a=document.getElementById('uw621Avatar');
-     const auth=await window.uwSupabase?.auth?.getSession();
-     const me=String(auth?.data?.session?.user?.id||'');
-     const viewed=String(window.uw621ActiveCreator||window.uw744ViewedUid||'');
-     const uid=viewed||me;
-     let q=null, source='none';
-     if(!window.uwSupabase) throw new Error('window.uwSupabase missing');
-     if(!uid) throw new Error('No viewed/self uid resolved');
-     if(me&&uid===me){source='uw_my_cosmetic_locker';q=await window.uwSupabase.rpc('uw_my_cosmetic_locker')}
-     else {source='uw_public_cosmetics';q=await window.uwSupabase.rpc('uw_public_cosmetics',{p_user_id:uid})}
-     const rows=Array.isArray(q?.data)?q.data:(q?.data?[q.data]:[]);
-     const eq=rows.find(r=>r&&r.is_equipped===true&&slugs.includes(String(r.cosmetic_slug||r.slug||'')));
-     const slug=String(eq?.cosmetic_slug||eq?.slug||'');
-     if(slug && typeof window.uwFrameV2SetTest==='function') window.uwFrameV2SetTest(slug);
-     await new Promise(r=>setTimeout(r,80));
-     const host=a?.closest('.uw621-head')||a?.parentElement;
-     const frame=host?.querySelector(':scope > .uwpf[data-uw-frame-v2="1"]');
-     const ar=a?.getBoundingClientRect(), fr=frame?.getBoundingClientRect();
-     b.innerHTML='<b>COSMETIC TRACE</b> // TEMPORARY\n'+
-       'viewed uid: '+esc(viewed||'(empty)')+'\n'+
-       'auth uid: '+esc(me||'(empty)')+'\n'+
-       'resolved uid: '+esc(uid||'(empty)')+'\n'+
-       'rpc: '+esc(source)+'\n'+
-       'rpc error: '+esc(q?.error?.message||'none')+'\n'+
-       'rows: '+esc(rows.length)+'\n'+
-       'equipped: '+esc(slug||'(none)')+'\n'+
-       'uwFrameV2SetTest: '+(typeof window.uwFrameV2SetTest)+'\n'+
-       'avatar: '+(a?'YES':'NO')+(ar?' '+Math.round(ar.width)+'x'+Math.round(ar.height):'')+'\n'+
-       'frame node: '+(frame?'YES':'NO')+(fr?' '+Math.round(fr.width)+'x'+Math.round(fr.height):'')+'\n'+
-       'frame slug: '+esc(frame?.dataset?.slug||'(none)')+'\n'+
-       'frame children: '+esc(frame?.children?.length||0);
-   }catch(e){b.innerHTML='<b>COSMETIC TRACE</b>\n<span class="bad">TRACE ERROR: '+esc(e?.message||e)+'</span>'}
- }
- window.uwRunCosmeticTrace=trace;
- const m=document.getElementById('uw621ProfileModal');
- if(m)new MutationObserver(()=>{if(m.classList.contains('open')){setTimeout(trace,250);setTimeout(trace,1000)}else document.getElementById('uwCosDiag')?.remove()}).observe(m,{attributes:true,attributeFilter:['class']});
- document.addEventListener('click',e=>{if(e.target.closest('[data-uwcos-equip]'))setTimeout(trace,700)},true);
- setInterval(()=>{if(document.getElementById('uw621ProfileModal')?.classList.contains('open'))trace()},2500);
+  // uwSupabase is intentionally a top-level lexical const in this build, not window.uwSupabase.
+  // The V2 renderer now hydrates through that same client. Re-run hydration whenever the profile opens.
+  const m=document.getElementById('uw621ProfileModal');
+  if(m)new MutationObserver(()=>{
+    if(m.classList.contains('open')){
+      setTimeout(()=>window.uwFrameV2Refresh?.(),80);
+      setTimeout(()=>window.uwFrameV2Refresh?.(),450);
+    }
+  }).observe(m,{attributes:true,attributeFilter:['class']});
 })();
-</script>\n</body></html>
+</script>
+</body></html>
 <!-- 0.8.0.2 — member profile editing: remove creator-role dependency -->
 <script id="uw802MemberProfileEditing">
 /* Ordinary Network members may edit their account identity after onboarding.
