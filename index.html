@@ -1192,6 +1192,15 @@ body[data-theme="symbiotes"] .uw-help-fab i{background:#62aaff}
 <style id="uw-remove-floating-help-feedback-v1">
 .uw-help-fab,#feedbackFab,.feedback-fab,.uw-feedback-fab,[data-feedback-fab]{display:none!important}
 </style>
+
+<style id="uw-help-fab-repurpose-v3">
+/* The existing green + FAB is now the single Help Center shortcut. */
+.uw-help-fab{display:none!important}
+#uwCreateFab{overflow:visible!important}
+#uwCreateFab::before{content:"NEED HELP?";position:absolute;right:66px;top:50%;transform:translateY(-50%);white-space:nowrap;font:800 10px/1 monospace;letter-spacing:.14em;color:#55ff91;background:rgba(2,10,5,.94);border:1px solid rgba(85,255,145,.32);border-radius:999px;padding:9px 11px;box-shadow:0 0 20px rgba(85,255,145,.10);pointer-events:none}
+body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgba(98,170,255,.35)}
+@media(max-width:380px){#uwCreateFab::before{right:62px;font-size:9px;padding:8px 9px}}
+</style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -2424,7 +2433,7 @@ try{localStorage.removeItem('underwebTheme')}catch(e){}
 setTheme('underweb');
 
 </script>
-<button aria-label="Create" id="uwCreateFab" title="Create / report">+</button>
+<button aria-label="Need help? Open Help Center" id="uwCreateFab" title="Need help?">+</button>
 <script>
 let uwBeta={applications:[],tickets:[],announcements:[],activity:[],feedback:[],events:[]};
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -2705,7 +2714,7 @@ function renderMissing(id,msg){const e=document.getElementById(id);if(e)e.innerH
 document.addEventListener('click',e=>{const a=e.target.closest('[data-app-status]');if(a){const [id,s]=a.dataset.appStatus.split('|');setApplicationStatus(id,s);return}const t=e.target.closest('[data-ticket-status]');if(t){const [id,s]=t.dataset.ticketStatus.split('|');setTicketStatus(id,s);return}});
 document.getElementById('saveEventBtn')?.addEventListener('click',saveEvent);
 document.getElementById('reloadApplicationsBtn')?.addEventListener('click',loadApplications);document.getElementById('reloadTicketsBtn')?.addEventListener('click',loadTickets);document.getElementById('reloadAnnouncementsBtn')?.addEventListener('click',loadAnnouncements);document.getElementById('reloadActivityBtn')?.addEventListener('click',loadActivity);document.getElementById('reloadFeedbackBtn')?.addEventListener('click',loadFeedback);document.getElementById('postAnnouncementBtn')?.addEventListener('click',postAnnouncement);document.getElementById('submitFeedbackBtn')?.addEventListener('click',submitFeedback);
-document.getElementById('uwCreateFab')?.addEventListener('click',()=>{if(hasStaffAccess())showPage('feedback');else showPage('profile')});
+document.getElementById('uwCreateFab')?.addEventListener('click',()=>{showPage('help');setTimeout(()=>window.uwHelpRefresh?.(),40)});
 bindDynamicPageButtons();
 </script>
 <div aria-hidden="true" class="uw-overlay" id="projectPublishOverlay"><div class="uw-dialog uw63-dialog"><div class="uw-dialog-head"><div><div class="eyebrow">PROJECT / COLLAB</div><h2>Post a Recruiting Project</h2></div><button class="uw-dialog-close" id="closeProjectPublisher" type="button">×</button></div><div class="uw-field-grid"><label><span>Title</span><input class="input" id="projectTitle" placeholder="What are you building?"/></label><label><span>Community</span><select class="select" id="projectGroup"><option value="network">Network-wide</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option></select></label><label><span>Type</span><select class="select" id="projectType"><option value="collaboration">Collaboration</option><option value="event">Event Support</option><option value="avatar">Avatar / Unity</option><option value="world">World Creation</option><option value="media">Photo / Video / Design</option><option value="music">Music</option></select></label><label><span>Compensation</span><select class="select" id="projectComp"><option value="collaboration">Collaboration</option><option value="paid">Paid</option><option value="unpaid">Unpaid</option><option value="volunteer">Volunteer</option></select></label><label><span>Project / Event Date</span><input class="input" id="projectDate" type="datetime-local"/></label><label><span>Apply By</span><input class="input" id="projectDeadline" type="datetime-local"/></label></div><label class="uw-field"><span>Description</span><textarea class="textarea" id="projectDescription" placeholder="Describe the project, expectations, timing, and what kind of help you need."></textarea></label><label class="uw-field uw71-media-field"><span>Optional Cover / Collab Image</span><input id="projectCoverInput" type="file" accept="image/jpeg,image/png,image/webp"/><small>JPG, PNG or WebP · max 8 MB. Use a flyer, render, world screenshot or collab artwork.</small><div class="uw71-media-preview" id="projectCoverPreview"></div></label><div class="uw63-slot-editor"><div class="uw63-slot-head"><div><span class="eyebrow">RECRUITING SLOTS</span><h3>Who do you need?</h3></div><button class="btn" id="uw63AddSlot" type="button">+ ADD ROLE</button></div><div id="uw63SlotRows"></div></div><div class="uw-dialog-actions"><button class="btn" id="cancelProjectPublisher" type="button">Cancel</button><button class="btn hot" id="publishProjectBtn" type="button">POST PROJECT</button></div></div></div></div>
