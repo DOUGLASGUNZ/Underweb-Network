@@ -6031,8 +6031,10 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
  async function fetchEquipped(){
   if(busy||!modalOpen()||!window.uwSupabase)return;busy=true;
   try{
-   const uid=viewedUid(); if(!uid)return;
    const auth=await uwSupabase.auth.getSession();const me=String(auth?.data?.session?.user?.id||'');
+   // Production-safe fallback: member/self profiles do not always populate uw621ActiveCreator.
+   // In that case the signed-in user's id is the viewed profile id.
+   const uid=viewedUid() || me; if(!uid)return;
    let q;
    if(me&&uid===me) q=await uwSupabase.rpc('uw_my_cosmetic_locker');
    else q=await uwSupabase.rpc('uw_public_cosmetics',{p_user_id:uid});
