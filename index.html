@@ -6329,38 +6329,66 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 }
 </style>
 
-<!-- BLACKFLAME mobile trigger reliability patch — 2026-09-17 -->
+<!-- BLACKFLAME mobile trigger reliability patch v2 — 2026-09-17 -->
 <script id="uw-blackflame-mobile-trigger-fix-20260917">
 (()=>{
   const TARGET='thereisnoweb';
-  let firing=false;
-  const normalize=v=>String(v||'').toLowerCase().replace(/[^a-z]/g,'');
-  const isPeopleSearch=el=>el instanceof Element && (el.id==='uw783PeopleQuery' || !!el.closest?.('#uw783PeopleQuery'));
-  const tryUnlock=async el=>{
-    const q=el?.id==='uw783PeopleQuery'?el:el?.closest?.('#uw783PeopleQuery');
-    if(!q||firing)return;
-    const value=normalize(q.value);
-    if(!value.endsWith(TARGET))return;
-    firing=true;
-    q.value='';
-    try{q.dispatchEvent(new Event('input',{bubbles:true}))}catch(_){}
+  const SECRET='ghost_protocol';
+  let firing=false, typed='';
+  const clean=v=>String(v||'').toLowerCase().replace(/[^a-z]/g,'');
+  const field=el=>el?.id==='uw783PeopleQuery'?el:el?.closest?.('#uw783PeopleQuery');
+
+  async function unlock(q){
+    if(firing)return;
+    firing=true; typed='';
+    if(q){q.value='';try{q.dispatchEvent(new Event('input',{bubbles:true}))}catch(_){}}
     try{
-      if(typeof uwDiscoverCosmetic==='function') await uwDiscoverCosmetic('ghost_protocol');
-    }finally{
-      setTimeout(()=>{firing=false},700);
-    }
-  };
-  ['input','change','search','keyup','compositionend'].forEach(type=>{
-    document.addEventListener(type,e=>{if(isPeopleSearch(e.target))tryUnlock(e.target)},true);
-  });
-  const bind=()=>{
-    const q=document.getElementById('uw783PeopleQuery');
-    if(!q||q.dataset.uwBlackflameFixed)return;
-    q.dataset.uwBlackflameFixed='1';
-    ['input','change','search','keyup','compositionend'].forEach(type=>q.addEventListener(type,()=>tryUnlock(q)));
-  };
-  bind();
-  new MutationObserver(bind).observe(document.documentElement,{subtree:true,childList:true});
+      // Call the RPC directly so this trigger does not depend on any later wrapper/rebinding
+      // of uwDiscoverCosmetic.
+      const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:SECRET});
+      if(r.error){console.error('[BLACKFLAME unlock]',r.error);toast?.('BLACKFLAME SIGNAL FAILED');return}
+      const row=Array.isArray(r.data)?r.data[0]:r.data;
+      if(!row){toast?.('BLACKFLAME SIGNAL FAILED');return}
+      const name='BLACKFLAME PROTOCOL';
+      if(row.new_unlock && typeof window.uwCosmeticDiscoverySequence==='function'){
+        window.uwCosmeticDiscoverySequence(name);
+      }else{
+        toast?.(row.new_unlock?`SECRET FOUND // ${name}`:`SECRET ALREADY DISCOVERED // ${name}`);
+      }
+      try{if(typeof uwLoadCosmeticsLocker==='function')await uwLoadCosmeticsLocker()}catch(_){}
+      try{if(row.new_unlock&&typeof loadNetworkPulse==='function')await loadNetworkPulse()}catch(_){}
+    }catch(err){console.error('[BLACKFLAME unlock exception]',err);toast?.('BLACKFLAME SIGNAL FAILED')}
+    finally{setTimeout(()=>{firing=false},500)}
+  }
+
+  function inspect(q){
+    if(!q)return;
+    const v=clean(q.value);
+    if(v.includes(TARGET))unlock(q);
+  }
+
+  // Normal Android/iOS/browser input path.
+  document.addEventListener('input',e=>{const q=field(e.target);if(q)inspect(q)},true);
+  document.addEventListener('change',e=>{const q=field(e.target);if(q)inspect(q)},true);
+  document.addEventListener('compositionend',e=>{const q=field(e.target);if(q)inspect(q)},true);
+
+  // Independent character buffer. This survives search code that rewrites/clears the field
+  // between input events and also handles mobile keyboards using beforeinput.
+  document.addEventListener('beforeinput',e=>{
+    const q=field(e.target); if(!q)return;
+    if(e.inputType==='deleteContentBackward'){typed=typed.slice(0,-1);return}
+    const chars=clean(e.data);
+    if(!chars)return;
+    typed=(typed+chars).slice(-TARGET.length);
+    if(typed===TARGET)setTimeout(()=>unlock(q),0);
+  },true);
+
+  // Physical-key fallback for desktop testing.
+  document.addEventListener('keydown',e=>{
+    const q=field(e.target);if(!q||e.ctrlKey||e.metaKey||e.altKey||e.key.length!==1)return;
+    typed=(typed+clean(e.key)).slice(-TARGET.length);
+    if(typed===TARGET)setTimeout(()=>unlock(q),0);
+  },true);
 })();
 </script>
 </body>
