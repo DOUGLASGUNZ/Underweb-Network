@@ -1246,6 +1246,57 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 .sidebar .brand img.uw-real-brand,.sidebar-brand img.uw-real-brand,#sidebar img.uw-real-brand{max-width:190px;max-height:58px;object-fit:contain}
 @media(max-width:760px){#uwArtHomeHero{min-height:215px}.uw-art-copy{width:72%;padding:24px 18px}#uwArtHomeHero .uw-art-eye{width:52%;right:-48px;opacity:.46}.uw-art-wordmark{max-height:78px}#uwArtCreatorHero{min-height:250px}#uwArtCreatorHero .uw-art-copy{width:68%}#uwArtCreatorHero .uw-art-character{max-width:58%;opacity:.58;right:-25px}#uwArtCommandMark{width:82px;height:82px;right:8px;top:8px;opacity:.12}}
 </style>
+
+<style id="uw-home-hero-cleanup-v4">
+/* Remove the redundant giant lower branding block/space. */
+#page-home #uwArtHomeHero ~ .uw-brand-showcase,
+#page-home #uwArtHomeHero ~ .uw-branding-showcase,
+#page-home #uwArtHomeHero ~ .brand-showcase,
+#page-home #uwArtHomeHero ~ .uw-home-brand-art,
+#page-home #uwArtHomeHero ~ [class*="brand"][class*="showcase"]{display:none!important}
+
+/* Make the retained top hero tighter, cleaner and more deliberate. */
+#uwArtHomeHero{
+ min-height:0!important;
+ display:grid!important;
+ grid-template-columns:minmax(0,1.35fr) minmax(180px,.65fr)!important;
+ align-items:center!important;
+ padding:22px 24px!important;
+ gap:18px!important;
+ border-radius:20px!important;
+ background:linear-gradient(120deg,#020503 0%,#020704 62%,#061109 100%)!important;
+}
+#uwArtHomeHero .uw-art-copy{
+ width:auto!important;padding:0!important;display:flex!important;flex-direction:column!important;
+ justify-content:center!important;min-width:0!important;
+}
+#uwArtHomeHero .uw-art-wordmark{
+ width:min(280px,72%)!important;max-height:94px!important;margin:0 0 12px!important;
+ object-position:left center!important;
+}
+#uwArtHomeHero .uw-art-sub{
+ font-size:clamp(14px,1.35vw,18px)!important;line-height:1.55!important;
+ max-width:650px!important;color:#c0c8c2!important;
+}
+#uwArtHomeHero .uw-art-eye{
+ position:relative!important;right:auto!important;top:auto!important;transform:none!important;
+ width:100%!important;max-width:270px!important;justify-self:end!important;opacity:.86!important;
+}
+@media(max-width:760px){
+ #uwArtHomeHero{
+   grid-template-columns:minmax(0,1fr) 120px!important;
+   padding:18px 16px!important;gap:10px!important;
+ }
+ #uwArtHomeHero .uw-art-wordmark{width:min(210px,90%)!important;max-height:72px!important}
+ #uwArtHomeHero .uw-art-sub{font-size:14px!important;line-height:1.45!important}
+ #uwArtHomeHero .uw-art-eye{max-width:120px!important}
+}
+@media(max-width:430px){
+ #uwArtHomeHero{grid-template-columns:minmax(0,1fr) 96px!important;padding:15px 14px!important}
+ #uwArtHomeHero .uw-art-eye{max-width:96px!important}
+}
+</style>
+
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <header class="top uw70-top">
@@ -6800,11 +6851,16 @@ document.addEventListener('DOMContentLoaded',()=>{
  if(brand&&!brand.querySelector('.uw-real-brand')){const i=document.createElement('img');i.className='uw-real-brand';i.src=logo;i.alt='UnderWeb Network';brand.prepend(i)}
  const home=document.getElementById('page-home');
  if(home&&!document.getElementById('uwArtHomeHero')){const h=document.createElement('div');h.id='uwArtHomeHero';h.innerHTML='<img class="uw-art-eye" src="'+eye+'" alt=""><div class="uw-art-copy"><img class="uw-art-wordmark" src="'+wordmark+'" alt="UnderWeb Network"><div class="uw-art-sub">Underground creator network // events, creators, projects, staff operations and community systems in one place.</div></div>';const a=home.querySelector('.hero,.page-head,.section-head');a?a.insertAdjacentElement('afterend',h):home.prepend(h)}
- const creator=document.getElementById('page-creators')||document.getElementById('page-people')||document.getElementById('page-network');
- if(creator&&!document.getElementById('uwArtCreatorHero')){const h=document.createElement('div');h.id='uwArtCreatorHero';h.innerHTML='<img class="uw-art-character" src="'+character+'" alt=""><div class="uw-art-copy"><img class="uw-art-wordmark" src="'+wordmark+'" alt="UnderWeb Network"><div class="uw-art-sub">Find creators, build connections, discover work and collaborate across the Network.</div></div>';const a=creator.querySelector('.hero,.page-head,.section-head');a?a.insertAdjacentElement('afterend',h):creator.prepend(h)}
  const command=document.getElementById('page-command')||document.getElementById('page-command-center')||document.getElementById('page-staff');
  if(command&&!document.getElementById('uwArtCommandMark')){command.style.position='relative';const i=document.createElement('img');i.id='uwArtCommandMark';i.src=eye;i.alt='';command.appendChild(i)}
 });
 </script>
+<script id="uw-remove-redundant-home-art">
+document.addEventListener('DOMContentLoaded',()=>{
+ const bad=document.getElementById('uwArtCreatorHero');
+ if(bad) bad.remove();
+});
+</script>
+
 </body>
 </html>
