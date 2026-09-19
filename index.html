@@ -1236,6 +1236,13 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
     <button data-page="profile">PROFILE</button>
   </nav>
   <div class="actions uw70-actions">
+    <div class="uw-notify-wrap" id="uwNotifyWrap" hidden>
+      <button class="uw-notify-bell" id="uwNotifyBell" type="button" aria-label="Notifications" aria-expanded="false">🔔<span id="uwNotifyCount" hidden>0</span></button>
+      <div class="uw-notify-drawer" id="uwNotifyDrawer" hidden>
+        <div class="uw-notify-head"><div><small>UNDERWEB NETWORK</small><strong>NOTIFICATIONS</strong></div><button type="button" id="uwNotifyMarkAll">MARK ALL READ</button></div>
+        <div id="uwNotifyList" class="uw-notify-list"><div class="uw-notify-empty">No notifications yet.</div></div>
+      </div>
+    </div>
     <span id="authState" style="font-size:11px;opacity:.68"></span>
     <button class="btn" data-action="signin" id="authBtn">Sign In</button>
     <button class="btn hot" data-action="join">Join Network</button>
@@ -6727,5 +6734,28 @@ window.uwHelpRefresh=()=>{renderFaq();loadMine();loadIssues();};
 })();
 </script>
 
+
+<style id="uw-notifications-v1-css">
+.uw-notify-wrap{position:relative;z-index:1200}.uw-notify-bell{position:relative;width:42px;height:42px;border:1px solid rgba(68,255,111,.22);border-radius:12px;background:#050907;color:#eaffee;cursor:pointer;font-size:17px}.uw-notify-bell:hover,.uw-notify-bell[aria-expanded="true"]{border-color:#45ff72;box-shadow:0 0 22px rgba(69,255,114,.12)}#uwNotifyCount{position:absolute;right:-6px;top:-7px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#45ff72;color:#020603;font:900 10px/20px system-ui;text-align:center;box-shadow:0 0 14px rgba(69,255,114,.45)}.uw-notify-drawer{position:absolute;right:0;top:50px;width:min(390px,calc(100vw - 24px));max-height:min(620px,75vh);overflow:hidden;border:1px solid rgba(69,255,114,.22);border-radius:16px;background:rgba(3,7,5,.985);box-shadow:0 25px 80px rgba(0,0,0,.65);backdrop-filter:blur(16px)}.uw-notify-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border-bottom:1px solid rgba(69,255,114,.12)}.uw-notify-head small{display:block;color:#45ff72;font-size:8px;letter-spacing:.18em}.uw-notify-head strong{font-size:13px;letter-spacing:.08em}.uw-notify-head button{border:0;background:transparent;color:#8e9b92;font-size:8px;letter-spacing:.12em;cursor:pointer}.uw-notify-head button:hover{color:#45ff72}.uw-notify-list{overflow:auto;max-height:520px}.uw-notify-item{display:block;width:100%;padding:14px 15px;border:0;border-bottom:1px solid rgba(255,255,255,.055);background:transparent;color:#eaf1ec;text-align:left;cursor:pointer}.uw-notify-item:hover{background:rgba(69,255,114,.045)}.uw-notify-item.unread{background:linear-gradient(90deg,rgba(69,255,114,.09),transparent 60%);box-shadow:inset 2px 0 #45ff72}.uw-notify-item .uw-ni-top{display:flex;justify-content:space-between;gap:12px;align-items:center}.uw-notify-item .uw-ni-kind{color:#45ff72;font-size:7px;letter-spacing:.16em;text-transform:uppercase}.uw-notify-item time{color:#657168;font-size:7px;white-space:nowrap}.uw-notify-item h4{margin:6px 0 4px;font-size:12px}.uw-notify-item p{margin:0;color:#94a098;font-size:10px;line-height:1.45}.uw-notify-empty{padding:28px 15px;text-align:center;color:#718078;font-size:10px}.uw-notify-toast{position:fixed;right:18px;top:74px;z-index:1300;max-width:340px;padding:12px 14px;border:1px solid rgba(69,255,114,.25);border-radius:12px;background:#050a07;color:#eaf1ec;box-shadow:0 18px 50px rgba(0,0,0,.5);font-size:10px;animation:uwNotifIn .2s ease-out}@keyframes uwNotifIn{from{transform:translateY(-8px);opacity:0}to{transform:none;opacity:1}}@media(max-width:760px){.uw70-actions #authState{display:none}.uw-notify-drawer{position:fixed;right:12px;left:12px;top:64px;width:auto;max-height:72vh}.uw-notify-list{max-height:calc(72vh - 62px)}}
+</style>
+<script id="uw-notifications-v1-js">
+(()=>{
+ let channel=null, rows=[];
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const ago=v=>{const d=new Date(v),n=Date.now()-d.getTime(),m=Math.floor(n/60000);if(!Number.isFinite(m))return '';if(m<1)return 'now';if(m<60)return m+'m';const h=Math.floor(m/60);if(h<24)return h+'h';const day=Math.floor(h/24);return day<7?day+'d':d.toLocaleDateString()};
+ function draw(){const list=$('uwNotifyList'),count=$('uwNotifyCount');if(!list||!count)return;const unread=rows.filter(x=>!x.read_at).length;count.textContent=unread>99?'99+':String(unread);count.hidden=!unread;list.innerHTML=rows.length?rows.slice(0,30).map(n=>`<button class="uw-notify-item ${n.read_at?'':'unread'}" type="button" data-uw-notif-id="${esc(n.id)}" data-uw-notif-page="${esc(n.action_page||'')}"><div class="uw-ni-top"><span class="uw-ni-kind">${esc(n.kind||'NETWORK')}</span><time>${esc(ago(n.created_at))}</time></div><h4>${esc(n.title||'UnderWeb update')}</h4><p>${esc(n.body||'')}</p></button>`).join(''):'<div class="uw-notify-empty">You have no notifications yet.</div>';}
+ async function load(){try{if(!window.uwSupabase||!window.currentSession?.user)return;const {data,error}=await uwSupabase.from('network_notifications').select('*').eq('user_id',currentSession.user.id).order('created_at',{ascending:false}).limit(50);if(error)throw error;rows=data||[];draw();$('uwNotifyWrap').hidden=false}catch(e){console.warn('[UnderWeb notifications]',e)}}
+ async function mark(id){if(!id)return;const n=rows.find(x=>String(x.id)===String(id));if(n&&!n.read_at){n.read_at=new Date().toISOString();draw();await uwSupabase.from('network_notifications').update({read_at:n.read_at}).eq('id',id).eq('user_id',currentSession.user.id)}}
+ async function markAll(){const t=new Date().toISOString();rows.forEach(n=>{if(!n.read_at)n.read_at=t});draw();await uwSupabase.from('network_notifications').update({read_at:t}).eq('user_id',currentSession.user.id).is('read_at',null)}
+ function popup(n){const x=document.createElement('div');x.className='uw-notify-toast';x.innerHTML=`<b>${esc(n.title||'New notification')}</b><div style="margin-top:4px;color:#94a098">${esc(n.body||'')}</div>`;document.body.appendChild(x);setTimeout(()=>x.remove(),4500)}
+ async function subscribe(){if(!window.uwSupabase||!window.currentSession?.user)return;if(channel){try{await uwSupabase.removeChannel(channel)}catch(_){}}channel=uwSupabase.channel('uw-notifications-'+currentSession.user.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'network_notifications',filter:'user_id=eq.'+currentSession.user.id},payload=>{rows.unshift(payload.new);draw();popup(payload.new)}).subscribe();}
+ async function boot(){await load();await subscribe()}
+ document.addEventListener('click',async e=>{const bell=e.target.closest('#uwNotifyBell');if(bell){const d=$('uwNotifyDrawer'),open=d.hidden;d.hidden=!open;bell.setAttribute('aria-expanded',String(open));if(open)load();return}if(!e.target.closest('#uwNotifyWrap')){const d=$('uwNotifyDrawer'),b=$('uwNotifyBell');if(d&&!d.hidden){d.hidden=true;b?.setAttribute('aria-expanded','false')}}const item=e.target.closest('[data-uw-notif-id]');if(item){await mark(item.dataset.uwNotifId);const page=item.dataset.uwNotifPage;if(page){document.querySelector(`[data-page="${CSS.escape(page)}"]`)?.click()}$('uwNotifyDrawer').hidden=true}$('uwNotifyMarkAll')===e.target&&markAll()});
+ window.uwNotificationsV1={load,subscribe,boot};
+ if(window.uwSupabase)uwSupabase.auth.onAuthStateChange((event,session)=>{if(session){window.currentSession=session;setTimeout(boot,180)}else{$('uwNotifyWrap')&&($('uwNotifyWrap').hidden=true)}});
+ setTimeout(()=>{if(window.currentSession?.user)boot()},900);
+})();
+</script>
 </body>
 </html>
