@@ -1498,6 +1498,22 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
  <div class="uwcos-locker-status"><span id="uwCosDiscoveryCount">0 / ??? SECRETS DISCOVERED</span><span>Cosmetics never grant roles, verification, or authority.</span></div>
  <div class="uwcos-locker-grid" id="uwCosLockerGrid"><div class="uw-empty">Loading unlocked cosmetics…</div></div>
 </section>
+<section class="uw50-panel uwhints-panel" id="uwCosmeticHints">
+ <div class="uw50-panel-title">
+  <div><span>SECRET SIGNALS</span><h3>Cosmetic Hints</h3><p>Some of these got a little evil. Start with the nudge; open the stronger hint only if the Web is cooking you.</p></div>
+  <button class="uw50-mini" id="uwHintsToggleAll" type="button">OPEN ALL</button>
+ </div>
+ <div class="uwhints-note"><span>7 SIGNALS // NO FULL SOLUTIONS</span><span>Your discovered cosmetics are marked automatically.</span></div>
+ <div class="uwhints-grid" id="uwCosmeticHintsGrid">
+  <article class="uwhint-card" data-uw-hint-slug="webwalker"><div class="uwhint-top"><h4>WEBWALKER</h4><span class="uwhint-state">UNDISCOVERED</span></div><p>The Web notices repetition. Give the main UnderWeb mark more attention than any sane person normally would.</p><details><summary>STRONGER HINT</summary><p>Click or tap the main UnderWeb logo <b>seven times</b>.</p></details></article>
+  <article class="uwhint-card" data-uw-hint-slug="void_signal"><div class="uwhint-top"><h4>VOID SIGNAL</h4><span class="uwhint-state">UNDISCOVERED</span></div><p>Versions are more than changelog numbers. Sometimes a dead signal needs to be knocked awake.</p><details><summary>STRONGER HINT</summary><p>Rapidly tap the visible <b>version pill three times</b>.</p></details></article>
+  <article class="uwhint-card" data-uw-hint-slug="parasite"><div class="uwhint-top"><h4>PARASITE</h4><span class="uwhint-state">UNDISCOVERED</span></div><p>A parasite does not leave after a quick touch. Stay on the host.</p><details><summary>STRONGER HINT</summary><p>Press and hold the main <b>UnderWeb logo for about two seconds</b>.</p></details></article>
+  <article class="uwhint-card" data-uw-hint-slug="black_web_crown"><div class="uwhint-top"><h4>EVENT HORIZON</h4><span class="uwhint-state">UNDISCOVERED</span></div><p>Look for something that should not exist. The most famous missing page on the internet knows the way.</p><details><summary>STRONGER HINT</summary><p>Use <b>People Search</b>. Search the three-digit web error for “not found.”</p></details></article>
+  <article class="uwhint-card" data-uw-hint-slug="ghost_protocol"><div class="uwhint-top"><h4>BLACKFLAME PROTOCOL</h4><span class="uwhint-state">UNDISCOVERED</span></div><p>The edge of the Network is hotter than it looks. Hit the label before the flame has time to die.</p><details><summary>STRONGER HINT</summary><p>Rapidly tap the vertical <b>NETWORK</b> side label. Do not stop at four.</p></details></article>
+  <article class="uwhint-card" data-uw-hint-slug="devoured_signal"><div class="uwhint-top"><h4>DEVOURED SIGNAL</h4><span class="uwhint-state">UNDISCOVERED</span></div><p>This one wants a journey, not a click. Walk through the Network in a deliberate order and end back at yourself.</p><details><summary>STRONGER HINT</summary><p>Go <b>People → Discover → Events → Projects → Profile</b>, in that order.</p></details></article>
+  <article class="uwhint-card" data-uw-hint-slug="network_zero"><div class="uwhint-top"><h4>NETWORK ZERO</h4><span class="uwhint-state">UNDISCOVERED</span></div><p>An old-school game code is buried in the Network. The ending belongs to UnderWeb.</p><details><summary>STRONGER HINT</summary><p>Think <b>Konami</b>: use the classic eight directional inputs, then finish with <b>U W</b>. On mobile, swipe those directions and then tap the main logo twice.</p></details></article>
+ </div>
+</section>
 <div class="uw40-grid2 uw40-profile-editgrid">
 <section class="uw40-block">
 <div class="uw40-title"><div><span>PROFILE MEDIA</span><h3>Avatar &amp; Banner</h3></div><small>MAX 5 MB EACH</small></div>
@@ -1591,7 +1607,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 <section class="uw50-release"><div class="uw50-release-version">LATEST</div><div><span class="eyebrow">MEMBER PROFILES</span><h3>Members are members first</h3><p>Removed leftover creator-role dependencies from ordinary profile editing. Authenticated members can maintain their basic Network identity after onboarding while creator-only fields and tools remain permission-gated.</p></div></section>
 <section class="uw50-release"><div class="uw50-release-version">LATEST</div><div><span class="eyebrow">NETWORK PULSE</span><h3>The Network has a heartbeat</h3><p>Expanded Pulse to support meaningful Network activity including published events, profile updates and cosmetic discoveries. Profile-edit activity is limited to one feed entry per member per hour to prevent spam.</p></div></section>
 <section class="uw50-release"><div class="uw50-release-version">LATEST</div><div><span class="eyebrow">EVENTS</span><h3>Featured Event reliability</h3><p>Reworked UP NEXT selection to prioritize the nearest approved future event instead of stale active records. Featured artwork now follows the selected event and falls back cleanly when no poster exists.</p></div></section>
-<section class="uw50-release"><div class="uw50-release-version">0.8</div><div><span class="eyebrow">SECRET COSMETICS</span><h3>Persistent profile cosmetics</h3><p>Added a seven-piece secret cosmetic collection, Cosmetic Locker, persistent unlock/equip state, animated profile presentation and public-profile rendering. Discovery paths were audited for mobile accessibility. Unlock methods remain intentionally undocumented.</p></div></section>
+<section class="uw50-release"><div class="uw50-release-version">0.8</div><div><span class="eyebrow">SECRET COSMETICS</span><h3>Persistent profile cosmetics</h3><p>Added a seven-piece secret cosmetic collection, Cosmetic Locker, persistent unlock/equip state, animated profile presentation and public-profile rendering. Discovery paths were audited for mobile accessibility. A tiered hint panel now gives members a nudge without dumping every solution outright.</p></div></section>
 <section class="uw50-release"><div class="uw50-release-version">0.8</div><div><span class="eyebrow">PROFILE RENDERER</span><h3>Frames rebuilt properly</h3><p>Rebuilt cosmetic attachment around the real rendered avatar so profile refreshes no longer destroy or misalign equipped frames. The stable attachment architecture is now independent from replaceable avatar contents.</p></div></section>
 <section class="uw50-release"><div class="uw50-release-version">0.7.9</div><div><span class="eyebrow">SECURITY HARDENING</span><h3>Permissions moved beyond hidden buttons</h3><p>Hardened internal RPC access, role authority, projects, applications, invitations and creator media policies. Creator authorization is enforced by backend role state rather than frontend assumptions.</p></div></section>
 <section class="uw50-release"><div class="uw50-release-version">0.7.9</div><div><span class="eyebrow">MEDIA REVIEW</span><h3>Secure creator showcase moderation</h3><p>Creator uploads enter private pending storage first. Staff approval promotes accepted media into the public showcase, while ordinary clients cannot write directly to public creator-showcase storage.</p></div></section>
@@ -6017,6 +6033,30 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
 
 
 
+
+<style id="uw-cosmetic-hints-v1-style">
+#uwCosmeticHints{position:relative;overflow:hidden}
+#uwCosmeticHints:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 90% -10%,rgba(57,255,104,.08),transparent 34%)}
+.uwhints-note{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px;padding:9px 11px;border:1px solid rgba(57,255,104,.14);background:rgba(1,8,4,.55);font:800 9px monospace;letter-spacing:.1em;color:#73867a}
+.uwhints-note span:first-child{color:#39ff68}
+.uwhints-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.uwhint-card{position:relative;min-width:0;padding:14px;border:1px solid rgba(57,255,104,.18);border-radius:14px;background:linear-gradient(180deg,rgba(4,13,8,.92),rgba(1,6,3,.94));transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.uwhint-card:hover{border-color:rgba(57,255,104,.4);transform:translateY(-1px)}
+.uwhint-card.found{border-color:rgba(57,255,104,.55);box-shadow:inset 0 0 0 1px rgba(57,255,104,.08),0 0 16px rgba(57,255,104,.07)}
+.uwhint-top{display:flex;align-items:flex-start;justify-content:space-between;gap:9px}
+.uwhint-card h4{margin:0;color:#e9fff0;font-size:14px;letter-spacing:.025em}
+.uwhint-card>p,.uwhint-card details p{margin:9px 0 0;color:#8fa098;font-size:12px;line-height:1.55}
+.uwhint-state{flex:0 0 auto;padding:4px 7px;border:1px solid rgba(255,255,255,.1);border-radius:999px;font:900 8px monospace;letter-spacing:.08em;color:#65746a;background:#030705}
+.uwhint-card.found .uwhint-state{border-color:rgba(57,255,104,.42);color:#39ff68;background:rgba(57,255,104,.06)}
+.uwhint-card details{margin-top:11px;padding-top:9px;border-top:1px solid rgba(57,255,104,.11)}
+.uwhint-card summary{cursor:pointer;list-style:none;color:#39ff68;font:900 9px monospace;letter-spacing:.11em;user-select:none}
+.uwhint-card summary::-webkit-details-marker{display:none}
+.uwhint-card summary:after{content:" +";opacity:.55}
+.uwhint-card details[open] summary:after{content:" −"}
+.uwhint-card details b{color:#dffff0}
+@media(max-width:760px){.uwhints-grid{grid-template-columns:1fr}.uwhints-note{align-items:flex-start;flex-direction:column}.uwhint-card{padding:13px}.uwhint-card h4{font-size:13px}}
+</style>
+
 <style id="uw-cosmetics-locker-approved-style">
 #uwCosLockerGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px!important}
 .uwcos-locker-card{padding:14px;border:1px solid rgba(57,255,104,.22);border-radius:14px;background:linear-gradient(180deg,rgba(4,13,8,.96),rgba(1,6,3,.96));min-width:0}
@@ -7076,6 +7116,242 @@ window.uwHelpRefresh=()=>{renderFaq();loadMine();loadIssues();};
 }
 </style>
 <!-- /DEVOUR SIGNAL HARD RENDER FIX 20260920 -->
+
+<script id="uw-cosmetic-hints-v1-js">
+(()=>{
+ const cards=()=>[...document.querySelectorAll('[data-uw-hint-slug]')];
+ const getRows=async()=>{
+   try{
+     if(typeof uwSupabase==='undefined')return [];
+     const q=await uwSupabase.rpc('uw_my_cosmetic_locker');
+     if(q.error)return [];
+     return Array.isArray(q.data)?q.data:(q.data?[q.data]:[]);
+   }catch(_){return []}
+ };
+ async function refreshHints(rows){
+   if(!rows)rows=await getRows();
+   const found=new Set((rows||[]).map(x=>String(x?.cosmetic_slug||x?.slug||'')));
+   cards().forEach(card=>{
+     const yes=found.has(String(card.dataset.uwHintSlug||''));
+     card.classList.toggle('found',yes);
+     const state=card.querySelector('.uwhint-state');
+     if(state)state.textContent=yes?'FOUND':'UNDISCOVERED';
+   });
+ }
+ window.uwRefreshCosmeticHints=refreshHints;
+
+ let allOpen=false;
+ document.addEventListener('click',e=>{
+   const b=e.target.closest?.('#uwHintsToggleAll'); if(!b)return;
+   allOpen=!allOpen;
+   cards().forEach(c=>{const d=c.querySelector('details');if(d)d.open=allOpen});
+   b.textContent=allOpen?'CLOSE ALL':'OPEN ALL';
+ });
+
+ // Keep hint status synchronized with the existing locker without changing unlock logic.
+ const hook=()=>{
+   const old=window.uwLoadCosmeticsLocker;
+   if(typeof old==='function'&&!old.__uwHintsWrapped){
+     const wrapped=async function(){const r=await old.apply(this,arguments);setTimeout(()=>refreshHints(),40);return r};
+     wrapped.__uwHintsWrapped=true;
+     window.uwLoadCosmeticsLocker=wrapped;
+   }
+   refreshHints();
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(hook,50),{once:true});
+ else setTimeout(hook,50);
+ window.addEventListener('pageshow',()=>setTimeout(refreshHints,700));
+})();
+</script>
+
 </body>
 </html>
 
+
+<!-- UW COSMETIC FRAME V4 REPAIR 20260920 -->
+<style id="uw-cosmetic-frame-v4-repair-20260920">
+/* Final authoritative geometry for WEBWALKER, PARASITE and DEVOURED SIGNAL.
+   Everything is pixel-anchored to the 104px/82px avatar host so legacy percentage rules cannot stretch it. */
+
+/* ---------- common hard reset ---------- */
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"],
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"],
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]{
+  contain:none!important;overflow:visible!important;isolation:isolate!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>i,
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>i,
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>i{
+  position:absolute!important;display:block!important;box-sizing:border-box!important;
+  margin:0!important;padding:0!important;min-width:0!important;min-height:0!important;
+  max-width:none!important;max-height:none!important;pointer-events:none!important;
+}
+
+/* ==================== WEBWALKER ==================== */
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]{
+  filter:drop-shadow(0 0 8px rgba(57,255,104,.28))!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.web{
+  inset:-8px!important;width:auto!important;height:auto!important;
+  border:2px solid #07150b!important;border-radius:29px!important;background:transparent!important;
+  box-shadow:0 0 0 1px rgba(57,255,104,.62),0 0 14px rgba(57,255,104,.24),inset 0 0 12px rgba(57,255,104,.08)!important;
+  transform:none!important;rotate:none!important;animation:uwWebwalkerBreathV4 4.8s ease-in-out infinite!important;z-index:2!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.web:before,
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.web:after{
+  content:""!important;position:absolute!important;display:block!important;pointer-events:none!important;
+  inset:7px!important;border-radius:24px!important;background:
+    linear-gradient(32deg,transparent 48.7%,rgba(57,255,104,.36) 49.5% 50.5%,transparent 51.3%),
+    linear-gradient(148deg,transparent 48.7%,rgba(57,255,104,.28) 49.5% 50.5%,transparent 51.3%),
+    linear-gradient(90deg,transparent 49%,rgba(57,255,104,.18) 49.6% 50.4%,transparent 51%)!important;
+  border:1px solid rgba(57,255,104,.18)!important;opacity:.82!important;transform:none!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.web:after{
+  inset:18px!important;border-color:rgba(57,255,104,.12)!important;opacity:.48!important;transform:rotate(19deg)!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.eye{
+  inset:auto!important;width:15px!important;height:8px!important;border:1px solid #0b2a14!important;
+  border-radius:70% 30% 70% 30%!important;background:radial-gradient(ellipse at 52% 47%,#ecfff0 0 10%,#39ff68 12% 58%,#0a5d22 64% 100%)!important;
+  box-shadow:0 0 6px #39ff68,0 0 11px rgba(57,255,104,.42)!important;
+  transform:none!important;rotate:none!important;transform-origin:center!important;animation:uwWebwalkerBlinkV4 4.2s infinite!important;z-index:6!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.eye:after{
+  content:""!important;position:absolute!important;left:46%!important;top:4%!important;width:9%!important;height:92%!important;background:#001607!important;border-radius:50%!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.e1{left:-11px!important;right:auto!important;top:13px!important;bottom:auto!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.e2{right:-12px!important;left:auto!important;top:24px!important;bottom:auto!important;animation-delay:-.75s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.e3{right:-10px!important;left:auto!important;bottom:15px!important;top:auto!important;animation-delay:-1.5s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.e4{left:-12px!important;right:auto!important;bottom:23px!important;top:auto!important;animation-delay:-2.25s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.e5{left:24px!important;right:auto!important;top:-10px!important;bottom:auto!important;animation-delay:-3s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.e6{right:23px!important;left:auto!important;bottom:-9px!important;top:auto!important;animation-delay:-1.1s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.t{
+  inset:auto!important;width:4px!important;height:27px!important;border:0!important;border-radius:100% 15% 100% 20%!important;
+  background:linear-gradient(180deg,#39ff68 0%,#143a1e 43%,#020603 100%)!important;
+  box-shadow:none!important;filter:drop-shadow(0 0 3px rgba(57,255,104,.5))!important;
+  rotate:none!important;transform-origin:50% 100%!important;z-index:3!important;
+  animation:uwWebwalkerTendrilV4 3.9s ease-in-out infinite!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.t1{left:13px!important;right:auto!important;top:-24px!important;bottom:auto!important;--wr:-25deg}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.t2{right:13px!important;left:auto!important;top:-22px!important;bottom:auto!important;--wr:29deg;animation-delay:-.8s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.t3{right:-23px!important;left:auto!important;bottom:17px!important;top:auto!important;--wr:76deg;animation-delay:-1.6s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.t4{left:-22px!important;right:auto!important;bottom:17px!important;top:auto!important;--wr:-75deg;animation-delay:-2.4s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.t5{left:50%!important;right:auto!important;bottom:-23px!important;top:auto!important;--wr:180deg;animation-delay:-3.1s!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.thread{
+  inset:auto!important;height:1px!important;border:0!important;background:linear-gradient(90deg,transparent,rgba(57,255,104,.62),transparent)!important;
+  transform-origin:left center!important;rotate:none!important;animation:uwWebwalkerThreadV4 3.2s ease-in-out infinite!important;z-index:4!important;
+}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.th1{left:-5px!important;right:auto!important;top:9px!important;bottom:auto!important;width:58px!important;transform:rotate(22deg)!important}
+#uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.th2{right:-6px!important;left:auto!important;bottom:10px!important;top:auto!important;width:57px!important;transform:rotate(-23deg)!important;transform-origin:right center!important}
+
+/* ==================== PARASITE ==================== */
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]{
+  filter:drop-shadow(0 0 8px rgba(231,63,173,.30))!important;
+}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.flesh{
+  inset:-7px!important;width:auto!important;height:auto!important;border:3px solid #27041f!important;
+  border-radius:27px 22px 30px 24px!important;background:transparent!important;
+  box-shadow:0 0 0 1.5px #c72b92,0 0 13px rgba(239,83,174,.45),inset 0 0 10px rgba(247,100,186,.14)!important;
+  transform:none!important;rotate:none!important;animation:uwParasitePulseV4 3.6s ease-in-out infinite!important;z-index:2!important;
+}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.flesh:before,
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.flesh:after{
+  content:""!important;position:absolute!important;display:block!important;pointer-events:none!important;
+}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.flesh:before{
+  left:8px!important;right:8px!important;top:7px!important;height:4px!important;border:0!important;border-radius:50%!important;
+  background:linear-gradient(90deg,transparent,#f858b6 20% 35%,transparent 36% 47%,#7d155b 49% 67%,transparent 69%)!important;
+  opacity:.62!important;filter:blur(.25px)!important;transform:rotate(-2deg)!important;
+}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.flesh:after{
+  left:7px!important;right:9px!important;bottom:8px!important;height:3px!important;top:auto!important;border:0!important;border-radius:50%!important;
+  background:linear-gradient(90deg,transparent,#8c1765 15% 34%,transparent 36% 52%,#f858b6 55% 78%,transparent)!important;
+  opacity:.55!important;transform:rotate(2deg)!important;
+}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.peye{
+  inset:auto!important;width:14px!important;height:8px!important;border:1px solid #3b052d!important;border-radius:72% 28% 68% 32%!important;
+  background:radial-gradient(ellipse at 52% 44%,#ffe5f5 0 12%,#ff85cf 14% 57%,#8f155f 62% 100%)!important;
+  box-shadow:0 0 5px #ef4da9,0 0 9px rgba(239,77,169,.42)!important;
+  transform:none!important;rotate:none!important;transform-origin:center!important;animation:uwParasiteBlinkV4 4.1s infinite!important;z-index:6!important;
+}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.peye:after{
+  content:""!important;position:absolute!important;left:45%!important;top:4%!important;width:10%!important;height:92%!important;background:#12000d!important;border-radius:50%!important;
+}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.p1{left:-10px!important;right:auto!important;top:14px!important;bottom:auto!important}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.p2{right:-11px!important;left:auto!important;top:27px!important;bottom:auto!important;animation-delay:-.7s!important}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.p3{right:-9px!important;left:auto!important;bottom:15px!important;top:auto!important;animation-delay:-1.4s!important}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.p4{left:-11px!important;right:auto!important;bottom:21px!important;top:auto!important;animation-delay:-2.1s!important}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.p5{left:28px!important;right:auto!important;top:-8px!important;bottom:auto!important;animation-delay:-2.8s!important}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.p6{right:27px!important;left:auto!important;bottom:-8px!important;top:auto!important;animation-delay:-1.1s!important}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.ptent{
+  inset:auto!important;width:5px!important;height:24px!important;border:0!important;border-radius:100% 8% 100% 15%!important;
+  background:linear-gradient(180deg,#f455b1 0%,#9f206f 40%,#3b082f 80%,#10000c 100%)!important;
+  box-shadow:none!important;filter:drop-shadow(0 0 3px rgba(244,85,177,.52))!important;
+  rotate:none!important;transform-origin:50% 100%!important;animation:uwParasiteTendrilV4 3.45s ease-in-out infinite!important;z-index:4!important;
+}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.pt1{left:15px!important;right:auto!important;top:-20px!important;bottom:auto!important;--pr:-27deg}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.pt2{right:15px!important;left:auto!important;top:-20px!important;bottom:auto!important;--pr:28deg;animation-delay:-.8s!important}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.pt3{right:-19px!important;left:auto!important;bottom:18px!important;top:auto!important;--pr:77deg;animation-delay:-1.6s!important}
+#uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.pt4{left:-19px!important;right:auto!important;bottom:19px!important;top:auto!important;--pr:-77deg;animation-delay:-2.4s!important}
+
+/* ==================== DEVOURED SIGNAL ====================
+   Not another glitch frame. These are black void-maws eating into the profile edge. */
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]{
+  filter:drop-shadow(0 0 7px rgba(57,255,104,.22))!important;
+}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.rift{
+  inset:auto!important;width:27px!important;height:16px!important;border:0!important;border-radius:52% 48% 55% 45%!important;
+  background:#000!important;clip-path:none!important;
+  box-shadow:0 0 0 1px #174c25,0 0 7px rgba(57,255,104,.58),inset 0 0 7px rgba(57,255,104,.16)!important;
+  filter:none!important;rotate:none!important;transform-origin:center!important;animation:uwDevouredMawV4 3.1s ease-in-out infinite!important;z-index:6!important;
+}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.rift:before{
+  content:""!important;position:absolute!important;left:4px!important;right:4px!important;top:2px!important;height:6px!important;
+  background:repeating-linear-gradient(100deg,#dffff0 0 2px,transparent 2px 5px)!important;
+  clip-path:polygon(0 0,100% 0,88% 100%,75% 20%,60% 100%,45% 18%,30% 100%,15% 24%)!important;
+  opacity:.88!important;filter:drop-shadow(0 0 2px rgba(57,255,104,.42))!important;
+}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.rift:after{
+  content:""!important;position:absolute!important;left:4px!important;right:4px!important;bottom:2px!important;height:6px!important;
+  background:repeating-linear-gradient(80deg,#dffff0 0 2px,transparent 2px 5px)!important;
+  clip-path:polygon(12% 0,27% 80%,42% 0,57% 82%,72% 0,88% 75%,100% 0,0 0)!important;
+  opacity:.72!important;
+}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.r1{left:-15px!important;right:auto!important;top:4px!important;bottom:auto!important;--dmr:-21deg}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.r2{right:-16px!important;left:auto!important;top:23px!important;bottom:auto!important;--dmr:17deg;animation-delay:-.5s!important}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.r3{right:-14px!important;left:auto!important;bottom:11px!important;top:auto!important;--dmr:-16deg;animation-delay:-1s!important}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.r4{left:-15px!important;right:auto!important;bottom:20px!important;top:auto!important;--dmr:18deg;animation-delay:-1.5s!important}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.r5{left:25px!important;right:auto!important;top:-9px!important;bottom:auto!important;--dmr:-4deg;animation-delay:-2s!important}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.r6{right:24px!important;left:auto!important;bottom:-8px!important;top:auto!important;--dmr:5deg;animation-delay:-2.5s!important}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.frag{
+  inset:auto!important;width:4px!important;height:9px!important;border:0!important;border-radius:50% 50% 20% 20%!important;
+  background:linear-gradient(#39ff68,#0a451b 55%,transparent)!important;clip-path:none!important;
+  box-shadow:0 0 4px rgba(57,255,104,.55)!important;filter:none!important;rotate:none!important;
+  transform-origin:center!important;animation:uwDevouredSporeV4 2.9s ease-in infinite!important;z-index:3!important;
+}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.f1{left:-3px!important;right:auto!important;top:24px!important;bottom:auto!important;--dfx:-7px;--dfy:-14px}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.f2{right:-4px!important;left:auto!important;top:49px!important;bottom:auto!important;--dfx:8px;--dfy:-13px;animation-delay:-.55s!important}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.f3{left:21px!important;right:auto!important;bottom:-7px!important;top:auto!important;--dfx:-4px;--dfy:12px;animation-delay:-1.1s!important}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.f4{right:22px!important;left:auto!important;top:-7px!important;bottom:auto!important;--dfx:5px;--dfy:-12px;animation-delay:-1.65s!important}
+#uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.f5{left:-4px!important;right:auto!important;bottom:12px!important;top:auto!important;--dfx:-8px;--dfy:8px;animation-delay:-2.2s!important}
+
+@keyframes uwWebwalkerBreathV4{0%,100%{transform:scale(1);opacity:.88}50%{transform:scale(1.012);opacity:1}}
+@keyframes uwWebwalkerBlinkV4{0%,43%,48%,100%{transform:scaleY(1)}45.5%{transform:scaleY(.08)}}
+@keyframes uwWebwalkerTendrilV4{0%,100%{transform:rotate(var(--wr)) scaleY(1)}50%{transform:rotate(calc(var(--wr) + 7deg)) scaleY(1.08)}}
+@keyframes uwWebwalkerThreadV4{0%,100%{opacity:.28}50%{opacity:.9}}
+@keyframes uwParasitePulseV4{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.012);filter:brightness(1.1)}}
+@keyframes uwParasiteBlinkV4{0%,44%,49%,100%{transform:scaleY(1)}46.5%{transform:scaleY(.06)}}
+@keyframes uwParasiteTendrilV4{0%,100%{transform:rotate(var(--pr)) scaleY(1)}50%{transform:rotate(calc(var(--pr) + 7deg)) scaleY(1.07)}}
+@keyframes uwDevouredMawV4{0%,100%{transform:rotate(var(--dmr)) scale(.96);opacity:.82}50%{transform:rotate(var(--dmr)) scale(1.07,.88);opacity:1;box-shadow:0 0 0 1px #2b8b43,0 0 11px rgba(57,255,104,.82),inset 0 0 8px rgba(57,255,104,.22)}}
+@keyframes uwDevouredSporeV4{0%{transform:translate(0,0) scale(1);opacity:.9}75%{opacity:.45}100%{transform:translate(var(--dfx),var(--dfy)) scale(.2);opacity:0}}
+
+@media(max-width:700px){
+ #uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.web{inset:-7px!important;border-radius:24px!important}
+ #uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.eye{width:13px!important;height:7px!important}
+ #uw621ProfileModal .uwpf.uwpf-webwalker[data-uw-frame-v2="1"]>.t{height:22px!important}
+ #uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.flesh{inset:-6px!important;border-width:2.5px!important;border-radius:23px 19px 25px 20px!important}
+ #uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.peye{width:12px!important;height:7px!important}
+ #uw621ProfileModal .uwpf.uwpf-parasite[data-uw-frame-v2="1"]>.ptent{height:20px!important;width:4px!important}
+ #uw621ProfileModal .uwpf.uwpf-devoured_signal[data-uw-frame-v2="1"]>.rift{width:23px!important;height:14px!important}
+}
+</style>
+<!-- /UW COSMETIC FRAME V4 REPAIR 20260920 -->
