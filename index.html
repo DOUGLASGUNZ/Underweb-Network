@@ -7264,5 +7264,105 @@ document.addEventListener('DOMContentLoaded',()=>{
  setInterval(()=>{try{refresh()}catch(e){console.warn('[UW growth pack]',e)}},1800);
 })();
 </script>
+
+<style id="uw-network-radar-v2-20260920">
+/* UNDERWEB NETWORK // Radar + Recruiting Intelligence V2. Additive only. */
+.uwgrow-live-v2{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.uwgrow-live-v2 .uwgrow-live{margin:0}.uwgrow-sync{font:800 8px/1 monospace;letter-spacing:.09em;opacity:.52;white-space:nowrap}
+.uwgrow-creators{border-top:1px solid rgba(57,255,104,.11);background:#020604;padding:15px 18px 18px}
+.uwgrow-creators-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:11px}.uwgrow-creators-head>div b{display:block;font-size:11px;letter-spacing:.08em}.uwgrow-creators-head>div span{font:800 8px/1.4 monospace;opacity:.5}.uwgrow-creator-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.uwgrow-creator-card{appearance:none;width:100%;border:1px solid rgba(255,255,255,.07);background:linear-gradient(145deg,rgba(57,255,104,.035),rgba(0,0,0,.18));padding:11px;text-align:left;color:inherit;cursor:pointer;display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;min-width:0;transition:.16s ease}
+.uwgrow-creator-card:hover{border-color:rgba(57,255,104,.5);background:rgba(57,255,104,.07);transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.22)}
+.uwgrow-creator-avatar{width:44px;height:44px;border-radius:50%;border:1px solid rgba(57,255,104,.25);background:#06100a center/cover no-repeat;display:grid;place-items:center;color:var(--g,#39ff68);font:900 17px monospace;box-shadow:inset 0 0 16px rgba(57,255,104,.05)}
+.uwgrow-creator-copy{min-width:0}.uwgrow-creator-copy strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.uwgrow-creator-copy small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px;opacity:.55;margin-top:2px}.uwgrow-creator-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}.uwgrow-mini{border:1px solid rgba(57,255,104,.18);padding:4px 6px;font:800 7px/1 monospace;letter-spacing:.05em;color:#cffff0;text-transform:uppercase}.uwgrow-mini.live{color:var(--g,#39ff68);border-color:rgba(57,255,104,.4)}
+.uwgrow-project-intel{margin:0 0 15px;border:1px solid rgba(57,255,104,.15);background:linear-gradient(145deg,rgba(4,12,7,.97),rgba(0,3,2,.97));overflow:hidden}
+.uwgrow-intel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;padding:14px 15px;border-bottom:1px solid rgba(57,255,104,.11)}.uwgrow-intel-head b{display:block;font-size:12px;letter-spacing:.08em}.uwgrow-intel-head span{font:800 8px/1.5 monospace;opacity:.52}.uwgrow-intel-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.uwgrow-intel-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:rgba(57,255,104,.09)}.uwgrow-intel-stat{background:#020604;padding:12px 13px}.uwgrow-intel-stat span{display:block;font:800 7px/1.25 monospace;letter-spacing:.13em;opacity:.48}.uwgrow-intel-stat b{display:block;font-size:22px;margin-top:4px}.uwgrow-intel-stat small{display:block;font-size:8px;color:var(--g,#39ff68);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uwgrow-intel-body{display:grid;grid-template-columns:1.25fr .75fr;gap:1px;background:rgba(57,255,104,.09)}.uwgrow-priority,.uwgrow-match{background:#020604;padding:13px 14px}.uwgrow-intel-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}.uwgrow-intel-title b{font-size:10px;letter-spacing:.08em}.uwgrow-intel-title span{font:800 7px monospace;opacity:.45}
+.uwgrow-priority-list{display:grid;gap:7px}.uwgrow-priority-card{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.015);padding:10px 11px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;cursor:pointer;transition:.15s ease}.uwgrow-priority-card:hover{border-color:rgba(57,255,104,.4);background:rgba(57,255,104,.045)}.uwgrow-priority-card strong{display:block;font-size:11px}.uwgrow-priority-card small{display:block;font-size:8px;opacity:.52;margin-top:3px}.uwgrow-priority-open{font:900 9px/1 monospace;color:var(--g,#39ff68);white-space:nowrap}
+.uwgrow-match-copy{font-size:10px;opacity:.62;line-height:1.45;margin-bottom:9px}.uwgrow-match-results{display:flex;flex-wrap:wrap;gap:6px}.uwgrow-match-empty{font-size:9px;opacity:.48;line-height:1.45}.uwgrow-filter.active{border-color:var(--g,#39ff68);color:var(--g,#39ff68);background:rgba(57,255,104,.09)}
+@media(max-width:980px){.uwgrow-creator-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.uwgrow-intel-body{grid-template-columns:1fr}.uwgrow-intel-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.uwgrow-creators-head,.uwgrow-intel-head{align-items:flex-start;flex-direction:column}.uwgrow-live-v2{justify-content:flex-start}.uwgrow-creator-grid{grid-template-columns:1fr}.uwgrow-intel-stats{grid-template-columns:1fr 1fr}.uwgrow-intel-actions{justify-content:flex-start}.uwgrow-priority-card{grid-template-columns:1fr}}
+</style>
+<script id="uw-network-radar-v2-20260920-js">
+(()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const norm=v=>String(v||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+ const safeUrl=v=>{try{const u=new URL(String(v||''));return ['http:','https:'].includes(u.protocol)?u.href:''}catch(_){return ''}};
+ let lastSync=0,lastCreatorSig='',lastProjectSig='';
+ function creators(){
+   try{const rows=(typeof uw758Creators!=='undefined'&&Array.isArray(uw758Creators))?uw758Creators:[];return typeof uw758Visible==='function'?rows.filter(uw758Visible):rows}catch(_){return []}
+ }
+ function avail(v){try{return typeof uw758Availability==='function'?uw758Availability(v):String(v||'').replaceAll('_',' ').toUpperCase()}catch(_){return String(v||'').toUpperCase()}}
+ function openProjectsV2(){try{return Array.isArray(uwProjects)?uwProjects.filter(x=>String(x.status||'').toLowerCase()==='open'):[]}catch(_){return []}}
+ function slotsFor(pid){try{return typeof uw63SlotsFor==='function'?uw63SlotsFor(pid):[]}catch(_){return []}}
+ function filled(sid){try{return typeof uw63Filled==='function'?Number(uw63Filled(sid)||0):0}catch(_){return 0}}
+ function projectOpenCount(p){return slotsFor(p.id).reduce((n,s)=>n+Math.max(0,Number(s.slots_needed||1)-filled(s.id)),0)}
+ function deadlineMs(p){const d=new Date(p.deadline||p.project_date||0).getTime();return Number.isFinite(d)?d:0}
+ function deadlineText(p){const t=deadlineMs(p);if(!t)return 'NO DEADLINE';const diff=t-Date.now(),days=Math.ceil(diff/86400000);if(days<0)return 'DEADLINE PASSED';if(days===0)return 'DUE TODAY';if(days===1)return 'DUE TOMORROW';if(days<=7)return `DUE IN ${days} DAYS`;return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'})}
+ function injectRadarCreators(){
+   const radar=$('uwGrowthRadar');if(!radar)return;
+   const live=radar.querySelector('.uwgrow-head .uwgrow-live');
+   if(live&&!$('uwGrowthSync')){const wrap=document.createElement('div');wrap.className='uwgrow-live-v2';live.parentNode.insertBefore(wrap,live);wrap.appendChild(live);const sync=document.createElement('span');sync.id='uwGrowthSync';sync.className='uwgrow-sync';sync.textContent='SYNCING…';wrap.appendChild(sync)}
+   if(!$('uwGrowthCreatorStrip'))radar.insertAdjacentHTML('beforeend',`<section class="uwgrow-creators" id="uwGrowthCreatorStrip"><div class="uwgrow-creators-head"><div><b>AVAILABLE NOW // CREATOR SIGNALS</b><span>Creators currently open to work or collaboration.</span></div><button class="uwgrow-btn" type="button" data-page="discover">VIEW CREATOR NETWORK →</button></div><div class="uwgrow-creator-grid" id="uwGrowthAvailableCreators"><span class="meta">Creator availability is syncing…</span></div></section>`);
+ }
+ function creatorCard(c){
+   const url=safeUrl(c.avatar_url),name=String(c.display_name||'Creator'),headline=String(c.headline||'UnderWeb Network Creator'),skills=Array.isArray(c.specialties)?c.specialties.filter(Boolean).slice(0,2):[];
+   const status=avail(c.availability);const initials=name.trim().charAt(0).toUpperCase()||'?';
+   return `<button class="uwgrow-creator-card" type="button" data-uwgrow-creator="${esc(c.user_id)}"><span class="uwgrow-creator-avatar" ${url?`style="background-image:url('${esc(url)}')"`:''}>${url?'':esc(initials)}</span><span class="uwgrow-creator-copy"><strong>${esc(name)}</strong><small>${esc(headline)}</small><span class="uwgrow-creator-tags"><i class="uwgrow-mini live">${esc(status)}</i>${skills.map(x=>`<i class="uwgrow-mini">${esc(x)}</i>`).join('')}</span></span></button>`;
+ }
+ function renderCreatorStrip(){
+   const host=$('uwGrowthAvailableCreators');if(!host)return;
+   const rows=creators().filter(c=>['AVAILABLE','AVAILABLE BY REQUEST'].includes(avail(c.availability))).sort((a,b)=>(avail(a.availability)==='AVAILABLE'?-1:1)-(avail(b.availability)==='AVAILABLE'?-1:1)||String(a.display_name||'').localeCompare(String(b.display_name||'')));
+   const sig=rows.map(x=>`${x.user_id}:${x.availability}:${x.avatar_url||''}:${x.display_name||''}`).join('|');if(sig===lastCreatorSig&&host.children.length)return;lastCreatorSig=sig;
+   host.innerHTML=rows.length?rows.slice(0,4).map(creatorCard).join(''):'<span class="meta">No creators are marked available right now.</span>';
+ }
+ function injectProjectIntel(){
+   const needs=$('uwGrowthProjectNeeds');if(!needs||$('uwGrowthProjectIntel'))return;
+   needs.insertAdjacentHTML('afterend',`<section class="uwgrow-project-intel" id="uwGrowthProjectIntel"><div class="uwgrow-intel-head"><div><b>RECRUITMENT INTEL</b><span>Live pressure readout across open UnderWeb projects.</span></div><div class="uwgrow-intel-actions"><button class="uwgrow-chip uwgrow-filter active" type="button" data-uwgrow-comp="all">ALL</button><button class="uwgrow-chip uwgrow-filter" type="button" data-uwgrow-comp="paid">PAID</button><button class="uwgrow-chip uwgrow-filter" type="button" data-uwgrow-comp="collaboration">COLLAB</button><button class="uwgrow-chip uwgrow-filter" type="button" data-uwgrow-comp="volunteer">VOLUNTEER</button></div></div><div class="uwgrow-intel-stats"><div class="uwgrow-intel-stat"><span>RECRUITING PROJECTS</span><b id="uwIntelProjects">—</b><small>active calls</small></div><div class="uwgrow-intel-stat"><span>PAID PROJECTS</span><b id="uwIntelPaid">—</b><small>compensated work</small></div><div class="uwgrow-intel-stat"><span>DEADLINES ≤ 7 DAYS</span><b id="uwIntelUrgent">—</b><small>time pressure</small></div><div class="uwgrow-intel-stat"><span>MY PENDING INVITES</span><b id="uwIntelInvites">—</b><small>waiting on you</small></div></div><div class="uwgrow-intel-body"><div class="uwgrow-priority"><div class="uwgrow-intel-title"><b>PRIORITY CALLS</b><span>MOST OPEN / MOST URGENT</span></div><div class="uwgrow-priority-list" id="uwGrowthPriorityProjects"><span class="meta">Project intelligence is syncing…</span></div></div><div class="uwgrow-match"><div class="uwgrow-intel-title"><b>SKILL MATCH</b><button class="uwgrow-btn" type="button" id="uwGrowthMatchSkills">MATCH MY SKILLS</button></div><div class="uwgrow-match-copy">Compare your profile specialties against currently unfilled project roles.</div><div class="uwgrow-match-results" id="uwGrowthSkillMatches"><span class="uwgrow-match-empty">Run a match to find open roles that line up with your profile.</span></div></div></div></section>`);
+ }
+ function priorityScore(p){const open=projectOpenCount(p);let score=open*10;const d=deadlineMs(p);if(d){const days=(d-Date.now())/86400000;if(days>=0&&days<=7)score+=Math.max(0,30-days*3)}if(String(p.compensation||'').toLowerCase()==='paid')score+=4;return score}
+ function renderProjectIntel(){
+   const host=$('uwGrowthPriorityProjects');if(!host)return;const rows=openProjectsV2();
+   const paid=rows.filter(p=>String(p.compensation||'').toLowerCase()==='paid').length;
+   const urgent=rows.filter(p=>{const d=deadlineMs(p);const diff=d-Date.now();return d&&diff>=0&&diff<=7*86400000}).length;
+   let invites=0;try{invites=Array.isArray(uw63Invites)?uw63Invites.filter(i=>String(i.invitee_id)===String(currentSession?.user?.id)&&String(i.status)==='pending').length:0}catch(_){}
+   if($('uwIntelProjects'))$('uwIntelProjects').textContent=rows.length;if($('uwIntelPaid'))$('uwIntelPaid').textContent=paid;if($('uwIntelUrgent'))$('uwIntelUrgent').textContent=urgent;if($('uwIntelInvites'))$('uwIntelInvites').textContent=invites;
+   const sorted=[...rows].sort((a,b)=>priorityScore(b)-priorityScore(a)||new Date(b.created_at||0)-new Date(a.created_at||0));
+   const sig=sorted.map(p=>`${p.id}:${projectOpenCount(p)}:${p.deadline||''}:${p.compensation||''}`).join('|');if(sig===lastProjectSig&&host.children.length)return;lastProjectSig=sig;
+   host.innerHTML=sorted.length?sorted.slice(0,4).map(p=>{const open=projectOpenCount(p);return `<button class="uwgrow-priority-card" type="button" data-uwgrow-open-project="${esc(p.id)}"><span><strong>${esc(p.title||'Untitled Project')}</strong><small>${esc(String(p.group_scope||'network').replaceAll('_',' ').toUpperCase())} · ${esc(String(p.compensation||'collaboration').replaceAll('_',' ').toUpperCase())} · ${esc(deadlineText(p))}</small></span><span class="uwgrow-priority-open">${open} OPEN</span></button>`}).join(''):'<span class="meta">No projects are recruiting right now.</span>';
+ }
+ function syncClock(){lastSync=Date.now();const el=$('uwGrowthSync');if(el)el.textContent='SYNCED '+new Date(lastSync).toLocaleTimeString([], {hour:'numeric',minute:'2-digit',second:'2-digit'})}
+ function applyComp(v){const s=$('uw63ProjectComp');if(!s)return;s.value=v;document.querySelectorAll('[data-uwgrow-comp]').forEach(b=>b.classList.toggle('active',b.dataset.uwgrowComp===v));try{renderProjects()}catch(_){};try{showPage('projects')}catch(_){} }
+ function openCreator(uid){try{if(typeof uw758Open==='function')return uw758Open(uid)}catch(_){}try{if(typeof uw621OpenProfile==='function')return uw621OpenProfile(uid)}catch(_){} }
+ function openProject(id){try{if(typeof uw63OpenProject==='function')return uw63OpenProject(id)}catch(_){} }
+ function mySkills(){
+   const out=[];const field=String($('profileSkills')?.value||'').split(',').map(x=>x.trim()).filter(Boolean);out.push(...field);
+   try{const me=creators().find(c=>String(c.user_id)===String(currentSession?.user?.id));if(Array.isArray(me?.specialties))out.push(...me.specialties)}catch(_){}
+   try{if(Array.isArray(uw033Profile?.specialties))out.push(...uw033Profile.specialties)}catch(_){}
+   return [...new Set(out.map(x=>String(x).trim()).filter(Boolean))];
+ }
+ function skillTokens(v){const n=norm(v);const out=new Set(n.split(' ').filter(x=>x.length>1));const aliases={photography:['photographer','photo'],videography:['videographer','video'],unity:['unity creator','unity'],blender:['blender artist','blender'],avatar:['avatar creator','avatar'],world:['world creator','world'],graphic:['graphic designer','graphic'],music:['musician','producer','dj','vocalist','rapper']};Object.entries(aliases).forEach(([k,vals])=>{if(n.includes(k))vals.forEach(x=>out.add(norm(x)))});return [...out]}
+ function matchSkills(){
+   const host=$('uwGrowthSkillMatches');if(!host)return;const skills=mySkills();if(!skills.length){host.innerHTML='<span class="uwgrow-match-empty">Add specialties to your profile first, then run the match again.</span>';return}
+   const needles=[...new Set(skills.flatMap(skillTokens))];const found=new Map();openProjectsV2().forEach(p=>slotsFor(p.id).forEach(s=>{const remain=Math.max(0,Number(s.slots_needed||1)-filled(s.id));if(!remain)return;const role=String(s.role_name||'Creator');const r=norm(role);const hit=needles.some(k=>k&&(r.includes(k)||k.includes(r)));if(hit)found.set(role,(found.get(role)||0)+remain)}));
+   const rows=[...found.entries()].sort((a,b)=>b[1]-a[1]);host.innerHTML=rows.length?rows.slice(0,8).map(([role,n])=>`<button class="uwgrow-chip" type="button" data-uwgrow-project-role="${esc(role)}">${esc(role)} · ${n}</button>`).join(''):'<span class="uwgrow-match-empty">No current open roles directly match your listed specialties. That can change as new projects are posted.</span>';
+ }
+ function enhanceHotNeedClicks(){document.querySelectorAll('[data-uwgrow-project-role]').forEach(b=>{if(b.dataset.uwV2Title)return;b.dataset.uwV2Title='1';b.title='Open Projects filtered to this role'})}
+ function refresh(){injectRadarCreators();injectProjectIntel();renderCreatorStrip();renderProjectIntel();enhanceHotNeedClicks();syncClock()}
+ document.addEventListener('click',e=>{
+   const c=e.target.closest('[data-uwgrow-creator]');if(c){openCreator(c.dataset.uwgrowCreator);return}
+   const p=e.target.closest('[data-uwgrow-open-project]');if(p){openProject(p.dataset.uwgrowOpenProject);return}
+   const f=e.target.closest('[data-uwgrow-comp]');if(f){applyComp(f.dataset.uwgrowComp);return}
+   if(e.target.closest('#uwGrowthMatchSkills')){matchSkills();return}
+   const role=e.target.closest('[data-uwgrow-project-role]');if(role){setTimeout(()=>{try{uw63Tab='all';document.querySelectorAll('[data-uw63-tab]').forEach(x=>x.classList.toggle('active',x.dataset.uw63Tab==='all'));renderProjects();$('projectBoard')?.scrollIntoView({behavior:'smooth',block:'start'})}catch(_){ }},60)}
+ });
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setTimeout(refresh,500);setTimeout(refresh,1600)});else setTimeout(refresh,250);
+ setInterval(()=>{try{refresh()}catch(e){console.warn('[UW radar v2]',e)}},4000);
+})();
+</script>
+
 </body>
 </html>
