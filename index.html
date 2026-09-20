@@ -7104,5 +7104,165 @@ document.addEventListener('DOMContentLoaded',()=>{
 })();
 </script>
 <!-- /UW SECRET HINTS PATCH 20260920 -->
+
+
+<!-- UNDERWEB // NETWORK GROWTH PACK // 2026-09-20 -->
+<style id="uw-network-growth-pack-20260920">
+/* Additive product upgrades only. Does not touch cosmetics/frame rendering. */
+.uwgrow-shell{margin:18px 0 24px;border:1px solid rgba(57,255,104,.18);background:linear-gradient(145deg,rgba(4,12,7,.96),rgba(0,3,2,.98));box-shadow:0 18px 44px rgba(0,0,0,.22);position:relative;overflow:hidden}
+.uwgrow-shell:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(57,255,104,.035),transparent);transform:translateX(-100%);animation:uwgrowScan 7s linear infinite}
+@keyframes uwgrowScan{to{transform:translateX(100%)}}
+.uwgrow-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:18px 19px 14px;border-bottom:1px solid rgba(57,255,104,.12)}
+.uwgrow-kicker{font:900 9px/1.2 monospace;letter-spacing:.22em;color:var(--g,#39ff68);text-transform:uppercase;margin-bottom:6px}
+.uwgrow-head h3{margin:0;font-size:22px;letter-spacing:.02em}.uwgrow-head p{margin:5px 0 0;opacity:.65;font-size:12px;max-width:700px}
+.uwgrow-live{font:900 9px/1 monospace;letter-spacing:.12em;color:var(--g,#39ff68);white-space:nowrap}.uwgrow-live:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor;margin-right:7px;animation:uwgrowPulse 1.6s ease-in-out infinite}
+@keyframes uwgrowPulse{50%{opacity:.35;transform:scale(.72)}}
+.uwgrow-radar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:rgba(57,255,104,.1)}
+.uwgrow-stat{background:#030806;padding:17px 18px;min-height:112px;display:flex;flex-direction:column;justify-content:space-between}.uwgrow-stat span{font:900 8px/1.25 monospace;letter-spacing:.16em;opacity:.58}.uwgrow-stat b{font-size:30px;line-height:1;color:#f0fff4}.uwgrow-stat small{font-size:10px;color:var(--g,#39ff68);opacity:.9}
+.uwgrow-bottom{display:grid;grid-template-columns:1.35fr .9fr;gap:1px;background:rgba(57,255,104,.1)}
+.uwgrow-needs,.uwgrow-actions{background:#020604;padding:16px 18px}.uwgrow-needs-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.uwgrow-needs-title b{font-size:11px;letter-spacing:.08em}.uwgrow-needs-title span{font:800 8px monospace;opacity:.5}
+.uwgrow-needchips,.uwgrow-quick,.uwgrow-project-needs{display:flex;flex-wrap:wrap;gap:7px}.uwgrow-chip,.uwgrow-btn{appearance:none;border:1px solid rgba(57,255,104,.22);background:rgba(57,255,104,.035);color:#ddffe6;padding:8px 10px;font:900 9px/1 monospace;letter-spacing:.075em;text-transform:uppercase;cursor:pointer;transition:.16s ease}.uwgrow-chip:hover,.uwgrow-btn:hover,.uwgrow-chip.active{border-color:rgba(57,255,104,.7);background:rgba(57,255,104,.11);color:var(--g,#39ff68);box-shadow:0 0 16px rgba(57,255,104,.08)}
+.uwgrow-btn.hot{background:var(--g,#39ff68);color:#001406;border-color:var(--g,#39ff68)}
+.uwgrow-tools{margin:10px 0 13px;padding:11px 12px;border:1px solid rgba(57,255,104,.14);background:rgba(0,0,0,.22);display:flex;align-items:center;gap:9px;flex-wrap:wrap}.uwgrow-tools>span{font:900 8px monospace;letter-spacing:.16em;color:var(--g,#39ff68);margin-right:3px}.uwgrow-tools .uwgrow-spacer{flex:1}
+.uwgrow-project-panel{margin:12px 0 14px;padding:13px 14px;border:1px solid rgba(57,255,104,.14);background:linear-gradient(90deg,rgba(57,255,104,.045),rgba(0,0,0,.12))}.uwgrow-project-top{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px}.uwgrow-project-top b{font-size:11px;letter-spacing:.07em}.uwgrow-project-top small{font:800 8px monospace;color:var(--g,#39ff68)}
+.uwgrow-profile-next{margin-top:14px;border-top:1px solid rgba(57,255,104,.13);padding-top:13px}.uwgrow-profile-next-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.uwgrow-profile-next-head b{font:900 9px monospace;letter-spacing:.12em;color:var(--g,#39ff68)}.uwgrow-profile-next-head span{font-size:10px;opacity:.65}
+.uwgrow-checklist{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.uwgrow-check{display:flex;align-items:center;gap:7px;padding:8px 9px;border:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.17);font-size:9px;min-width:0}.uwgrow-check i{width:15px;height:15px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(255,255,255,.18);font:900 8px monospace;font-style:normal;flex:none}.uwgrow-check.done{border-color:rgba(57,255,104,.18);color:#dfffe7}.uwgrow-check.done i{border-color:var(--g,#39ff68);color:#001406;background:var(--g,#39ff68);box-shadow:0 0 10px rgba(57,255,104,.2)}.uwgrow-check.missing{opacity:.52}
+.uwgrow-nextstep{margin-top:9px;font:800 9px/1.35 monospace;color:#d8ffe2}.uwgrow-nextstep strong{color:var(--g,#39ff68)}
+@media(max-width:900px){.uwgrow-radar{grid-template-columns:repeat(2,1fr)}.uwgrow-bottom{grid-template-columns:1fr}.uwgrow-checklist{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.uwgrow-head{align-items:flex-start;flex-direction:column}.uwgrow-radar{grid-template-columns:1fr 1fr}.uwgrow-stat{min-height:96px;padding:14px}.uwgrow-stat b{font-size:25px}.uwgrow-checklist{grid-template-columns:1fr}.uwgrow-tools .uwgrow-spacer{display:none}}
+</style>
+<script id="uw-network-growth-pack-20260920-js">
+(()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const visible=(el)=>!!(el&&el.offsetParent!==null);
+ function inject(){
+   const livebar=document.querySelector('#page-home .uw70-livebar');
+   if(livebar&&!$('uwGrowthRadar')){
+     livebar.insertAdjacentHTML('afterend',`<section class="uwgrow-shell" id="uwGrowthRadar">
+       <div class="uwgrow-head"><div><div class="uwgrow-kicker">UNDERWEB // OPPORTUNITY RADAR</div><h3>What the Network needs right now.</h3><p>Live readout from creator availability, recruiting projects and published events already loaded by UnderWeb.</p></div><div class="uwgrow-live">LIVE NETWORK DATA</div></div>
+       <div class="uwgrow-radar">
+         <div class="uwgrow-stat"><span>CREATORS OPEN TO WORK</span><b id="uwGrowthAvailable">—</b><small id="uwGrowthCreatorSub">loading network</small></div>
+         <div class="uwgrow-stat"><span>OPEN PROJECTS</span><b id="uwGrowthProjects">—</b><small id="uwGrowthProjectSub">loading recruiting</small></div>
+         <div class="uwgrow-stat"><span>CREW SLOTS NEEDED</span><b id="uwGrowthSlots">—</b><small id="uwGrowthSlotSub">roles waiting</small></div>
+         <div class="uwgrow-stat"><span>UPCOMING EVENTS</span><b id="uwGrowthEvents">—</b><small id="uwGrowthEventSub">loading calendar</small></div>
+       </div>
+       <div class="uwgrow-bottom"><div class="uwgrow-needs"><div class="uwgrow-needs-title"><b>HOT NEEDS // OPEN CREW ROLES</b><span>CLICK TO SEARCH PROJECTS</span></div><div class="uwgrow-needchips" id="uwGrowthNeeds"><span class="meta">Waiting for project data…</span></div></div>
+       <div class="uwgrow-actions"><div class="uwgrow-needs-title"><b>JUMP INTO THE NETWORK</b><span>QUICK ACTIONS</span></div><div class="uwgrow-quick"><button class="uwgrow-btn hot" data-page="discover">FIND CREATORS</button><button class="uwgrow-btn" data-page="projects">OPEN PROJECTS</button><button class="uwgrow-btn" data-page="events">VIEW EVENTS</button></div></div></div>
+     </section>`);
+   }
+   const toolbar=document.querySelector('#page-discover .uw70-toolbar');
+   if(toolbar&&!$('uwGrowthCreatorTools')){
+     toolbar.insertAdjacentHTML('beforebegin',`<div class="uwgrow-tools" id="uwGrowthCreatorTools"><span>QUICK DISCOVERY</span><button class="uwgrow-chip" data-uwgrow-avail="Available">AVAILABLE NOW</button><button class="uwgrow-chip" data-uwgrow-avail="Available by request">BY REQUEST</button><button class="uwgrow-chip" data-uwgrow-avail="Any Availability">SHOW ALL</button><div class="uwgrow-spacer"></div><button class="uwgrow-btn" id="uwGrowthRandomCreator" type="button">RANDOM CREATOR ↗</button></div>`);
+   }
+   const projectToolbar=document.querySelector('#page-projects .uw63-toolbar');
+   if(projectToolbar&&!$('uwGrowthProjectNeeds')){
+     projectToolbar.insertAdjacentHTML('beforebegin',`<div class="uwgrow-project-panel" id="uwGrowthProjectNeeds"><div class="uwgrow-project-top"><b>NEEDED RIGHT NOW</b><small id="uwGrowthProjectOpenLabel">REAL OPEN SLOTS</small></div><div class="uwgrow-project-needs" id="uwGrowthProjectNeedChips"><span class="meta">Waiting for recruiting data…</span></div></div>`);
+   }
+   const meter=document.querySelector('#page-profile .uw42-profile-meter');
+   if(meter&&!$('uwGrowthProfileNext')){
+     meter.insertAdjacentHTML('beforeend',`<div class="uwgrow-profile-next" id="uwGrowthProfileNext"><div class="uwgrow-profile-next-head"><b>PROFILE READINESS</b><span id="uwGrowthProfileCount">0 / 8 complete</span></div><div class="uwgrow-checklist" id="uwGrowthChecklist"></div><div class="uwgrow-nextstep" id="uwGrowthNextStep"></div></div>`);
+   }
+ }
+ function creatorRows(){
+   try{
+     if(!Array.isArray(window.uw758Creators)&&typeof uw758Creators==='undefined')return [];
+     const rows=(typeof uw758Creators!=='undefined'?uw758Creators:window.uw758Creators)||[];
+     return typeof uw758Visible==='function'?rows.filter(uw758Visible):rows;
+   }catch(_){return []}
+ }
+ function availabilityLabel(v){try{return typeof uw758Availability==='function'?uw758Availability(v):String(v||'').replaceAll('_',' ').toUpperCase()}catch(_){return String(v||'').toUpperCase()}}
+ function openProjects(){try{return Array.isArray(uwProjects)?uwProjects.filter(x=>String(x.status||'').toLowerCase()==='open'):[]}catch(_){return []}}
+ function slotRows(){try{return Array.isArray(uw63Slots)?uw63Slots:[]}catch(_){return []}}
+ function filled(id){try{return typeof uw63Filled==='function'?Number(uw63Filled(id)||0):0}catch(_){return 0}}
+ function projectIdForSlot(s){return String(s.project_id||s.network_project_id||'')}
+ function openSlotData(){
+   const openIds=new Set(openProjects().map(p=>String(p.id)));
+   return slotRows().map(s=>{
+     const need=Math.max(1,Number(s.slots_needed||1)), remain=Math.max(0,need-filled(s.id));
+     return {slot:s,remain,open:openIds.has(projectIdForSlot(s))};
+   }).filter(x=>x.open&&x.remain>0);
+ }
+ function upcomingEvents(){
+   try{
+     const rows=Array.isArray(uwBeta?.events)?uwBeta.events:[]; const now=Date.now();
+     return rows.filter(x=>String(x.status||'published').toLowerCase()==='published'&&!x.cancelled_at&&!x.archived_at&&(!x.starts_at||new Date(x.starts_at).getTime()>=now-21600000)).sort((a,b)=>new Date(a.starts_at||0)-new Date(b.starts_at||0));
+   }catch(_){return []}
+ }
+ function needsMap(){
+   const map=new Map();
+   openSlotData().forEach(({slot,remain})=>{const role=String(slot.role_name||'CREATOR').trim();map.set(role,(map.get(role)||0)+remain)});
+   return [...map.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+ }
+ function updateRadar(){
+   if(!$('uwGrowthRadar'))return;
+   const creators=creatorRows(); const open=creators.filter(c=>['AVAILABLE','AVAILABLE BY REQUEST'].includes(availabilityLabel(c.availability)));
+   const projects=openProjects(), slots=openSlotData(), events=upcomingEvents(), needs=needsMap();
+   if($('uwGrowthAvailable'))$('uwGrowthAvailable').textContent=open.length;
+   if($('uwGrowthCreatorSub'))$('uwGrowthCreatorSub').textContent=creators.length?`${creators.length} approved creators indexed`:'creator directory syncing';
+   if($('uwGrowthProjects'))$('uwGrowthProjects').textContent=projects.length;
+   if($('uwGrowthProjectSub'))$('uwGrowthProjectSub').textContent=projects.length?`${projects.length===1?'project is':'projects are'} recruiting`:'nothing recruiting yet';
+   const remaining=slots.reduce((n,x)=>n+x.remain,0);if($('uwGrowthSlots'))$('uwGrowthSlots').textContent=remaining;
+   if($('uwGrowthSlotSub'))$('uwGrowthSlotSub').textContent=needs[0]?`top need: ${needs[0][0]}`:'no open roles right now';
+   if($('uwGrowthEvents'))$('uwGrowthEvents').textContent=events.length;
+   if($('uwGrowthEventSub'))$('uwGrowthEventSub').textContent=events[0]?`next: ${String(events[0].title||'event').slice(0,36)}`:'calendar is clear';
+   const host=$('uwGrowthNeeds');if(host)host.innerHTML=needs.length?needs.slice(0,6).map(([role,n])=>`<button class="uwgrow-chip" data-uwgrow-project-role="${safe(role)}">${safe(role)} <b>×${n}</b></button>`).join(''):'<span class="meta">No unfilled project roles right now.</span>';
+ }
+ function updateProjectNeeds(){
+   const host=$('uwGrowthProjectNeedChips');if(!host)return;const needs=needsMap(), remaining=openSlotData().reduce((n,x)=>n+x.remain,0);
+   if($('uwGrowthProjectOpenLabel'))$('uwGrowthProjectOpenLabel').textContent=`${remaining} OPEN ${remaining===1?'SLOT':'SLOTS'}`;
+   host.innerHTML=needs.length?`<button class="uwgrow-chip" data-uwgrow-project-role="">ALL OPEN ROLES</button>`+needs.slice(0,9).map(([role,n])=>`<button class="uwgrow-chip" data-uwgrow-project-role="${safe(role)}">${safe(role)} · ${n}</button>`).join(''):'<span class="meta">No open role requirements right now.</span>';
+ }
+ function updateCreatorQuickState(){
+   const current=$('creatorAvailability')?.value||'Any Availability';document.querySelectorAll('[data-uwgrow-avail]').forEach(b=>b.classList.toggle('active',b.dataset.uwgrowAvail===current));
+ }
+ function previewHasImage(id){const el=$(id);if(!el)return false;const bg=getComputedStyle(el).backgroundImage;return !!bg&&bg!=='none'&&!bg.includes('linear-gradient')}
+ function updateProfile(){
+   const box=$('uwGrowthChecklist');if(!box)return;
+   const field=id=>String($(id)?.value||'').trim();
+   const ext=[...document.querySelectorAll('#uwExternalLinksRows .uwext-url')].some(x=>String(x.value||'').trim());
+   let avatar=false,banner=false;
+   try{avatar=!!uw033Profile?.avatar_url}catch(_){} try{banner=!!uw033Profile?.banner_url}catch(_){}
+   avatar=avatar||previewHasImage('avatarPreview'); banner=banner||previewHasImage('bannerPreview');
+   const items=[
+     ['DISPLAY NAME',field('profileDisplayName').length>=2,'Add your display name'],
+     ['HEADLINE',field('profileHeadline').length>=4,'Write a short headline'],
+     ['BIO',field('profileBio').length>=20,'Add a bio with a little context'],
+     ['SKILLS',field('profileSkills').length>=2,'List your skills or specialties'],
+     ['AVATAR',avatar,'Upload a profile picture'],
+     ['BANNER',banner,'Upload a profile banner'],
+     ['AVAILABILITY',!!field('profileAvailability'),'Set your availability'],
+     ['PUBLIC LINK',ext,'Add at least one public/social link']
+   ];
+   const done=items.filter(x=>x[1]).length, pct=Math.round(done/items.length*100);
+   box.innerHTML=items.map(([name,ok])=>`<div class="uwgrow-check ${ok?'done':'missing'}"><i>${ok?'✓':'·'}</i><span>${name}</span></div>`).join('');
+   if($('uwGrowthProfileCount'))$('uwGrowthProfileCount').textContent=`${done} / ${items.length} complete`;
+   if($('uw42ProfilePercent'))$('uw42ProfilePercent').textContent=pct+'%'; if($('uw42ProfileBar'))$('uw42ProfileBar').style.width=pct+'%';
+   const next=items.find(x=>!x[1]);if($('uwGrowthNextStep'))$('uwGrowthNextStep').innerHTML=next?`NEXT BEST STEP // <strong>${safe(next[2])}</strong>`:'<strong>PROFILE READY // YOUR NETWORK IDENTITY IS COMPLETE.</strong>';
+ }
+ function randomCreator(){
+   const buttons=[...document.querySelectorAll('#creatorDirectoryList [data-uw758-profile],#creatorDirectoryList [data-uw62-profile],#creatorDirectoryList [data-uw61-profile]')].filter(visible);
+   if(!buttons.length){try{uw758Render()}catch(_){};return typeof toast==='function'?toast('No visible creators match the current filters.'):void 0}
+   buttons[Math.floor(Math.random()*buttons.length)].click();
+ }
+ function applyCreatorAvailability(v){const s=$('creatorAvailability');if(!s)return;s.value=v;updateCreatorQuickState();try{uw758Render()}catch(_){try{renderCreatorDirectory()}catch(__){}}}
+ function searchProjectRole(role){const s=$('uw63ProjectSearch');if(!s)return;s.value=role||'';try{renderProjects()}catch(_){};try{showPage('projects')}catch(_){};setTimeout(()=>s.focus(),80)}
+ function bind(){
+   document.addEventListener('click',e=>{
+     const av=e.target.closest('[data-uwgrow-avail]');if(av){applyCreatorAvailability(av.dataset.uwgrowAvail);return}
+     const role=e.target.closest('[data-uwgrow-project-role]');if(role){searchProjectRole(role.dataset.uwgrowProjectRole);return}
+     if(e.target.closest('#uwGrowthRandomCreator')){randomCreator();return}
+   });
+   ['creatorAvailability','creatorDiscipline','creatorCommunity'].forEach(id=>$(id)?.addEventListener('change',updateCreatorQuickState));
+   ['profileDisplayName','profileHeadline','profileBio','profileSkills','profileAvailability'].forEach(id=>$(id)?.addEventListener('input',updateProfile));
+   $('profileAvatarInput')?.addEventListener('change',()=>setTimeout(updateProfile,80));$('profileBannerInput')?.addEventListener('change',()=>setTimeout(updateProfile,80));
+   $('uwExternalLinksRows')?.addEventListener('input',updateProfile);
+ }
+ function refresh(){inject();updateRadar();updateProjectNeeds();updateCreatorQuickState();updateProfile()}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{inject();bind();setTimeout(refresh,350);setTimeout(refresh,1200)});else{inject();bind();setTimeout(refresh,100)}
+ setInterval(()=>{try{refresh()}catch(e){console.warn('[UW growth pack]',e)}},1800);
+})();
+</script>
 </body>
 </html>
