@@ -20,6 +20,7 @@ button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
 .logo{font-weight:1000;font-style:italic;font-size:27px;color:var(--g);letter-spacing:-.06em;text-shadow:0 0 25px rgba(56,255,114,.25);cursor:pointer}
 .logo-img-wrap{display:flex;align-items:center;height:54px;max-width:220px;overflow:hidden}
 .logo-img-wrap img{display:block;width:210px;max-height:54px;object-fit:contain;object-position:left center;filter:drop-shadow(0 0 10px rgba(56,255,114,.22))}
+.logo,.logo-img-wrap,.logo-img-wrap img{-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none;touch-action:manipulation}
 .brand-lockup{display:flex;align-items:center;gap:10px}
 .brand-lockup img{display:block;object-fit:contain}
 .brand-underweb-emblem{width:min(78%,460px);max-height:330px;filter:drop-shadow(0 0 18px rgba(56,255,114,.24))}
@@ -5847,9 +5848,11 @@ async function uwDiscoverCosmetic(secret){
  const fire=x=>uwDiscoverCosmetic(x);
 
  // Existing seven-signal legacy discovery remains because people already know/own it.
- let logo=0;
+ // A successful long-hold secret suppresses the synthetic click that follows release.
+ let logo=0, suppressLogoClick=false;
  document.addEventListener('click',e=>{
    if(e.target.closest('.logo-img-wrap,.logo')){
+     if(suppressLogoClick){suppressLogoClick=false;return;}
      logo++;
      if(logo>=7){logo=0;fire(D(115,101,118,101,110,95,115,105,103,110,97,108,115))}
    }
@@ -5920,12 +5923,41 @@ async function uwDiscoverCosmetic(secret){
    if(match&&lpMobileArmed){lpMobileArmed=false;fire(D(108,111,115,116,95,112,97,99,107,101,116))}
    else if(!match)lpMobileArmed=true;
  });
- let holdTimer=0;
- document.addEventListener('pointerdown',e=>{
-   if(!e.target.closest?.('.logo-img-wrap,.logo'))return; clearTimeout(holdTimer);
-   holdTimer=setTimeout(()=>fire(D(117,110,100,101,114,95,116,104,101,95,119,101,98)),1800);
+ // Safe finite long-hold path. Never fires while the pointer is still held and
+ // automatically cancels overlong presses so the page cannot remain in a stuck gesture state.
+ let holdArmTimer=0,holdCancelTimer=0,holdStarted=0,holdPointer=-1,holdHit=null,holdArmed=false;
+ const clearLogoHold=()=>{
+   clearTimeout(holdArmTimer);clearTimeout(holdCancelTimer);
+   holdArmTimer=holdCancelTimer=0;holdStarted=0;holdPointer=-1;holdHit=null;holdArmed=false;
+ };
+ document.querySelectorAll('.logo-img-wrap img,.logo img').forEach(img=>{
+   img.draggable=false;
+   img.addEventListener('dragstart',e=>e.preventDefault());
  });
- ['pointerup','pointercancel','pointerleave'].forEach(type=>document.addEventListener(type,()=>clearTimeout(holdTimer)));
+ document.addEventListener('pointerdown',e=>{
+   const hit=e.target.closest?.('.logo-img-wrap,.logo');
+   if(!hit||e.button>0)return;
+   clearLogoHold();
+   holdStarted=Date.now();holdPointer=e.pointerId;holdHit=hit;holdArmed=false;
+   try{hit.setPointerCapture?.(e.pointerId)}catch(_){}
+   holdArmTimer=setTimeout(()=>{holdArmed=true},1500);
+   holdCancelTimer=setTimeout(()=>{clearLogoHold()},3000);
+ });
+ document.addEventListener('pointerup',e=>{
+   if(!holdHit||e.pointerId!==holdPointer)return;
+   const elapsed=Date.now()-holdStarted;
+   const shouldFire=holdArmed&&elapsed>=1500&&elapsed<=3000;
+   const hit=holdHit;
+   clearLogoHold();
+   try{hit.releasePointerCapture?.(e.pointerId)}catch(_){}
+   if(shouldFire){
+     suppressLogoClick=true;
+     fire(D(117,110,100,101,114,95,116,104,101,95,119,101,98));
+   }
+ });
+ ['pointercancel','lostpointercapture'].forEach(type=>document.addEventListener(type,clearLogoHold));
+ window.addEventListener('blur',clearLogoHold);
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)clearLogoHold()});
  let vt=0,vn=0;
  document.addEventListener('pointerup',e=>{
    if(!e.target.closest?.('.uw50-version-pill'))return; const now=Date.now(); vn=(now-vt<650)?vn+1:1; vt=now;
