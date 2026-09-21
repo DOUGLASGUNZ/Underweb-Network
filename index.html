@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_PROFILE_V4_BUILD_20260921_05 -->
-<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_05">
+<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
+<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_06">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -1266,7 +1266,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 </style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
-<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-05</div>
+<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-06</div>
 
 <header class="top uw70-top">
   <button aria-label="Open menu" class="btn drawer-btn" id="drawerBtn">☰</button>
@@ -8618,7 +8618,7 @@ html,body{max-width:100%;overflow-x:hidden}
  /* Keep the visible build marker authoritative and singular. */
  function buildMark(){
    let b=$('uwBuildIndicator');
-   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-05';
+   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-06';
    document.querySelectorAll('[id*="version" i],[class*="version" i]').forEach(el=>{
      if(el===b)return;
      const t=(el.textContent||'').trim();
@@ -8629,7 +8629,7 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(buildMark,500);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_05 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
 <!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
 
 
@@ -8680,7 +8680,7 @@ html,body{max-width:100%;overflow-x:hidden}
    if(!f)return '';
    if(!currentSession?.user?.id)throw new Error('Sign in before uploading partner artwork.');
    const ext=f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg';
-   const path=`partner-applications/${currentSession.user.id}/${kind}-${Date.now()}.${ext}`;
+   const path=`${currentSession.user.id}/partner-applications/${kind}-${Date.now()}.${ext}`;
    const up=await uwSupabase.storage.from('profile-media').upload(path,f,{upsert:false,contentType:f.type,cacheControl:'3600'});
    if(up.error)throw up.error;
    const pub=uwSupabase.storage.from('profile-media').getPublicUrl(path);
@@ -8726,7 +8726,7 @@ html,body{max-width:100%;overflow-x:hidden}
  },true);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_05 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
 <!-- /UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 -->
 
 
@@ -8774,7 +8774,7 @@ html,body{max-width:100%;overflow-x:hidden}
    if(!currentSession?.user?.id)throw new Error('Sign in first.');
    const ext=f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg';
    const pid=$('uwpPartnerId')?.value||'new';
-   const path=`partner-records/${currentSession.user.id}/${pid}/${kind}-${Date.now()}.${ext}`;
+   const path=`${currentSession.user.id}/partner-records/${pid}/${kind}-${Date.now()}.${ext}`;
    const r=await uwSupabase.storage.from('profile-media').upload(path,f,{upsert:false,contentType:f.type,cacheControl:'3600'});
    if(r.error)throw r.error;
    const pub=uwSupabase.storage.from('profile-media').getPublicUrl(path);
@@ -8826,5 +8826,9 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(syncFromFields,300);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_05 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
 
+
+<!-- UNDERWEB STORAGE RLS PATH FIX BUILD 06 2026-09-21 -->
+<!-- Partner media paths now preserve auth.uid() as storage.foldername(name)[1]. -->
+<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
