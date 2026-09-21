@@ -3049,13 +3049,13 @@ const uw50Esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>
 const uw50Nice=s=>String(s||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 const uw50When=s=>{try{return new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(s))}catch{return ''}};
 
-async function uw50LoadAll(){
+let uw50LoadPromise=null, uw50LastLoad=0;
+async function uw50LoadAll(force=false){
   if(!currentSession)return;
+  if(uw50LoadPromise)return uw50LoadPromise;
+  if(!force && Date.now()-uw50LastLoad<15000)return;
   const uid=currentSession.user.id;
-  // Repair any missing role-derived badges/titles before reading identity data.
-  // Safe to call repeatedly; the RPC is idempotent.
-  const repair=await uwSupabase.rpc('uw_repair_my_identity');
-  if(repair.error)console.warn('Identity repair:',repair.error.message);
+  uw50LoadPromise=(async()=>{
   const [rd,ur,bd,ub,td,ut,ma]=await Promise.all([
     uwSupabase.from('role_definitions').select('*').eq('active',true).order('authority_rank',{ascending:false}),
     uwSupabase.from('user_roles').select('*').eq('user_id',uid).eq('status','active'),
@@ -3067,16 +3067,22 @@ async function uw50LoadAll(){
   ]);
   const identityErrors=[rd,ur,bd,ub,td,ut,ma].filter(x=>x?.error).map(x=>x.error.message);
   if(identityErrors.length){
-    console.error('Identity load errors:',identityErrors);
-    toast('Identity data error: '+identityErrors[0]);
+    console.warn('Identity load degraded:',identityErrors);
   }
-  if(ur.error)return;
-  uw50Roles=ur.data||[];
-  UW50.roleDefs=rd.data||[];UW50.badgeDefs=bd.data||[];UW50.badges=ub.data||[];UW50.titleDefs=td.data||[];UW50.titles=ut.data||[];UW50.myApps=ma.data||[];
+  if(!ur.error)uw50Roles=ur.data||[];
+  if(!rd.error)UW50.roleDefs=rd.data||[];
+  if(!bd.error)UW50.badgeDefs=bd.data||[];
+  if(!ub.error)UW50.badges=ub.data||[];
+  if(!td.error)UW50.titleDefs=td.data||[];
+  if(!ut.error)UW50.titles=ut.data||[];
+  if(!ma.error)UW50.myApps=ma.data||[];
   renderAccessUI();
   uw50RenderIdentity();
   uw50RenderProfileIdentity();
-  if(hasStaffAccess())await uw50LoadReviewQueue();
+  uw50LastLoad=Date.now();
+  if(hasStaffAccess())uw61LoadStaffRoster?.();
+  })().catch(err=>{console.warn('Identity load network error:',err);}).finally(()=>{uw50LoadPromise=null});
+  return uw50LoadPromise;
 }
 function uw50Def(slug){return UW50.roleDefs.find(x=>x.slug===slug)}
 function uw50BadgeDef(slug){return UW50.badgeDefs.find(x=>x.slug===slug)}
@@ -3169,11 +3175,18 @@ function uw61Initial(v){return (String(v||'?').trim().charAt(0)||'?').toUpperCas
 function uw61CommunityLabel(arr){arr=Array.isArray(arr)?arr:[];const vals=[...new Set(arr.map(x=>String(x||'').toLowerCase()))];if(vals.includes('both')||vals.includes('network')||vals.includes('shared')||(vals.includes('underweb')&&vals.includes('symbiotes')))return 'Both';if(vals.includes('symbiotes'))return 'Symbiotes';if(vals.includes('underweb'))return 'UnderWeb';return 'Network'}
 function uw61AvailabilityLabel(v){const k=String(v||'').toLowerCase();return ({available:'Available',limited:'Limited',by_request:'By Request',booked:'Booked / Busy',unavailable:'Unavailable'})[k]||uw61Nice(k||'Not set')}
 function uw61CanonicalRoles(input){const rows=Array.isArray(input)?input:[];const seen=new Set();return rows.filter(r=>{const key=String(r?.slug||r?.name||'').trim().toLowerCase().replace(/[\s-]+/g,'_');if(!key||['member','community_member','community'].includes(key)||seen.has(key))return false;seen.add(key);return true}).sort((a,b)=>Number(b?.rank||0)-Number(a?.rank||0)||String(a?.name||a?.slug||'').localeCompare(String(b?.name||b?.slug||'')))}
-async function uw61LoadStaffRoster(){
-  if(!currentSession||!hasStaffAccess())return;
-  const out=await uwSupabase.rpc('uw_staff_roster_directory');
-  if(out.error){console.warn('Staff roster RPC error:',out.error.message);const g=document.getElementById('uw61RosterGrid');if(g)g.innerHTML=`<div class="uw61-empty"><b>Staff Roster backend error</b><br>${uw61Text(out.error.message)}<br><span class="meta">Run the 0.6.1.4 canonical roster patch, then refresh.</span></div>`;return}
-  uw61Roster=out.data||[];uw61RenderStaffRoster();
+let uw61RosterPromise=null,uw61RosterLoadedAt=0;
+async function uw61LoadStaffRoster(force=false){
+  const g=document.getElementById('uw61RosterGrid');
+  if(!currentSession){if(g)g.innerHTML='<div class="uw61-empty">Sign in to view the staff roster.</div>';return}
+  if(!hasStaffAccess()){if(g)g.innerHTML='<div class="uw61-empty">Staff access is still loading. Try again in a moment.</div>';return}
+  if(uw61RosterPromise)return uw61RosterPromise;
+  if(!force&&uw61Roster.length&&Date.now()-uw61RosterLoadedAt<30000){uw61RenderStaffRoster();return}
+  uw61RosterPromise=(async()=>{const out=await uwSupabase.rpc('uw_staff_roster_directory');
+    if(out.error){console.warn('Staff roster RPC error:',out.error.message);if(g)g.innerHTML='<div class="uw61-empty">Could not load staff roster. Tap Staff again to retry.</div>';return}
+    uw61Roster=out.data||[];uw61RosterLoadedAt=Date.now();uw61RenderStaffRoster();
+  })().catch(err=>{console.warn('Staff roster network error:',err);if(g)g.innerHTML='<div class="uw61-empty">Network error loading staff roster. Tap Staff again to retry.</div>';}).finally(()=>{uw61RosterPromise=null});
+  return uw61RosterPromise;
 }
 function uw61RenderStaffRoster(){
   const grid=document.getElementById('uw61RosterGrid');if(!grid)return;
