@@ -7478,7 +7478,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  });
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{ensure();setTimeout(sync,800)});else{ensure();setTimeout(sync,350)}
  state.timer=setInterval(()=>{if(document.querySelector('#page-home.active'))sync()},15000);
- window.uwHomeRadarV2={sync,render};
+ window.uwHomeRadarV2={sync,render,state};
 })();
 </script>
 
@@ -7492,6 +7492,70 @@ document.addEventListener('DOMContentLoaded',()=>{
 .uwp-links .btn{min-width:120px}.uwp-sectionhead{display:flex;justify-content:space-between;align-items:end;gap:16px;padding-bottom:12px;border-bottom:1px solid #18261d;margin-bottom:3px}.uwp-sectionhead h3{font-size:25px;margin:4px 0 0}.uwp-liveflag{border:1px solid #294132;color:#45ff72;padding:6px 8px;font:800 7px monospace;letter-spacing:.12em}.uwp-collab{transition:.16s background,.16s padding}.uwp-collab:hover{background:rgba(69,255,114,.035);padding-left:8px;padding-right:8px}.uwp-cardlogo,.uwp-logo{background-size:cover;background-position:center}.uwp-card.featured{position:relative}.uwp-card.featured:before{content:"FEATURED NETWORK PARTNER";position:absolute;z-index:2;top:10px;right:10px;background:#45ff72;color:#001807;padding:5px 7px;font:900 7px monospace;letter-spacing:.09em}.uwp-adminrow{transition:.15s border-color,.15s background}.uwp-adminrow:hover{border-color:#35533f;background:#050805}
 @media(max-width:620px){.uwp-cover{height:190px}.uwp-profile{padding:0 14px 20px}.uwp-identity{align-items:end}.uwp-logo{width:82px;height:82px}.uwp-identity h2{font-size:30px}.uwp-sectionhead{align-items:flex-start;flex-direction:column}.uwp-liveflag{display:none}}
 </style>
+
+
+<!-- UNDERWEB V2 QA HOTFIX // mobile radar controls + dynamic navigation -->
+<style id="uw-v2-qa-hotfix-css">
+#uwHomeRadarControls,.uwgrow-quick,.uwgrow-needchips{position:relative;z-index:4}
+#uwHomeRadarControls button,.uwgrow-quick button,.uwgrow-needchips button,#uwOpenFullRadar,#uwRadarMore{touch-action:manipulation;pointer-events:auto!important}
+@media(max-width:560px){
+ #uwHomeRadarControls{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;width:100%}
+ #uwHomeRadarControls .uwh-radar-filter{min-height:34px;width:100%;padding:8px 5px!important}
+ #uwOpenFullRadar,#uwRadarMore{min-height:38px}
+ .uwgrow-quick{display:grid!important;grid-template-columns:1fr!important;width:100%}
+ .uwgrow-quick .uwgrow-btn{width:100%;min-height:42px}
+ .uwgrow-needchips .uwgrow-chip{min-height:36px}
+}
+</style>
+<script id="uw-v2-qa-hotfix-js">
+(()=>{
+ 'use strict';
+ // Dynamic homepage controls are injected after the site's original navigation buttons
+ // are bound, so handle them through delegation for both touch and mouse.
+ document.addEventListener('click',e=>{
+   const filter=e.target.closest('#uwHomeRadarControls [data-radar-filter]');
+   if(filter){
+     e.preventDefault();e.stopPropagation();
+     const api=window.uwHomeRadarV2;
+     if(api?.state) api.state.filter=filter.dataset.radarFilter;
+     document.querySelectorAll('#uwHomeRadarControls [data-radar-filter]').forEach(b=>b.classList.toggle('active',b===filter));
+     if(api?.render) api.render();
+     else filter.dispatchEvent(new CustomEvent('uw-radar-filter-fallback',{bubbles:false}));
+     return;
+   }
+   const nav=e.target.closest('#uwGrowthRadar [data-page],#uwHomeRadar [data-radar-page]');
+   if(nav){
+     e.preventDefault();e.stopPropagation();
+     const page=nav.dataset.page||nav.dataset.radarPage;
+     if(page&&typeof showPage==='function')showPage(page);
+     return;
+   }
+   const role=e.target.closest('#uwGrowthRadar [data-uwgrow-project-role]');
+   if(role){
+     e.preventDefault();
+     const search=document.getElementById('uw63ProjectSearch');
+     if(typeof showPage==='function')showPage('projects');
+     setTimeout(()=>{if(search){search.value=role.dataset.uwgrowProjectRole||'';try{renderProjects()}catch(_){}search.focus?.()}},80);
+     return;
+   }
+   if(e.target.closest('#uwOpenFullRadar,#uwRadarMore')){
+     e.preventDefault();e.stopPropagation();
+     const full=document.getElementById('uwGrowthRadar');
+     if(full)full.scrollIntoView({behavior:'smooth',block:'start'});
+   }
+ },true);
+ // Expose state so the mobile hotfix can update the existing renderer without duplicating it.
+ try{
+   const api=window.uwHomeRadarV2;
+   if(api&&!api.state){
+     // Existing implementation did not expose state. Re-clicking the original filter
+     // listener remains the fallback; this marker is used by the patched renderer below.
+   }
+ }catch(_){}
+})();
+</script>
+<!-- /UNDERWEB V2 QA HOTFIX -->
+
 </body>
 </html>
 
@@ -7568,7 +7632,7 @@ html,body{max-width:100%;overflow-x:hidden}
  async function locker(){try{const q=await uwSupabase.rpc('uw_my_cosmetic_locker');if(q.error)throw q.error;return Array.isArray(q.data)?q.data:[]}catch(_){return []}}
  function loadLocal(){try{return JSON.parse(localStorage.getItem('uw_deepweb_progress_v2')||'{}')}catch(_){return {}}}
  function saveLocal(){try{localStorage.setItem('uw_deepweb_progress_v2',JSON.stringify(state.stage))}catch(_){}}
- function cinematic(title,copy){let v=document.getElementById('uwDeepWebVeil');if(!v){v=document.createElement('div');v.id='uwDeepWebVeil';v.innerHTML='<div class="dw-core"><div class="dw-eye"></div><div class="dw-k">DEEP WEB // SIGNAL BREACH</div><h2></h2><p></p></div>';document.body.appendChild(v)}v.querySelector('h2').textContent=title;v.querySelector('p').textContent=copy;v.classList.remove('show');void v.offsetWidth;v.classList.add('show');clearTimeout(v._t);v._t=setTimeout(()=>v.classList.remove('show'),3000)}
+ function cinematic(title,copy){let v=document.getElementById('uwDeepWebVeil');if(!v){v=document.createElement('div');v.id='uwDeepWebVeil';v.innerHTML='<div class="dw-core"><div class="dw-eye"></div><div class="dw-k">DEEP WEB // SIGNAL BREACH</div><h2></h2><p></p></div>';document.body.appendChild(v)}v.querySelector('h2').textContent=title;v.querySelector('p').textContent=copy;v.classList.remove('show');void v.offsetWidth;v.classList.add('show');clearTimeout(v._t);v._t=setTimeout(()=>v.classList.remove('show'),6000)}
  async function discover(slug){if(!state.eligible&&!state.qa)return false;try{const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:slug});if(r.error)throw r.error;const row=Array.isArray(r.data)?r.data[0]:r.data;if(!row)throw new Error('No unlock response');state.owned.add(slug);cinematic(SETS[slug]?.name||slug,'REWARD SET ACQUIRED // FRAME + TITLE + BADGE + PROFILE EFFECT');await refresh();return true}catch(e){console.warn('[Deep Web unlock requires V2 backend secret]',slug,e);if(state.qa){state.owned.add(slug);state.stage['qa_'+slug]=true;saveLocal();cinematic(SETS[slug]?.name||slug,'QA SIMULATION // FRONT-END REWARD SET');renderLocker();hydrateProfile();return true}if(typeof toast==='function')toast('DEEP WEB SIGNAL REJECTED // V2 secret is not installed server-side.');return false}}
  async function eligibility(){const rows=await locker();state.owned=new Set(rows.map(x=>String(x.cosmetic_slug||x.slug||'')));state.stage=loadLocal();state.eligible=OG.every(x=>state.owned.has(x));return rows}
  function ensureLocker(){if(!state.eligible&&!state.qa)return;const base=document.getElementById('uwCosmeticsLocker');if(!base)return;let root=document.getElementById('uwDeepWebLocker');if(root)return root;root=document.createElement('section');root.id='uwDeepWebLocker';root.innerHTML='<div class="dw-lock-head"><span>CLEARANCE VERIFIED // 07/07</span><h4>Deep Web Reward Sets</h4><p>Signals below the public Network. Reward sets can contain frames, titles, badges, profile effects and network effects.</p></div><div class="dw-set-grid" id="uwDeepSetGrid"></div><div class="dw-title-select"><label class="eyebrow">EQUIPPED TITLE</label><select id="uwDeepTitleSelect"></select><button id="uwDeepTitleSave" type="button">APPLY TITLE</button></div>';base.appendChild(root);return root}
