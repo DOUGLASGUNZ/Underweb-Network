@@ -6712,7 +6712,7 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
   const links=[['WEBSITE',x.website_url],['DISCORD',x.discord_url],['VRCHAT',x.vrchat_url]].filter(a=>safeUrl(a[1]));$('uwpModalLinks').innerHTML=links.map(a=>`<a class="btn" target="_blank" rel="noopener" href="${esc(safeUrl(a[1]))}">${a[0]} ↗</a>`).join('');
   $('uwpModalMeta').innerHTML=`<div class="uwp-meta"><span>NETWORK SCOPE</span><b>${esc(labelScope(x.scope))}</b></div><div class="uwp-meta"><span>PARTNER SINCE</span><b>${esc(x.partner_since?String(x.partner_since).slice(0,10):'Not listed')}</b></div><div class="uwp-meta"><span>PRIMARY CONTACT</span><b>${esc(x.primary_contact||'Staff managed')}</b></div>`;
   let reps=[],collabs=[];if(!x.legacy){const [rr,cc]=await Promise.all([uwSupabase.from('network_partner_representatives').select('*').eq('partner_id',x.id).eq('active',true),uwSupabase.from('network_partner_collabs').select('*').eq('partner_id',x.id).order('occurred_at',{ascending:false}).limit(12)]);reps=rr.data||[];collabs=cc.data||[]}
-  $('uwpModalReps').innerHTML=reps.length?reps.map(r=>`<div class="uwp-rep"><b>${esc(r.display_name||'Partner Representative')}</b>${r.title?` · ${esc(r.title)}`:''}</div>`).join(''):'<div class="uw-empty">No public representatives listed.</div>';
+  $('uwpModalReps').innerHTML=reps.length?reps.map(r=>`<button type="button" class="uwp-rep uwp-rep-profile" ${r.user_id?`data-uw-partner-profile-user="${esc(r.user_id)}"`:''}><b>${esc(r.display_name||'Partner Representative')}</b>${r.title?` · ${esc(r.title)}`:''}${r.user_id?'<span>VIEW NETWORK PROFILE →</span>':''}</button>`).join(''):'<div class="uw-empty">No public representatives listed.</div>';
   $('uwpModalCollabs').innerHTML=collabs.length?collabs.map(c=>`<div class="uwp-collab"><div><b>${esc(c.title||'Network collaboration')}</b><br><span>${esc(c.collab_type||'COLLABORATION')}</span></div><span>${esc(c.occurred_at?String(c.occurred_at).slice(0,10):'PLANNED')}</span></div>`).join(''):'<div class="uw-empty">No collaboration history published yet.</div>';
   $('uwpModal').classList.add('open');$('uwpModal').setAttribute('aria-hidden','false');
  }
@@ -8438,9 +8438,80 @@ html,body{max-width:100%;overflow-x:hidden}
  let queued=false;function run(){queued=false;cleanPublic();repairEditor();collapseSecondary();}
  function queue(){if(queued)return;queued=true;requestAnimationFrame(run)}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
- new MutationObserver(queue).observe(document.body,{childList:true,subtree:true});
+ const v3modal=document.getElementById('uw621ProfileModal');if(v3modal)new MutationObserver(queue).observe(v3modal,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
  document.addEventListener('click',e=>{if(e.target.closest('[data-page="profile"],#nav-profile,.nav-profile'))setTimeout(run,50)},true);
  setTimeout(run,500);setTimeout(run,1500);
 })();
 </script>
 <!-- /UNDERWEB PROFILE OVERHAUL V3 -->
+
+
+<!-- UNDERWEB PROFILE NETWORK HOTFIX 2026-09-21 -->
+<style id="uw-profile-network-hotfix-css">
+/* Public profile: remove the old duplicated column layout once V3 shell exists. */
+#uw621ProfileModal:has(#uwpoPublic) .uw621-grid>section.uw621-panel:first-of-type,
+#uw621ProfileModal:has(#uwpoPublic) .uw621-grid>aside{display:none!important}
+#uw621ProfileModal:has(#uwpoPublic) .uw621-grid{display:block!important}
+#uw621ProfileModal:has(#uwpoPublic) #uwpoPublic{width:100%!important}
+#uw621ProfileModal .uwpo-identity-grid{grid-template-columns:1fr!important}
+#uw621ProfileModal .uwpo-card{margin:6px 0!important;padding:11px!important}
+#uw621ProfileModal .uwpo-tabs{margin:8px 0!important}
+#uw621ProfileModal .uw621-actions{margin:7px 0!important}
+#uw621ProfileModal .uw621-main{padding-bottom:18px!important}
+#uw621ProfileModal .uwpo-pane{min-height:0!important}
+#uw621ProfileModal .uwpo-pane[hidden]{display:none!important}
+#uw621ProfileModal .uwsys-feed{display:grid;gap:7px}
+#uw621ProfileModal .uwsys-feeditem{margin:0!important}
+.uwp-rep-profile{width:100%;text-align:left;cursor:pointer;background:#040604;color:#eaffef;display:block}
+.uwp-rep-profile span{display:block;margin-top:5px;color:#45ff72;font:900 7px monospace;letter-spacing:.1em}
+.uwp-rep-profile:hover{border-color:#45ff72}
+@media(max-width:700px){
+ #uw621ProfileModal .uw621-cover{height:190px!important}
+ #uw621ProfileModal .uw621-head{margin-top:-36px!important}
+ #uw621ProfileModal .uw621-main{padding-left:10px!important;padding-right:10px!important}
+ #uw621ProfileModal .uwpo-card{padding:10px!important}
+}
+</style>
+<script id="uw-profile-network-hotfix-js">
+(()=>{
+ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ const ago=d=>{if(!d)return'';const n=Date.now()-new Date(d).getTime(),m=Math.floor(n/60000);if(m<1)return'NOW';if(m<60)return m+'M';const h=Math.floor(m/60);if(h<24)return h+'H';return Math.floor(h/24)+'D'};
+ async function allActivity(uid,host){
+  if(!host||!uid||typeof uwSupabase==='undefined')return;
+  host.innerHTML='<span class="meta">Syncing complete Network history…</span>';
+  const items=[], push=(kind,title,body,date,objectType,objectId)=>items.push({kind,title,body,date,objectType,objectId});
+  try{
+   const jobs=[
+    uwSupabase.rpc('uw_profile_network_activity',{p_user_id:uid,p_limit:50}),
+    uwSupabase.from('network_projects').select('id,title,status,created_at,created_by').eq('created_by',uid).order('created_at',{ascending:false}).limit(50),
+    uwSupabase.from('network_events').select('id,title,status,starts_at,created_at,created_by').eq('created_by',uid).order('created_at',{ascending:false}).limit(50),
+    uwSupabase.from('network_collaborators').select('*').eq('user_id',uid).order('created_at',{ascending:false}).limit(50),
+    uwSupabase.from('network_partner_representatives').select('partner_id,partner_role,title,created_at,active').eq('user_id',uid).eq('active',true)
+   ];
+   const [base,projects,events,collabs,reps]=await Promise.allSettled(jobs);
+   if(base.status==='fulfilled'&&!base.value.error)(base.value.data||[]).forEach(x=>push(x.kind||'network',x.title||'Network update',x.body||'',x.created_at,x.object_type,x.object_id));
+   if(projects.status==='fulfilled'&&!projects.value.error)(projects.value.data||[]).forEach(x=>push('project','Posted a Network project',x.title,x.created_at,'project',x.id));
+   if(events.status==='fulfilled'&&!events.value.error)(events.value.data||[]).forEach(x=>push('event','Created a Network event',x.title,x.created_at||x.starts_at,'event',x.id));
+   let crows=collabs.status==='fulfilled'&&!collabs.value.error?(collabs.value.data||[]):[];
+   const pids=[...new Set(crows.filter(x=>x.object_type==='project').map(x=>x.object_id).filter(Boolean))];
+   let pmap={};if(pids.length){const q=await uwSupabase.from('network_projects').select('id,title').in('id',pids);if(!q.error)pmap=Object.fromEntries((q.data||[]).map(x=>[String(x.id),x.title]));}
+   crows.forEach(x=>push('collab','Joined a Network '+String(x.object_type||'collaboration'),pmap[String(x.object_id)]||x.role_label||'Collaboration',x.created_at,x.object_type,x.object_id));
+   let rrows=reps.status==='fulfilled'&&!reps.value.error?(reps.value.data||[]):[];
+   const partnerIds=[...new Set(rrows.map(x=>x.partner_id).filter(Boolean))];let partners={};if(partnerIds.length){const q=await uwSupabase.from('network_partners_public').select('id,name').in('id',partnerIds);if(!q.error)partners=Object.fromEntries((q.data||[]).map(x=>[String(x.id),x.name]));}
+   rrows.forEach(x=>push('partner',String(x.partner_role||'representative').toLowerCase()==='owner'?'Partner Owner':'Partner Representative',partners[String(x.partner_id)]||'Network Partner',x.created_at,'partner',x.partner_id));
+   const seen=new Set();const clean=items.filter(x=>{const k=[x.kind,x.title,x.body,x.objectId].join('|').toLowerCase();if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).slice(0,40);
+   host.innerHTML=clean.length?clean.map(x=>`<button type="button" class="uwsys-feeditem" ${x.objectType&&x.objectId?`data-uw-activity-object="${esc(x.objectType)}|${esc(x.objectId)}"`:''}><i>◈</i><span><strong>${esc(x.title)}</strong><small>${esc(x.body||String(x.kind).toUpperCase())}</small></span><time>${esc(ago(x.date))}</time></button>`).join(''):'<span class="meta">No public Network activity yet.</span>';
+  }catch(err){console.warn('Complete profile activity',err);host.innerHTML='<span class="meta">Network activity unavailable.</span>'}
+ }
+ window.uwProfileActivityComplete=allActivity;
+ window.uwProfileActivityFallback=allActivity;
+ if(window.uwNetworkSystems)window.uwNetworkSystems.profileActivity=allActivity;
+ document.addEventListener('click',e=>{
+  const rep=e.target.closest('[data-uw-partner-profile-user]');if(rep){e.preventDefault();e.stopImmediatePropagation();document.getElementById('uwpModal')?.classList.remove('open');document.body.style.overflow='hidden';const uid=rep.dataset.uwPartnerProfileUser;if(typeof uw621OpenProfile==='function')uw621OpenProfile(uid);return}
+  const obj=e.target.closest('[data-uw-activity-object]');if(obj){const [type,id]=obj.dataset.uwActivityObject.split('|');if(type==='partner'&&typeof window.uwOpenPartner==='function'){window.uwOpenPartner(id);return}if(type==='project'){const p=(window.uwProjects||[]).find(x=>String(x.id)===String(id));if(p&&typeof window.uw63OpenDetail==='function')window.uw63OpenDetail(p);}}
+ },true);
+ /* Rehydrate activity whenever the V3 profile shell is built. */
+ const oldBuild=window.uwProfileV1Build;if(typeof oldBuild==='function')window.uwProfileV1Build=async function(){const r=await oldBuild.apply(this,arguments);const uid=String(window.uw621ActiveCreator||'');const h=document.getElementById('uwpoActivity');if(uid&&h)allActivity(uid,h);return r};
+})();
+</script>
+<!-- /UNDERWEB PROFILE NETWORK HOTFIX -->
