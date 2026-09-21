@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_PROFILE_V4_BUILD_20260921_04 -->
-<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_04">
+<!-- UW_PROFILE_V4_BUILD_20260921_05 -->
+<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_05">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -1266,7 +1266,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 </style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
-<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-04</div>
+<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-05</div>
 
 <header class="top uw70-top">
   <button aria-label="Open menu" class="btn drawer-btn" id="drawerBtn">☰</button>
@@ -1640,7 +1640,22 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
  <div id="uwpAdminBody" hidden>
   <form id="uwpPartnerForm" class="uwp-form">
    <input type="hidden" id="uwpPartnerId"><div class="uwp-formhead"><div><span>PARTNER RECORD</span><h3 id="uwpFormTitle">NEW PARTNER</h3></div><button class="btn" type="button" id="uwpFormReset">CLEAR</button></div>
-   <div class="uwp-formgrid"><label>NAME<input class="input" id="uwpName" required maxlength="100"></label><label>TYPE<input class="input" id="uwpType" placeholder="Community, venue, collective…" maxlength="60"></label><label>SCOPE<select class="select" id="uwpScope"><option value="network">Network</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="both">UnderWeb + Symbiotes</option></select></label><label>STATUS<select class="select" id="uwpStatus"><option value="active">Active</option><option value="pending">Pending</option><option value="paused">Paused</option><option value="ended">Ended</option></select></label><label class="wide">SHORT DESCRIPTION<textarea class="input" id="uwpDescription" rows="3" maxlength="600"></textarea></label><label>LOGO URL<input class="input" id="uwpLogo"></label><label>BANNER URL<input class="input" id="uwpBanner"></label><label>WEBSITE<input class="input" id="uwpWebsite"></label><label>DISCORD / COMMUNITY LINK<input class="input" id="uwpDiscord"></label><label>VRCHAT LINK<input class="input" id="uwpVrchat"></label><label>PRIMARY CONTACT<input class="input" id="uwpContact" maxlength="100"></label><label>PARTNER SINCE<input class="input" id="uwpSince" type="date"></label><label class="wide">PRIVATE STAFF NOTES<textarea class="input" id="uwpNotes" rows="3"></textarea></label><label class="uwp-check"><input type="checkbox" id="uwpFeatured"> FEATURED PARTNER</label></div>
+   <div class="uwp-formgrid"><label>NAME<input class="input" id="uwpName" required maxlength="100"></label><label>TYPE<input class="input" id="uwpType" placeholder="Community, venue, collective…" maxlength="60"></label><label>SCOPE<select class="select" id="uwpScope"><option value="network">Network</option><option value="underweb">UnderWeb</option><option value="symbiotes">Symbiotes</option><option value="both">UnderWeb + Symbiotes</option></select></label><label>STATUS<select class="select" id="uwpStatus"><option value="active">Active</option><option value="pending">Pending</option><option value="paused">Paused</option><option value="ended">Ended</option></select></label><label class="wide">SHORT DESCRIPTION<textarea class="input" id="uwpDescription" rows="3" maxlength="600"></textarea></label><div class="uwp-admin-media-field">
+  <span>PARTNER PFP / LOGO</span>
+  <input type="hidden" id="uwpLogo">
+  <div class="uwp-admin-media-preview logo" id="uwpAdminLogoPreview"><span>NO LOGO</span></div>
+  <input type="file" id="uwpAdminLogoFile" accept="image/jpeg,image/png,image/webp" hidden>
+  <button class="btn uwp-admin-media-pick" type="button" data-uwp-admin-pick="logo">CHOOSE IMAGE</button>
+  <button class="uw-mini-btn" type="button" data-uwp-admin-clear="logo">REMOVE</button>
+</div>
+<div class="uwp-admin-media-field">
+  <span>PARTNER BANNER</span>
+  <input type="hidden" id="uwpBanner">
+  <div class="uwp-admin-media-preview banner" id="uwpAdminBannerPreview"><span>NO BANNER</span></div>
+  <input type="file" id="uwpAdminBannerFile" accept="image/jpeg,image/png,image/webp" hidden>
+  <button class="btn uwp-admin-media-pick" type="button" data-uwp-admin-pick="banner">CHOOSE BANNER</button>
+  <button class="uw-mini-btn" type="button" data-uwp-admin-clear="banner">REMOVE</button>
+</div><label>WEBSITE<input class="input" id="uwpWebsite"></label><label>DISCORD / COMMUNITY LINK<input class="input" id="uwpDiscord"></label><label>VRCHAT LINK<input class="input" id="uwpVrchat"></label><label>PRIMARY CONTACT<input class="input" id="uwpContact" maxlength="100"></label><label>PARTNER SINCE<input class="input" id="uwpSince" type="date"></label><label class="wide">PRIVATE STAFF NOTES<textarea class="input" id="uwpNotes" rows="3"></textarea></label><label class="uwp-check"><input type="checkbox" id="uwpFeatured"> FEATURED PARTNER</label></div>
    <div class="uwp-formactions"><button class="btn hot" type="submit">SAVE PARTNER</button></div>
   </form>
   <section class="uwpmgr" id="uwpRepManager">
@@ -8603,7 +8618,7 @@ html,body{max-width:100%;overflow-x:hidden}
  /* Keep the visible build marker authoritative and singular. */
  function buildMark(){
    let b=$('uwBuildIndicator');
-   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-04';
+   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-05';
    document.querySelectorAll('[id*="version" i],[class*="version" i]').forEach(el=>{
      if(el===b)return;
      const t=(el.textContent||'').trim();
@@ -8614,7 +8629,7 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(buildMark,500);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_04 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_05 -->
 <!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
 
 
@@ -8711,6 +8726,105 @@ html,body{max-width:100%;overflow-x:hidden}
  },true);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_04 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_05 -->
 <!-- /UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 -->
+
+
+
+<!-- UNDERWEB PARTNER ADMIN MEDIA BUILD 05 2026-09-21 -->
+<style id="uw-partner-admin-media-05-css">
+#uwpPartnerForm .uwp-admin-media-field{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;min-width:0}
+#uwpPartnerForm .uwp-admin-media-field>span{grid-column:1/-1;color:#7f9185;font:800 10px/1.2 monospace;letter-spacing:.1em}
+#uwpPartnerForm .uwp-admin-media-preview{grid-column:1/-1;overflow:hidden;border:1px dashed rgba(57,255,20,.34);background:#010302 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#647269;font:900 9px monospace;letter-spacing:.08em}
+#uwpPartnerForm .uwp-admin-media-preview.logo{width:132px;max-width:100%;aspect-ratio:1/1}
+#uwpPartnerForm .uwp-admin-media-preview.banner{width:100%;aspect-ratio:16/5;min-height:90px}
+#uwpPartnerForm .uwp-admin-media-preview.has-image span{display:none}
+#uwpPartnerForm .uwp-admin-media-pick{min-height:40px}
+@media(max-width:700px){
+ #uwpPartnerForm .uwp-admin-media-field{grid-template-columns:1fr}
+ #uwpPartnerForm .uwp-admin-media-field .uw-mini-btn{min-height:38px}
+}
+</style>
+<script id="uw-partner-admin-media-05-js">
+(()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ let files={logo:null,banner:null};
+ let saving=false;
+
+ function validate(f){
+   if(!f)return false;
+   if(!['image/jpeg','image/png','image/webp'].includes(f.type)){toast?.('USE JPG, PNG OR WEBP');return false}
+   if(f.size>5*1024*1024){toast?.('IMAGE MUST BE 5 MB OR SMALLER');return false}
+   return true;
+ }
+ function draw(kind,url){
+   const p=$(kind==='logo'?'uwpAdminLogoPreview':'uwpAdminBannerPreview');
+   if(!p)return;
+   p.style.backgroundImage=url?`url("${String(url).replace(/"/g,'')}")`:'';
+   p.classList.toggle('has-image',!!url);
+ }
+ function choose(kind,f){
+   if(!validate(f))return;
+   files[kind]=f;
+   draw(kind,URL.createObjectURL(f));
+ }
+ async function upload(kind){
+   const f=files[kind]; if(!f)return $(kind==='logo'?'uwpLogo':'uwpBanner')?.value?.trim()||null;
+   if(!currentSession?.user?.id)throw new Error('Sign in first.');
+   const ext=f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg';
+   const pid=$('uwpPartnerId')?.value||'new';
+   const path=`partner-records/${currentSession.user.id}/${pid}/${kind}-${Date.now()}.${ext}`;
+   const r=await uwSupabase.storage.from('profile-media').upload(path,f,{upsert:false,contentType:f.type,cacheControl:'3600'});
+   if(r.error)throw r.error;
+   const pub=uwSupabase.storage.from('profile-media').getPublicUrl(path);
+   return pub?.data?.publicUrl||null;
+ }
+ function syncFromFields(){
+   draw('logo',$('uwpLogo')?.value||'');
+   draw('banner',$('uwpBanner')?.value||'');
+   files={logo:null,banner:null};
+ }
+ document.addEventListener('click',e=>{
+   const p=e.target.closest('[data-uwp-admin-pick]');
+   if(p){e.preventDefault();$(p.dataset.uwpAdminPick==='logo'?'uwpAdminLogoFile':'uwpAdminBannerFile')?.click();return}
+   const c=e.target.closest('[data-uwp-admin-clear]');
+   if(c){
+     e.preventDefault();const k=c.dataset.uwpAdminClear;
+     files[k]=null;const field=$(k==='logo'?'uwpLogo':'uwpBanner');if(field)field.value='';draw(k,'');
+   }
+   if(e.target.closest('[data-uwp-edit]')||e.target.closest('#uwpFormReset'))setTimeout(syncFromFields,0);
+ },true);
+ document.addEventListener('change',e=>{
+   if(e.target.id==='uwpAdminLogoFile')choose('logo',e.target.files?.[0]);
+   if(e.target.id==='uwpAdminBannerFile')choose('banner',e.target.files?.[0]);
+ },true);
+
+ /* Upload selected artwork before the existing partner save handler reads uwpLogo/uwpBanner. */
+ document.addEventListener('submit',async e=>{
+   if(e.target?.id!=='uwpPartnerForm'||saving||(!files.logo&&!files.banner))return;
+   e.preventDefault();e.stopImmediatePropagation();
+   const submit=e.target.querySelector('[type="submit"]');const old=submit?.textContent;
+   if(submit){submit.disabled=true;submit.textContent='UPLOADING ARTWORK…'}
+   try{
+     const [logo,banner]=await Promise.all([upload('logo'),upload('banner')]);
+     if($('uwpLogo'))$('uwpLogo').value=logo||'';
+     if($('uwpBanner'))$('uwpBanner').value=banner||'';
+     files={logo:null,banner:null};saving=true;
+     if(submit){submit.disabled=false;submit.textContent=old||'SAVE PARTNER'}
+     e.target.requestSubmit();saving=false;
+     setTimeout(syncFromFields,100);
+   }catch(err){
+     if(submit){submit.disabled=false;submit.textContent=old||'SAVE PARTNER'}
+     toast?.('PARTNER ARTWORK UPLOAD FAILED // '+(err?.message||err));
+   }
+ },true);
+
+ /* Existing fill() updates hidden fields; observe title changes to refresh previews on edit/new. */
+ const title=$('uwpFormTitle');
+ if(title)new MutationObserver(()=>setTimeout(syncFromFields,0)).observe(title,{childList:true,subtree:true});
+ setTimeout(syncFromFields,300);
+})();
+</script>
+<!-- UW_PROFILE_V4_BUILD_20260921_05 -->
 
