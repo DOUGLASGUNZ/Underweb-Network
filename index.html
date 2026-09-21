@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_PROFILE_V4_BUILD_20260921_02 -->
-<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_02">
+<!-- UW_PROFILE_V4_BUILD_20260921_03 -->
+<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_03">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -1266,7 +1266,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 </style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
-<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-02</div>
+<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-03</div>
 
 <header class="top uw70-top">
   <button aria-label="Open menu" class="btn drawer-btn" id="drawerBtn">☰</button>
@@ -4293,7 +4293,7 @@ async function uw758Open(uid){
  if(typeof uwLoadVerificationBadges==='function')extras.push(Promise.resolve().then(()=>uwLoadVerificationBadges(uid)).catch(e=>console.warn('Verification badge render failed:',e)));
  if(typeof uw743LoadPublic==='function')extras.push(Promise.resolve().then(()=>uw743LoadPublic(uid)).catch(e=>console.warn('Showcase render failed:',e)));
  if(typeof window.uwProfileV1Build==='function')setTimeout(()=>window.uwProfileV1Build(),40);
- await Promise.allSettled(extras);
+ Promise.allSettled(extras).catch(()=>{});
 }
 ['creatorSearch','creatorCommunity','creatorDiscipline','creatorAvailability'].forEach(id=>{
  const el=document.getElementById(id);if(el)el.addEventListener(id==='creatorSearch'?'input':'change',uw758Render);
@@ -8339,8 +8339,9 @@ html,body{max-width:100%;overflow-x:hidden}
   <div class="uwpo-pane" data-uwpo-pane="activity" hidden><div class="uwpo-card"><small>NETWORK ACTIVITY</small><div class="uwsys-feed" id="uwpoActivity"><span class="meta">Syncing activity…</span></div></div></div>
   <div class="uwpo-pane" data-uwpo-pane="projects" hidden><div class="uwpo-card"><small>PROJECTS & COLLABORATIONS</small><div id="uwpoProjects"><span class="meta">Syncing project history…</span></div></div></div>`;
   const publicShow=$('uw743PublicShowcase');if(publicShow){const clone=publicShow.cloneNode(true);clone.id='uwpoPublicShowcase';$('uwpoShowcaseMount').appendChild(clone)}
-  if(typeof window.uwNetworkSystems?.profileActivity==='function')window.uwNetworkSystems.profileActivity(uid,$('uwpoActivity'));else if(typeof window.uwProfileActivityFallback==='function')window.uwProfileActivityFallback(uid,$('uwpoActivity'));else {try{let q=await uwSupabase.rpc('uw_profile_network_activity',{p_user_id:uid,p_limit:20});$('uwpoActivity').innerHTML=(q.data||[]).length?(q.data||[]).map(x=>`<div class="uwsys-feeditem"><i>◈</i><span><strong>${esc(x.title)}</strong><small>${esc(x.body||x.kind||'')}</small></span></div>`).join(''):'<span class="meta">No public Network activity yet.</span>'}catch(_){$('uwpoActivity').innerHTML='<span class="meta">Activity unavailable.</span>'}}
-  try{const c=await uwSupabase.from('network_collaborators').select('*').eq('user_id',uid).order('created_at',{ascending:false});const rows=c.data||[];$('uwpoProjects').innerHTML=rows.length?rows.map(x=>`<button class="uwsys-collablink" type="button" data-uwpo-object="${esc(x.object_type)}" data-uwpo-object-id="${esc(x.object_id)}">${esc(String(x.object_type||'project').toUpperCase())}${x.role_label?' · '+esc(x.role_label):''}</button>`).join(''):'<span class="meta">No recorded project collaborations yet.</span>'}catch(_){$('uwpoProjects').innerHTML='<span class="meta">Project history unavailable.</span>'}
+  /* Build 03: Activity and Projects are lazy-loaded only when their tab is opened. */
+  const ah=$('uwpoActivity');if(ah){ah.dataset.uwLazyUid=uid;ah.innerHTML='<span class="meta">Open Activity to sync Network history.</span>'}
+  const ph=$('uwpoProjects');if(ph){ph.dataset.uwLazyUid=uid;ph.innerHTML='<span class="meta">Open Projects to sync collaboration history.</span>'}
  }
  function editor(){const page=$('page-profile');if(!page||page.querySelector('.uwpo-editor-nav'))return;const preview=page.querySelector('.uw40-profile-preview');if(!preview)return;const nav=document.createElement('nav');nav.className='uwpo-editor-nav';nav.innerHTML='<button class="active" data-uwpo-edit="identity">IDENTITY</button><button data-uwpo-edit="media">MEDIA + DETAILS</button><button data-uwpo-edit="creator">CREATOR TOOLS</button>';preview.after(nav);const ident=page.querySelector('.uw51-profile-identity');ident?.classList.add('uwpo-editor-collapsed');ident?.querySelector('.uw50-panel-title')?.addEventListener('click',e=>{if(e.target.closest('button'))return;ident.classList.toggle('uwpo-editor-collapsed')});}
  document.addEventListener('click',e=>{const t=e.target.closest('[data-uwpo-tab]');if(t){const root=t.closest('#uwpoPublic');root.querySelectorAll('[data-uwpo-tab]').forEach(b=>b.classList.toggle('active',b===t));root.querySelectorAll('[data-uwpo-pane]').forEach(p=>p.hidden=p.dataset.uwpoPane!==t.dataset.uwpoTab)}},true);
@@ -8526,7 +8527,7 @@ html,body{max-width:100%;overflow-x:hidden}
  window.uwProfileActivityFallback=allActivity;
  if(window.uwNetworkSystems)window.uwNetworkSystems.profileActivity=allActivity;
  document.addEventListener('click',e=>{
-  const rep=e.target.closest('[data-uw-partner-profile-user]');if(rep){e.preventDefault();e.stopImmediatePropagation();document.getElementById('uwpModal')?.classList.remove('open');document.body.style.overflow='hidden';const uid=rep.dataset.uwPartnerProfileUser;if(typeof uw621OpenProfile==='function')uw621OpenProfile(uid);return}
+  const rep=e.target.closest('[data-uw-partner-profile-user]');if(rep){e.preventDefault();e.stopImmediatePropagation();document.getElementById('uwpModal')?.classList.remove('open');document.body.style.overflow='hidden';const uid=rep.dataset.uwPartnerProfileUser;if(typeof uw758Open==='function')uw758Open(uid);else if(typeof uw621OpenProfile==='function')uw621OpenProfile(uid);return}
   const obj=e.target.closest('[data-uw-activity-object]');if(obj){const [type,id]=obj.dataset.uwActivityObject.split('|');if(type==='partner'&&typeof window.uwOpenPartner==='function'){window.uwOpenPartner(id);return}if(type==='project'){const p=(window.uwProjects||[]).find(x=>String(x.id)===String(id));if(p&&typeof window.uw63OpenDetail==='function')window.uw63OpenDetail(p);}}
  },true);
  /* Rehydrate activity whenever the V3 profile shell is built. */
@@ -8534,3 +8535,85 @@ html,body{max-width:100%;overflow-x:hidden}
 })();
 </script>
 <!-- /UNDERWEB PROFILE NETWORK HOTFIX -->
+
+
+<!-- UNDERWEB PROFILE V4 REPAIR BUILD 03 2026-09-21 -->
+<style id="uw-profile-v4-repair03-css">
+#uwBuildIndicator{bottom:68px!important;left:8px!important}
+@media(min-width:1051px){#uwBuildIndicator{bottom:10px!important;left:12px!important}}
+</style>
+<script id="uw-profile-v4-repair03-js">
+(()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ const loadedActivity=new Set(),loadedProjects=new Set();
+
+ async function lazyActivity(uid,host){
+   if(!uid||!host||loadedActivity.has(uid))return;
+   loadedActivity.add(uid);host.innerHTML='<span class="meta">Syncing Network activity…</span>';
+   try{
+     if(typeof window.uwProfileActivityComplete==='function')await window.uwProfileActivityComplete(uid,host);
+     else if(typeof window.uwProfileActivityFallback==='function')await window.uwProfileActivityFallback(uid,host);
+   }catch(e){loadedActivity.delete(uid);host.innerHTML='<span class="meta">Activity unavailable.</span>'}
+ }
+ async function lazyProjects(uid,host){
+   if(!uid||!host||loadedProjects.has(uid))return;
+   loadedProjects.add(uid);host.innerHTML='<span class="meta">Syncing project history…</span>';
+   try{
+     const c=await uwSupabase.from('network_collaborators').select('*').eq('user_id',uid).order('created_at',{ascending:false}).limit(50);
+     if(c.error)throw c.error;const rows=c.data||[];
+     host.innerHTML=rows.length?rows.map(x=>`<button class="uwsys-collablink" type="button" data-uwpo-object="${esc(x.object_type)}" data-uwpo-object-id="${esc(x.object_id)}">${esc(String(x.object_type||'project').toUpperCase())}${x.role_label?' · '+esc(x.role_label):''}</button>`).join(''):'<span class="meta">No recorded project collaborations yet.</span>';
+   }catch(e){loadedProjects.delete(uid);host.innerHTML='<span class="meta">Project history unavailable.</span>'}
+ }
+
+ /* Lazy public-profile tabs: no heavy history fan-out until the user asks for it. */
+ document.addEventListener('click',e=>{
+   const tab=e.target.closest('[data-uwpo-tab]');if(tab){
+     const uid=String(window.uw621ActiveCreator||'');
+     if(tab.dataset.uwpoTab==='activity')setTimeout(()=>lazyActivity(uid,$('uwpoActivity')),0);
+     if(tab.dataset.uwpoTab==='projects')setTimeout(()=>lazyProjects(uid,$('uwpoProjects')),0);
+   }
+ },true);
+
+ /* Repair partner representative -> person profile routing, including reps absent from directory cache. */
+ document.addEventListener('click',e=>{
+   const rep=e.target.closest('[data-uw-partner-profile-user]');if(!rep)return;
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+   $('uwpModal')?.classList.remove('open');
+   const uid=String(rep.dataset.uwPartnerProfileUser||'');
+   if(typeof uw758Open==='function')uw758Open(uid);
+   else if(typeof uw621OpenProfile==='function')uw621OpenProfile(uid);
+ },true);
+
+ /* Radar de-duplication: collapse repeated identical semantic events even when timestamps differ. */
+ function dedupeRadar(){
+   const api=window.uwHomeRadarV2;if(!api?.state?.rows)return;
+   const seen=new Set();
+   api.state.rows=api.state.rows.filter(x=>{
+     const key=[String(x.event_type||'').toLowerCase(),String(x.headline||'').trim().toLowerCase(),String(x.detail||'').trim().toLowerCase()].join('|');
+     if(seen.has(key))return false;seen.add(key);return true;
+   });
+   api.render?.();
+ }
+ const radarTimer=setInterval(()=>{if(window.uwHomeRadarV2){dedupeRadar();clearInterval(radarTimer)}},250);
+ document.addEventListener('click',e=>{if(e.target.closest('[data-page="home"]'))setTimeout(dedupeRadar,700)},true);
+ setInterval(()=>{if(document.querySelector('#page-home.active'))dedupeRadar()},16000);
+
+ /* Keep the visible build marker authoritative and singular. */
+ function buildMark(){
+   let b=$('uwBuildIndicator');
+   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-03';
+   document.querySelectorAll('[id*="version" i],[class*="version" i]').forEach(el=>{
+     if(el===b)return;
+     const t=(el.textContent||'').trim();
+     if(/UNDERWEB\s*\/\/\s*0\.8\.0\s*OPEN BETA RC1/i.test(t))el.style.display='none';
+   });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',buildMark);else buildMark();
+ setTimeout(buildMark,500);
+})();
+</script>
+<!-- UW_PROFILE_V4_BUILD_20260921_03 -->
+<!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
+
