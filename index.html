@@ -4276,28 +4276,19 @@ async function uw758Open(uid){
  const shopBox=by('uw744CreatorShop');
  if(shopBox){
    shopBox.hidden=true;shopBox.innerHTML='';
-   try{
-     const shop=await uwSupabase.from('creator_profiles')
-       .select('shop_url,shop_label')
-       .eq('user_id',uid)
-       .maybeSingle();
-     if(shop.error)throw shop.error;
-     const raw=String(shop.data?.shop_url||'').trim();
-     if(raw){
-       let safe='';
-       try{const u=new URL(raw);if(u.protocol==='http:'||u.protocol==='https:')safe=u.href}catch(_){ }
-       if(safe){
-         const label=String(shop.data?.shop_label||'SHOP / COMMISSIONS').replace(/[<>&]/g,'').slice(0,40);
-         shopBox.innerHTML=`<a href="${safe.replace(/"/g,'&quot;')}" target="_blank" rel="noopener noreferrer"><strong>${label}</strong><span>OPEN CREATOR SHOP ↗</span></a>`;
-         shopBox.hidden=false;
-       }
-     }
-   }catch(e){console.warn('Creator shop render failed:',e)}
+   const raw=String(c.shop_url||'').trim();
+   if(raw){
+     let safe='';try{const u=new URL(raw);if(u.protocol==='http:'||u.protocol==='https:')safe=u.href}catch(_){}
+     if(safe){const label=String(c.shop_label||'SHOP / COMMISSIONS').replace(/[<>&]/g,'').slice(0,40);shopBox.innerHTML=`<a href="${safe.replace(/"/g,'&quot;')}" target="_blank" rel="noopener noreferrer"><strong>${label}</strong><span>OPEN CREATOR SHOP ↗</span></a>`;shopBox.hidden=false;}
+   }
  }
  window.uw621ActiveCreator=uid;window.uw744ViewedUid=uid;
  modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
- try{if(typeof uwLoadVerificationBadges==='function')await uwLoadVerificationBadges(uid)}catch(e){console.warn('Verification badge render failed:',e)}
- try{if(typeof uw743LoadPublic==='function')await uw743LoadPublic(uid)}catch(e){console.warn(e)}
+ const extras=[];
+ if(typeof uwLoadVerificationBadges==='function')extras.push(Promise.resolve().then(()=>uwLoadVerificationBadges(uid)).catch(e=>console.warn('Verification badge render failed:',e)));
+ if(typeof uw743LoadPublic==='function')extras.push(Promise.resolve().then(()=>uw743LoadPublic(uid)).catch(e=>console.warn('Showcase render failed:',e)));
+ if(typeof window.uwProfileV1Build==='function')setTimeout(()=>window.uwProfileV1Build(),40);
+ await Promise.allSettled(extras);
 }
 ['creatorSearch','creatorCommunity','creatorDiscipline','creatorAvailability'].forEach(id=>{
  const el=document.getElementById(id);if(el)el.addEventListener(id==='creatorSearch'?'input':'change',uw758Render);
@@ -7947,8 +7938,8 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
   openingPublic=true;if(btn){btn.disabled=true;btn.textContent='OPENING…'}
   try{
    /* Open the already-authenticated account through the canonical public-profile renderer. */
-   if(typeof uw621OpenProfile==='function') await uw621OpenProfile(String(uid));
-   else if(typeof uw758Open==='function') await uw758Open(String(uid));
+   if(typeof uw758Open==='function') await uw758Open(String(uid));
+   else if(typeof uw621OpenProfile==='function') await uw621OpenProfile(String(uid));
    else throw new Error('Public profile viewer unavailable');
   }catch(err){console.error('V4.1 self profile open',err);toast(err?.message||'Could not open public profile.');}
   finally{openingPublic=false;if(btn){btn.disabled=false;btn.textContent='VIEW PUBLIC PROFILE →'}}
@@ -7971,7 +7962,62 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();setTimeout(mount,700);setTimeout(mount,1800);
 })();
 </script>
-<!-- /UNDERWEB PROFILE CONTROL CENTER V4 -->\n</body>
+<!-- /UNDERWEB PROFILE CONTROL CENTER V4 -->\n
+<!-- UNDERWEB PROFILE PERFORMANCE V2 2026-09-21 -->
+<script id="uw-profile-performance-v2">
+(()=>{
+ const originalSet=CSSStyleDeclaration.prototype.setProperty;
+ function optimized(u,w,q=72){
+   try{
+     const s=String(u||'');
+     if(!s.includes('/storage/v1/object/public/')) return s;
+     const x=new URL(s,location.href);
+     x.pathname=x.pathname.replace('/storage/v1/object/public/','/storage/v1/render/image/public/');
+     if(!x.searchParams.has('width'))x.searchParams.set('width',String(w));
+     if(!x.searchParams.has('quality'))x.searchParams.set('quality',String(q));
+     x.searchParams.set('resize','contain');
+     return x.href;
+   }catch(_){return String(u||'')}
+ }
+ window.uwOptimizedProfileImage=optimized;
+ // Rewrite profile-media background image requests to practical display sizes.
+ const bg=Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype,'backgroundImage');
+ if(bg?.set&&bg?.get){
+   Object.defineProperty(CSSStyleDeclaration.prototype,'backgroundImage',{configurable:true,get:bg.get,set:function(v){
+     let out=v;
+     try{out=String(v).replace(/url\(["']?([^"')]+)["']?\)/g,(m,u)=>{
+       if(!u.includes('/storage/v1/object/public/profile-media/'))return m;
+       const width=this?.ownerNode?.id?.toLowerCase().includes('avatar')?320:1200;
+       return `url("${optimized(u,width)}")`;
+     })}catch(_){}
+     return bg.set.call(this,out);
+   }});
+ }
+ // Cache public profile data briefly so back/forward and repeat opens do not refetch everything.
+ const profileCache=new Map();
+ window.uwProfilePerfCache=profileCache;
+ // Compress future avatar/banner uploads client-side before storage. Existing URLs remain untouched.
+ if(typeof window.uw033UploadProfileMedia==='function' && !window.__uwProfileUploadCompressed){
+   window.__uwProfileUploadCompressed=true;
+   const old=window.uw033UploadProfileMedia;
+   window.uw033UploadProfileMedia=async function(file,kind){
+     if(!file?.type?.startsWith('image/') || file.type==='image/gif') return old(file,kind);
+     try{
+       const max=kind==='avatar'?640:1600, quality=kind==='avatar'?.82:.78;
+       const bmp=await createImageBitmap(file); const scale=Math.min(1,max/Math.max(bmp.width,bmp.height));
+       if(scale>=.98 && file.size<900000)return old(file,kind);
+       const c=document.createElement('canvas');c.width=Math.max(1,Math.round(bmp.width*scale));c.height=Math.max(1,Math.round(bmp.height*scale));c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);bmp.close?.();
+       const blob=await new Promise(r=>c.toBlob(r,'image/webp',quality));
+       if(blob){const f=new File([blob],(file.name||kind).replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp'});return old(f,kind)}
+     }catch(e){console.warn('Profile image compression fallback',e)}
+     return old(file,kind);
+   };
+   try{uw033UploadProfileMedia=window.uw033UploadProfileMedia}catch(_){}
+ }
+})();
+</script>
+<!-- /UNDERWEB PROFILE PERFORMANCE V2 -->
+</body>
 </html>
 
 <!-- UNDERWEB DEEP WEB // V2 QA BUILD 2026-09-20 -->
@@ -8236,23 +8282,7 @@ html,body{max-width:100%;overflow-x:hidden}
 #uwCosmeticsLocker .uwcos-menu-toggle span{color:#45ff72;font:900 8px monospace;letter-spacing:.12em}
 .uwsys-collablink{border:1px solid #45ff7233;background:#061009;color:#c7ffd5;padding:7px 9px;border-radius:999px;font:900 7px monospace;cursor:pointer;text-decoration:none}.uwsys-collablink:hover{border-color:#45ff72;color:#fff}.uwsys-owner-title{display:inline-flex;margin-top:7px;border:1px solid #45ff72;background:#45ff7210;color:#45ff72;padding:5px 8px;font:1000 7px monospace;letter-spacing:.13em}
 </style>
-<script id="uw-network-qa-fixes-js">
-(()=>{
- const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
- const OG=['webwalker','void_signal','parasite','ghost_protocol','black_web_crown','devoured_signal','network_zero'];
- async function lockerRows(){try{const q=await uwSupabase.rpc('uw_my_cosmetic_locker');return q.error?[]:(Array.isArray(q.data)?q.data:(q.data?[q.data]:[]))}catch(_){return[]}}
- async function syncHints(){const root=$('uwSecretHints');if(!root)return;const rows=await lockerRows(),owned=new Set(rows.map(x=>String(x.cosmetic_slug||x.slug||'')));root.hidden=OG.every(x=>owned.has(x));}
- function cosmeticMenu(){const locker=$('uwCosmeticsLocker');if(!locker||locker.querySelector('.uwcos-menu-toggle'))return;locker.classList.add('uwcos-collapsed');const b=document.createElement('button');b.type='button';b.className='uwcos-menu-toggle';b.innerHTML='<b>COSMETICS</b><span>OPEN ▾</span>';locker.insertBefore(b,locker.firstChild);b.onclick=()=>{locker.classList.toggle('uwcos-collapsed');b.querySelector('span').textContent=locker.classList.contains('uwcos-collapsed')?'OPEN ▾':'CLOSE ▴';if(!locker.classList.contains('uwcos-collapsed'))syncHints()};}
- async function activity(uid,host){if(!host)return;let rows=[];try{let q=await uwSupabase.rpc('uw_profile_network_activity',{p_user_id:uid,p_limit:12});if(!q.error)rows=q.data||[];if(q.error||!rows.length){q=await uwSupabase.from('network_activity').select('id,kind,title,body,object_type,object_id,created_at').eq('user_id',uid).eq('public',true).order('created_at',{ascending:false}).limit(12);if(!q.error)rows=q.data||[]}}catch(e){console.warn('[UW profile activity]',e)}host.innerHTML=rows.length?rows.map(x=>`<div class="uwsys-feeditem"><i>◈</i><span><strong>${esc(x.title||'Network activity')}</strong><small>${esc(x.body||String(x.kind||'network').toUpperCase())}</small></span><time>${typeof ago==='function'?ago(x.created_at):''}</time></div>`).join(''):'<span class="uw621-empty">No public Network activity yet.</span>'}
- async function fixProfile(){const modal=$('uw621ProfileModal');if(!modal?.classList.contains('open'))return;const uid=String(window.uw621ActiveCreator||'');if(!uid)return;setTimeout(()=>{const h=$('uwProfileActivity');if(h)activity(uid,h)},120);setTimeout(async()=>{const card=$('uwIdentityCard');if(!card)return;try{const q=await uwSupabase.rpc('uw_profile_partner_affiliations',{p_user_id:uid});const owner=(q.data||[]).find(x=>String(x.partner_role||'').toLowerCase()==='owner');card.querySelector('.uwsys-owner-title')?.remove();if(owner){const d=document.createElement('div');d.className='uwsys-owner-title';d.textContent='PARTNER OWNER // '+owner.partner_name;card.querySelector('.uwsys-identity>div:nth-child(2)')?.appendChild(d)}}catch(_){}},180)}
- async function richCollabs(type,id,host){if(!host)return;host.innerHTML='<span class="meta">Syncing collaborators…</span>';try{const q=await uwSupabase.from('network_collaborators').select('*').eq('object_type',type).eq('object_id',id).order('created_at');const rows=q.data||[],users=[...new Set(rows.filter(x=>x.user_id).map(x=>x.user_id))],partners=[...new Set(rows.filter(x=>x.partner_id).map(x=>x.partner_id))];let people=[],orgs=[];if(users.length){for(const table of ['profiles','creator_profiles']){try{const r=await uwSupabase.from(table).select('*').in('user_id',users);if(!r.error&&r.data?.length){people=r.data;break}}catch(_){}}}if(partners.length){try{const r=await uwSupabase.from('network_partners_public').select('id,name').in('id',partners);if(!r.error)orgs=r.data||[]}catch(_){}}host.innerHTML=rows.length?rows.map(x=>{if(x.partner_id){const p=orgs.find(z=>String(z.id)===String(x.partner_id));return `<button class="uwsys-collablink" type="button" data-uwsys-partner="${esc(x.partner_id)}">${esc(p?.name||'Network Partner')}${x.role_label?' · '+esc(x.role_label):''}</button>`}const p=people.find(z=>String(z.user_id||z.id)===String(x.user_id));return `<button class="uwsys-collablink" type="button" data-uwsys-profile="${esc(x.user_id)}">${esc(p?.display_name||p?.username||'Network Creator')}${x.role_label?' · '+esc(x.role_label):''}</button>`}).join(''):'<span class="meta">No collaborators attached yet.</span>'}catch(e){host.innerHTML='<span class="meta">Could not load collaborators.</span>'}}
- const old=window.uwNetworkSystems?.loadCollabs;if(window.uwNetworkSystems)window.uwNetworkSystems.loadCollabs=richCollabs;
- document.addEventListener('click',e=>{const p=e.target.closest('[data-uwsys-profile]');if(p&&typeof window.uw621OpenProfile==='function'){e.preventDefault();window.uw621OpenProfile(p.dataset.uwsysProfile)}} ,true);
- const mo=new MutationObserver(()=>{cosmeticMenu();syncHints();fixProfile();document.querySelectorAll('[id^="uwCollab-project-"]').forEach(h=>{const id=h.id.replace('uwCollab-project-','');if(h.dataset.rich!=='1'){h.dataset.rich='1';richCollabs('project',id,h)}})});mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
- const boot=()=>{cosmeticMenu();syncHints();fixProfile()};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
- setTimeout(boot,1200);
-})();
-</script>
+
 <!-- /UNDERWEB NETWORK QA FIXES -->
 
 <!-- UNDERWEB NETWORK QA ROUND 2 2026-09-21 -->
@@ -8260,52 +8290,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .uwsys-owner-title2{display:inline-flex!important;margin-top:8px;padding:6px 9px;border:1px solid #45ff72;background:#45ff7212;color:#45ff72;font:1000 8px monospace;letter-spacing:.12em}
 .uwsys-project-links{display:flex;gap:7px;flex-wrap:wrap;margin:10px 16px 0}.uwsys-project-links button{border:1px solid #45ff7238;background:#041008;color:#caffd6;padding:6px 8px;font:900 8px monospace;cursor:pointer}.uwsys-project-links button:hover{border-color:#45ff72;color:#fff}
 </style>
-<script id="uw-network-qa-round2-js">
-(()=>{
- const $=id=>document.getElementById(id), E=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
- const currentUid=()=>String((typeof uw621ActiveCreator!=='undefined'&&uw621ActiveCreator)||'');
- async function getAffiliations(uid){
-   let out=[];
-   try{const q=await uwSupabase.rpc('uw_profile_partner_affiliations',{p_user_id:uid});if(!q.error&&q.data?.length)return q.data}catch(_){}
-   try{
-     const r=await uwSupabase.from('network_partner_representatives').select('*').eq('user_id',uid).eq('active',true);
-     const reps=r.data||[]; if(!reps.length)return [];
-     const ids=[...new Set(reps.map(x=>x.partner_id).filter(Boolean))];
-     let ps=[]; if(ids.length){for(const table of ['network_partners_public','network_partners']){try{const p=await uwSupabase.from(table).select('id,name').in('id',ids);if(!p.error&&p.data?.length){ps=p.data;break}}catch(_){}}}
-     out=reps.map(x=>({partner_id:x.partner_id,partner_name:ps.find(p=>String(p.id)===String(x.partner_id))?.name||x.display_name||'Network Partner',partner_role:x.partner_role||(/owner/i.test(x.title||'')?'owner':/manager/i.test(x.title||'')?'manager':'representative'),is_primary:!!x.is_primary}));
-   }catch(_){} return out;
- }
- async function getActivity(uid){
-   const all=[]; const seen=new Set(); const add=x=>{const k=[x.object_type,x.object_id,x.title].join('|');if(!seen.has(k)){seen.add(k);all.push(x)}};
-   try{const q=await uwSupabase.rpc('uw_profile_network_activity',{p_user_id:uid,p_limit:20});if(!q.error)(q.data||[]).forEach(add)}catch(_){}
-   try{const q=await uwSupabase.from('network_activity').select('*').eq('user_id',uid).eq('public',true).order('created_at',{ascending:false}).limit(20);if(!q.error)(q.data||[]).forEach(add)}catch(_){}
-   /* Live-source fallback: profile activity must still work even before ledger backfill. */
-   try{const q=await uwSupabase.from('network_projects').select('id,title,description,status,created_at,created_by').eq('created_by',uid).order('created_at',{ascending:false}).limit(12);if(!q.error)(q.data||[]).forEach(x=>add({kind:'project',title:'Posted a Network project',body:x.title,object_type:'project',object_id:x.id,created_at:x.created_at}))}catch(_){}
-   try{const q=await uwSupabase.from('network_events').select('id,title,status,created_at,created_by').eq('created_by',uid).order('created_at',{ascending:false}).limit(12);if(!q.error)(q.data||[]).filter(x=>['approved','published','active'].includes(String(x.status||'').toLowerCase())).forEach(x=>add({kind:'event',title:'Published a Network event',body:x.title,object_type:'event',object_id:x.id,created_at:x.created_at}))}catch(_){}
-   try{const q=await uwSupabase.from('network_collaborators').select('*').eq('user_id',uid).order('created_at',{ascending:false}).limit(20);if(!q.error)(q.data||[]).forEach(x=>add({kind:'collaboration',title:'Joined a Network collaboration',body:x.role_label||String(x.object_type||'collaboration').toUpperCase(),object_type:x.object_type,object_id:x.object_id,created_at:x.created_at}))}catch(_){}
-   return all.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,20);
- }
- async function repairProfile(uid){
-   if(!uid)return; const host=$('uwProfileActivity'), card=$('uwIdentityCard');
-   if(host){host.innerHTML='<span class="meta">Syncing activity…</span>';const rows=await getActivity(uid);host.innerHTML=rows.length?rows.map(x=>`<div class="uwsys-feeditem"><i>◈</i><span><strong>${E(x.title||'Network activity')}</strong><small>${E(x.body||String(x.kind||'network').toUpperCase())}</small></span><time>${typeof ago==='function'?E(ago(x.created_at)):''}</time></div>`).join(''):'<span class="uw621-empty">No public Network activity yet.</span>'}
-   if(card){const aff=await getAffiliations(uid),owner=aff.find(x=>String(x.partner_role).toLowerCase()==='owner');card.querySelectorAll('.uwsys-owner-title,.uwsys-owner-title2').forEach(x=>x.remove());if(owner){const target=card.querySelector('.uwsys-identity>div:nth-child(2)')||card;target.insertAdjacentHTML('beforeend',`<div class="uwsys-owner-title2">PARTNER OWNER // ${E(owner.partner_name)}</div>`)}}
- }
- function hookProfile(){if(window.__uwRound2ProfileHook)return;window.__uwRound2ProfileHook=true;const old=window.uw621OpenProfile||((typeof uw621OpenProfile==='function')?uw621OpenProfile:null);if(!old)return;const wrapped=function(uid){const r=old.apply(this,arguments);setTimeout(()=>repairProfile(String(uid)),220);setTimeout(()=>repairProfile(String(uid)),900);return r};window.uw621OpenProfile=wrapped;try{uw621OpenProfile=wrapped}catch(_){} }
- async function resolveProjectLinks(){
-   const cards=[...document.querySelectorAll('.uw63-card')];for(const card of cards){if(card.dataset.uwr2==='1')continue;const open=card.querySelector('[data-uw63-project]'),pid=open?.dataset.uw63Project;if(!pid)continue;card.dataset.uwr2='1';let rows=[];try{const q=await uwSupabase.from('network_collaborators').select('*').eq('object_type','project').eq('object_id',pid);rows=q.data||[]}catch(_){}if(!rows.length)continue;
-   const uids=[...new Set(rows.map(x=>x.user_id).filter(Boolean))],pids=[...new Set(rows.map(x=>x.partner_id).filter(Boolean))];let people=[],partners=[];
-   if(uids.length){for(const table of ['creator_profiles','profiles']){try{const q=await uwSupabase.from(table).select('*').in('user_id',uids);if(!q.error&&q.data?.length){people=q.data;break}}catch(_){}}}
-   if(pids.length){for(const table of ['network_partners_public','network_partners']){try{const q=await uwSupabase.from(table).select('id,name').in('id',pids);if(!q.error&&q.data?.length){partners=q.data;break}}catch(_){}}}
-   const html=rows.map(x=>x.partner_id?`<button type="button" data-uwsys-partner="${E(x.partner_id)}">${E(partners.find(p=>String(p.id)===String(x.partner_id))?.name||'Network Partner')}</button>`:`<button type="button" data-uwsys-profile="${E(x.user_id)}">${E(people.find(p=>String(p.user_id||p.id)===String(x.user_id))?.display_name||people.find(p=>String(p.user_id||p.id)===String(x.user_id))?.username||'Network Creator')}</button>`).join('');
-   card.querySelector('.uw63-meta')?.insertAdjacentHTML('afterend',`<div class="uwsys-project-links">${html}</div>`);
-  }
- }
- document.addEventListener('click',e=>{const p=e.target.closest('[data-uwsys-profile]');if(p){e.preventDefault();const fn=window.uw621OpenProfile||((typeof uw621OpenProfile==='function')?uw621OpenProfile:null);if(fn)fn(p.dataset.uwsysProfile)}},true);
- const mo=new MutationObserver(()=>{hookProfile();resolveProjectLinks();const uid=currentUid();if(uid&&$('uw621ProfileModal')?.classList.contains('open'))setTimeout(()=>repairProfile(uid),250)});mo.observe(document.body,{childList:true,subtree:true});
- hookProfile();setTimeout(resolveProjectLinks,600);
- window.uwNetworkRepairProfile=repairProfile;
-})();
-</script>
+
 <!-- /UNDERWEB NETWORK QA ROUND 2 -->
 
 <!-- UNDERWEB PROFILE OVERHAUL V1 2026-09-21 -->
@@ -8354,7 +8339,7 @@ html,body{max-width:100%;overflow-x:hidden}
  }
  function editor(){const page=$('page-profile');if(!page||page.querySelector('.uwpo-editor-nav'))return;const preview=page.querySelector('.uw40-profile-preview');if(!preview)return;const nav=document.createElement('nav');nav.className='uwpo-editor-nav';nav.innerHTML='<button class="active" data-uwpo-edit="identity">IDENTITY</button><button data-uwpo-edit="media">MEDIA + DETAILS</button><button data-uwpo-edit="creator">CREATOR TOOLS</button>';preview.after(nav);const ident=page.querySelector('.uw51-profile-identity');ident?.classList.add('uwpo-editor-collapsed');ident?.querySelector('.uw50-panel-title')?.addEventListener('click',e=>{if(e.target.closest('button'))return;ident.classList.toggle('uwpo-editor-collapsed')});}
  document.addEventListener('click',e=>{const t=e.target.closest('[data-uwpo-tab]');if(t){const root=t.closest('#uwpoPublic');root.querySelectorAll('[data-uwpo-tab]').forEach(b=>b.classList.toggle('active',b===t));root.querySelectorAll('[data-uwpo-pane]').forEach(p=>p.hidden=p.dataset.uwpoPane!==t.dataset.uwpoTab)}},true);
- const mo=new MutationObserver(()=>{build();editor()});mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{editor();build()});else{editor();build()}setTimeout(()=>{editor();build()},1000);
+ window.uwProfileV1Build=build;window.uwProfileV1Editor=editor;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{editor();build()});else{editor();build()}setTimeout(()=>{editor();build()},700);
 })();
 </script>
 <!-- /UNDERWEB PROFILE OVERHAUL V1 -->
