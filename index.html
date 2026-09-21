@@ -7417,6 +7417,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 <!-- ===== UNDERWEB HOME RADAR 2.0 // 2026-09-20 ===== -->
 <style id="uw-home-radar-v2-style">
 #uwHomeRadar .uwh-radar-head{align-items:flex-start}
+#uwHomeRadarFeed{display:flex!important;flex-direction:column!important;gap:6px!important;max-height:430px;overflow:hidden}
+#uwHomeRadarFeed .uwh-radar-item{min-height:62px!important;padding:10px 12px!important}
+#uwHomeRadarFeed .uwh-radar-copy b{font-size:11px!important}
+#uwHomeRadarFeed .uwh-radar-copy small{font-size:9px!important;margin-top:2px!important}
+#uwHomeRadarFeed .uwh-radar-time{font-size:8px!important}
+#uwHomeRadarFeed .uwh-radar-icon{width:30px!important;height:30px!important;min-width:30px!important}
+.uwh-radar-more{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #173020;margin-top:7px;padding-top:10px;color:#718278;font:800 8px/1.2 monospace;letter-spacing:.08em;text-transform:uppercase}
+.uwh-radar-more button{border:0;background:none;color:#45ff72;font:900 8px/1 monospace;letter-spacing:.08em;cursor:pointer;text-transform:uppercase}
 .uwh-radar-controls{position:relative;display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 2px}
 .uwh-radar-filter{appearance:none;border:1px solid #1d3b27;background:#020604;color:#7f9186;padding:7px 9px;font:900 8px/1 monospace;letter-spacing:.09em;cursor:pointer;text-transform:uppercase;transition:.15s ease}
 .uwh-radar-filter:hover,.uwh-radar-filter.active{border-color:#45ff72;color:#45ff72;background:rgba(69,255,114,.07);box-shadow:0 0 18px rgba(69,255,114,.04)}
@@ -7447,8 +7455,8 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  function render(){
    const box=document.getElementById('uwHomeRadarFeed');if(!box)return;
-   const rows=state.filter==='all'?state.rows:state.rows.filter(x=>category(x.event_type)===state.filter);
-   box.innerHTML=rows.length?rows.map(x=>{const c=category(x.event_type),key=[x.event_type,x.headline,x.detail,x.created_at].join('|'),fresh=!state.first&&!state.seen.has(key);return `<button class="uwh-radar-item${fresh?' is-new':''}" type="button" data-radar-page="${pageFor(c)}"><div class="uwh-radar-icon">${typeof uwPulseIcon==='function'?uwPulseIcon(x.event_type):'◆'}</div><div class="uwh-radar-copy"><b>${esc(x.headline||'Network update')}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}<span class="uwh-radar-type">${esc(c)}</span></div><div class="uwh-radar-time">${rel(x.created_at)}</div></button>`}).join(''):`<div class="uwh-radar-empty">No ${state.filter==='all'?'public network':state.filter} activity to show right now.</div>`;
+   const filtered=state.filter==='all'?state.rows:state.rows.filter(x=>category(x.event_type)===state.filter);const rows=filtered.slice(0,6);
+   box.innerHTML=rows.length?(rows.map(x=>{const c=category(x.event_type),key=[x.event_type,x.headline,x.detail,x.created_at].join('|'),fresh=!state.first&&!state.seen.has(key);return `<button class="uwh-radar-item${fresh?' is-new':''}" type="button" data-radar-page="${pageFor(c)}"><div class="uwh-radar-icon">${typeof uwPulseIcon==='function'?uwPulseIcon(x.event_type):'◆'}</div><div class="uwh-radar-copy"><b>${esc(x.headline||'Network update')}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}<span class="uwh-radar-type">${esc(c)}</span></div><div class="uwh-radar-time">${rel(x.created_at)}</div></button>`}).join('')+(filtered.length>6?`<div class="uwh-radar-more"><span>+ ${filtered.length-6} more signals</span><button type="button" id="uwRadarMore">Open full radar →</button></div>`:'')):`<div class="uwh-radar-empty">No ${state.filter==='all'?'public network':state.filter} activity to show right now.</div>`;
    state.rows.forEach(x=>state.seen.add([x.event_type,x.headline,x.detail,x.created_at].join('|')));state.first=false;
  }
  async function sync(){
@@ -7458,7 +7466,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.addEventListener('click',e=>{
    const f=e.target.closest('[data-radar-filter]');if(f){state.filter=f.dataset.radarFilter;document.querySelectorAll('[data-radar-filter]').forEach(b=>b.classList.toggle('active',b===f));render();return}
    const item=e.target.closest('[data-radar-page]');if(item){try{showPage(item.dataset.radarPage)}catch(_){document.querySelector(`[data-page="${item.dataset.radarPage}"]`)?.click()}return}
-   if(e.target.closest('#uwOpenFullRadar')){const full=document.getElementById('uwGrowthRadar');if(full)full.scrollIntoView({behavior:'smooth',block:'start'});return}
+   if(e.target.closest('#uwOpenFullRadar')||e.target.closest('#uwRadarMore')){const full=document.getElementById('uwGrowthRadar');if(full)full.scrollIntoView({behavior:'smooth',block:'start'});return}
    if(e.target.closest('[data-page="home"]'))setTimeout(sync,300);
  });
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{ensure();setTimeout(sync,800)});else{ensure();setTimeout(sync,350)}
