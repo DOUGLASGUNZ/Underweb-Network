@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_COSMETICS_V2_QA_20260921_09 -->
-<meta name="underweb-build" content="UW_COSMETICS_V2_QA_20260921_09">
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
+<meta name="underweb-build" content="UW_COSMETICS_V2_STORAGE_QA_20260921_09">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -8038,52 +8038,64 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
 </script>
 <!-- /UNDERWEB PROFILE PERFORMANCE V2 -->
 
-<!-- ===== UNDERWEB COSMETICS V2 // QA ONLY ===== -->
-<style id="uwCosV2QaCss">
-#uwCosV2QA{margin:0 0 18px;border:1px solid rgba(57,255,104,.25);background:#020503;padding:14px;border-radius:14px}
-#uwCosV2QA .uwv2-head{display:flex;justify-content:space-between;gap:10px;align-items:end;margin-bottom:12px}
-#uwCosV2QA .uwv2-head b{color:#39ff68;letter-spacing:.14em}#uwCosV2QA .uwv2-head small{color:#789083}
-#uwCosV2QA .uwv2-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-.uwv2-card{border:1px solid #17301f;background:#000;padding:8px;cursor:pointer;color:#dfffe7;text-align:left;border-radius:10px}
-.uwv2-card.active{border-color:#39ff68;box-shadow:0 0 18px #39ff6828}
-.uwv2-card img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain}
-.uwv2-card span{display:block;margin-top:6px;font:800 9px/1.2 monospace;letter-spacing:.08em;text-align:center}
-#uwV2QaClear{margin-top:10px}
-.uwv2-preview{position:absolute!important;left:50%;top:50%;width:190%;height:190%;transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;z-index:8;filter:drop-shadow(0 0 6px #39ff6840)}
-@media(max-width:800px){#uwCosV2QA .uwv2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+<!-- UNDERWEB COSMETICS V2 // STORAGE QA -->
+<style id="uwV2StorageQaCss">
+#uwV2StorageQA{margin:12px 0 18px;padding:14px;border:1px solid rgba(57,255,104,.28);border-radius:14px;background:#010503}
+#uwV2StorageQA h3{margin:0;color:#39ff68;letter-spacing:.12em}#uwV2StorageQA p{color:#819087;font-size:12px}
+.uwv2u-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.uwv2u-card{border:1px solid #17301f;border-radius:11px;background:#000;padding:8px;min-width:0}
+.uwv2u-card.has{border-color:#39ff68}.uwv2u-preview{height:150px;display:grid;place-items:center;overflow:hidden}
+.uwv2u-preview img{width:100%;height:100%;object-fit:contain}.uwv2u-name{font:900 10px monospace;letter-spacing:.08em;text-align:center;color:#eaffef;margin:5px 0}
+.uwv2u-actions{display:flex;gap:5px}.uwv2u-actions button{flex:1;font-size:9px;padding:8px 4px}
+#uwV2StorageState{font:800 10px monospace;color:#39ff68;margin-top:10px}
+.uwv2-profile-frame{position:absolute!important;left:50%;top:50%;width:190%!important;height:190%!important;transform:translate(-50%,-50%);object-fit:contain!important;pointer-events:none;z-index:8}
+@media(min-width:800px){.uwv2u-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 </style>
-<script id="uwCosV2QaJs">
+<script id="uwV2StorageQaJs">
 (()=>{
- const V2=[
- ['nullstate','NULLSTATE'],['hive-mind','HIVE MIND'],['voidbloom','VOIDBLOOM'],['symbiotic','SYMBIOTIC'],['chainsoul','CHAINSOUL'],
- ['digital-rot','DIGITAL ROT'],['chorus','CHORUS'],['fracture','FRACTURE'],['oblivion','OBLIVION'],['ascension','ASCENSION']
- ];
- const url=s=>`assets/cosmetics-v2/${s}.webp`;
+ const ITEMS=[['nullstate','NULLSTATE'],['hive-mind','HIVE MIND'],['voidbloom','VOIDBLOOM'],['symbiotic','SYMBIOTIC'],['chainsoul','CHAINSOUL'],['digital-rot','DIGITAL ROT'],['chorus','CHORUS'],['fracture','FRACTURE'],['oblivion','OBLIVION'],['ascension','ASCENSION']];
+ const KEY='uw_cosmetics_v2_qa_urls';
+ const get=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}};
+ const put=x=>localStorage.setItem(KEY,JSON.stringify(x));
+ const $=id=>document.getElementById(id);
  function mount(){
-   if(document.getElementById('uwCosV2QA'))return;
-   const locker=document.getElementById('uwCosmeticsLocker'); if(!locker)return;
-   const q=document.createElement('section');q.id='uwCosV2QA';
-   q.innerHTML=`<div class="uwv2-head"><div><b>COSMETICS V2 // QA</b><br><small>Local preview only — V1 and unlock data are untouched.</small></div></div>
-   <div class="uwv2-grid">${V2.map(([s,n])=>`<button class="uwv2-card" type="button" data-v2="${s}"><img loading="lazy" src="${url(s)}" alt=""><span>${n}</span></button>`).join('')}</div>
-   <button class="uw50-mini" id="uwV2QaClear" type="button">CLEAR PREVIEW</button>`;
-   locker.parentNode.insertBefore(q,locker);
+   if($('uwV2StorageQA'))return;
+   const locker=$('uwCosmeticsLocker'); if(!locker)return;
+   const root=document.createElement('section');root.id='uwV2StorageQA';
+   root.innerHTML=`<h3>COSMETICS V2 // QA UPLOAD</h3><p>Upload each approved V2 image to Supabase Storage. Saved URLs persist on this device for QA. V1 is untouched.</p>
+   <div class="uwv2u-grid">${ITEMS.map(([s,n])=>`<div class="uwv2u-card" data-card="${s}"><div class="uwv2u-preview" data-prev="${s}"><span>NO ASSET</span></div><div class="uwv2u-name">${n}</div><input hidden type="file" accept="image/png,image/webp,image/jpeg" data-file="${s}"><div class="uwv2u-actions"><button type="button" data-pick="${s}">UPLOAD</button><button type="button" data-preview="${s}">PREVIEW</button></div></div>`).join('')}</div>
+   <div id="uwV2StorageState">READY</div>`;
+   locker.parentNode.insertBefore(root,locker);render();
  }
- function avatar(){
-   return document.getElementById('uw621Avatar')||document.querySelector('.uw621-avatar')||document.querySelector('.uw40-avatar');
+ function render(){
+   const m=get(); ITEMS.forEach(([s])=>{const box=document.querySelector(`[data-prev="${s}"]`),card=document.querySelector(`[data-card="${s}"]`);if(!box)return;if(m[s]){box.innerHTML=`<img src="${m[s]}" alt="">`;card?.classList.add('has')}else{box.innerHTML='<span>NO ASSET</span>';card?.classList.remove('has')}});
  }
- function clear(){
-   document.querySelectorAll('.uwv2-preview').forEach(x=>x.remove());
-   document.querySelectorAll('.uwv2-card.active').forEach(x=>x.classList.remove('active'));
+ async function upload(slug,file){
+   if(!currentSession?.user?.id)throw Error('Sign in before uploading.');
+   if(!file||!['image/png','image/webp','image/jpeg'].includes(file.type))throw Error('Use PNG, WebP, or JPG.');
+   if(file.size>8*1024*1024)throw Error('File must be 8 MB or smaller.');
+   const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
+   const path=`${currentSession.user.id}/cosmetics-v2/${slug}-${Date.now()}.${ext}`;
+   const r=await uwSupabase.storage.from('profile-media').upload(path,file,{upsert:false,contentType:file.type,cacheControl:'3600'});
+   if(r.error)throw r.error;
+   const p=uwSupabase.storage.from('profile-media').getPublicUrl(path);
+   const url=p?.data?.publicUrl;if(!url)throw Error('Could not create public URL.');
+   const m=get();m[slug]=url;put(m);render();return url;
  }
- function preview(slug,btn){
-   clear(); const a=avatar(); if(!a){if(typeof toast==='function')toast('Open a profile first, then tap the cosmetic.');return}
-   a.style.position='relative';a.style.overflow='visible';
-   const im=document.createElement('img');im.className='uwv2-preview';im.src=url(slug);im.alt='';a.appendChild(im);
-   btn?.classList.add('active');
+ function clearFrame(){document.querySelectorAll('.uwv2-profile-frame').forEach(x=>x.remove())}
+ function preview(slug){
+   const url=get()[slug];if(!url){toast?.('Upload this V2 cosmetic first.');return}
+   const a=$('uw621Avatar')||document.querySelector('.uw621-avatar')||document.querySelector('.uw40-avatar');
+   if(!a){toast?.('Open a profile first.');return}clearFrame();a.style.position='relative';a.style.overflow='visible';
+   const im=document.createElement('img');im.className='uwv2-profile-frame';im.src=url;im.alt='';a.appendChild(im);
  }
  document.addEventListener('click',e=>{
-   const b=e.target.closest?.('[data-v2]'); if(b){e.preventDefault();preview(b.dataset.v2,b);return}
-   if(e.target.closest?.('#uwV2QaClear')){e.preventDefault();clear()}
+   const p=e.target.closest?.('[data-pick]');if(p){e.preventDefault();document.querySelector(`[data-file="${p.dataset.pick}"]`)?.click();return}
+   const q=e.target.closest?.('[data-preview]');if(q){e.preventDefault();preview(q.dataset.preview)}
+ });
+ document.addEventListener('change',async e=>{
+   const input=e.target.closest?.('[data-file]');if(!input||!input.files?.[0])return;
+   const state=$('uwV2StorageState');try{if(state)state.textContent=`UPLOADING ${input.dataset.file.toUpperCase()}...`;await upload(input.dataset.file,input.files[0]);if(state)state.textContent='UPLOAD COMPLETE';toast?.('V2 cosmetic uploaded.')}catch(err){console.error(err);if(state)state.textContent='UPLOAD FAILED';toast?.('V2 upload failed: '+(err.message||err))}finally{input.value=''}
  });
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
  new MutationObserver(mount).observe(document.documentElement,{childList:true,subtree:true});
@@ -8682,7 +8694,7 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(buildMark,500);
 })();
 </script>
-<!-- UW_COSMETICS_V2_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
 <!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
 
 
@@ -8779,7 +8791,7 @@ html,body{max-width:100%;overflow-x:hidden}
  },true);
 })();
 </script>
-<!-- UW_COSMETICS_V2_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
 <!-- /UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 -->
 
 
@@ -8879,12 +8891,12 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(syncFromFields,300);
 })();
 </script>
-<!-- UW_COSMETICS_V2_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
 
 
 <!-- UNDERWEB STORAGE RLS PATH FIX BUILD 06 2026-09-21 -->
 <!-- Partner media paths now preserve auth.uid() as storage.foldername(name)[1]. -->
-<!-- UW_COSMETICS_V2_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
 
 
 <!-- UNDERWEB PARTNER CONNECT BUILD 07 2026-09-21 -->
@@ -8926,5 +8938,5 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(decorate,300);
 })();
 </script>
-<!-- UW_COSMETICS_V2_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
 
