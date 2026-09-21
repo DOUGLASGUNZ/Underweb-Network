@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
-<meta name="underweb-build" content="UW_COSMETICS_V2_STORAGE_QA_20260921_09">
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
+<meta name="underweb-build" content="UW_COSMETICS_V2_STORAGE_QA_20260921_10">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -8050,6 +8050,16 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
 #uwV2StorageState{font:800 10px monospace;color:#39ff68;margin-top:10px}
 .uwv2-profile-frame{position:absolute!important;left:50%;top:50%;width:190%!important;height:190%!important;transform:translate(-50%,-50%);object-fit:contain!important;pointer-events:none;z-index:8}
 @media(min-width:800px){.uwv2u-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+#uwV2PreviewModal{display:none;position:fixed;inset:0;z-index:2147483000;align-items:center;justify-content:center;padding:18px}
+#uwV2PreviewModal.open{display:flex}.uwv2m-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(7px)}
+.uwv2m-panel{position:relative;width:min(92vw,430px);border:1px solid #39ff68;background:#020503;padding:18px 14px 16px;border-radius:16px;box-shadow:0 0 40px rgba(57,255,104,.18)}
+.uwv2m-close{position:absolute;right:10px;top:7px;border:0;background:transparent;color:#39ff68;font-size:30px;z-index:3}
+.uwv2m-title,.uwv2m-name,.uwv2m-note{text-align:center;font-family:monospace;letter-spacing:.11em}.uwv2m-title{color:#39ff68;font-weight:900;font-size:11px}
+.uwv2m-stage{position:relative;width:min(76vw,330px);aspect-ratio:1;margin:18px auto 10px;display:grid;place-items:center;overflow:visible}
+.uwv2m-avatar{position:absolute;width:43%;aspect-ratio:1;border-radius:50%;background:#071009 center/cover no-repeat;border:1px solid #244b30;display:grid;place-items:center;overflow:hidden}
+.uwv2m-avatarFallback{font:900 30px monospace;color:#244b30}.uwv2m-stage>img{position:absolute;width:100%;height:100%;object-fit:contain;z-index:2;filter:drop-shadow(0 0 8px rgba(57,255,104,.3))}
+.uwv2m-name{color:#eaffef;font-weight:900;font-size:13px}.uwv2m-note{color:#607268;font-size:9px;margin-top:5px}
+
 </style>
 <script id="uwV2StorageQaJs">
 (()=>{
@@ -8084,12 +8094,32 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  }
  function clearFrame(){document.querySelectorAll('.uwv2-profile-frame').forEach(x=>x.remove())}
  function preview(slug){
-   const url=get()[slug];if(!url){toast?.('Upload this V2 cosmetic first.');return}
-   const a=$('uw621Avatar')||document.querySelector('.uw621-avatar')||document.querySelector('.uw40-avatar');
-   if(!a){toast?.('Open a profile first.');return}clearFrame();a.style.position='relative';a.style.overflow='visible';
-   const im=document.createElement('img');im.className='uwv2-profile-frame';im.src=url;im.alt='';a.appendChild(im);
+   const url=get()[slug]; if(!url){if(typeof toast==='function')toast('Upload this V2 cosmetic first.');return}
+   let modal=$('uwV2PreviewModal');
+   if(!modal){
+     modal=document.createElement('div'); modal.id='uwV2PreviewModal';
+     modal.innerHTML=`<div class="uwv2m-backdrop" data-v2close></div><div class="uwv2m-panel">
+       <button class="uwv2m-close" type="button" data-v2close>×</button>
+       <div class="uwv2m-title">COSMETICS V2 // PROFILE QA</div>
+       <div class="uwv2m-stage">
+         <div class="uwv2m-avatar" id="uwV2QaAvatar"><div class="uwv2m-avatarFallback">UW</div></div>
+         <img id="uwV2QaFrame" alt="">
+       </div>
+       <div class="uwv2m-name" id="uwV2QaName"></div>
+       <div class="uwv2m-note">QA PREVIEW — NOT EQUIPPED</div>
+     </div>`;
+     document.body.appendChild(modal);
+   }
+   const profileAvatar=$('uw621Avatar')||document.querySelector('.uw621-avatar')||document.querySelector('.uw40-avatar');
+   const stage=$('uwV2QaAvatar');
+   const candidate=profileAvatar?.querySelector?.('img')?.src || profileAvatar?.style?.backgroundImage?.replace(/^url\(["']?|["']?\)$/g,'');
+   stage.style.backgroundImage=candidate?`url("${candidate}")`:'';
+   $('uwV2QaFrame').src=url;
+   $('uwV2QaName').textContent=(ITEMS.find(x=>x[0]===slug)||['',slug])[1];
+   modal.classList.add('open');
  }
  document.addEventListener('click',e=>{
+   const c=e.target.closest?.('[data-v2close]');if(c){e.preventDefault();$('uwV2PreviewModal')?.classList.remove('open');return}
    const p=e.target.closest?.('[data-pick]');if(p){e.preventDefault();document.querySelector(`[data-file="${p.dataset.pick}"]`)?.click();return}
    const q=e.target.closest?.('[data-preview]');if(q){e.preventDefault();preview(q.dataset.preview)}
  });
@@ -8694,7 +8724,7 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(buildMark,500);
 })();
 </script>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
 <!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
 
 
@@ -8791,7 +8821,7 @@ html,body{max-width:100%;overflow-x:hidden}
  },true);
 })();
 </script>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
 <!-- /UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 -->
 
 
@@ -8891,12 +8921,12 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(syncFromFields,300);
 })();
 </script>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
 
 
 <!-- UNDERWEB STORAGE RLS PATH FIX BUILD 06 2026-09-21 -->
 <!-- Partner media paths now preserve auth.uid() as storage.foldername(name)[1]. -->
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
 
 
 <!-- UNDERWEB PARTNER CONNECT BUILD 07 2026-09-21 -->
@@ -8938,5 +8968,5 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(decorate,300);
 })();
 </script>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_09 -->
+<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
 
