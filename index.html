@@ -7861,7 +7861,94 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
 </script>
 <!-- /UNDERWEB PROFILE OVERHAUL V2 -->
 
-</body>
+\n<!-- UNDERWEB PROFILE CONTROL CENTER V4 2026-09-21 -->
+<style id="uw-profile-v4-css">
+/* One communication surface: Inbox. Toasts remain transient; legacy bell/drawer are retired. */
+#uwNotifyWrap,#uwNotifyBell,#uwNotifyDrawer{display:none!important}
+/* Compact profile control center */
+#page-profile .uw-profile-edit-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}
+#page-profile .uw-profile-edit-head h1{margin-bottom:3px!important}
+#page-profile .uw-hub-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+#page-profile .uw40-profile-preview{position:relative;overflow:hidden}
+#page-profile .uw40-profile-preview .uw40-profile-banner{height:112px!important}
+#page-profile .uw40-profile-preview .uw40-profile-header{margin-top:-34px!important;padding-bottom:8px!important}
+#page-profile .uw40-profile-preview .uw40-avatar{width:74px!important;height:74px!important;flex-basis:74px!important}
+#page-profile .uw40-profile-preview .uw40-profile-buttons{display:none!important}
+#page-profile .uw40-profile-preview .uw40-profile-body{padding-top:2px!important;padding-bottom:7px!important}
+#page-profile .uw40-profile-preview .uw40-profile-body>p{max-width:72ch;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#page-profile .uw42-profile-meter{padding-top:3px!important;padding-bottom:9px!important}
+/* Creator tools dashboard */
+#uwV4CreatorDashboard{margin:0 0 10px;border:1px solid var(--l);padding:13px;background:linear-gradient(145deg,rgba(56,255,114,.045),rgba(0,0,0,.25))}
+#uwV4CreatorDashboard .uwv4-head{display:flex;justify-content:space-between;gap:10px;align-items:end;margin-bottom:10px}
+#uwV4CreatorDashboard .uwv4-head span{color:var(--g);font:800 10px/1 monospace;letter-spacing:.18em}
+#uwV4CreatorDashboard .uwv4-head h3{margin:5px 0 0;font-size:18px}
+#uwV4CreatorDashboard .uwv4-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#uwV4CreatorDashboard button{min-height:58px;text-align:left;border:1px solid var(--l);background:#020604;color:#eef7f1;padding:10px 11px;font-weight:900;letter-spacing:.05em}
+#uwV4CreatorDashboard button small{display:block;color:#819087;font-size:9px;margin-top:4px;font-weight:600;letter-spacing:.02em}
+#uwV4CreatorDashboard button:active{border-color:var(--g);background:rgba(56,255,114,.07)}
+@media(max-width:600px){
+ #page-profile .uw-profile-edit-head{grid-template-columns:1fr!important}
+ #page-profile .uw-profile-head-actions{margin-top:0!important}
+ #page-profile .uw-profile-edit-head>div:first-child>p{max-width:34ch}
+ #page-profile .uw40-profile-preview .uw40-profile-banner{height:92px!important}
+ #page-profile .uw40-profile-preview .uw40-profile-header{margin-top:-30px!important;padding:0 10px 7px!important}
+ #page-profile .uw40-profile-preview .uw40-avatar{width:66px!important;height:66px!important;flex-basis:66px!important}
+ #page-profile .uw40-profile-preview .uw40-profile-title h2{font-size:18px!important}
+ #page-profile .uw40-profile-preview .uw40-profile-body{padding:0 10px 6px!important}
+ #page-profile .uw40-profile-preview .uw40-profile-body>p{font-size:10px!important}
+ #uwV4CreatorDashboard .uwv4-grid{grid-template-columns:1fr 1fr}
+ #uwV4CreatorDashboard button{min-height:54px;font-size:10px}
+}
+</style>
+<script id="uw-profile-v4-js">
+(()=>{
+ const $=id=>document.getElementById(id);
+ let openingPublic=false;
+ function creatorDashboard(){
+  const page=$('page-profile'); if(!page||$('uwV4CreatorDashboard'))return;
+  const roleBox=page.querySelector('.uw744-creator-role-box'); if(!roleBox)return;
+  const dash=document.createElement('section'); dash.id='uwV4CreatorDashboard';dash.dataset.uwpoEditorGroup='creator';dash.className='uwpo-editor-group';
+  dash.innerHTML=`<div class="uwv4-head"><div><span>CREATOR CONTROL CENTER</span><h3>Build, collaborate & get booked</h3></div></div><div class="uwv4-grid">
+   <button data-v4-page="projects">MY PROJECTS<small>Projects, recruiting and collaborators</small></button>
+   <button data-v4-page="bookings">BOOKINGS<small>Requests, credits and availability</small></button>
+   <button data-v4-page="events">EVENTS<small>Upcoming Network opportunities</small></button>
+   <button data-v4-media>PORTFOLIO MANAGER<small>Showcase media and creator details</small></button>
+   <button data-v4-page="help">COLLAB REQUESTS<small>Requests and creator support</small></button>
+   <button data-v4-share>SHARE PROFILE<small>Send your public Network identity</small></button>
+  </div>`;
+  roleBox.before(dash);
+  const active=page.querySelector('.uwpo-editor-nav button.active')?.dataset.uwpoEdit||'identity';dash.hidden=active!=='creator';
+ }
+ async function openSelfFast(btn){
+  if(openingPublic)return; const uid=window.currentSession?.user?.id; if(!uid)return window.toast?.('Sign in first.');
+  openingPublic=true;if(btn){btn.disabled=true;btn.textContent='OPENING…'}
+  try{
+   /* Use the canonical profile modal directly. Avoid the directory wrappers that were reloading identity/media more than once. */
+   if(typeof window.uw621OpenProfile==='function') await window.uw621OpenProfile(String(uid));
+   else if(typeof window.uw758Open==='function') await window.uw758Open(String(uid));
+   else throw new Error('Public profile viewer unavailable');
+  }catch(err){console.error('V4 self profile open',err);window.toast?.(err?.message||'Could not open public profile.');}
+  finally{openingPublic=false;if(btn){btn.disabled=false;btn.textContent='VIEW PUBLIC PROFILE →'}}
+ }
+ document.addEventListener('click',e=>{
+  const self=e.target.closest('#uwViewMyPublicProfile');if(self){e.preventDefault();e.stopImmediatePropagation();openSelfFast(self);return}
+  const p=e.target.closest('[data-v4-page]');if(p){e.preventDefault();document.querySelector(`[data-page="${p.dataset.v4Page}"]`)?.click();return}
+  if(e.target.closest('[data-v4-media]')){e.preventDefault();document.querySelector('.uwpo-editor-nav [data-uwpo-edit="media"]')?.click();return}
+  if(e.target.closest('[data-v4-share]')){e.preventDefault();const url=location.origin+location.pathname+'#profile='+encodeURIComponent(window.currentSession?.user?.id||'');if(navigator.share)navigator.share({title:'UnderWeb Network Profile',url}).catch(()=>{});else navigator.clipboard?.writeText(url).then(()=>window.toast?.('Profile link copied.'));}
+ },true);
+ function ensureArtistOnboarding(){
+  /* Onboarding is definition-driven. Ensure these two disciplines are offered even on older role-definition datasets. */
+  if(!Array.isArray(window.uw780Defs))return;
+  const have=new Set(window.uw780Defs.map(x=>String(x.slug||'').toLowerCase()));
+  if(!have.has('digital_artist'))window.uw780Defs.push({slug:'digital_artist',name:'Digital Artist'});
+  if(!have.has('traditional_artist'))window.uw780Defs.push({slug:'traditional_artist',name:'Traditional Artist'});
+ }
+ function mount(){creatorDashboard();ensureArtistOnboarding();}
+ new MutationObserver(mount).observe(document.body,{subtree:true,childList:true});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();setTimeout(mount,700);setTimeout(mount,1800);
+})();
+</script>
+<!-- /UNDERWEB PROFILE CONTROL CENTER V4 -->\n</body>
 </html>
 
 <!-- UNDERWEB DEEP WEB // V2 QA BUILD 2026-09-20 -->
