@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
-<meta name="underweb-build" content="UW_COSMETICS_V2_STORAGE_QA_20260921_10">
+<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_11 -->
+<meta name="underweb-build" content="UW_COSMETICS_V2_EQUIP_QA_20260921_11">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -8044,7 +8044,7 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
 #uwV2StorageQA h3{margin:0;color:#39ff68;letter-spacing:.12em}#uwV2StorageQA p{color:#819087;font-size:12px}
 .uwv2u-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .uwv2u-card{border:1px solid #17301f;border-radius:11px;background:#000;padding:8px;min-width:0}
-.uwv2u-card.has{border-color:#39ff68}.uwv2u-preview{height:150px;display:grid;place-items:center;overflow:hidden}
+.uwv2u-card.has{border-color:#39ff68}.uwv2u-card.equipped{box-shadow:0 0 22px rgba(57,255,104,.35);border-color:#7dff9a}.uwv2u-card.equipped .uwv2u-name:after{content:'  // EQUIPPED';color:#39ff68}.uwv2u-preview{height:150px;display:grid;place-items:center;overflow:hidden}
 .uwv2u-preview img{width:100%;height:100%;object-fit:contain}.uwv2u-name{font:900 10px monospace;letter-spacing:.08em;text-align:center;color:#eaffef;margin:5px 0}
 .uwv2u-actions{display:flex;gap:5px}.uwv2u-actions button{flex:1;font-size:9px;padding:8px 4px}
 #uwV2StorageState{font:800 10px monospace;color:#39ff68;margin-top:10px}
@@ -8064,7 +8064,7 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
 <script id="uwV2StorageQaJs">
 (()=>{
  const ITEMS=[['nullstate','NULLSTATE'],['hive-mind','HIVE MIND'],['voidbloom','VOIDBLOOM'],['symbiotic','SYMBIOTIC'],['chainsoul','CHAINSOUL'],['digital-rot','DIGITAL ROT'],['chorus','CHORUS'],['fracture','FRACTURE'],['oblivion','OBLIVION'],['ascension','ASCENSION']];
- const KEY='uw_cosmetics_v2_qa_urls';
+ const KEY='uw_cosmetics_v2_qa_urls'; const EQUIPKEY='uw_cosmetics_v2_qa_equipped';
  const get=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}};
  const put=x=>localStorage.setItem(KEY,JSON.stringify(x));
  const $=id=>document.getElementById(id);
@@ -8073,12 +8073,29 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
    const locker=$('uwCosmeticsLocker'); if(!locker)return;
    const root=document.createElement('section');root.id='uwV2StorageQA';
    root.innerHTML=`<h3>COSMETICS V2 // QA UPLOAD</h3><p>Upload each approved V2 image to Supabase Storage. Saved URLs persist on this device for QA. V1 is untouched.</p>
-   <div class="uwv2u-grid">${ITEMS.map(([s,n])=>`<div class="uwv2u-card" data-card="${s}"><div class="uwv2u-preview" data-prev="${s}"><span>NO ASSET</span></div><div class="uwv2u-name">${n}</div><input hidden type="file" accept="image/png,image/webp,image/jpeg" data-file="${s}"><div class="uwv2u-actions"><button type="button" data-pick="${s}">UPLOAD</button><button type="button" data-preview="${s}">PREVIEW</button></div></div>`).join('')}</div>
-   <div id="uwV2StorageState">READY</div>`;
-   locker.parentNode.insertBefore(root,locker);render();
+   <div class="uwv2u-grid">${ITEMS.map(([s,n])=>`<div class="uwv2u-card" data-card="${s}"><div class="uwv2u-preview" data-prev="${s}"><span>NO ASSET</span></div><div class="uwv2u-name">${n}</div><input hidden type="file" accept="image/png,image/webp,image/jpeg" data-file="${s}"><div class="uwv2u-actions"><button type="button" data-pick="${s}">UPLOAD</button><button type="button" data-preview="${s}">PREVIEW</button><button type="button" data-equip="${s}">EQUIP</button></div></div>`).join('')}</div>
+   <button type="button" id="uwV2Unequip" style="margin-top:10px">UNEQUIP V2</button><div id="uwV2StorageState">READY</div>`;
+   locker.parentNode.insertBefore(root,locker);render();setTimeout(applyEquipped,0);
  }
  function render(){
-   const m=get(); ITEMS.forEach(([s])=>{const box=document.querySelector(`[data-prev="${s}"]`),card=document.querySelector(`[data-card="${s}"]`);if(!box)return;if(m[s]){box.innerHTML=`<img src="${m[s]}" alt="">`;card?.classList.add('has')}else{box.innerHTML='<span>NO ASSET</span>';card?.classList.remove('has')}});
+   const m=get(), equipped=localStorage.getItem(EQUIPKEY)||''; ITEMS.forEach(([s])=>{const box=document.querySelector(`[data-prev="${s}"]`),card=document.querySelector(`[data-card="${s}"]`);if(!box)return;if(m[s]){box.innerHTML=`<img src="${m[s]}" alt="">`;card?.classList.add('has')}else{box.innerHTML='<span>NO ASSET</span>';card?.classList.remove('has')}card?.classList.toggle('equipped',s===equipped)});
+ }
+ function profileAvatar(){
+   return $('uw621Avatar')||document.querySelector('.uw621-avatar')||document.querySelector('.uw40-avatar')||
+          document.querySelector('[class*="profile"][class*="avatar"]')||document.querySelector('[id*="profile"][id*="avatar"]');
+ }
+ function applyEquipped(){
+   document.querySelectorAll('.uwv2-equipped-frame').forEach(x=>x.remove());
+   const slug=localStorage.getItem(EQUIPKEY), url=slug&&get()[slug]; if(!url)return;
+   const a=profileAvatar(); if(!a)return;
+   a.style.position='relative'; a.style.overflow='visible';
+   const im=document.createElement('img'); im.className='uwv2-profile-frame uwv2-equipped-frame'; im.src=url; im.alt='';
+   a.appendChild(im);
+ }
+ function equip(slug){
+   const url=get()[slug]; if(!url){if(typeof toast==='function')toast('Upload this V2 cosmetic first.');return}
+   localStorage.setItem(EQUIPKEY,slug); render(); applyEquipped();
+   if(typeof toast==='function')toast(((ITEMS.find(x=>x[0]===slug)||['',slug])[1])+' equipped for QA.');
  }
  async function upload(slug,file){
    if(!currentSession?.user?.id)throw Error('Sign in before uploading.');
@@ -8120,6 +8137,8 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  }
  document.addEventListener('click',e=>{
    const c=e.target.closest?.('[data-v2close]');if(c){e.preventDefault();$('uwV2PreviewModal')?.classList.remove('open');return}
+   const eq=e.target.closest?.('[data-equip]');if(eq){e.preventDefault();equip(eq.dataset.equip);return}
+   if(e.target.closest?.('#uwV2Unequip')){e.preventDefault();localStorage.removeItem(EQUIPKEY);document.querySelectorAll('.uwv2-equipped-frame').forEach(x=>x.remove());render();if(typeof toast==='function')toast('V2 QA cosmetic unequipped.');return}
    const p=e.target.closest?.('[data-pick]');if(p){e.preventDefault();document.querySelector(`[data-file="${p.dataset.pick}"]`)?.click();return}
    const q=e.target.closest?.('[data-preview]');if(q){e.preventDefault();preview(q.dataset.preview)}
  });
@@ -8128,7 +8147,7 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
    const state=$('uwV2StorageState');try{if(state)state.textContent=`UPLOADING ${input.dataset.file.toUpperCase()}...`;await upload(input.dataset.file,input.files[0]);if(state)state.textContent='UPLOAD COMPLETE';toast?.('V2 cosmetic uploaded.')}catch(err){console.error(err);if(state)state.textContent='UPLOAD FAILED';toast?.('V2 upload failed: '+(err.message||err))}finally{input.value=''}
  });
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
- new MutationObserver(mount).observe(document.documentElement,{childList:true,subtree:true});
+ let raf=0;new MutationObserver(()=>{mount();cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{if(!document.querySelector('.uwv2-equipped-frame'))applyEquipped()})}).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 
@@ -8724,7 +8743,7 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(buildMark,500);
 })();
 </script>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
+<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_11 -->
 <!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
 
 
@@ -8821,7 +8840,7 @@ html,body{max-width:100%;overflow-x:hidden}
  },true);
 })();
 </script>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
+<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_11 -->
 <!-- /UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 -->
 
 
@@ -8921,12 +8940,12 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(syncFromFields,300);
 })();
 </script>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
+<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_11 -->
 
 
 <!-- UNDERWEB STORAGE RLS PATH FIX BUILD 06 2026-09-21 -->
 <!-- Partner media paths now preserve auth.uid() as storage.foldername(name)[1]. -->
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
+<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_11 -->
 
 
 <!-- UNDERWEB PARTNER CONNECT BUILD 07 2026-09-21 -->
@@ -8968,5 +8987,5 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(decorate,300);
 })();
 </script>
-<!-- UW_COSMETICS_V2_STORAGE_QA_20260921_10 -->
+<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_11 -->
 
