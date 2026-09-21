@@ -8515,3 +8515,70 @@ html,body{max-width:100%;overflow-x:hidden}
 })();
 </script>
 <!-- /UNDERWEB PROFILE NETWORK HOTFIX -->
+\n<!-- UNDERWEB PROFILE V4 HARD FIX 2026-09-21 -->
+<style id="uw-profile-v4-hardfix-css">
+#uw621ProfileModal.uw-v4-ready .uw621-grid>section.uw621-panel,#uw621ProfileModal.uw-v4-ready .uw621-grid>aside{display:none!important}
+#uw621ProfileModal.uw-v4-ready .uw621-grid{display:block!important;gap:0!important}
+#uw621ProfileModal.uw-v4-ready #uwpoPublic{display:block!important;width:100%!important;margin:0!important;padding:0!important}
+#uw621ProfileModal.uw-v4-ready .uw621-cover{height:150px!important;min-height:150px!important}
+#uw621ProfileModal.uw-v4-ready .uw621-head{margin-top:-28px!important;padding:0 14px 8px!important}
+#uw621ProfileModal.uw-v4-ready .uw621-main{padding:0 12px 18px!important}
+#uw621ProfileModal.uw-v4-ready .uw621-actions{margin:5px 0 7px!important}
+#uw621ProfileModal.uw-v4-ready .uwpo-tabs{margin:6px 0 8px!important;position:static!important}
+#uw621ProfileModal.uw-v4-ready .uwpo-card{padding:10px!important;margin:5px 0!important}
+#uw621ProfileModal.uw-v4-ready .uwpo-identity-grid{gap:5px!important}
+#uw621ProfileModal.uw-v4-ready .uwpo-pane{margin:0!important;padding:0!important;min-height:0!important}
+#uw621ProfileModal.uw-v4-ready .uwpo-pane[hidden]{display:none!important}
+#uw621ProfileModal.uw-v4-ready .uwpo-primary-id{margin-top:4px!important}
+#uw621ProfileModal.uw-v4-ready #uw743PublicShowcase{display:none!important}
+.uwpp-repbtn,[data-uw-partner-profile-user]{cursor:pointer!important}
+@media(max-width:700px){#uw621ProfileModal.uw-v4-ready .uw621-cover{height:138px!important;min-height:138px!important}#uw621ProfileModal.uw-v4-ready .uw621-head{margin-top:-24px!important}.uw621-title h2{margin-bottom:1px!important}}
+</style>
+<script id="uw-profile-v4-hardfix-js">
+(()=>{
+ const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ async function ensureCreator(uid){
+   uid=String(uid||''); if(!uid)return null;
+   let x=(window.uwRealCreators||[]).find(v=>String(v.user_id)===uid); if(x)return x;
+   try{const q=await uwSupabase.from('creator_profiles').select('user_id,display_name,headline,bio,availability,profile_mode,specialties,avatar_url,banner_url,portfolio_url,public_visible,approval_status').eq('user_id',uid).maybeSingle();if(q.error||!q.data)return null;window.uwRealCreators=window.uwRealCreators||[];window.uwRealCreators.push(q.data);return q.data}catch(_){return null}
+ }
+ async function openUser(uid){
+   uid=String(uid||''); if(!uid)return;
+   const x=await ensureCreator(uid); if(!x){if(typeof toast==='function')toast('This member does not have a public Network profile yet.');return}
+   $('uwpModal')?.classList.remove('open');
+   if(typeof window.uw621OpenProfile==='function')window.uw621OpenProfile(uid);else if(typeof uw621OpenProfile==='function')uw621OpenProfile(uid);
+   setTimeout(()=>{const m=$('uw621ProfileModal');if(m?.classList.contains('open')){m.classList.add('uw-v4-ready');m.querySelectorAll(':scope .uw621-grid > section.uw621-panel, :scope .uw621-grid > aside').forEach(n=>n.style.setProperty('display','none','important'));if(typeof window.uwProfileV1Build==='function'){const g=m.querySelector('.uw621-grid');if(g)delete g.dataset.uwpoUid;window.uwProfileV1Build();}}},20);
+ }
+ window.uwOpenNetworkProfile=openUser;
+ // Capture partner representative clicks before older partner-directory handlers can navigate away.
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-uwpp-user],[data-uw-partner-profile-user]');if(!b)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();openUser(b.dataset.uwppUser||b.dataset.uwPartnerProfileUser)},true);
+ // Hard-hide the obsolete public-profile columns after every actual profile open; no global DOM observer.
+ const base=window.uw621OpenProfile||((typeof uw621OpenProfile==='function')?uw621OpenProfile:null);
+ if(base&&!base.__uwV4){const wrapped=function(uid){const r=base.apply(this,arguments);setTimeout(()=>{const m=$('uw621ProfileModal');if(!m?.classList.contains('open'))return;m.classList.add('uw-v4-ready');const g=m.querySelector('.uw621-grid');if(g){g.querySelectorAll(':scope > section.uw621-panel,:scope > aside').forEach(n=>n.style.setProperty('display','none','important'));delete g.dataset.uwpoUid;}if(typeof window.uwProfileV1Build==='function')window.uwProfileV1Build();},0);return r};wrapped.__uwV4=true;window.uw621OpenProfile=wrapped;try{uw621OpenProfile=wrapped}catch(_){}}
+ // Complete activity: merge base feed + authored projects/events + collaborations + partner role, with linked object names.
+ async function activity(uid,host){
+   if(!host||!uid)return;host.innerHTML='<span class="meta">Loading Network history…</span>';const out=[];const add=(k,t,b,d,ot,oid)=>out.push({k,t,b,d,ot,oid});
+   const safe=p=>Promise.resolve(p).catch(()=>({data:[],error:true}));
+   try{
+    const [feed,pr,ev,co,rp]=await Promise.all([
+      safe(uwSupabase.rpc('uw_profile_network_activity',{p_user_id:uid,p_limit:100})),
+      safe(uwSupabase.from('network_projects').select('id,title,status,created_at,created_by').eq('created_by',uid).limit(100)),
+      safe(uwSupabase.from('network_events').select('id,title,status,created_at,starts_at,created_by').eq('created_by',uid).limit(100)),
+      safe(uwSupabase.from('network_collaborators').select('*').eq('user_id',uid).limit(100)),
+      safe(uwSupabase.from('network_partner_representatives').select('partner_id,partner_role,title,created_at,active').eq('user_id',uid).eq('active',true))]);
+    (feed.data||[]).forEach(x=>add(x.kind||'network',x.title||'Network update',x.body||'',x.created_at,x.object_type,x.object_id));
+    (pr.data||[]).forEach(x=>add('project','Posted a Network project',x.title,x.created_at,'project',x.id));
+    (ev.data||[]).forEach(x=>add('event','Created a Network event',x.title,x.created_at||x.starts_at,'event',x.id));
+    const cs=co.data||[], pids=[...new Set(cs.filter(x=>String(x.object_type)==='project').map(x=>x.object_id).filter(Boolean))], eids=[...new Set(cs.filter(x=>String(x.object_type)==='event').map(x=>x.object_id).filter(Boolean))];
+    let pm={},em={};if(pids.length){const q=await safe(uwSupabase.from('network_projects').select('id,title').in('id',pids));(q.data||[]).forEach(x=>pm[String(x.id)]=x.title)}if(eids.length){const q=await safe(uwSupabase.from('network_events').select('id,title').in('id',eids));(q.data||[]).forEach(x=>em[String(x.id)]=x.title)}
+    cs.forEach(x=>{const typ=String(x.object_type||'collaboration'),name=typ==='project'?pm[String(x.object_id)]:typ==='event'?em[String(x.object_id)]:'';add('collab','Joined '+(typ==='event'?'an event':'a Network project'),name||x.role_label||'Collaboration',x.created_at,typ,x.object_id)});
+    const reps=rp.data||[], ids=[...new Set(reps.map(x=>x.partner_id).filter(Boolean))];let names={};if(ids.length){const q=await safe(uwSupabase.from('network_partners_public').select('id,name').in('id',ids));(q.data||[]).forEach(x=>names[String(x.id)]=x.name)}reps.forEach(x=>add('partner',String(x.partner_role).toLowerCase()==='owner'?'Partner Owner':'Partner Representative',names[String(x.partner_id)]||'Network Partner',x.created_at,'partner',x.partner_id));
+    const seen=new Set(),rows=out.filter(x=>{const k=[x.k,x.t,x.b,x.ot,x.oid].join('|').toLowerCase();if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>new Date(b.d||0)-new Date(a.d||0));
+    host.innerHTML=rows.length?rows.map(x=>`<button type="button" class="uwsys-feeditem" ${x.ot&&x.oid?`data-uw-activity-object="${esc(x.ot)}|${esc(x.oid)}"`:''}><i>◈</i><span><strong>${esc(x.t)}</strong><small>${esc(x.b||x.k)}</small></span></button>`).join(''):'<span class="meta">No public Network activity yet.</span>';
+   }catch(e){console.warn('V4 activity',e);host.innerHTML='<span class="meta">Network activity unavailable.</span>'}
+ }
+ window.uwProfileActivityComplete=activity;window.uwProfileActivityFallback=activity;if(window.uwNetworkSystems)window.uwNetworkSystems.profileActivity=activity;
+ document.addEventListener('click',e=>{const tab=e.target.closest('[data-uwpo-tab="activity"]');if(!tab)return;const uid=String(window.uw621ActiveCreator||'');setTimeout(()=>activity(uid,$('uwpoActivity')),0)},true);
+})();
+</script>
+<!-- /UNDERWEB PROFILE V4 HARD FIX -->
