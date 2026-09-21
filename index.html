@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
-<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_06">
+<!-- UW_PROFILE_V4_BUILD_20260921_07 -->
+<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_07">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -1266,7 +1266,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 </style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
-<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-06</div>
+<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-07</div>
 
 <header class="top uw70-top">
   <button aria-label="Open menu" class="btn drawer-btn" id="drawerBtn">☰</button>
@@ -8618,7 +8618,7 @@ html,body{max-width:100%;overflow-x:hidden}
  /* Keep the visible build marker authoritative and singular. */
  function buildMark(){
    let b=$('uwBuildIndicator');
-   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-06';
+   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-07';
    document.querySelectorAll('[id*="version" i],[class*="version" i]').forEach(el=>{
      if(el===b)return;
      const t=(el.textContent||'').trim();
@@ -8629,7 +8629,7 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(buildMark,500);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_07 -->
 <!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
 
 
@@ -8726,7 +8726,7 @@ html,body{max-width:100%;overflow-x:hidden}
  },true);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_07 -->
 <!-- /UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 -->
 
 
@@ -8826,9 +8826,52 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(syncFromFields,300);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_07 -->
 
 
 <!-- UNDERWEB STORAGE RLS PATH FIX BUILD 06 2026-09-21 -->
 <!-- Partner media paths now preserve auth.uid() as storage.foldername(name)[1]. -->
-<!-- UW_PROFILE_V4_BUILD_20260921_06 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_07 -->
+
+
+<!-- UNDERWEB PARTNER CONNECT BUILD 07 2026-09-21 -->
+<style id="uw-partner-connect-07-css">
+#uwpModal .uwp-connect07{margin:18px 0 0;border-top:1px solid rgba(57,255,20,.18);padding-top:16px}
+#uwpModal .uwp-connect07-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}
+#uwpModal .uwp-connect07-head span{color:#75847b;font:900 9px/1 monospace;letter-spacing:.16em}
+#uwpModal .uwp-connect07-head b{color:#eef7f0;font:1000 17px/1 sans-serif}
+#uwpModal #uwpModalLinks.uwp-connect07-links{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0!important}
+#uwpModal #uwpModalLinks.uwp-connect07-links .btn{display:flex;align-items:center;justify-content:center;min-height:48px;padding:10px 8px;text-align:center}
+#uwpModal .uwp-connect07-empty{border:1px dashed rgba(57,255,20,.22);padding:14px;color:#6d7c72;font:800 9px monospace;letter-spacing:.08em}
+@media(max-width:700px){
+ #uwpModal #uwpModalLinks.uwp-connect07-links{grid-template-columns:1fr}
+ #uwpModal #uwpModalLinks.uwp-connect07-links .btn{min-height:50px}
+}
+</style>
+<script id="uw-partner-connect-07-js">
+(()=>{
+ const $=id=>document.getElementById(id);
+ function decorate(){
+   const links=$('uwpModalLinks'); if(!links)return;
+   links.classList.add('uwp-connect07-links');
+   if(!links.closest('.uwp-connect07')){
+     const wrap=document.createElement('section');wrap.className='uwp-connect07';
+     wrap.innerHTML='<div class="uwp-connect07-head"><div><span>PARTNER LINKS</span><br><b>CONNECT</b></div></div>';
+     links.parentNode.insertBefore(wrap,links);wrap.appendChild(links);
+   }
+   const wrap=links.closest('.uwp-connect07');
+   let empty=wrap?.querySelector('.uwp-connect07-empty');
+   if(!links.children.length){
+     if(!empty){empty=document.createElement('div');empty.className='uwp-connect07-empty';empty.textContent='NO PUBLIC LINKS LISTED.';wrap.appendChild(empty)}
+   }else empty?.remove();
+ }
+ const modal=$('uwpModal');
+ if(modal)new MutationObserver(decorate).observe(modal,{childList:true,subtree:true});
+ document.addEventListener('click',e=>{
+   if(e.target.closest('[data-uwp-id],[data-uwp-home-id]'))setTimeout(decorate,60);
+ });
+ setTimeout(decorate,300);
+})();
+</script>
+<!-- UW_PROFILE_V4_BUILD_20260921_07 -->
+
