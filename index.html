@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_12 -->
-<meta name="underweb-build" content="UW_COSMETICS_V2_EQUIP_QA_20260921_12">
+<!-- UW_COSMETICS_V2_BLACKBOX_QA_20260921_13 -->
+<meta name="underweb-build" content="UW_COSMETICS_V2_BLACKBOX_QA_20260921_13">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -8085,12 +8085,15 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
           document.querySelector('[class*="profile"][class*="avatar"]')||document.querySelector('[id*="profile"][id*="avatar"]');
  }
  function applyEquipped(){
-   document.querySelectorAll('.uwv2-equipped-frame').forEach(x=>x.remove());
+   document.querySelectorAll('.uwv2-cosmetic-box').forEach(x=>x.remove());
    const slug=localStorage.getItem(EQUIPKEY), url=slug&&get()[slug]; if(!url)return;
    const a=profileAvatar(); if(!a)return;
-   a.style.position='relative'; a.style.overflow='visible';
+   a.style.position='relative'; a.style.overflow='visible'; a.style.zIndex='2';
+   const kids=[...a.children];
+   kids.forEach(k=>{if(!k.classList.contains('uwv2-cosmetic-box'))k.classList.add('uwv2-pfp-lift')});
+   const box=document.createElement('div'); box.className='uwv2-cosmetic-box';
    const im=document.createElement('img'); im.className='uwv2-profile-frame uwv2-equipped-frame'; im.src=url; im.alt='';
-   a.appendChild(im);
+   box.appendChild(im); a.insertBefore(box,a.firstChild);
  }
  function equip(slug){
    const url=get()[slug]; if(!url){if(typeof toast==='function')toast('Upload this V2 cosmetic first.');return}
@@ -8109,7 +8112,7 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
    const url=p?.data?.publicUrl;if(!url)throw Error('Could not create public URL.');
    const m=get();m[slug]=url;put(m);render();return url;
  }
- function clearFrame(){document.querySelectorAll('.uwv2-profile-frame').forEach(x=>x.remove())}
+ function clearFrame(){document.querySelectorAll('.uwv2-cosmetic-box').forEach(x=>x.remove());document.querySelectorAll('.uwv2-pfp-lift').forEach(x=>x.classList.remove('uwv2-pfp-lift'))}
  function preview(slug){
    const url=get()[slug]; if(!url){if(typeof toast==='function')toast('Upload this V2 cosmetic first.');return}
    let modal=$('uwV2PreviewModal');
@@ -8138,7 +8141,7 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  document.addEventListener('click',e=>{
    const c=e.target.closest?.('[data-v2close]');if(c){e.preventDefault();$('uwV2PreviewModal')?.classList.remove('open');return}
    const eq=e.target.closest?.('[data-equip]');if(eq){e.preventDefault();equip(eq.dataset.equip);return}
-   if(e.target.closest?.('#uwV2Unequip')){e.preventDefault();localStorage.removeItem(EQUIPKEY);document.querySelectorAll('.uwv2-equipped-frame').forEach(x=>x.remove());render();if(typeof toast==='function')toast('V2 QA cosmetic unequipped.');return}
+   if(e.target.closest?.('#uwV2Unequip')){e.preventDefault();localStorage.removeItem(EQUIPKEY);clearFrame();render();if(typeof toast==='function')toast('V2 QA cosmetic unequipped.');return}
    const p=e.target.closest?.('[data-pick]');if(p){e.preventDefault();document.querySelector(`[data-file="${p.dataset.pick}"]`)?.click();return}
    const q=e.target.closest?.('[data-preview]');if(q){e.preventDefault();preview(q.dataset.preview)}
  });
@@ -8147,7 +8150,7 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
    const state=$('uwV2StorageState');try{if(state)state.textContent=`UPLOADING ${input.dataset.file.toUpperCase()}...`;await upload(input.dataset.file,input.files[0]);if(state)state.textContent='UPLOAD COMPLETE';toast?.('V2 cosmetic uploaded.')}catch(err){console.error(err);if(state)state.textContent='UPLOAD FAILED';toast?.('V2 upload failed: '+(err.message||err))}finally{input.value=''}
  });
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
- let raf=0;new MutationObserver(()=>{mount();cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{if(!document.querySelector('.uwv2-equipped-frame'))applyEquipped()})}).observe(document.documentElement,{childList:true,subtree:true});
+ let raf=0;new MutationObserver(()=>{mount();cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{if(!document.querySelector('.uwv2-cosmetic-box'))applyEquipped()})}).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 
@@ -8743,7 +8746,7 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(buildMark,500);
 })();
 </script>
-<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_12 -->
+<!-- UW_COSMETICS_V2_BLACKBOX_QA_20260921_13 -->
 <!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
 
 
@@ -8840,7 +8843,7 @@ html,body{max-width:100%;overflow-x:hidden}
  },true);
 })();
 </script>
-<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_12 -->
+<!-- UW_COSMETICS_V2_BLACKBOX_QA_20260921_13 -->
 <!-- /UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 -->
 
 
@@ -8940,12 +8943,12 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(syncFromFields,300);
 })();
 </script>
-<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_12 -->
+<!-- UW_COSMETICS_V2_BLACKBOX_QA_20260921_13 -->
 
 
 <!-- UNDERWEB STORAGE RLS PATH FIX BUILD 06 2026-09-21 -->
 <!-- Partner media paths now preserve auth.uid() as storage.foldername(name)[1]. -->
-<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_12 -->
+<!-- UW_COSMETICS_V2_BLACKBOX_QA_20260921_13 -->
 
 
 <!-- UNDERWEB PARTNER CONNECT BUILD 07 2026-09-21 -->
@@ -8987,5 +8990,5 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(decorate,300);
 })();
 </script>
-<!-- UW_COSMETICS_V2_EQUIP_QA_20260921_12 -->
+<!-- UW_COSMETICS_V2_BLACKBOX_QA_20260921_13 -->
 
