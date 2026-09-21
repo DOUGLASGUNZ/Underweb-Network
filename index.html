@@ -7759,6 +7759,108 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  const form=$('uwHelpForm');if(form)new MutationObserver(()=>{if(form.hidden)document.body.classList.remove('uw-help-form-open');}).observe(form,{attributes:true,attributeFilter:['hidden']});
 })();
 </script>
+
+<!-- UNDERWEB PROFILE OVERHAUL V2 2026-09-21 -->
+<style id="uw-profile-overhaul-v2-css">
+/* Public profile: the tab owns the media; do not render the legacy showcase a second time. */
+#uw621ProfileModal #uw743PublicShowcase.uwpo-legacy-showcase-hidden{display:none!important}
+#uw621ProfileModal #uwpoPublicShowcase{margin:10px 0 0!important}
+#uw621ProfileModal #uwpoPublic .uwpo-pane{min-height:0!important}
+#uw621ProfileModal #uwpoPublic .uwpo-card{margin-bottom:8px!important}
+#uw621ProfileModal .uwpo-identity-grid{align-items:start}
+
+/* Editor becomes a real three-view workspace instead of decorative tabs. */
+#page-profile .uwpo-editor-nav{margin:8px 0 12px!important}
+#page-profile [data-uwpo-editor-group][hidden]{display:none!important}
+#page-profile .uwpo-editor-group{animation:uwpoEditIn .15s ease-out}
+@keyframes uwpoEditIn{from{opacity:.35;transform:translateY(3px)}to{opacity:1;transform:none}}
+#page-profile .uw40-profile-editgrid{display:block!important}
+#page-profile .uw40-profile-editgrid>.uw40-block{width:100%;margin-bottom:10px!important}
+#page-profile .uw40-profile-preview{margin-bottom:8px!important}
+#page-profile .uw50-panel,#page-profile .uw40-block,#page-profile .uw744-creator-role-box,#page-profile .uw743-showcase-editor{margin-bottom:9px!important;padding:13px!important}
+#page-profile .uw40-pagehead{margin-bottom:10px!important}
+
+/* Media is one compact disclosure; no second giant wall of thumbnails while editing. */
+#page-profile .uwpo-media-disclosure{border:1px solid var(--l);background:#020403;margin:0 0 9px}
+#page-profile .uwpo-media-disclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;padding:13px 14px;list-style:none;color:#eef7f0;font-weight:1000}
+#page-profile .uwpo-media-disclosure>summary::-webkit-details-marker{display:none}
+#page-profile .uwpo-media-disclosure>summary:after{content:'+';color:var(--g);font:1000 20px/1 monospace}
+#page-profile .uwpo-media-disclosure[open]>summary:after{content:'−'}
+#page-profile .uwpo-media-disclosure .uwpo-media-body{padding:0 12px 12px}
+#page-profile .uwpo-media-disclosure .uw743-showcase-editor{margin:0!important;border:0!important;padding:4px!important;background:transparent!important}
+#page-profile .uwpo-media-disclosure .uw743-myshowcase{max-height:460px;overflow:auto}
+
+/* Trim dead vertical air on mobile. */
+@media(max-width:700px){
+ #page-profile .wrap.uw40-profile-page{padding-left:12px!important;padding-right:12px!important}
+ #page-profile .uw40-profile-header{gap:10px!important}
+ #page-profile .uw40-profile-body{padding-top:8px!important;padding-bottom:8px!important}
+ #page-profile .uw42-profile-meter{margin-top:8px!important}
+ #page-profile .uwpo-editor-nav{position:sticky;top:0;z-index:20;padding:5px;background:#010302}
+ #page-profile .uwpo-editor-nav button{min-height:42px;padding:8px 4px!important;font-size:8px!important}
+ #page-profile .uw40-media-grid{gap:8px!important}
+ #page-profile .uw40-media-card{min-height:0!important}
+ #page-profile .uw743-showcase-editor .uw40-title{margin-bottom:6px!important}
+ #uw621ProfileModal .uwpo-tabs{position:sticky;top:0}
+}
+</style>
+<script id="uw-profile-overhaul-v2-js">
+(()=>{
+ const $=id=>document.getElementById(id);
+ function hideDuplicatePublicMedia(){
+   const modal=$('uw621ProfileModal'); if(!modal) return;
+   const original=modal.querySelector('#uw743PublicShowcase');
+   const clone=modal.querySelector('#uwpoPublicShowcase');
+   if(original && clone) original.classList.add('uwpo-legacy-showcase-hidden');
+ }
+ function setupEditor(){
+   const page=$('page-profile'); if(!page) return;
+   const nav=page.querySelector('.uwpo-editor-nav'); if(!nav) return;
+   const ident=page.querySelector('.uw51-profile-identity');
+   const locker=page.querySelector('#uwCosmeticsLocker');
+   const grid=page.querySelector('.uw40-profile-editgrid');
+   const blocks=grid?[...grid.children].filter(x=>x.classList.contains('uw40-block')):[];
+   const media=blocks[0], details=blocks[1];
+   const creator=page.querySelector('.uw744-creator-role-box');
+   const showcase=page.querySelector('.uw743-showcase-editor');
+
+   if(ident){ident.dataset.uwpoEditorGroup='identity';ident.classList.add('uwpo-editor-group')}
+   if(locker){locker.dataset.uwpoEditorGroup='identity';locker.classList.add('uwpo-editor-group')}
+   if(details){details.dataset.uwpoEditorGroup='identity';details.classList.add('uwpo-editor-group')}
+   if(media){media.dataset.uwpoEditorGroup='media';media.classList.add('uwpo-editor-group')}
+   if(creator){creator.dataset.uwpoEditorGroup='creator';creator.classList.add('uwpo-editor-group')}
+
+   /* Put creator showcase inside a collapsed Media disclosure. */
+   if(showcase && !showcase.closest('.uwpo-media-disclosure')){
+     const disclosure=document.createElement('details');
+     disclosure.className='uwpo-media-disclosure uwpo-editor-group';
+     disclosure.dataset.uwpoEditorGroup='media';
+     disclosure.innerHTML='<summary><span>SHOWCASE MEDIA</span><small class="meta">UPLOADS + PORTFOLIO</small></summary><div class="uwpo-media-body"></div>';
+     showcase.parentNode.insertBefore(disclosure,showcase);
+     disclosure.querySelector('.uwpo-media-body').appendChild(showcase);
+   }
+
+   const groups=()=>[...page.querySelectorAll('[data-uwpo-editor-group]')];
+   function activate(name){
+     nav.querySelectorAll('[data-uwpo-edit]').forEach(b=>b.classList.toggle('active',b.dataset.uwpoEdit===name));
+     groups().forEach(el=>{el.hidden=el.dataset.uwpoEditorGroup!==name});
+     nav.dataset.active=name;
+   }
+   if(!nav.dataset.v2Bound){
+     nav.dataset.v2Bound='1';
+     nav.addEventListener('click',e=>{const b=e.target.closest('[data-uwpo-edit]');if(!b)return;e.preventDefault();e.stopPropagation();activate(b.dataset.uwpoEdit)});
+   }
+   activate(nav.dataset.active||'identity');
+ }
+ function run(){setupEditor();hideDuplicatePublicMedia()}
+ const mo=new MutationObserver(()=>requestAnimationFrame(run));
+ mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+ setTimeout(run,500);setTimeout(run,1400);
+})();
+</script>
+<!-- /UNDERWEB PROFILE OVERHAUL V2 -->
+
 </body>
 </html>
 
