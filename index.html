@@ -2,8 +2,8 @@
 
 <html lang="en">
 <head>
-<!-- UW_PROFILE_V4_BUILD_20260921_03 -->
-<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_03">
+<!-- UW_PROFILE_V4_BUILD_20260921_04 -->
+<meta name="underweb-build" content="UW_PROFILE_V4_BUILD_20260921_04">
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
@@ -1266,7 +1266,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 </style>
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
-<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-03</div>
+<div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-04</div>
 
 <header class="top uw70-top">
   <button aria-label="Open menu" class="btn drawer-btn" id="drawerBtn">☰</button>
@@ -8603,7 +8603,7 @@ html,body{max-width:100%;overflow-x:hidden}
  /* Keep the visible build marker authoritative and singular. */
  function buildMark(){
    let b=$('uwBuildIndicator');
-   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-03';
+   if(b)b.innerHTML='UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-04';
    document.querySelectorAll('[id*="version" i],[class*="version" i]').forEach(el=>{
      if(el===b)return;
      const t=(el.textContent||'').trim();
@@ -8614,6 +8614,103 @@ html,body{max-width:100%;overflow-x:hidden}
  setTimeout(buildMark,500);
 })();
 </script>
-<!-- UW_PROFILE_V4_BUILD_20260921_03 -->
+<!-- UW_PROFILE_V4_BUILD_20260921_04 -->
 <!-- /UNDERWEB PROFILE V4 REPAIR BUILD 03 -->
+
+
+
+<!-- UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 2026-09-21 -->
+<style id="uw-partner-application-media-04-css">
+.uwpartner-media-wrap{grid-column:1/-1;display:grid;grid-template-columns:160px minmax(0,1fr);gap:12px;margin-top:2px}
+.uwpartner-upload{border:1px solid var(--l);background:#020503;padding:10px;min-width:0}
+.uwpartner-upload-preview{position:relative;overflow:hidden;border:1px dashed rgba(57,255,20,.35);background:#010201 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#66806c;font:800 9px monospace;letter-spacing:.08em;text-align:center}
+.uwpartner-upload.logo .uwpartner-upload-preview{aspect-ratio:1/1}
+.uwpartner-upload.banner .uwpartner-upload-preview{aspect-ratio:16/5}
+.uwpartner-upload b{display:block;margin:8px 0 2px;font-size:11px}.uwpartner-upload small{display:block;color:#718078;font:8px monospace;margin-bottom:7px}
+.uwpartner-upload button{width:100%;min-height:38px;border:1px solid var(--g);background:#031006;color:var(--g);font:900 9px monospace;letter-spacing:.08em}
+.uwpartner-upload.has-image .uwpartner-upload-preview span{display:none}
+@media(max-width:700px){.uwpartner-media-wrap{grid-template-columns:1fr}.uwpartner-upload.logo .uwpartner-upload-preview{max-width:180px}.uwpartner-upload.banner .uwpartner-upload-preview{min-height:110px}}
+</style>
+<script id="uw-partner-application-media-04-js">
+(()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ let logoFile=null,bannerFile=null,logoUrl='',bannerUrl='';
+
+ function mediaHTML(){
+   return `<div class="uwpartner-media-wrap" id="uwPartnerMediaFields">
+    <div class="uwpartner-upload logo" id="uwPartnerLogoBox">
+      <div class="uwpartner-upload-preview" id="uwPartnerLogoPreview"><span>PARTNER<br>PFP / LOGO</span></div>
+      <b>Partner PFP / Logo</b><small>JPG, PNG or WebP · 5 MB max</small>
+      <input id="uwPartnerLogoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+      <button type="button" data-uw-partner-pick="logo">CHOOSE IMAGE</button>
+    </div>
+    <div class="uwpartner-upload banner" id="uwPartnerBannerBox">
+      <div class="uwpartner-upload-preview" id="uwPartnerBannerPreview"><span>PARTNER BANNER</span></div>
+      <b>Partner Banner</b><small>Wide image recommended · JPG, PNG or WebP · 5 MB max</small>
+      <input id="uwPartnerBannerInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+      <button type="button" data-uw-partner-pick="banner">CHOOSE BANNER</button>
+    </div>
+   </div>`;
+ }
+ function reset(){logoFile=bannerFile=null;logoUrl=bannerUrl=''}
+ function valid(f){if(!f)return false;if(!['image/jpeg','image/png','image/webp'].includes(f.type)){toast('Use JPG, PNG or WebP.');return false}if(f.size>5*1024*1024){toast('Image must be 5 MB or smaller.');return false}return true}
+ function preview(kind,f){
+   if(!valid(f))return;
+   if(kind==='logo')logoFile=f;else bannerFile=f;
+   const u=URL.createObjectURL(f), p=$(kind==='logo'?'uwPartnerLogoPreview':'uwPartnerBannerPreview'), box=$(kind==='logo'?'uwPartnerLogoBox':'uwPartnerBannerBox');
+   if(p)p.style.backgroundImage=`url("${u}")`;box?.classList.add('has-image');
+ }
+ async function upload(f,kind){
+   if(!f)return '';
+   if(!currentSession?.user?.id)throw new Error('Sign in before uploading partner artwork.');
+   const ext=f.type==='image/png'?'png':f.type==='image/webp'?'webp':'jpg';
+   const path=`partner-applications/${currentSession.user.id}/${kind}-${Date.now()}.${ext}`;
+   const up=await uwSupabase.storage.from('profile-media').upload(path,f,{upsert:false,contentType:f.type,cacheControl:'3600'});
+   if(up.error)throw up.error;
+   const pub=uwSupabase.storage.from('profile-media').getPublicUrl(path);
+   return pub?.data?.publicUrl||'';
+ }
+ function inject(){
+   const box=$('uwHelpDynamicFields');if(!box||$('uwPartnerMediaFields'))return;
+   const type=document.querySelector('[data-uwhelp-type].active')?.dataset.uwhelpType;
+   /* chosen type is not always represented by an active class, so use subject as a second signal */
+   if(type!=='partnership_application' && $('uwHelpSubject')?.value!=='Partnership with UnderWeb')return;
+   box.insertAdjacentHTML('beforeend',mediaHTML());
+ }
+ document.addEventListener('click',e=>{
+   const type=e.target.closest('[data-uwhelp-type]');
+   if(type?.dataset.uwhelpType==='partnership_application'){reset();setTimeout(inject,20)}
+   const pick=e.target.closest('[data-uw-partner-pick]');
+   if(pick){e.preventDefault();$(pick.dataset.uwPartnerPick==='logo'?'uwPartnerLogoInput':'uwPartnerBannerInput')?.click()}
+ },true);
+ document.addEventListener('change',e=>{
+   if(e.target.id==='uwPartnerLogoInput')preview('logo',e.target.files?.[0]);
+   if(e.target.id==='uwPartnerBannerInput')preview('banner',e.target.files?.[0]);
+ },true);
+
+ /* Upload before the existing schema serializer runs, then serialize URLs into the application body for staff.
+    Capture listener is registered late, so stop the old click and replay it after uploads are ready. */
+ let replaying=false;
+ document.addEventListener('click',async e=>{
+   const btn=e.target.closest('#uwHelpSubmitBtn');if(!btn||replaying)return;
+   if($('uwHelpSubject')?.value!=='Partnership with UnderWeb')return;
+   if(!logoFile&&!bannerFile)return;
+   e.preventDefault();e.stopImmediatePropagation();
+   btn.disabled=true;const old=btn.textContent;btn.textContent='UPLOADING ARTWORK…';
+   try{
+     [logoUrl,bannerUrl]=await Promise.all([upload(logoFile,'logo'),upload(bannerFile,'banner')]);
+     const body=$('uwHelpBody');
+     const media=[logoUrl?`[Partner PFP / Logo: ${logoUrl}]`:'',bannerUrl?`[Partner Banner: ${bannerUrl}]`:''].filter(Boolean).join('\n');
+     if(body&&media&&!body.value.includes('[Partner PFP / Logo:')&&!body.value.includes('[Partner Banner:'))body.value=(media+'\n\n'+body.value.trim()).trim();
+     logoFile=bannerFile=null;replaying=true;btn.disabled=false;btn.textContent=old;btn.click();replaying=false;
+   }catch(err){
+     btn.disabled=false;btn.textContent=old;
+     toast('Artwork upload failed: '+(err?.message||err));
+   }
+ },true);
+})();
+</script>
+<!-- UW_PROFILE_V4_BUILD_20260921_04 -->
+<!-- /UNDERWEB PARTNER APPLICATION MEDIA BUILD 04 -->
 
