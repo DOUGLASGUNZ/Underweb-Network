@@ -8248,3 +8248,104 @@ html,body{max-width:100%;overflow-x:hidden}
 })();
 </script>
 <!-- /UNDERWEB PROFILE OVERHAUL V1 -->
+
+<!-- UNDERWEB PROFILE OVERHAUL V3 2026-09-21 -->
+<style id="uw-profile-overhaul-v3-css">
+/* V3: denser public identity, cleaner mobile rhythm, no duplicate media walls. */
+#uw621ProfileModal .uw621-card,#uw621ProfileModal .uwpo-card{margin-block:8px!important}
+#uw621ProfileModal .uw621-body{gap:8px!important}
+#uw621ProfileModal .uw621-head{padding-bottom:12px!important}
+#uw621ProfileModal .uwpo-tabs{margin:10px 0!important}
+#uw621ProfileModal .uwpo-tabs button{min-height:44px!important}
+#uw621ProfileModal #uwpoPublic{margin-top:0!important}
+#uw621ProfileModal #uw743PublicShowcase{display:none!important}
+#uw621ProfileModal #uwpoPublicShowcase .uw743-showcase-grid,
+#uw621ProfileModal #uwpoPublicShowcase .uw40-media-grid{margin-top:8px!important}
+#uw621ProfileModal .uwpo-identity-grid{gap:7px!important}
+#uw621ProfileModal .uwpo-affiliations{gap:6px!important}
+
+/* Don't waste a full panel on an empty milestone state. */
+#uw621ProfileModal .uwpo-milestones:has(.uwpo-empty),
+#uw621ProfileModal .uwpo-card:has(>.uwpo-milestones .uwpo-empty){display:none!important}
+
+/* Editor shell */
+#page-profile .uw40-profile-page{max-width:1040px!important}
+#page-profile .uw40-profile-body{display:block!important}
+#page-profile .uwpo-editor-nav{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px!important;margin:8px 0 10px!important}
+#page-profile .uwpo-editor-nav button{width:100%!important;margin:0!important}
+#page-profile .uwpo-editor-nav button.active{background:#06230f!important;color:#56ff7c!important;border-color:#45ff72!important;box-shadow:inset 0 -3px 0 #45ff72!important}
+#page-profile [data-uwpo-editor-group="identity"],
+#page-profile [data-uwpo-editor-group="media"],
+#page-profile [data-uwpo-editor-group="creator"]{margin-top:0!important}
+#page-profile .uw40-block,#page-profile .uw50-panel,#page-profile .uw51-profile-identity,#page-profile .uw744-creator-role-box{min-height:0!important}
+#page-profile .uw40-block p:empty,#page-profile .uw50-panel p:empty{display:none!important}
+
+/* Media manager is intentionally secondary. */
+#page-profile .uwpo-media-disclosure{border-radius:10px!important;overflow:hidden}
+#page-profile .uwpo-media-disclosure:not([open]){min-height:0!important}
+#page-profile .uwpo-media-disclosure>summary{min-height:52px!important}
+
+/* Cosmetics should behave like a utility drawer, not a permanent page section. */
+#page-profile #uwCosmeticsLocker{padding:0!important;background:transparent!important;border:0!important}
+#page-profile #uwCosmeticsLocker>.uwpo-cosmetics-toggle,
+#page-profile #uwCosmeticsLocker>summary{min-height:50px!important}
+
+@media(max-width:700px){
+ #uw621ProfileModal .uw621-head{padding:12px 14px!important}
+ #uw621ProfileModal .uw621-hero{min-height:0!important}
+ #uw621ProfileModal .uw621-actions{margin:8px 0!important}
+ #uw621ProfileModal .uwpo-tabs{top:0!important;z-index:35!important;background:#010302!important;padding:4px!important}
+ #uw621ProfileModal .uwpo-card{padding:12px!important}
+ #uw621ProfileModal .uwpo-card h2,#uw621ProfileModal .uwpo-card h3{margin-bottom:5px!important}
+ #page-profile .uw40-profile-page{padding:8px 10px 90px!important}
+ #page-profile .uw40-profile-header{margin-bottom:6px!important}
+ #page-profile .uw42-profile-meter{padding:10px!important;margin:6px 0!important}
+ #page-profile .uwpo-editor-nav{position:sticky!important;top:0!important;z-index:60!important;margin:4px 0 8px!important;padding:5px!important;border:1px solid #12351d!important}
+ #page-profile .uwpo-editor-nav button{font-size:8px!important;letter-spacing:.09em!important;min-height:40px!important}
+ #page-profile .uw40-block,#page-profile .uw50-panel,#page-profile .uw51-profile-identity,#page-profile .uw744-creator-role-box{padding:11px!important;margin-bottom:7px!important}
+ #page-profile .uw40-title{margin-bottom:5px!important}
+ #page-profile .uw40-sub,#page-profile .meta{margin-bottom:6px!important}
+ #page-profile .uw40-profile-editgrid{gap:0!important}
+ #page-profile .uw40-field{margin-bottom:8px!important}
+ #page-profile .uwpo-media-disclosure{margin-bottom:7px!important}
+}
+</style>
+<script id="uw-profile-overhaul-v3-js">
+(()=>{
+ const page=()=>document.getElementById('page-profile');
+ function cleanPublic(){
+   const m=document.getElementById('uw621ProfileModal'); if(!m)return;
+   const legacy=m.querySelector('#uw743PublicShowcase'); if(legacy) legacy.style.setProperty('display','none','important');
+ }
+ function groups(p){return [...p.querySelectorAll('[data-uwpo-editor-group]')];}
+ function activate(p,name){
+   const nav=p.querySelector('.uwpo-editor-nav'); if(!nav)return;
+   nav.dataset.active=name;
+   nav.querySelectorAll('[data-uwpo-edit]').forEach(b=>{
+     const on=b.dataset.uwpoEdit===name;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false');
+   });
+   groups(p).forEach(el=>{const on=el.dataset.uwpoEditorGroup===name;el.hidden=!on;el.style.display=on?'':'none';});
+ }
+ function repairEditor(){
+   const p=page(); if(!p)return;
+   const nav=p.querySelector('.uwpo-editor-nav'); if(!nav)return;
+   if(!nav.dataset.v3Bound){
+     nav.dataset.v3Bound='1';nav.setAttribute('role','tablist');
+     nav.addEventListener('click',e=>{const b=e.target.closest('[data-uwpo-edit]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();activate(p,b.dataset.uwpoEdit);},true);
+   }
+   nav.querySelectorAll('[data-uwpo-edit]').forEach(b=>b.setAttribute('role','tab'));
+   activate(p,nav.dataset.active||'identity');
+ }
+ function collapseSecondary(){
+   const p=page();if(!p)return;
+   const d=p.querySelector('.uwpo-media-disclosure');if(d&&!d.dataset.v3){d.dataset.v3='1';d.open=false;}
+ }
+ let queued=false;function run(){queued=false;cleanPublic();repairEditor();collapseSecondary();}
+ function queue(){if(queued)return;queued=true;requestAnimationFrame(run)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+ new MutationObserver(queue).observe(document.body,{childList:true,subtree:true});
+ document.addEventListener('click',e=>{if(e.target.closest('[data-page="profile"],#nav-profile,.nav-profile'))setTimeout(run,50)},true);
+ setTimeout(run,500);setTimeout(run,1500);
+})();
+</script>
+<!-- /UNDERWEB PROFILE OVERHAUL V3 -->
