@@ -7473,7 +7473,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.addEventListener('click',e=>{
    const f=e.target.closest('[data-radar-filter]');if(f){state.filter=f.dataset.radarFilter;document.querySelectorAll('[data-radar-filter]').forEach(b=>b.classList.toggle('active',b===f));render();return}
    const item=e.target.closest('[data-radar-page]');if(item){try{showPage(item.dataset.radarPage)}catch(_){document.querySelector(`[data-page="${item.dataset.radarPage}"]`)?.click()}return}
-   if(e.target.closest('#uwOpenFullRadar')||e.target.closest('#uwRadarMore')){const full=document.getElementById('uwGrowthRadar');if(full)full.scrollIntoView({behavior:'smooth',block:'start'});return}
+   if(e.target.closest('#uwOpenFullRadar')||e.target.closest('#uwRadarMore')){try{if(typeof showPage==='function')showPage('home')}catch(_){}setTimeout(()=>{const full=document.getElementById('uwGrowthRadar');if(full){full.scrollIntoView({behavior:'smooth',block:'start'});full.classList.add('uw-radar-focus');setTimeout(()=>full.classList.remove('uw-radar-focus'),1800)}},120);return}
    if(e.target.closest('[data-page="home"]'))setTimeout(sync,300);
  });
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{ensure();setTimeout(sync,800)});else{ensure();setTimeout(sync,350)}
@@ -7632,12 +7632,12 @@ html,body{max-width:100%;overflow-x:hidden}
  async function locker(){try{const q=await uwSupabase.rpc('uw_my_cosmetic_locker');if(q.error)throw q.error;return Array.isArray(q.data)?q.data:[]}catch(_){return []}}
  function loadLocal(){try{return JSON.parse(localStorage.getItem('uw_deepweb_progress_v2')||'{}')}catch(_){return {}}}
  function saveLocal(){try{localStorage.setItem('uw_deepweb_progress_v2',JSON.stringify(state.stage))}catch(_){}}
- function cinematic(title,copy){let v=document.getElementById('uwDeepWebVeil');if(!v){v=document.createElement('div');v.id='uwDeepWebVeil';v.innerHTML='<div class="dw-core"><div class="dw-eye"></div><div class="dw-k">DEEP WEB // SIGNAL BREACH</div><h2></h2><p></p></div>';document.body.appendChild(v)}v.querySelector('h2').textContent=title;v.querySelector('p').textContent=copy;v.classList.remove('show');void v.offsetWidth;v.classList.add('show');clearTimeout(v._t);v._t=setTimeout(()=>v.classList.remove('show'),6000)}
- async function discover(slug){if(!state.eligible&&!state.qa)return false;try{const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:slug});if(r.error)throw r.error;const row=Array.isArray(r.data)?r.data[0]:r.data;if(!row)throw new Error('No unlock response');state.owned.add(slug);cinematic(SETS[slug]?.name||slug,'REWARD SET ACQUIRED // FRAME + TITLE + BADGE + PROFILE EFFECT');await refresh();return true}catch(e){console.warn('[Deep Web unlock requires V2 backend secret]',slug,e);if(state.qa){state.owned.add(slug);state.stage['qa_'+slug]=true;saveLocal();cinematic(SETS[slug]?.name||slug,'QA SIMULATION // FRONT-END REWARD SET');renderLocker();hydrateProfile();return true}if(typeof toast==='function')toast('DEEP WEB SIGNAL REJECTED // V2 secret is not installed server-side.');return false}}
+ function cinematic(title,copy,slug='signal'){let v=document.getElementById('uwDeepWebVeil');if(!v){v=document.createElement('div');v.id='uwDeepWebVeil';v.innerHTML='<div class="dw-core"><div class="dw-eye"></div><div class="dw-k">DEEP WEB // SIGNAL BREACH</div><h2></h2><p></p></div>';document.body.appendChild(v)}v.dataset.signal=slug;v.querySelector('h2').textContent=title;v.querySelector('p').textContent=copy;v.classList.remove('show');void v.offsetWidth;v.classList.add('show');clearTimeout(v._t);v._t=setTimeout(()=>v.classList.remove('show'),9000)}
+ async function discover(slug){if(!state.eligible&&!state.qa)return false;try{const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:slug});if(r.error)throw r.error;const row=Array.isArray(r.data)?r.data[0]:r.data;if(!row)throw new Error('No unlock response');state.owned.add(slug);cinematic(SETS[slug]?.name||slug,'REWARD SET ACQUIRED // FRAME + TITLE + BADGE + PROFILE EFFECT',slug);await refresh();return true}catch(e){console.warn('[Deep Web unlock requires V2 backend secret]',slug,e);if(state.qa){state.owned.add(slug);state.stage['qa_'+slug]=true;saveLocal();cinematic(SETS[slug]?.name||slug,'QA SIMULATION // FRONT-END REWARD SET',slug);renderLocker();hydrateProfile();return true}if(typeof toast==='function')toast('DEEP WEB SIGNAL REJECTED // V2 secret is not installed server-side.');return false}}
  async function eligibility(){const rows=await locker();state.owned=new Set(rows.map(x=>String(x.cosmetic_slug||x.slug||'')));state.stage=loadLocal();state.eligible=OG.every(x=>state.owned.has(x));return rows}
  function ensureLocker(){if(!state.eligible&&!state.qa)return;const base=document.getElementById('uwCosmeticsLocker');if(!base)return;let root=document.getElementById('uwDeepWebLocker');if(root)return root;root=document.createElement('section');root.id='uwDeepWebLocker';root.innerHTML='<div class="dw-lock-head"><span>CLEARANCE VERIFIED // 07/07</span><h4>Deep Web Reward Sets</h4><p>Signals below the public Network. Reward sets can contain frames, titles, badges, profile effects and network effects.</p></div><div class="dw-set-grid" id="uwDeepSetGrid"></div><div class="dw-title-select"><label class="eyebrow">EQUIPPED TITLE</label><select id="uwDeepTitleSelect"></select><button id="uwDeepTitleSave" type="button">APPLY TITLE</button></div>';base.appendChild(root);return root}
  function renderLocker(){const root=ensureLocker();if(!root)return;const grid=root.querySelector('#uwDeepSetGrid');grid.innerHTML=Object.entries(SETS).map(([slug,x])=>{const own=state.owned.has(slug)||state.stage['qa_'+slug];return `<article class="dw-set ${own?'owned':'locked'}"><b>${own?esc(x.name):'ENCRYPTED SIGNAL'}</b><em>${own?esc(x.title):'CLEARANCE REQUIRED'}</em><small>${own?esc(x.badge+' // '+x.effect):'Reward contents are hidden until discovery.'}</small><div class="dw-slots">${x.slots.map(s=>`<i>${esc(s)}</i>`).join('')}</div></article>`}).join('');const sel=root.querySelector('#uwDeepTitleSelect');const current=localStorage.getItem('uw_deepweb_title')||'';sel.innerHTML='<option value="">NO V2 TITLE</option>'+Object.entries(SETS).filter(([s])=>state.owned.has(s)||state.stage['qa_'+s]).map(([s,x])=>`<option value="${esc(s)}" ${current===s?'selected':''}>${esc(x.title)}</option>`).join('')}
- function hydrateProfile(){const head=document.querySelector('#uw621ProfileModal .uw621-head');if(!head)return;Object.keys(SETS).forEach(s=>head.classList.remove('dw-'+s));head.classList.remove('dw-v2-owned');const preferred=Object.keys(SETS).reverse().find(s=>state.owned.has(s)||state.stage['qa_'+s]);if(preferred){head.classList.add('dw-v2-owned','dw-'+preferred)}const titleSlug=localStorage.getItem('uw_deepweb_title')||'';let t=head.querySelector('.dw-profile-title');if(titleSlug&&(state.owned.has(titleSlug)||state.stage['qa_'+titleSlug])){if(!t){t=document.createElement('div');t.className='dw-profile-title';const target=document.getElementById('uw621Headline')||document.getElementById('uw621Name');target?.insertAdjacentElement('afterend',t)}t.textContent=SETS[titleSlug]?.title||''}else t?.remove()}
+ function hydrateProfile(){const head=document.querySelector('#uw621ProfileModal .uw621-head');if(!head)return;Object.keys(SETS).forEach(s=>head.classList.remove('dw-'+s));head.classList.remove('dw-v2-owned');const preferred=Object.keys(SETS).reverse().find(s=>state.owned.has(s)||state.stage['qa_'+s]);if(preferred){head.classList.add('dw-v2-owned','dw-'+preferred)}const titleSlug=localStorage.getItem('uw_deepweb_title')||'';let t=head.querySelector('.dw-profile-title');if(titleSlug&&(state.owned.has(titleSlug)||state.stage['qa_'+titleSlug])){if(!t){t=document.createElement('div');t.className='dw-profile-title';const target=document.getElementById('uw621Headline')||document.getElementById('uw621Name');target?.insertAdjacentElement('afterend',t)}t.textContent=SETS[titleSlug]?.title||'';t.dataset.dwTitle=titleSlug}else t?.remove()}
  function anomaly(){if(!state.eligible&&!state.qa)return;const feed=document.getElementById('uwHomeRadarFeed');if(!feed||document.getElementById('uwDeadSignal')||state.owned.has('dead_signal')||state.stage.qa_dead_signal)return;const b=document.createElement('button');b.id='uwDeadSignal';b.type='button';b.className='uwh-radar-item';b.innerHTML='<div class="uwh-radar-icon">⌁</div><div class="uwh-radar-copy"><b>UNKNOWN SIGNAL</b><small>PACKET INTEGRITY // 07/07 — something is transmitting beneath the Network.</small><span class="uwh-radar-type">PERSONAL ANOMALY</span></div><div class="uwh-radar-time">TRACE</div>';feed.prepend(b)}
  function progressDead(){state.stage.dead=(Number(state.stage.dead)||0)+1;saveLocal();if(state.stage.dead===1)cinematic('SIGNAL LOST','NODE TRACE 01 // DO NOT FOLLOW THE NOISE. FOLLOW WHERE THE NETWORK GOES QUIET.');else if(state.stage.dead===2)cinematic('PACKET 02/03','THE SIGNAL MOVED THROUGH TRUSTED CONNECTIONS.');else if(state.stage.dead>=3)discover('dead_signal')}
  function pageName(el){return String(el?.dataset?.page||'')}
@@ -7660,3 +7660,56 @@ html,body{max-width:100%;overflow-x:hidden}
 })();
 </script>
 <!-- /UNDERWEB DEEP WEB V2 -->
+
+<style id="uw-deepweb-v2-visual-rebuild-20260921">
+/* V2 visual rebuild: every reward has its own identity. */
+#uwDeepWebVeil.show{animation-duration:9s!important}
+#uwDeepWebVeil.show .dw-core{animation-duration:8.7s!important}
+#uwDeepWebVeil[data-signal="dead_signal"]{--dw:#37ff7a;background:radial-gradient(circle at 50% 45%,#37ff7a20,#000 61%)}
+#uwDeepWebVeil[data-signal="dead_signal"] .dw-eye{border-radius:0;clip-path:polygon(0 50%,18% 10%,50% 0,82% 10%,100% 50%,82% 90%,50% 100%,18% 90%);animation:dwDeadEye .55s steps(2) infinite}
+#uwDeepWebVeil[data-signal="web_of_trust"]{--dw:#7dff9d;background:radial-gradient(circle at 20% 20%,#45ff721a,transparent 28%),radial-gradient(circle at 80% 75%,#45ff721a,transparent 28%),#010302f2}
+#uwDeepWebVeil[data-signal="web_of_trust"] .dw-eye{border-radius:50%;border-style:dashed;animation:dwTrust 5s linear infinite}
+#uwDeepWebVeil[data-signal="after_hours"]{--dw:#a8ffc0;background:radial-gradient(ellipse at 50% 100%,#14351d 0,#020503 36%,#000 72%)}
+#uwDeepWebVeil[data-signal="after_hours"] .dw-eye{transform:rotate(45deg) scale(.78);filter:brightness(.55);animation:dwNightWake 4s ease-in-out infinite}
+#uwDeepWebVeil[data-signal="null_identity"]{--dw:#d9ffe3;background:repeating-linear-gradient(90deg,#000 0 17px,#07100a 18px,#000 19px)}
+#uwDeepWebVeil[data-signal="null_identity"] .dw-core{border-style:dashed;animation:dwNullCore .33s steps(2) infinite alternate}
+#uwDeepWebVeil[data-signal="backdoor"]{--dw:#54ff7f;background:linear-gradient(135deg,#000 0 44%,#0b2613 45% 46%,#000 47%)}
+#uwDeepWebVeil[data-signal="backdoor"] .dw-eye{border-radius:0;width:78px;height:78px;clip-path:polygon(0 0,100% 0,100% 28%,35% 28%,35% 100%,0 100%)}
+#uwDeepWebVeil[data-signal="deep_crawler"]{--dw:#4dff84;background:radial-gradient(circle,#0b2a14 0,#000 55%)}
+#uwDeepWebVeil[data-signal="deep_crawler"] .dw-eye{width:130px;border-radius:50%;box-shadow:0 0 15px var(--dw),0 0 55px var(--dw);animation:dwCrawler 1.8s ease-in-out infinite}
+#uwDeepWebVeil[data-signal="blacksite"]{--dw:#e8fff0;background:#000}
+#uwDeepWebVeil[data-signal="blacksite"] .dw-core{border-color:#e8fff0;box-shadow:0 0 0 1px #45ff72,0 0 100px #ffffff18}
+#uwDeepWebVeil[data-signal="blacksite"] .dw-eye{border-radius:0;border-color:#fff;box-shadow:0 0 40px #fff}
+#uwDeepWebVeil[data-signal="architect"]{--dw:#fff;background:radial-gradient(circle,#45ff7222 0,#000 56%)}
+#uwDeepWebVeil[data-signal="architect"] .dw-core{border:2px solid #fff;box-shadow:0 0 18px #fff,0 0 75px #45ff72,0 0 160px #45ff7244}
+#uwDeepWebVeil[data-signal="architect"] .dw-eye{border-color:#fff;box-shadow:0 0 20px #fff,0 0 70px #45ff72;animation:dwArchitect 2.8s linear infinite}
+@keyframes dwDeadEye{50%{transform:rotate(45deg) translate(5px,-3px);filter:contrast(2)}}
+@keyframes dwNightWake{0%,60%,100%{opacity:.15}72%,85%{opacity:1;filter:brightness(1.8)}}
+@keyframes dwNullCore{to{transform:translate(calc(-50% + 4px),calc(-50% - 2px));filter:contrast(1.7)}}
+
+/* Distinct profile reward identities */
+.uw621-head.dw-web_of_trust:after{content:"TRUSTED NODE // 02";color:#9cffb4;right:8px;bottom:-22px;font:900 7px monospace;letter-spacing:.16em}
+.uw621-head.dw-after_hours:after{content:"EYES OPEN AFTER MIDNIGHT // 03";color:#6b8e74;right:8px;bottom:-22px;font:900 7px monospace;letter-spacing:.13em;text-shadow:0 0 12px #45ff72}
+.uw621-head.dw-null_identity:after{content:"USER // NULL // 04";color:#fff;right:8px;bottom:-22px;font:900 7px monospace;letter-spacing:.18em;animation:dwNull .45s steps(2) infinite}
+.uw621-head.dw-backdoor:after{content:"ACCESS GRANTED? // 05";color:#45ff72;right:8px;bottom:-22px;font:900 7px monospace;letter-spacing:.15em}
+.uw621-head.dw-deep_crawler:after{content:"BELOW THE WEB // NODE 06";color:#b8ffca;right:8px;bottom:-24px;font:1000 7px monospace;letter-spacing:.18em;text-shadow:0 0 10px #45ff72}
+.uw621-head.dw-blacksite:after{content:"BLACKSITE // CLASSIFIED";background:#fff;color:#000;right:5px;bottom:-25px;padding:4px 7px;font:1000 7px monospace;letter-spacing:.16em}
+.uw621-head.dw-architect:after{content:"ROOT AUTHORITY // THE ARCHITECT";background:linear-gradient(90deg,#fff,#45ff72,#fff);color:#001507;right:0;bottom:-28px;padding:5px 9px;font:1000 7px monospace;letter-spacing:.17em;box-shadow:0 0 20px #45ff72}
+
+/* Titles are text treatments, never generic green blocks. */
+.dw-profile-title{display:inline-flex!important;width:auto!important;max-width:100%!important;min-width:0!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:5px 0!important;margin-top:6px!important;font-size:8px!important;letter-spacing:.18em!important;line-height:1.25!important}
+.dw-profile-title:before{content:"//";margin-right:7px;opacity:.45}
+.dw-profile-title[data-dw-title="dead_signal"]{color:#45ff72!important;text-shadow:2px 0 #0b5726,-2px 0 #fff2;animation:dwTextBurst 4.8s steps(1) infinite}
+.dw-profile-title[data-dw-title="web_of_trust"]{color:#b8ffca!important;border-bottom:1px dotted #45ff7277!important}
+.dw-profile-title[data-dw-title="after_hours"]{color:#708c78!important;text-shadow:0 0 12px #45ff7277;animation:dwNightWake 5s ease-in-out infinite}
+.dw-profile-title[data-dw-title="null_identity"]{color:#fff!important;text-decoration:line-through;text-decoration-color:#45ff72;animation:dwNull .5s steps(2) infinite}
+.dw-profile-title[data-dw-title="backdoor"]{color:#45ff72!important;font-family:monospace!important}.dw-profile-title[data-dw-title="backdoor"]:before{content:">_"}
+.dw-profile-title[data-dw-title="deep_crawler"]{color:#c8ffd5!important;text-shadow:0 0 9px #45ff72}.dw-profile-title[data-dw-title="deep_crawler"]:before{content:"⌁⌁"}
+.dw-profile-title[data-dw-title="blacksite"]{color:#fff!important;background:#000!important;border:1px solid #fff!important;padding:5px 8px!important;letter-spacing:.22em!important}.dw-profile-title[data-dw-title="blacksite"]:before{content:"████";font-size:5px}
+.dw-profile-title[data-dw-title="architect"]{color:#001507!important;background:linear-gradient(90deg,#fff,#45ff72,#fff)!important;padding:6px 10px!important;font-weight:1000!important;box-shadow:0 0 16px #45ff7266!important}.dw-profile-title[data-dw-title="architect"]:before{content:"ROOT //";opacity:1}
+
+#uwGrowthRadar.uw-radar-focus{animation:uwRadarFocus 1.8s ease-out}
+@keyframes uwRadarFocus{0%{box-shadow:0 0 0 2px #45ff72,0 0 80px #45ff7266}100%{box-shadow:0 18px 44px rgba(0,0,0,.22)}}
+@media(max-width:700px){#uwDeepWebVeil .dw-core{max-height:88dvh;overflow:auto}.dw-profile-title{font-size:7px!important;letter-spacing:.12em!important}.uw621-head.dw-v2-owned:after{max-width:72vw;white-space:normal;text-align:right}}
+</style>
+
