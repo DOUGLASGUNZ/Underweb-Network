@@ -1639,7 +1639,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
    <div class="uwp-formactions"><button class="btn hot" type="submit">SAVE PARTNER</button></div>
   </form>
   <section class="uwpmgr" id="uwpRepManager">
-   <div class="uwp-formhead"><div><span>PARTNER ACCESS</span><h3>REPRESENTATIVE MANAGEMENT</h3><p>Assign organization owners, managers and representatives. Select a saved partner record first.</p></div></div>
+   <div class="uwp-formhead"><div><span>PARTNER ACCESS</span><h3>REPRESENTATIVE MANAGEMENT</h3><p id="uwpRepContext">Save or select a partner to manage organization access.</p></div></div>
    <div id="uwpRepDisabled" class="uw-empty">Save or select a partner to manage access.</div>
    <div id="uwpRepBody" hidden>
     <div class="uwpmgr-add"><label>FIND MEMBER<input class="input" id="uwpRepSearch" placeholder="Search display name or username…" autocomplete="off"></label><div id="uwpRepResults" class="uwpmgr-results"></div></div>
@@ -6719,8 +6719,10 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
  function fill(x={}){const v=(id,val='')=>{$(id).value=val??''};v('uwpPartnerId',x.id);v('uwpName',x.name);v('uwpType',x.partner_type);v('uwpScope',x.scope||'network');v('uwpStatus',x.status||'active');v('uwpDescription',x.description);v('uwpLogo',x.logo_url);v('uwpBanner',x.banner_url);v('uwpWebsite',x.website_url);v('uwpDiscord',x.discord_url);v('uwpVrchat',x.vrchat_url);v('uwpContact',x.primary_contact);v('uwpSince',x.partner_since?String(x.partner_since).slice(0,10):'');v('uwpNotes',x.staff_notes);$('uwpFeatured').checked=!!x.featured;$('uwpFormTitle').textContent=x.id?'EDIT PARTNER':'NEW PARTNER';setTimeout(loadRepManager,0)}
  let repSearchTimer=null;
  async function loadRepManager(){
-  const pid=$('uwpPartnerId')?.value;const off=$('uwpRepDisabled'),body=$('uwpRepBody'),list=$('uwpRepList');
-  if(!off||!body||!list)return;off.hidden=!!pid;body.hidden=!pid;if(!pid)return;
+  const pid=$('uwpPartnerId')?.value;const off=$('uwpRepDisabled'),body=$('uwpRepBody'),list=$('uwpRepList'),ctx=$('uwpRepContext');
+  if(!off||!body||!list)return;off.hidden=!!pid;body.hidden=!pid;
+  if(!pid){if(ctx)ctx.textContent='Save or select a partner to manage organization access.';return}
+  const selected=rows.find(x=>String(x.id)===String(pid));if(ctx)ctx.textContent='Managing: '+(selected?.name||$('uwpName')?.value||'Selected partner')+' // assign owners, managers and representatives.';
   list.innerHTML='<div class="uw-empty">Loading representatives…</div>';
   const r=await uwSupabase.from('network_partner_representatives').select('*').eq('partner_id',pid).order('active',{ascending:false}).order('display_name');
   if(r.error){list.innerHTML=`<div class="uw-empty">${esc(r.error.message)}</div>`;return}
@@ -6729,9 +6731,20 @@ window.addEventListener('pageshow',()=>setTimeout(()=>{if(currentSession&&!uwExt
  }
  async function searchRepUsers(){
   const q=String($('uwpRepSearch')?.value||'').trim();const box=$('uwpRepResults');if(!box)return;if(q.length<2){box.innerHTML='';return}
-  const safe=q.replace(/[%_,()]/g,' ');let r=await uwSupabase.from('profiles').select('id,display_name,username').or(`display_name.ilike.%${safe}%,username.ilike.%${safe}%`).limit(8);
-  if(r.error){box.innerHTML=`<div class="uw-empty">${esc(r.error.message)}</div>`;return}
-  box.innerHTML=(r.data||[]).length?(r.data||[]).map(u=>`<div class="uwpmgr-result"><div class="uwpmgr-person"><b>${esc(u.display_name||u.username||'Member')}</b><span>${esc(u.username?'@'+u.username:u.id)}</span></div><div class="uwpmgr-actions"><select class="select" data-uwpmgr-newrole="${esc(u.id)}"><option value="owner">Partner Owner</option><option value="manager">Manager</option><option value="representative" selected>Representative</option></select><button class="btn hot" type="button" data-uwpmgr-add="${esc(u.id)}" data-name="${esc(u.display_name||u.username||'Member')}">ADD</button></div></div>`).join(''):'<div class="uw-empty">No matching members.</div>';
+  box.innerHTML='<div class="uw-empty">Searching Network members…</div>';
+  let users=[],err=null;
+  /* Staff member search must use the server-side identity resolver because profiles RLS intentionally prevents broad client-side account enumeration. */
+  try{
+    const rpc=await uwSupabase.rpc('uw_moderation_search_members',{p_query:q,p_limit:12});
+    if(!rpc.error)users=rpc.data||[];else err=rpc.error;
+  }catch(e){err=e}
+  /* Compatibility fallback for installs where the moderation RPC has not been installed yet. */
+  if(!users.length){
+    const safe=q.replace(/[%_,()]/g,' ');const direct=await uwSupabase.from('profiles').select('id,display_name,username').or(`display_name.ilike.%${safe}%,username.ilike.%${safe}%`).limit(12);
+    if(!direct.error){users=direct.data||[];err=null}else if(!err)err=direct.error;
+  }
+  if(err&&!users.length){box.innerHTML=`<div class="uw-empty">Member lookup unavailable // ${esc(err.message||'identity search RPC required')}</div>`;return}
+  box.innerHTML=users.length?users.map(u=>`<div class="uwpmgr-result"><div class="uwpmgr-person"><b>${esc(u.display_name||u.username||'Member')}</b><span>${esc(u.username?'@'+u.username:u.id)}</span></div><div class="uwpmgr-actions"><select class="select" data-uwpmgr-newrole="${esc(u.id)}"><option value="owner">Partner Owner</option><option value="manager">Manager</option><option value="representative" selected>Representative</option></select><button class="btn hot" type="button" data-uwpmgr-add="${esc(u.id)}" data-name="${esc(u.display_name||u.username||'Member')}">ADD</button></div></div>`).join(''):'<div class="uw-empty">No matching Network member.</div>';
  }
  async function addRep(btn){const pid=$('uwpPartnerId')?.value;if(!pid)return toast?.('SELECT A PARTNER FIRST');const uid=btn.dataset.uwpmgrAdd;const role=document.querySelector(`[data-uwpmgr-newrole="${CSS.escape(uid)}"]`)?.value||'representative';const name=btn.dataset.name||'Partner Representative';const r=await uwSupabase.from('network_partner_representatives').upsert({partner_id:pid,user_id:uid,display_name:name,title:role==='owner'?'Partnership Owner':role==='manager'?'Partner Manager':'Partner Representative',partner_role:role,active:true},{onConflict:'partner_id,user_id'});if(r.error)return toast?.('ACCESS SAVE FAILED // '+r.error.message);toast?.('PARTNER ACCESS UPDATED');$('uwpRepSearch').value='';$('uwpRepResults').innerHTML='';await loadRepManager()}
  async function setRepRole(id,role){const title=role==='owner'?'Partnership Owner':role==='manager'?'Partner Manager':'Partner Representative';const r=await uwSupabase.from('network_partner_representatives').update({partner_role:role,title}).eq('id',id);if(r.error)return toast?.('ROLE UPDATE FAILED // '+r.error.message);toast?.('PARTNER ROLE UPDATED');await loadRepManager()}
