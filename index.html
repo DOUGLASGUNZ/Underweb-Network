@@ -7556,6 +7556,37 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 <!-- /UNDERWEB V2 QA HOTFIX -->
 
+
+
+<!-- UNDERWEB // FULL RADAR MOBILE FIX -->
+<style id="uw-full-radar-fix-css">
+#uwFullRadarOverlay{position:fixed;inset:0;z-index:2147483000;background:rgba(0,3,1,.97);backdrop-filter:blur(10px);display:none;overflow:auto;-webkit-overflow-scrolling:touch;padding:env(safe-area-inset-top) 12px calc(24px + env(safe-area-inset-bottom))}
+#uwFullRadarOverlay.open{display:block}
+.uwfr-shell{width:min(980px,100%);margin:16px auto 60px;border:1px solid #1d4c2b;background:linear-gradient(180deg,#030a05,#010302);box-shadow:0 0 70px rgba(57,255,104,.08)}
+.uwfr-head{position:sticky;top:0;z-index:3;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px;border-bottom:1px solid #15351f;background:rgba(2,8,4,.96);backdrop-filter:blur(8px)}
+.uwfr-kicker{font:900 9px monospace;letter-spacing:.22em;color:#39ff68}.uwfr-head h2{margin:5px 0 4px;font-size:clamp(30px,7vw,52px);line-height:.9}.uwfr-head p{margin:0;color:#88a991;font-size:11px}.uwfr-close{border:1px solid #2a6c3d;background:#031006;color:#dfffe7;min-width:44px;min-height:44px;font-size:20px;cursor:pointer}
+.uwfr-filters{display:flex;gap:6px;overflow-x:auto;padding:12px 14px;border-bottom:1px solid #102a18;scrollbar-width:none}.uwfr-filters::-webkit-scrollbar{display:none}.uwfr-filter{flex:0 0 auto;border:1px solid #245632;background:#020704;color:#8bb796;padding:9px 11px;font:900 8px monospace;letter-spacing:.1em}.uwfr-filter.active{background:#39ff68;color:#001706;border-color:#39ff68;box-shadow:0 0 18px rgba(57,255,104,.18)}
+#uwFullRadarFeed{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:14px}.uwfr-item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;text-align:left;border:1px solid #163a21;background:#020604;color:#eefdf1;padding:11px;min-height:68px}.uwfr-icon{width:34px;height:34px;border:1px solid #2a6c3d;display:grid;place-items:center;color:#39ff68}.uwfr-copy b{display:block;font-size:11px}.uwfr-copy small{display:block;margin-top:3px;color:#779982;font-size:9px}.uwfr-type{display:block;margin-top:5px;color:#39ff68;font:900 7px monospace;letter-spacing:.12em}.uwfr-time{color:#39ff68;font:900 8px monospace}.uwfr-empty{grid-column:1/-1;padding:28px;color:#76917d;text-align:center;font:800 10px monospace}
+body.uw-full-radar-open{overflow:hidden!important}
+@media(max-width:650px){#uwFullRadarOverlay{padding-left:8px;padding-right:8px}.uwfr-shell{margin-top:8px}.uwfr-head{padding:14px}.uwfr-head p{max-width:230px}.uwfr-filters{padding:9px}.uwfr-filter{min-height:38px}#uwFullRadarFeed{grid-template-columns:1fr;padding:8px;gap:6px}.uwfr-item{min-height:64px;padding:9px}.uwfr-copy b{font-size:10px}}
+</style>
+<script id="uw-full-radar-fix-js">
+(()=>{
+ 'use strict';
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const cat=t=>{t=String(t||'').toLowerCase();if(t.includes('event'))return'events';if(t.includes('project'))return'projects';if(t.includes('partner'))return'partners';if(t.includes('creator')||t.includes('profile')||t.includes('showcase'))return'creators';return'network'};
+ const rel=d=>{try{if(typeof uwPulseRelative==='function')return uwPulseRelative(d)}catch(_){}const n=new Date(d).getTime();if(!n)return'NOW';const s=Math.max(0,Math.floor((Date.now()-n)/1000));if(s<60)return s+'S';if(s<3600)return Math.floor(s/60)+'M';if(s<86400)return Math.floor(s/3600)+'H';return Math.floor(s/86400)+'D'};
+ let filter='all';
+ function ensure(){if(document.getElementById('uwFullRadarOverlay'))return;document.body.insertAdjacentHTML('beforeend',`<div id="uwFullRadarOverlay" aria-hidden="true"><section class="uwfr-shell"><header class="uwfr-head"><div><div class="uwfr-kicker">UNDERWEB // LIVE NETWORK</div><h2>FULL RADAR</h2><p>Complete recent activity from across the Network.</p></div><button class="uwfr-close" id="uwFullRadarClose" type="button" aria-label="Close Radar">×</button></header><div class="uwfr-filters"><button class="uwfr-filter active" data-uwfr-filter="all">ALL</button><button class="uwfr-filter" data-uwfr-filter="creators">CREATORS</button><button class="uwfr-filter" data-uwfr-filter="events">EVENTS</button><button class="uwfr-filter" data-uwfr-filter="projects">PROJECTS</button><button class="uwfr-filter" data-uwfr-filter="partners">PARTNERS</button><button class="uwfr-filter" data-uwfr-filter="network">NETWORK</button></div><div id="uwFullRadarFeed"></div></section></div>`)}
+ function render(){ensure();const feed=document.getElementById('uwFullRadarFeed');const rows=window.uwHomeRadarV2?.state?.rows||[];const shown=filter==='all'?rows:rows.filter(x=>cat(x.event_type)===filter);feed.innerHTML=shown.length?shown.map(x=>`<div class="uwfr-item"><div class="uwfr-icon">${typeof uwPulseIcon==='function'?uwPulseIcon(x.event_type):'◆'}</div><div class="uwfr-copy"><b>${esc(x.headline||'Network update')}</b>${x.detail?`<small>${esc(x.detail)}</small>`:''}<span class="uwfr-type">${esc(cat(x.event_type))}</span></div><div class="uwfr-time">${rel(x.created_at)}</div></div>`).join(''):'<div class="uwfr-empty">NO SIGNALS IN THIS CHANNEL.</div>'}
+ async function open(){ensure();try{await window.uwHomeRadarV2?.sync?.()}catch(_){}render();const o=document.getElementById('uwFullRadarOverlay');o.classList.add('open');o.setAttribute('aria-hidden','false');document.body.classList.add('uw-full-radar-open');o.scrollTop=0}
+ function close(){const o=document.getElementById('uwFullRadarOverlay');if(!o)return;o.classList.remove('open');o.setAttribute('aria-hidden','true');document.body.classList.remove('uw-full-radar-open')}
+ document.addEventListener('click',e=>{const openBtn=e.target.closest('#uwOpenFullRadar,#uwRadarMore');if(openBtn){e.preventDefault();e.stopImmediatePropagation();open();return}if(e.target.closest('#uwFullRadarClose')){e.preventDefault();close();return}const f=e.target.closest('[data-uwfr-filter]');if(f){e.preventDefault();filter=f.dataset.uwfrFilter;document.querySelectorAll('[data-uwfr-filter]').forEach(b=>b.classList.toggle('active',b===f));render();return}if(e.target.id==='uwFullRadarOverlay')close()},true);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+ window.uwOpenFullRadar=open;
+})();
+</script>
+
 </body>
 </html>
 
@@ -7713,3 +7744,48 @@ html,body{max-width:100%;overflow-x:hidden}
 @media(max-width:700px){#uwDeepWebVeil .dw-core{max-height:88dvh;overflow:auto}.dw-profile-title{font-size:7px!important;letter-spacing:.12em!important}.uw621-head.dw-v2-owned:after{max-width:72vw;white-space:normal;text-align:right}}
 </style>
 
+
+<!-- UNDERWEB V2 PROFILE IDENTITY + CINEMATIC MOBILE FIX 2026-09-21 -->
+<style id="uw-v2-profile-identity-fix">
+/* Keep unlock presentation crisp/readable for the full display window. */
+#uwDeepWebVeil.show{animation:uwV2Hold 12s linear both!important}
+#uwDeepWebVeil.show .dw-core{animation:uwV2CoreIn 12s linear both!important}
+@keyframes uwV2Hold{0%{opacity:0}3%,94%{opacity:1}100%{opacity:0}}
+@keyframes uwV2CoreIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.86);filter:blur(8px)}4%{opacity:1;transform:translate(-50%,-50%) scale(1.02);filter:none}7%,94%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:none}100%{opacity:0;transform:translate(-50%,-50%) scale(1.01);filter:none}}
+/* Selected V2 identity controls the profile treatment. No generic green box. */
+.uw621-head.dw-v2-owned:before{border:0!important;box-sizing:border-box}
+.uw621-head.dw-dead_signal:before{inset:-7px!important;border:0!important;background:linear-gradient(90deg,#39ff78 0 18%,transparent 18% 82%,#39ff78 82%) top/100% 2px no-repeat,linear-gradient(90deg,#39ff78 0 9%,transparent 9% 91%,#39ff78 91%) bottom/100% 2px no-repeat;filter:drop-shadow(0 0 8px #39ff78);animation:dwFrameBurst 4.8s steps(1) infinite!important}
+.uw621-head.dw-web_of_trust:before{inset:-10px!important;border:0!important;border-radius:22px;background:radial-gradient(circle at 8% 12%,#b8ffca 0 2px,transparent 3px),radial-gradient(circle at 92% 18%,#b8ffca 0 2px,transparent 3px),radial-gradient(circle at 15% 88%,#b8ffca 0 2px,transparent 3px),radial-gradient(circle at 88% 86%,#b8ffca 0 2px,transparent 3px),linear-gradient(32deg,transparent 49.5%,#7dff9d88 50%,transparent 50.5%),linear-gradient(148deg,transparent 49.5%,#7dff9d55 50%,transparent 50.5%)!important;filter:drop-shadow(0 0 10px #7dff9d88);animation:dwTrust 10s linear infinite!important}
+.uw621-head.dw-after_hours:before{inset:-8px!important;border:0!important;border-radius:26px;background:radial-gradient(ellipse at 24% 7%,#b7ffd0 0 2px,#25452e 3px 5px,transparent 6px),radial-gradient(ellipse at 76% 7%,#b7ffd0 0 2px,#25452e 3px 5px,transparent 6px),linear-gradient(180deg,#07100a99,transparent 30%,#0008)!important;box-shadow:inset 0 28px 45px #000,0 -8px 28px #294f35!important;animation:dwEyes 6s ease-in-out infinite!important}
+.uw621-head.dw-null_identity:before{inset:-7px!important;border:0!important;background:repeating-linear-gradient(90deg,#fff 0 18px,transparent 18px 29px) top/100% 1px no-repeat,repeating-linear-gradient(90deg,#45ff72 0 7px,transparent 7px 19px) bottom/100% 1px no-repeat!important;box-shadow:8px 0 0 #ffffff1c,-8px 0 0 #45ff721c!important;animation:dwNull .55s steps(2) infinite!important}
+.uw621-head.dw-backdoor:before{inset:-9px!important;border:0!important;background:linear-gradient(#45ff72,#45ff72) 0 0/34px 2px no-repeat,linear-gradient(#45ff72,#45ff72) 0 0/2px 34px no-repeat,linear-gradient(#45ff72,#45ff72) 100% 100%/34px 2px no-repeat,linear-gradient(#45ff72,#45ff72) 100% 100%/2px 34px no-repeat,linear-gradient(135deg,transparent 46%,#45ff7233 47% 48%,transparent 49%)!important;box-shadow:none!important}
+.uw621-head.dw-deep_crawler:before{inset:-12px!important;border:0!important;border-radius:50% 18% 50% 18%;background:conic-gradient(from 0deg,transparent,#45ff72,transparent 18%,transparent 48%,#b8ffca,transparent 67%)!important;filter:drop-shadow(0 0 15px #45ff72);animation:dwTrust 4.5s linear infinite!important}
+.uw621-head.dw-blacksite:before{inset:-11px!important;border:2px solid #eaffef!important;background:repeating-linear-gradient(0deg,#0000 0 9px,#fff1 10px,#0000 11px)!important;box-shadow:0 0 0 5px #000,0 0 0 6px #eaffef,0 0 34px #fff3!important;animation:none!important}
+.uw621-head.dw-architect:before{inset:-14px!important;border:0!important;background:linear-gradient(90deg,#fff,#fff) top/100% 2px no-repeat,linear-gradient(90deg,#45ff72,#fff,#45ff72) bottom/100% 3px no-repeat,linear-gradient(#fff,#45ff72) left/2px 100% no-repeat,linear-gradient(#45ff72,#fff) right/2px 100% no-repeat!important;box-shadow:0 0 15px #fff,0 0 45px #45ff72,0 0 100px #45ff7244!important;animation:dwArchitect 3.5s linear infinite!important}
+/* Titles stay text-only and visually independent from profile frame geometry. */
+.dw-profile-title{position:relative!important;z-index:42!important}
+@media(max-width:700px){#uwDeepWebVeil .dw-core{width:calc(100vw - 28px)!important;padding:34px 18px!important;max-height:76dvh!important}.uw621-head.dw-v2-owned:before{max-width:none!important}}
+</style>
+<script id="uw-v2-profile-identity-fix-js">
+(()=>{
+ const SETS=window.uwDeepWebV2?.SETS||{};
+ const slugs=Object.keys(SETS);
+ function sync(){
+   const head=document.querySelector('#uw621ProfileModal .uw621-head'); if(!head)return;
+   slugs.forEach(s=>head.classList.remove('dw-'+s));
+   const selected=localStorage.getItem('uw_deepweb_title')||'';
+   const st=window.uwDeepWebV2?.state;
+   const allowed=s=>!!s && (st?.owned?.has?.(s)||st?.stage?.['qa_'+s]);
+   const active=allowed(selected)?selected:slugs.slice().reverse().find(allowed);
+   head.classList.toggle('dw-v2-owned',!!active);
+   if(active)head.classList.add('dw-'+active);
+ }
+ document.addEventListener('click',e=>{if(e.target.closest('#uwDeepTitleSave'))setTimeout(sync,40)},true);
+ const modal=document.getElementById('uw621ProfileModal');
+ if(modal)new MutationObserver(()=>{if(modal.classList.contains('open'))setTimeout(sync,180)}).observe(modal,{attributes:true,attributeFilter:['class']});
+ window.addEventListener('storage',e=>{if(e.key==='uw_deepweb_title')sync()});
+ setTimeout(sync,1300);
+ window.uwSyncV2ProfileIdentity=sync;
+})();
+</script>
+<!-- /UNDERWEB V2 PROFILE IDENTITY FIX -->
