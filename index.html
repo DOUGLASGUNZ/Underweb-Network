@@ -7663,7 +7663,7 @@ html,body{max-width:100%;overflow-x:hidden}
  async function locker(){try{const q=await uwSupabase.rpc('uw_my_cosmetic_locker');if(q.error)throw q.error;return Array.isArray(q.data)?q.data:[]}catch(_){return []}}
  function loadLocal(){try{return JSON.parse(localStorage.getItem('uw_deepweb_progress_v2')||'{}')}catch(_){return {}}}
  function saveLocal(){try{localStorage.setItem('uw_deepweb_progress_v2',JSON.stringify(state.stage))}catch(_){}}
- function cinematic(title,copy,slug='signal'){let v=document.getElementById('uwDeepWebVeil');if(!v){v=document.createElement('div');v.id='uwDeepWebVeil';v.innerHTML='<div class="dw-core"><div class="dw-eye"></div><div class="dw-k">DEEP WEB // SIGNAL BREACH</div><h2></h2><p></p></div>';document.body.appendChild(v)}v.dataset.signal=slug;v.querySelector('h2').textContent=title;v.querySelector('p').textContent=copy;v.classList.remove('show');void v.offsetWidth;v.classList.add('show');clearTimeout(v._t);v._t=setTimeout(()=>v.classList.remove('show'),9000)}
+ function cinematic(title,copy,slug='signal'){let v=document.getElementById('uwDeepWebVeil');if(!v){v=document.createElement('div');v.id='uwDeepWebVeil';v.innerHTML='<div class="dw-core"><div class="dw-eye"></div><div class="dw-k">DEEP WEB // SIGNAL BREACH</div><h2></h2><p></p></div>';document.body.appendChild(v)}v.dataset.signal=slug;v.querySelector('h2').textContent=title;v.querySelector('p').textContent=copy;v.classList.remove('show');void v.offsetWidth;v.classList.add('show');clearTimeout(v._t);v._t=setTimeout(()=>v.classList.remove('show'),6000)}
  async function discover(slug){if(!state.eligible&&!state.qa)return false;try{const r=await uwSupabase.rpc('uw_discover_secret',{p_secret_slug:slug});if(r.error)throw r.error;const row=Array.isArray(r.data)?r.data[0]:r.data;if(!row)throw new Error('No unlock response');state.owned.add(slug);cinematic(SETS[slug]?.name||slug,'REWARD SET ACQUIRED // FRAME + TITLE + BADGE + PROFILE EFFECT',slug);await refresh();return true}catch(e){console.warn('[Deep Web unlock requires V2 backend secret]',slug,e);if(state.qa){state.owned.add(slug);state.stage['qa_'+slug]=true;saveLocal();cinematic(SETS[slug]?.name||slug,'QA SIMULATION // FRONT-END REWARD SET',slug);renderLocker();hydrateProfile();return true}if(typeof toast==='function')toast('DEEP WEB SIGNAL REJECTED // V2 secret is not installed server-side.');return false}}
  async function eligibility(){const rows=await locker();state.owned=new Set(rows.map(x=>String(x.cosmetic_slug||x.slug||'')));state.stage=loadLocal();state.eligible=OG.every(x=>state.owned.has(x));return rows}
  function ensureLocker(){if(!state.eligible&&!state.qa)return;const base=document.getElementById('uwCosmeticsLocker');if(!base)return;let root=document.getElementById('uwDeepWebLocker');if(root)return root;root=document.createElement('section');root.id='uwDeepWebLocker';root.innerHTML='<div class="dw-lock-head"><span>CLEARANCE VERIFIED // 07/07</span><h4>Deep Web Reward Sets</h4><p>Signals below the public Network. Reward sets can contain frames, titles, badges, profile effects and network effects.</p></div><div class="dw-set-grid" id="uwDeepSetGrid"></div><div class="dw-title-select"><label class="eyebrow">EQUIPPED TITLE</label><select id="uwDeepTitleSelect"></select><button id="uwDeepTitleSave" type="button">APPLY TITLE</button></div>';base.appendChild(root);return root}
@@ -7789,3 +7789,62 @@ html,body{max-width:100%;overflow-x:hidden}
 })();
 </script>
 <!-- /UNDERWEB V2 PROFILE IDENTITY FIX -->
+
+<!-- UNDERWEB V2 MOBILE CONTENT-SAFE VISUAL FIX 2026-09-21 -->
+<style id="uw-v2-content-safe-fix">
+/* Cinematic timing: 6 seconds total, readable almost immediately. */
+#uwDeepWebVeil.show{animation:uwV2Hold6 6s linear both!important}
+#uwDeepWebVeil.show .dw-core{animation:uwV2Core6 6s linear both!important}
+@keyframes uwV2Hold6{0%{opacity:0}4%,91%{opacity:1}100%{opacity:0}}
+@keyframes uwV2Core6{0%{opacity:0;transform:translate(-50%,-50%) scale(.94);filter:blur(3px)}5%{opacity:1;transform:translate(-50%,-50%) scale(1.01);filter:none}9%,91%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:none}100%{opacity:0;transform:translate(-50%,-50%) scale(.99);filter:none}}
+
+/* Profile effects are perimeter decorations only. Never paint over profile content. */
+.uw621-head.dw-v2-owned{isolation:isolate!important}
+.uw621-head.dw-v2-owned:before{z-index:1!important;pointer-events:none!important}
+.uw621-head.dw-v2-owned:after{z-index:3!important;pointer-events:none!important}
+.uw621-head.dw-v2-owned>*{position:relative;z-index:2}
+.dw-profile-title{z-index:4!important}
+
+/* DEAD SIGNAL: broken top/bottom rails, no center coverage. */
+.uw621-head.dw-dead_signal:before{inset:3px!important;background:linear-gradient(90deg,#39ff78 0 17%,transparent 17% 78%,#39ff78 78% 100%) top/100% 2px no-repeat,linear-gradient(90deg,#39ff78 0 8%,transparent 8% 88%,#39ff78 88% 100%) bottom/100% 2px no-repeat!important;filter:drop-shadow(0 0 5px #39ff78)!important}
+
+/* WEB OF TRUST: nodes and short perimeter rails only; remove diagonal cross through content. */
+.uw621-head.dw-web_of_trust:before{inset:4px!important;border-radius:18px!important;background:radial-gradient(circle at 1% 9%,#b8ffca 0 3px,transparent 4px),radial-gradient(circle at 99% 16%,#b8ffca 0 3px,transparent 4px),radial-gradient(circle at 2% 88%,#b8ffca 0 3px,transparent 4px),radial-gradient(circle at 98% 84%,#b8ffca 0 3px,transparent 4px),linear-gradient(90deg,#7dff9d99,transparent 24%) top left/42% 1px no-repeat,linear-gradient(270deg,#7dff9d99,transparent 24%) top right/42% 1px no-repeat,linear-gradient(90deg,#7dff9d66,transparent 24%) bottom left/36% 1px no-repeat,linear-gradient(270deg,#7dff9d66,transparent 24%) bottom right/36% 1px no-repeat!important;animation:dwTrustPulse 3.8s ease-in-out infinite!important;filter:drop-shadow(0 0 6px #7dff9d66)!important}
+@keyframes dwTrustPulse{0%,100%{opacity:.55}50%{opacity:1;filter:drop-shadow(0 0 10px #7dff9d)}}
+
+/* AFTER HOURS: only top-edge eyes + vignette at extreme edges. */
+.uw621-head.dw-after_hours:before{inset:3px!important;border-radius:18px!important;background:radial-gradient(ellipse at 18% 2%,#b7ffd0 0 2px,#25452e 3px 5px,transparent 6px),radial-gradient(ellipse at 82% 2%,#b7ffd0 0 2px,#25452e 3px 5px,transparent 6px),linear-gradient(90deg,#18352288,transparent 12%,transparent 88%,#18352288)!important;box-shadow:inset 0 8px 15px #0008!important}
+
+/* NULL IDENTITY: fragmented rails only. */
+.uw621-head.dw-null_identity:before{inset:3px!important;background:repeating-linear-gradient(90deg,#fff 0 15px,transparent 15px 27px) top/100% 1px no-repeat,repeating-linear-gradient(90deg,#45ff72 0 6px,transparent 6px 18px) bottom/100% 1px no-repeat,linear-gradient(#fff8,transparent 25%) left/1px 35% no-repeat,linear-gradient(#45ff7288,transparent 25%) right/1px 35% no-repeat!important;box-shadow:none!important}
+
+/* BACKDOOR: corner brackets only. Kill the diagonal beam completely. */
+.uw621-head.dw-backdoor:before{inset:3px!important;background:linear-gradient(#45ff72,#45ff72) 0 0/34px 2px no-repeat,linear-gradient(#45ff72,#45ff72) 0 0/2px 34px no-repeat,linear-gradient(#45ff72,#45ff72) 100% 100%/34px 2px no-repeat,linear-gradient(#45ff72,#45ff72) 100% 100%/2px 34px no-repeat!important;filter:drop-shadow(0 0 5px #45ff72)!important}
+
+/* DEEP CRAWLER: replace giant conic portal with animated segmented perimeter. */
+.uw621-head.dw-deep_crawler:before{inset:2px!important;border-radius:18px!important;background:linear-gradient(90deg,#4dff84 0 12%,transparent 12% 32%,#b8ffca 32% 45%,transparent 45% 77%,#4dff84 77% 100%) top/100% 2px no-repeat,linear-gradient(90deg,transparent 0 14%,#4dff84 14% 29%,transparent 29% 62%,#b8ffca 62% 78%,transparent 78%) bottom/100% 2px no-repeat,linear-gradient(#4dff84,transparent 38%) left/2px 42% no-repeat,linear-gradient(transparent 8%,#b8ffca 42%,transparent 82%) right/2px 54% no-repeat!important;filter:drop-shadow(0 0 7px #45ff72)!important;animation:dwCrawlerRails 2.8s steps(4) infinite!important}
+@keyframes dwCrawlerRails{0%,100%{opacity:.55}25%{opacity:1;filter:drop-shadow(0 0 10px #45ff72)}50%{opacity:.7}75%{opacity:1;filter:drop-shadow(0 0 4px #b8ffca)}}
+
+/* BLACKSITE / ARCHITECT retain high impact but stay on perimeter. */
+.uw621-head.dw-blacksite:before{inset:2px!important;border:1px solid #eaffef!important;background:repeating-linear-gradient(90deg,#fff 0 18px,transparent 18px 32px) top/100% 1px no-repeat,repeating-linear-gradient(90deg,transparent 0 10px,#fff 10px 20px,transparent 20px 34px) bottom/100% 1px no-repeat!important;box-shadow:inset 0 0 0 3px #000,0 0 15px #fff2!important}
+.uw621-head.dw-architect:before{inset:1px!important;box-shadow:0 0 7px #fff,0 0 20px #45ff7277!important}
+
+/* Titles: compact, readable, and each visually distinct without becoming a block around the profile. */
+.dw-profile-title{margin-top:7px!important;padding:4px 7px!important;min-height:20px!important;align-items:center!important;white-space:normal!important;overflow-wrap:anywhere!important}
+.dw-profile-title[data-dw-title="dead_signal"]{border-left:2px solid #45ff72!important;border-right:2px solid #45ff7244!important}
+.dw-profile-title[data-dw-title="web_of_trust"]{border:0!important;border-bottom:1px dotted #7dff9d!important;padding-left:2px!important}
+.dw-profile-title[data-dw-title="after_hours"]{border:0!important;color:#91aa98!important;letter-spacing:.2em!important}
+.dw-profile-title[data-dw-title="null_identity"]{border:0!important;color:#fff!important}
+.dw-profile-title[data-dw-title="backdoor"]{border:0!important;border-left:1px solid #45ff72!important;padding-left:8px!important}
+.dw-profile-title[data-dw-title="deep_crawler"]{border:0!important;border-bottom:1px solid #45ff7270!important;padding-left:2px!important}
+.dw-profile-title[data-dw-title="blacksite"]{background:#050505!important;border:1px solid #dfffe7!important;box-shadow:none!important;color:#fff!important;padding:5px 8px!important}
+.dw-profile-title[data-dw-title="architect"]{background:linear-gradient(90deg,#f4fff7,#7dff9d)!important;color:#001507!important;border:0!important;box-shadow:0 0 9px #45ff7244!important;padding:5px 9px!important}
+
+@media(max-width:700px){
+ .uw621-head.dw-v2-owned:before{inset:2px!important;max-width:none!important}
+ .uw621-head.dw-v2-owned:after{bottom:3px!important;right:7px!important;max-width:58vw!important;font-size:6px!important;line-height:1.25!important;letter-spacing:.09em!important;padding:2px 4px!important;background-color:#010302cc}
+ .uw621-head.dw-blacksite:after,.uw621-head.dw-architect:after{bottom:3px!important}
+ .dw-profile-title{font-size:7px!important;letter-spacing:.12em!important;max-width:calc(100vw - 120px)!important}
+}
+</style>
+<!-- /UNDERWEB V2 MOBILE CONTENT-SAFE VISUAL FIX -->
