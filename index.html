@@ -7920,14 +7920,24 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
   const active=page.querySelector('.uwpo-editor-nav button.active')?.dataset.uwpoEdit||'identity';dash.hidden=active!=='creator';
  }
  async function openSelfFast(btn){
-  if(openingPublic)return; const uid=window.currentSession?.user?.id; if(!uid)return window.toast?.('Sign in first.');
+  if(openingPublic)return;
+  let session=(typeof currentSession!=='undefined'&&currentSession)?currentSession:null;
+  if(!session?.user?.id){
+   try{
+    const auth=await uwSupabase.auth.getSession();
+    session=auth?.data?.session||null;
+    if(session && typeof currentSession!=='undefined') currentSession=session;
+   }catch(err){console.warn('Could not refresh self-preview session',err);}
+  }
+  const uid=session?.user?.id;
+  if(!uid)return toast('Your session could not be verified. Refresh and try again.');
   openingPublic=true;if(btn){btn.disabled=true;btn.textContent='OPENING…'}
   try{
-   /* Use the canonical profile modal directly. Avoid the directory wrappers that were reloading identity/media more than once. */
-   if(typeof window.uw621OpenProfile==='function') await window.uw621OpenProfile(String(uid));
-   else if(typeof window.uw758Open==='function') await window.uw758Open(String(uid));
+   /* Open the already-authenticated account through the canonical public-profile renderer. */
+   if(typeof uw621OpenProfile==='function') await uw621OpenProfile(String(uid));
+   else if(typeof uw758Open==='function') await uw758Open(String(uid));
    else throw new Error('Public profile viewer unavailable');
-  }catch(err){console.error('V4 self profile open',err);window.toast?.(err?.message||'Could not open public profile.');}
+  }catch(err){console.error('V4.1 self profile open',err);toast(err?.message||'Could not open public profile.');}
   finally{openingPublic=false;if(btn){btn.disabled=false;btn.textContent='VIEW PUBLIC PROFILE →'}}
  }
  document.addEventListener('click',e=>{
