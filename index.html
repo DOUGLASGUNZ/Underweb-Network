@@ -1264,7 +1264,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 @media(max-width:1050px){.uwh-partner-grid{grid-template-columns:repeat(3,1fr)}.uwh-portals{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.uwh-radar-feed{grid-template-columns:1fr}.uwh-radar-head{align-items:flex-start;flex-direction:column}.uwh-portals{grid-template-columns:1fr}.uwh-about-copy{padding:30px 22px}}
 </style>
-<meta name="uw-feature-build" content="DARKO_VAULT_GUIDES_V2_AUTHFIX_20260922">
+<meta name="uw-feature-build" content="DARKO_VAULT_GUIDES_V2_CLIENTFIX_20260922">
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-07</div>
@@ -8310,7 +8310,10 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const open=id=>{const x=$(id);if(x){x.classList.add('open');x.setAttribute('aria-hidden','false')}};
  const close=id=>{const x=$(id);if(x){x.classList.remove('open');x.setAttribute('aria-hidden','true')}};
- const sb=()=>window.uwSupabase||window.supabaseClient||window.supabase||null;
+ const sb=()=>{
+   try{ if(typeof uwSupabase!=='undefined' && uwSupabase?.storage) return uwSupabase; }catch(e){}
+   return window.uwSupabase||window.supabaseClient||null;
+ };
  let vaultUser=null;
  const sessionUser=()=>vaultUser||window.currentSession?.user||null;
  const isOwner=()=>sessionUser()?.id===OWNER_UID;
