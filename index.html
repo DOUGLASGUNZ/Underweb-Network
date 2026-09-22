@@ -1264,7 +1264,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 @media(max-width:1050px){.uwh-partner-grid{grid-template-columns:repeat(3,1fr)}.uwh-portals{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.uwh-radar-feed{grid-template-columns:1fr}.uwh-radar-head{align-items:flex-start;flex-direction:column}.uwh-portals{grid-template-columns:1fr}.uwh-about-copy{padding:30px 22px}}
 </style>
-<meta name="uw-feature-build" content="DARKO_VAULT_GUIDES_V2_LIVE_STORAGE_20260922">
+<meta name="uw-feature-build" content="DARKO_VAULT_GUIDES_V2_AUTHFIX_20260922">
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-07</div>
@@ -8311,8 +8311,23 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  const open=id=>{const x=$(id);if(x){x.classList.add('open');x.setAttribute('aria-hidden','false')}};
  const close=id=>{const x=$(id);if(x){x.classList.remove('open');x.setAttribute('aria-hidden','true')}};
  const sb=()=>window.uwSupabase||window.supabaseClient||window.supabase||null;
- const sessionUser=()=>window.currentSession?.user||null;
+ let vaultUser=null;
+ const sessionUser=()=>vaultUser||window.currentSession?.user||null;
  const isOwner=()=>sessionUser()?.id===OWNER_UID;
+ async function refreshVaultUser(){
+   try{
+     if(typeof currentSession!=='undefined' && currentSession?.user) vaultUser=currentSession.user;
+   }catch(e){}
+   if(vaultUser?.id) return vaultUser;
+   try{
+     const client=sb();
+     if(client?.auth?.getSession){
+       const {data}=await client.auth.getSession();
+       vaultUser=data?.session?.user||null;
+     }
+   }catch(e){}
+   return vaultUser;
+ }
 
  $('uwOpenGuides')?.addEventListener('click',()=>open('uwGuidesShell'));
  $('uwOpenVault')?.addEventListener('click',()=>{open('uwVaultShell');checkVault()});
@@ -8333,7 +8348,8 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  }
  renderGuides();
  $('uwGuideSearch')?.addEventListener('input',e=>renderGuides(e.target.value));
- $('uwGuideEditorToggle')?.addEventListener('click',()=>{
+ $('uwGuideEditorToggle')?.addEventListener('click',async()=>{
+   await refreshVaultUser();
    if(!isOwner()){alert('OWNER AUTHORITY REQUIRED');return}
    $('uwGuideEditor').classList.toggle('open');
  });
@@ -8346,7 +8362,7 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
  });
 
  async function checkVault(){
-   const u=sessionUser();
+   const u=await refreshVaultUser();
    const ok=!!u && u.id===OWNER_UID;
    $('uwVaultUnlock').style.display=ok?'inline-block':'none';
    $('uwVaultStatus').textContent=ok?'OWNER AUTHORITY DETECTED':'ACCESS DENIED';
@@ -8368,11 +8384,12 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
     </div>`).join(''):'<p class="uwvg-muted">VAULT EMPTY // READY FOR FIRST UPLOAD.</p>';
  }
  $('uwVaultUnlock')?.addEventListener('click',async()=>{
+   await refreshVaultUser();
    if(!isOwner())return checkVault();
    $('uwVaultDoor').style.display='none';$('uwVaultInterior').style.display='block';
    await listVault();
  });
- $('uwVaultUpload')?.addEventListener('click',()=>{if(isOwner())$('uwVaultFile').click()});
+ $('uwVaultUpload')?.addEventListener('click',async()=>{await refreshVaultUser();if(isOwner())$('uwVaultFile').click()});
  $('uwVaultFile')?.addEventListener('change',async e=>{
    if(!isOwner())return;
    const client=sb(),files=[...e.target.files]; if(!client?.storage||!files.length)return;
