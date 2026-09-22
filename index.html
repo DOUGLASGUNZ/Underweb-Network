@@ -1264,6 +1264,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 @media(max-width:1050px){.uwh-partner-grid{grid-template-columns:repeat(3,1fr)}.uwh-portals{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.uwh-radar-feed{grid-template-columns:1fr}.uwh-radar-head{align-items:flex-start;flex-direction:column}.uwh-portals{grid-template-columns:1fr}.uwh-about-copy{padding:30px 22px}}
 </style>
+<meta name="uw-feature-build" content="DARKO_VAULT_GUIDES_V2_LIVE_STORAGE_20260922">
 </head>
 <body data-build="0.7.0-rc1" data-theme="underweb">
 <div id="uwBuildIndicator" title="Deployment build">UNDERWEB // PROFILE V4 &nbsp; BUILD 2026.09.21-07</div>
@@ -8239,6 +8240,174 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
 })();
 </script>
 
+
+<!-- UNDERWEB DARKO VAULT + GUIDES V1 -->
+
+<style id="uw-darko-vault-guides-v1-css">
+:root{--uwg:#39ff68;--uwbg:#010503;--uwline:rgba(57,255,104,.22)}
+#uwVaultGuideLauncher{position:fixed;right:14px;bottom:78px;z-index:9994;display:flex;gap:7px}
+.uwvg-launch{border:1px solid var(--uwline);background:#020906;color:#dfffe7;border-radius:10px;padding:9px 11px;font:900 9px/1 monospace;letter-spacing:.1em}
+.uwvg-launch:hover{border-color:var(--uwg);color:var(--uwg)}
+.uwvg-shell{position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,.86);backdrop-filter:blur(10px);display:none;overflow:auto;padding:18px}
+.uwvg-shell.open{display:block}.uwvg-panel{width:min(1080px,100%);margin:3vh auto;background:#010302;border:1px solid var(--uwline);border-radius:18px;box-shadow:0 30px 100px #000;overflow:hidden}
+.uwvg-top{padding:20px 22px;border-bottom:1px solid var(--uwline);background:radial-gradient(circle at 75% 0,rgba(57,255,104,.11),transparent 32%),#020705;display:flex;justify-content:space-between;gap:12px}
+.uwvg-kicker{font:900 9px/1 monospace;letter-spacing:.2em;color:var(--uwg)}.uwvg-top h2{margin:7px 0 5px;font-size:30px}.uwvg-muted{color:#839087;font-size:12px}
+.uwvg-x,.uwvg-btn{border:1px solid var(--uwline);background:#031008;color:#eaffef;border-radius:9px;padding:9px 12px;font:900 10px monospace}.uwvg-btn.primary{background:var(--uwg);color:#001405;border-color:var(--uwg)}
+.uwvg-body{padding:18px 22px 26px}.uwvg-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.uwvg-card{border:1px solid var(--uwline);background:#020604;border-radius:14px;padding:14px;min-width:0}
+.uwvg-card h3{margin:0 0 7px;font-size:15px}.uwvg-card p{margin:0;color:#8e9b92;font-size:12px;line-height:1.5}.uwvg-card .tag{display:inline-block;margin-top:10px;border:1px solid #183b22;color:var(--uwg);padding:5px 7px;border-radius:99px;font:800 8px monospace}
+.uwvg-vaultdoor{min-height:320px;display:grid;place-items:center;text-align:center;border:1px solid rgba(57,255,104,.26);border-radius:16px;background:radial-gradient(circle,rgba(57,255,104,.09),transparent 30%),repeating-linear-gradient(135deg,#010503,#010503 12px,#020805 12px,#020805 24px);position:relative;overflow:hidden}
+.uwvg-vaultdoor:before{content:"";position:absolute;width:210px;height:210px;border:2px solid rgba(57,255,104,.38);border-radius:50%;box-shadow:0 0 0 22px #010503,0 0 0 24px rgba(57,255,104,.14),0 0 70px rgba(57,255,104,.12)}
+.uwvg-vaultdoor>div{position:relative;z-index:2}.uwvg-lock{font-size:38px}.uwvg-denied{color:#ff5b68!important}.uwvg-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.uwvg-input,.uwvg-select,.uwvg-textarea{background:#010503;border:1px solid #183b22;color:#eaffef;border-radius:9px;padding:10px;font:700 11px monospace;outline:none}.uwvg-input{flex:1;min-width:180px}.uwvg-textarea{width:100%;min-height:110px;resize:vertical}
+.uwvg-file{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;border-top:1px solid #102417;padding:10px 0}.uwvg-file:first-child{border-top:0}.uwvg-icon{width:42px;height:42px;border:1px solid #183b22;border-radius:9px;display:grid;place-items:center;color:var(--uwg);font:900 9px monospace}.uwvg-name{font-weight:900;font-size:12px}.uwvg-meta{font:700 9px monospace;color:#6f7c73;margin-top:4px}
+.uwvg-guidehero{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-bottom:14px}.uwvg-feature{min-height:210px;border:1px solid var(--uwline);border-radius:16px;padding:20px;background:linear-gradient(135deg,rgba(57,255,104,.09),transparent 50%),#020604}.uwvg-feature h3{font-size:24px;margin:8px 0}.uwvg-cats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.uwvg-cat{border:1px solid #17301f;background:#020604;border-radius:11px;padding:13px;font:900 10px monospace;color:#c9d7cd}
+.uwvg-editor{display:none;margin-top:15px;border-top:1px solid var(--uwline);padding-top:15px}.uwvg-editor.open{display:block}.uwvg-row{display:flex;gap:8px;margin-bottom:8px}.uwvg-row>*{flex:1}
+@media(max-width:700px){#uwVaultGuideLauncher{right:9px;bottom:72px}.uwvg-launch{padding:8px;font-size:8px}.uwvg-shell{padding:8px}.uwvg-top{padding:16px}.uwvg-body{padding:13px}.uwvg-grid{grid-template-columns:1fr}.uwvg-guidehero{grid-template-columns:1fr}.uwvg-cats{grid-template-columns:1fr 1fr}.uwvg-top h2{font-size:25px}.uwvg-vaultdoor{min-height:260px}}
+</style>
+
+<div id="uwVaultGuideLauncher">
+ <button class="uwvg-launch" id="uwOpenGuides">GUIDES</button>
+ <button class="uwvg-launch" id="uwOpenVault">DARKO // VAULT</button>
+</div>
+
+<section class="uwvg-shell" id="uwGuidesShell" aria-hidden="true">
+ <div class="uwvg-panel">
+  <div class="uwvg-top"><div><div class="uwvg-kicker">UNDERWEB // CREATOR KNOWLEDGE BASE</div><h2>Avatar Guides</h2><div class="uwvg-muted">Build cleaner. Break less. Document everything.</div></div><button class="uwvg-x" data-close="uwGuidesShell">CLOSE</button></div>
+  <div class="uwvg-body">
+   <div class="uwvg-guidehero">
+    <div class="uwvg-feature"><div class="uwvg-kicker">START HERE</div><h3>VRChat Avatar Creation</h3><p class="uwvg-muted">Practical UnderWeb guides for Unity avatar setup, Modular Avatar, Poiyomi, VRCFury, AudioLink and troubleshooting.</p><div class="uwvg-toolbar" style="margin-top:18px"><input class="uwvg-input" id="uwGuideSearch" placeholder="SEARCH GUIDES..."><button class="uwvg-btn" id="uwGuideEditorToggle">NEW GUIDE</button></div></div>
+    <div class="uwvg-cats"><div class="uwvg-cat">UNITY</div><div class="uwvg-cat">MODULAR AVATAR</div><div class="uwvg-cat">POIYOMI</div><div class="uwvg-cat">VRCFURY</div><div class="uwvg-cat">AUDIOLINK</div><div class="uwvg-cat">TROUBLESHOOTING</div></div>
+   </div>
+   <div class="uwvg-grid" id="uwGuideGrid"></div>
+   <div class="uwvg-editor" id="uwGuideEditor">
+    <div class="uwvg-kicker">OWNER // GUIDE EDITOR</div>
+    <div class="uwvg-row"><input id="uwGuideTitle" class="uwvg-input" placeholder="GUIDE TITLE"><select id="uwGuideCategory" class="uwvg-select"><option>Unity</option><option>Modular Avatar</option><option>Poiyomi</option><option>VRCFury</option><option>AudioLink</option><option>Troubleshooting</option></select></div>
+    <textarea id="uwGuideBody" class="uwvg-textarea" placeholder="Write the guide steps here..."></textarea>
+    <div class="uwvg-toolbar" style="margin-top:8px"><button class="uwvg-btn primary" id="uwSaveGuide">SAVE DRAFT</button><span class="uwvg-muted" id="uwGuideState"></span></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="uwvg-shell" id="uwVaultShell" aria-hidden="true">
+ <div class="uwvg-panel">
+  <div class="uwvg-top"><div><div class="uwvg-kicker">OWNER AUTHORITY // PRIVATE STORAGE</div><h2>DARKO // VAULT</h2><div class="uwvg-muted">Private VRChat avatar and creator asset archive.</div></div><button class="uwvg-x" data-close="uwVaultShell">CLOSE</button></div>
+  <div class="uwvg-body">
+   <div class="uwvg-vaultdoor" id="uwVaultDoor"><div><div class="uwvg-lock">◉</div><h3 id="uwVaultStatus">VAULT SEALED</h3><p class="uwvg-muted" id="uwVaultMsg">Checking owner authority...</p><button class="uwvg-btn primary" id="uwVaultUnlock">UNLOCK VAULT</button></div></div>
+   <div id="uwVaultInterior" style="display:none;margin-top:14px">
+    <div class="uwvg-toolbar"><input class="uwvg-input" id="uwVaultSearch" placeholder="SEARCH VAULT..."><select class="uwvg-select" id="uwVaultType"><option>ALL FILES</option><option>AVATARS</option><option>CLOTHING</option><option>TEXTURES</option><option>UNITY</option><option>ANIMATIONS</option><option>AUDIO</option><option>ARCHIVES</option></select><button class="uwvg-btn" id="uwVaultUpload">UPLOAD</button><input type="file" id="uwVaultFile" multiple hidden></div>
+    <div class="uwvg-grid"><div class="uwvg-card"><h3>AVATARS</h3><p>Full avatar projects, bases and backups.</p><span class="tag">PRIVATE</span></div><div class="uwvg-card"><h3>ASSETS</h3><p>Clothing, hair, props, weapons and accessories.</p><span class="tag">PRIVATE</span></div><div class="uwvg-card"><h3>CREATOR FILES</h3><p>Textures, shaders, animations, audio and archives.</p><span class="tag">PRIVATE</span></div></div>
+    <div class="uwvg-card" style="margin-top:12px"><h3>RECENT FILES</h3><div id="uwVaultFiles"><p class="uwvg-muted">No files loaded yet.</p></div></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<script id="uw-darko-vault-guides-v2-js">
+(()=>{
+ const OWNER_UID='582affa4-c6d4-4bcb-bdf3-a26bf40dcad7';
+ const BUCKET='darko-vault';
+ const $=id=>document.getElementById(id);
+ const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const open=id=>{const x=$(id);if(x){x.classList.add('open');x.setAttribute('aria-hidden','false')}};
+ const close=id=>{const x=$(id);if(x){x.classList.remove('open');x.setAttribute('aria-hidden','true')}};
+ const sb=()=>window.uwSupabase||window.supabaseClient||window.supabase||null;
+ const sessionUser=()=>window.currentSession?.user||null;
+ const isOwner=()=>sessionUser()?.id===OWNER_UID;
+
+ $('uwOpenGuides')?.addEventListener('click',()=>open('uwGuidesShell'));
+ $('uwOpenVault')?.addEventListener('click',()=>{open('uwVaultShell');checkVault()});
+ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>close(b.dataset.close));
+
+ const starter=[
+  ['Modular Avatar Clothing Setup','Modular Avatar','Fit and install avatar clothing without destroying your base hierarchy.'],
+  ['Fix Clothing Scaling','Troubleshooting','Diagnose skinny, oversized or mismatched MA outfits.'],
+  ['Keep Face Blendshapes','Unity','Preserve your intended face expression and blendshape setup for upload.'],
+  ['Poiyomi Emission Basics','Poiyomi','Build clean emission materials and masks without washing out the texture.'],
+  ['AudioLink Hair Strands','AudioLink','Set up reactive hair emissions for rave avatars.'],
+  ['Desktop-Friendly Toggles','VRCFury','Build avatar toggles that work well without VR hand gestures.']
+ ];
+ function drafts(){try{return JSON.parse(localStorage.getItem('uw_guide_drafts')||'[]')}catch{return[]}}
+ function renderGuides(q=''){
+   const all=[...starter,...drafts().map(x=>[x.title,x.category,x.body])];
+   $('uwGuideGrid').innerHTML=all.filter(x=>x.join(' ').toLowerCase().includes(q.toLowerCase())).map(x=>`<article class="uwvg-card"><div class="uwvg-kicker">${esc(x[1])}</div><h3>${esc(x[0])}</h3><p>${esc(x[2]).slice(0,190)}</p><span class="tag">GUIDE</span></article>`).join('');
+ }
+ renderGuides();
+ $('uwGuideSearch')?.addEventListener('input',e=>renderGuides(e.target.value));
+ $('uwGuideEditorToggle')?.addEventListener('click',()=>{
+   if(!isOwner()){alert('OWNER AUTHORITY REQUIRED');return}
+   $('uwGuideEditor').classList.toggle('open');
+ });
+ $('uwSaveGuide')?.addEventListener('click',()=>{
+   if(!isOwner())return;
+   const title=$('uwGuideTitle').value.trim(),body=$('uwGuideBody').value.trim(),category=$('uwGuideCategory').value;
+   if(!title||!body){$('uwGuideState').textContent='TITLE + CONTENT REQUIRED';return}
+   const d=drafts();d.unshift({title,body,category,updated:new Date().toISOString()});localStorage.setItem('uw_guide_drafts',JSON.stringify(d));
+   $('uwGuideState').textContent='DRAFT SAVED LOCALLY';renderGuides();$('uwGuideTitle').value='';$('uwGuideBody').value='';
+ });
+
+ async function checkVault(){
+   const u=sessionUser();
+   const ok=!!u && u.id===OWNER_UID;
+   $('uwVaultUnlock').style.display=ok?'inline-block':'none';
+   $('uwVaultStatus').textContent=ok?'OWNER AUTHORITY DETECTED':'ACCESS DENIED';
+   $('uwVaultStatus').classList.toggle('uwvg-denied',!ok);
+   $('uwVaultMsg').textContent=ok?'Darko authorization confirmed. Unlock when ready.':'This vault can only be opened by the authorized owner account.';
+ }
+ async function listVault(){
+   if(!isOwner())return;
+   const client=sb();
+   if(!client?.storage){$('uwVaultFiles').innerHTML='<p class="uwvg-muted">SUPABASE CLIENT NOT READY.</p>';return}
+   const {data,error}=await client.storage.from(BUCKET).list('',{limit:100,sortBy:{column:'created_at',order:'desc'}});
+   if(error){$('uwVaultFiles').innerHTML=`<p class="uwvg-muted">${esc(error.message)}</p>`;return}
+   const files=(data||[]).filter(x=>x.name!=='.emptyFolderPlaceholder');
+   $('uwVaultFiles').innerHTML=files.length?files.map(f=>`
+    <div class="uwvg-file" data-vault-name="${esc(f.name)}">
+      <div class="uwvg-icon">${esc((f.name.split('.').pop()||'FILE').slice(0,5).toUpperCase())}</div>
+      <div><div class="uwvg-name">${esc(f.name)}</div><div class="uwvg-meta">${f.metadata?.size?`${(f.metadata.size/1024/1024).toFixed(2)} MB // `:''}PRIVATE VAULT</div></div>
+      <div style="display:flex;gap:5px"><button class="uwvg-btn uwVaultDownload">GET</button><button class="uwvg-btn uwVaultDelete">DEL</button></div>
+    </div>`).join(''):'<p class="uwvg-muted">VAULT EMPTY // READY FOR FIRST UPLOAD.</p>';
+ }
+ $('uwVaultUnlock')?.addEventListener('click',async()=>{
+   if(!isOwner())return checkVault();
+   $('uwVaultDoor').style.display='none';$('uwVaultInterior').style.display='block';
+   await listVault();
+ });
+ $('uwVaultUpload')?.addEventListener('click',()=>{if(isOwner())$('uwVaultFile').click()});
+ $('uwVaultFile')?.addEventListener('change',async e=>{
+   if(!isOwner())return;
+   const client=sb(),files=[...e.target.files]; if(!client?.storage||!files.length)return;
+   $('uwVaultFiles').innerHTML='<p class="uwvg-muted">UPLOADING TO PRIVATE VAULT...</p>';
+   for(const f of files){
+     const safe=f.name.replace(/[^\w.\- ()[\]]+/g,'_');
+     const path=`${Date.now()}-${safe}`;
+     const {error}=await client.storage.from(BUCKET).upload(path,f,{upsert:false,contentType:f.type||undefined,cacheControl:'3600'});
+     if(error){alert(`Upload failed: ${f.name}\n${error.message}`);break}
+   }
+   e.target.value=''; await listVault();
+ });
+ $('uwVaultFiles')?.addEventListener('click',async e=>{
+   const row=e.target.closest('[data-vault-name]'); if(!row||!isOwner())return;
+   const name=row.dataset.vaultName,client=sb(); if(!client?.storage)return;
+   if(e.target.closest('.uwVaultDownload')){
+     const {data,error}=await client.storage.from(BUCKET).createSignedUrl(name,60);
+     if(error)return alert(error.message);
+     window.open(data.signedUrl,'_blank','noopener');
+   }
+   if(e.target.closest('.uwVaultDelete')){
+     if(!confirm(`Delete ${name} from Darko Vault?`))return;
+     const {error}=await client.storage.from(BUCKET).remove([name]);
+     if(error)return alert(error.message);
+     await listVault();
+   }
+ });
+ $('uwVaultSearch')?.addEventListener('input',e=>{
+   const q=e.target.value.toLowerCase();
+   document.querySelectorAll('#uwVaultFiles [data-vault-name]').forEach(r=>r.style.display=r.dataset.vaultName.toLowerCase().includes(q)?'grid':'none');
+ });
+})();
+</script>
+
+<!-- /UNDERWEB DARKO VAULT + GUIDES V1 -->
 </body>
 </html>
 
