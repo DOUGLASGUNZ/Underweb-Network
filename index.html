@@ -8038,132 +8038,8 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
 </script>
 <!-- /UNDERWEB PROFILE PERFORMANCE V2 -->
 
-<!-- UNDERWEB COSMETICS V2 // STORAGE QA -->
-<style id="uwV2StorageQaCss">
-#uwV2StorageQA{margin:12px 0 18px;padding:14px;border:1px solid rgba(57,255,104,.28);border-radius:14px;background:#010503}
-#uwV2StorageQA h3{margin:0;color:#39ff68;letter-spacing:.12em}#uwV2StorageQA p{color:#819087;font-size:12px}
-.uwv2u-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.uwv2u-card{border:1px solid #17301f;border-radius:11px;background:#000;padding:8px;min-width:0}
-.uwv2u-card.has{border-color:#39ff68}.uwv2u-card.equipped{box-shadow:0 0 22px rgba(57,255,104,.35);border-color:#7dff9a}.uwv2u-card.equipped .uwv2u-name:after{content:'  // EQUIPPED';color:#39ff68}.uwv2u-preview{height:150px;display:grid;place-items:center;overflow:hidden}
-.uwv2u-preview img{width:100%;height:100%;object-fit:contain}.uwv2u-name{font:900 10px monospace;letter-spacing:.08em;text-align:center;color:#eaffef;margin:5px 0}
-.uwv2u-actions{display:flex;gap:5px}.uwv2u-actions button{flex:1;font-size:9px;padding:8px 4px}
-#uwV2StorageState{font:800 10px monospace;color:#39ff68;margin-top:10px}
-.uwv2-profile-frame{
-position:absolute!important;
-left:50%!important;
-top:50%!important;
-width:430%!important;
-height:auto!important;
-max-width:none!important;
-max-height:none!important;
-transform:translate(-50%,-50%)!important;
-object-fit:unset!important;
-pointer-events:none!important;
-z-index:8!important
-}
-@media(min-width:800px){.uwv2u-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
-#uwV2PreviewModal{display:none;position:fixed;inset:0;z-index:2147483000;align-items:center;justify-content:center;padding:18px}
-#uwV2PreviewModal.open{display:flex}.uwv2m-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(7px)}
-.uwv2m-panel{position:relative;width:min(92vw,430px);border:1px solid #39ff68;background:#020503;padding:18px 14px 16px;border-radius:16px;box-shadow:0 0 40px rgba(57,255,104,.18)}
-.uwv2m-close{position:absolute;right:10px;top:7px;border:0;background:transparent;color:#39ff68;font-size:30px;z-index:3}
-.uwv2m-title,.uwv2m-name,.uwv2m-note{text-align:center;font-family:monospace;letter-spacing:.11em}.uwv2m-title{color:#39ff68;font-weight:900;font-size:11px}
-.uwv2m-stage{position:relative;width:min(76vw,330px);aspect-ratio:1;margin:18px auto 10px;display:grid;place-items:center;overflow:visible}
-.uwv2m-avatar{position:absolute;width:43%;aspect-ratio:1;border-radius:50%;background:#071009 center/cover no-repeat;border:1px solid #244b30;display:grid;place-items:center;overflow:hidden}
-.uwv2m-avatarFallback{font:900 30px monospace;color:#244b30}.uwv2m-stage>img{position:absolute;width:100%;height:100%;object-fit:contain;z-index:2;filter:drop-shadow(0 0 8px rgba(57,255,104,.3))}
-.uwv2m-name{color:#eaffef;font-weight:900;font-size:13px}.uwv2m-note{color:#607268;font-size:9px;margin-top:5px}
 
-</style>
-<script id="uwV2StorageQaJs">
-(()=>{
- const ITEMS=[['nullstate','NULLSTATE'],['hive-mind','HIVE MIND'],['voidbloom','VOIDBLOOM'],['symbiotic','SYMBIOTIC'],['chainsoul','CHAINSOUL'],['digital-rot','DIGITAL ROT'],['chorus','CHORUS'],['fracture','FRACTURE'],['oblivion','OBLIVION'],['ascension','ASCENSION']];
- const KEY='uw_cosmetics_v2_qa_urls'; const EQUIPKEY='uw_cosmetics_v2_qa_equipped';
- const get=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}};
- const put=x=>localStorage.setItem(KEY,JSON.stringify(x));
- const $=id=>document.getElementById(id);
- function mount(){
-   if($('uwV2StorageQA'))return;
-   const locker=$('uwCosmeticsLocker'); if(!locker)return;
-   const root=document.createElement('section');root.id='uwV2StorageQA';
-   root.innerHTML=`<h3>COSMETICS V2 // QA UPLOAD</h3><p>Upload each approved V2 image to Supabase Storage. Saved URLs persist on this device for QA. V1 is untouched.</p>
-   <div class="uwv2u-grid">${ITEMS.map(([s,n])=>`<div class="uwv2u-card" data-card="${s}"><div class="uwv2u-preview" data-prev="${s}"><span>NO ASSET</span></div><div class="uwv2u-name">${n}</div><input hidden type="file" accept="image/png,image/webp,image/jpeg" data-file="${s}"><div class="uwv2u-actions"><button type="button" data-pick="${s}">UPLOAD</button><button type="button" data-preview="${s}">PREVIEW</button><button type="button" data-equip="${s}">EQUIP</button></div></div>`).join('')}</div>
-   <button type="button" id="uwV2Unequip" style="margin-top:10px">UNEQUIP V2</button><div id="uwV2StorageState">READY</div>`;
-   locker.parentNode.insertBefore(root,locker);render();setTimeout(applyEquipped,0);
- }
- function render(){
-   const m=get(), equipped=localStorage.getItem(EQUIPKEY)||''; ITEMS.forEach(([s])=>{const box=document.querySelector(`[data-prev="${s}"]`),card=document.querySelector(`[data-card="${s}"]`);if(!box)return;if(m[s]){box.innerHTML=`<img src="${m[s]}" alt="">`;card?.classList.add('has')}else{box.innerHTML='<span>NO ASSET</span>';card?.classList.remove('has')}card?.classList.toggle('equipped',s===equipped)});
- }
- function profileAvatar(){
-   return $('uw621Avatar')||document.querySelector('.uw621-avatar')||document.querySelector('.uw40-avatar')||
-          document.querySelector('[class*="profile"][class*="avatar"]')||document.querySelector('[id*="profile"][id*="avatar"]');
- }
- function applyEquipped(){
-   document.querySelectorAll('.uwv2-equipped-frame').forEach(x=>x.remove());
-   const slug=localStorage.getItem(EQUIPKEY), url=slug&&get()[slug]; if(!url)return;
-   const a=profileAvatar(); if(!a)return;
-   a.style.position='relative'; a.style.overflow='visible';
-   const im=document.createElement('img'); im.className='uwv2-profile-frame uwv2-equipped-frame'; im.src=url; im.alt='';
-   a.appendChild(im);
- }
- function equip(slug){
-   const url=get()[slug]; if(!url){if(typeof toast==='function')toast('Upload this V2 cosmetic first.');return}
-   localStorage.setItem(EQUIPKEY,slug); render(); applyEquipped();
-   if(typeof toast==='function')toast(((ITEMS.find(x=>x[0]===slug)||['',slug])[1])+' equipped for QA.');
- }
- async function upload(slug,file){
-   if(!currentSession?.user?.id)throw Error('Sign in before uploading.');
-   if(!file||!['image/png','image/webp','image/jpeg'].includes(file.type))throw Error('Use PNG, WebP, or JPG.');
-   if(file.size>8*1024*1024)throw Error('File must be 8 MB or smaller.');
-   const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
-   const path=`${currentSession.user.id}/cosmetics-v2/${slug}-${Date.now()}.${ext}`;
-   const r=await uwSupabase.storage.from('profile-media').upload(path,file,{upsert:false,contentType:file.type,cacheControl:'3600'});
-   if(r.error)throw r.error;
-   const p=uwSupabase.storage.from('profile-media').getPublicUrl(path);
-   const url=p?.data?.publicUrl;if(!url)throw Error('Could not create public URL.');
-   const m=get();m[slug]=url;put(m);render();return url;
- }
- function clearFrame(){document.querySelectorAll('.uwv2-profile-frame').forEach(x=>x.remove())}
- function preview(slug){
-   const url=get()[slug]; if(!url){if(typeof toast==='function')toast('Upload this V2 cosmetic first.');return}
-   let modal=$('uwV2PreviewModal');
-   if(!modal){
-     modal=document.createElement('div'); modal.id='uwV2PreviewModal';
-     modal.innerHTML=`<div class="uwv2m-backdrop" data-v2close></div><div class="uwv2m-panel">
-       <button class="uwv2m-close" type="button" data-v2close>×</button>
-       <div class="uwv2m-title">COSMETICS V2 // PROFILE QA</div>
-       <div class="uwv2m-stage">
-         <div class="uwv2m-avatar" id="uwV2QaAvatar"><div class="uwv2m-avatarFallback">UW</div></div>
-         <img id="uwV2QaFrame" alt="">
-       </div>
-       <div class="uwv2m-name" id="uwV2QaName"></div>
-       <div class="uwv2m-note">QA PREVIEW — NOT EQUIPPED</div>
-     </div>`;
-     document.body.appendChild(modal);
-   }
-   const profileAvatar=$('uw621Avatar')||document.querySelector('.uw621-avatar')||document.querySelector('.uw40-avatar');
-   const stage=$('uwV2QaAvatar');
-   const candidate=profileAvatar?.querySelector?.('img')?.src || profileAvatar?.style?.backgroundImage?.replace(/^url\(["']?|["']?\)$/g,'');
-   stage.style.backgroundImage=candidate?`url("${candidate}")`:'';
-   $('uwV2QaFrame').src=url;
-   $('uwV2QaName').textContent=(ITEMS.find(x=>x[0]===slug)||['',slug])[1];
-   modal.classList.add('open');
- }
- document.addEventListener('click',e=>{
-   const c=e.target.closest?.('[data-v2close]');if(c){e.preventDefault();$('uwV2PreviewModal')?.classList.remove('open');return}
-   const eq=e.target.closest?.('[data-equip]');if(eq){e.preventDefault();equip(eq.dataset.equip);return}
-   if(e.target.closest?.('#uwV2Unequip')){e.preventDefault();localStorage.removeItem(EQUIPKEY);document.querySelectorAll('.uwv2-equipped-frame').forEach(x=>x.remove());render();if(typeof toast==='function')toast('V2 QA cosmetic unequipped.');return}
-   const p=e.target.closest?.('[data-pick]');if(p){e.preventDefault();document.querySelector(`[data-file="${p.dataset.pick}"]`)?.click();return}
-   const q=e.target.closest?.('[data-preview]');if(q){e.preventDefault();preview(q.dataset.preview)}
- });
- document.addEventListener('change',async e=>{
-   const input=e.target.closest?.('[data-file]');if(!input||!input.files?.[0])return;
-   const state=$('uwV2StorageState');try{if(state)state.textContent=`UPLOADING ${input.dataset.file.toUpperCase()}...`;await upload(input.dataset.file,input.files[0]);if(state)state.textContent='UPLOAD COMPLETE';toast?.('V2 cosmetic uploaded.')}catch(err){console.error(err);if(state)state.textContent='UPLOAD FAILED';toast?.('V2 upload failed: '+(err.message||err))}finally{input.value=''}
- });
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
- let raf=0;new MutationObserver(()=>{mount();cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{if(!document.querySelector('.uwv2-equipped-frame'))applyEquipped()})}).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
-
-
+<!-- COSMETICS V2 QA REMOVED 2026.09.21 -->
 <!-- UNDERWEB PUBLIC PROFILE HERO V5 // COSMETIC STAGE -->
 <style id="uw-public-profile-hero-v5">
 /* Public-profile-only redesign. Existing data, tabs, actions and V1 systems remain intact. */
@@ -8348,22 +8224,83 @@ z-index:8!important
 <!-- /UNDERWEB PUBLIC PROFILE HERO V5 -->
 
 
-<!-- COSMETICS V2 TEMPORARILY DISABLED -->
-<style id="uw-v2-disabled">
-.uwv2-profile-frame,.uwv2-equipped-frame,.uwv2-cosmetic-box,
-#uwCosmeticsV2QA,#uwv2QA{display:none!important}
-</style>
-<script id="uw-v2-disabled-js">
+
+
+
+<script id="uw-v2-state-cleanup">
 (()=>{
-  const kill=()=>{
-    document.querySelectorAll('.uwv2-profile-frame,.uwv2-equipped-frame,.uwv2-cosmetic-box,#uwCosmeticsV2QA,#uwv2QA')
-      .forEach(el=>el.remove());
-  };
-  kill();
-  new MutationObserver(kill).observe(document.documentElement,{childList:true,subtree:true});
+  try{
+    Object.keys(localStorage).forEach(k=>{
+      if(/cosmetic.*v2|v2.*cosmetic|uwv2/i.test(k)) localStorage.removeItem(k);
+    });
+  }catch(e){}
+  document.querySelectorAll('#uwV2StorageQA,.uwv2-profile-frame,.uwv2-equipped-frame,.uwv2-cosmetic-box')
+    .forEach(el=>el.remove());
 })();
 </script>
-<!-- /COSMETICS V2 TEMPORARILY DISABLED -->
+
+
+<!-- PROFILE HERO V5 // LEGACY V1 FRAME FIT -->
+<style id="uw-hero-v5-v1-frame-fit">
+/* Fit the existing V1 sibling-frame renderer to the new larger hero PFP.
+   No V1 artwork/unlock/equip logic is changed. */
+#uw621ProfileModal .uw621-avatar{isolation:isolate!important}
+#uw621ProfileModal .uw621-avatar + .uwpf,
+#uw621ProfileModal .uw621-avatar ~ .uwpf{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:118%!important;
+  height:118%!important;
+  transform:translate(-50%,-50%)!important;
+  transform-origin:center!important;
+  pointer-events:none!important;
+  z-index:9!important;
+  overflow:visible!important;
+}
+
+/* Some legacy frames are injected inside the avatar instead of beside it. */
+#uw621ProfileModal .uw621-avatar>.uwpf{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:118%!important;
+  height:118%!important;
+  inset:auto!important;
+  transform:translate(-50%,-50%)!important;
+  transform-origin:center!important;
+  pointer-events:none!important;
+  z-index:9!important;
+  overflow:visible!important;
+}
+
+@media(max-width:700px){
+ #uw621ProfileModal .uw621-avatar + .uwpf,
+ #uw621ProfileModal .uw621-avatar ~ .uwpf,
+ #uw621ProfileModal .uw621-avatar>.uwpf{
+   width:116%!important;
+   height:116%!important;
+ }
+}
+</style>
+<script id="uw-hero-v5-v1-frame-fit-js">
+(()=>{
+ const fit=()=>{
+   const modal=document.getElementById('uw621ProfileModal');
+   if(!modal)return;
+   const avatar=modal.querySelector('.uw621-avatar');
+   if(!avatar)return;
+   avatar.style.overflow='visible';
+   // If a legacy sibling frame exists, anchor its containing header so percentage
+   // positioning resolves against the new hero area rather than the page.
+   const head=avatar.closest('.uw621-head');
+   if(head)head.style.position='relative';
+ };
+ fit();
+ new MutationObserver(fit).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<!-- /PROFILE HERO V5 // LEGACY V1 FRAME FIT -->
 
 </body>
 </html>
