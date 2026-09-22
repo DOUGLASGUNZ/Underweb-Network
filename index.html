@@ -8163,6 +8163,190 @@ z-index:8!important
 })();
 </script>
 
+
+<!-- UNDERWEB PUBLIC PROFILE HERO V5 // COSMETIC STAGE -->
+<style id="uw-public-profile-hero-v5">
+/* Public-profile-only redesign. Existing data, tabs, actions and V1 systems remain intact. */
+#uw621ProfileModal .uw621-sheet{
+  width:min(1080px,100%)!important;
+  background:#010302!important;
+}
+#uw621ProfileModal .uw621-cover{
+  height:250px!important;
+  background-position:center!important;
+}
+#uw621ProfileModal .uw621-main{
+  padding:0 26px 28px!important;
+}
+#uw621ProfileModal .uw621-head{
+  display:grid!important;
+  grid-template-columns:310px minmax(0,1fr) auto!important;
+  gap:26px!important;
+  align-items:center!important;
+  margin-top:-78px!important;
+  padding:0 4px 24px!important;
+  overflow:visible!important;
+  min-height:310px!important;
+}
+#uw621ProfileModal .uw621-head:after{
+  bottom:0!important;
+}
+#uw621ProfileModal .uw621-avatar{
+  width:250px!important;
+  height:250px!important;
+  flex:none!important;
+  justify-self:center!important;
+  border-radius:50%!important;
+  border:2px solid rgba(57,255,104,.45)!important;
+  outline:1px solid rgba(57,255,104,.18)!important;
+  box-shadow:0 0 0 10px #010302,0 28px 70px rgba(0,0,0,.72),0 0 42px rgba(57,255,104,.12)!important;
+  background-position:center!important;
+  background-size:cover!important;
+  overflow:visible!important;
+  position:relative!important;
+  z-index:5!important;
+}
+#uw621ProfileModal .uw621-title{
+  align-self:center!important;
+  padding:64px 0 0!important;
+  min-width:0!important;
+  position:relative!important;
+  z-index:6!important;
+}
+#uw621ProfileModal .uw621-title:before{
+  content:"UNDERWEB // NETWORK PROFILE";
+  display:block;
+  margin-bottom:11px;
+  color:var(--g);
+  font:900 9px/1 monospace;
+  letter-spacing:.18em;
+  opacity:.82;
+}
+#uw621ProfileModal .uw621-title h2{
+  font-size:44px!important;
+  line-height:.95!important;
+  letter-spacing:-.035em!important;
+  margin:0 0 9px!important;
+}
+#uw621ProfileModal .uw621-title p{
+  font-size:16px!important;
+  margin:0 0 10px!important;
+}
+#uw621ProfileModal .uw621-title .uwpo-primary-id{
+  margin-top:11px!important;
+}
+#uw621ProfileModal .uw621-scope{
+  align-self:center!important;
+  margin:58px 0 0!important;
+  padding:9px 11px!important;
+  border:1px solid rgba(57,255,104,.3)!important;
+  background:#031008!important;
+  white-space:nowrap!important;
+}
+#uw621ProfileModal .uw621-actions{
+  margin:10px 0 12px!important;
+  padding-top:10px!important;
+  border-top:1px solid rgba(57,255,104,.13)!important;
+}
+#uw621ProfileModal .uwpo-tabs{
+  border-color:rgba(57,255,104,.28)!important;
+  background:#010503!important;
+}
+#uw621ProfileModal .uwpo-tabs button.active{
+  background:linear-gradient(180deg,rgba(57,255,104,.14),rgba(57,255,104,.035))!important;
+}
+
+/* V2 cosmetic stage: intentionally large, but bounded to the dedicated hero avatar. */
+#uw621ProfileModal .uw621-avatar>.uwv2-profile-frame{
+  width:190%!important;
+  height:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  object-fit:unset!important;
+  z-index:8!important;
+}
+
+/* Give the artwork room to break out without colliding with the identity column. */
+#uw621ProfileModal .uw621-avatar:has(>.uwv2-profile-frame){
+  margin-left:8px!important;
+}
+
+@media(max-width:700px){
+ #uw621ProfileModal .uw621-cover{
+   height:210px!important;
+ }
+ #uw621ProfileModal .uw621-main{
+   padding:0 14px 24px!important;
+ }
+ #uw621ProfileModal .uw621-head{
+   display:flex!important;
+   flex-direction:column!important;
+   align-items:center!important;
+   gap:8px!important;
+   margin-top:-52px!important;
+   padding:0 4px 18px!important;
+   min-height:0!important;
+   text-align:center!important;
+ }
+ #uw621ProfileModal .uw621-avatar{
+   width:178px!important;
+   height:178px!important;
+   flex-basis:178px!important;
+   margin:0 auto!important;
+   box-shadow:0 0 0 8px #010302,0 24px 55px rgba(0,0,0,.7),0 0 34px rgba(57,255,104,.13)!important;
+ }
+ #uw621ProfileModal .uw621-avatar>.uwv2-profile-frame{
+   width:185%!important;
+ }
+ #uw621ProfileModal .uw621-title{
+   width:100%!important;
+   padding:16px 4px 0!important;
+   text-align:center!important;
+ }
+ #uw621ProfileModal .uw621-title:before{
+   margin-bottom:8px!important;
+ }
+ #uw621ProfileModal .uw621-title h2{
+   font-size:34px!important;
+ }
+ #uw621ProfileModal .uw621-title p{
+   font-size:14px!important;
+ }
+ #uw621ProfileModal .uw621-title>div,
+ #uw621ProfileModal .uw621-title .uwpo-primary-id{
+   justify-content:center!important;
+ }
+ #uw621ProfileModal .uw621-scope{
+   width:auto!important;
+   margin:4px auto 0!important;
+   align-self:center!important;
+ }
+ #uw621ProfileModal .uw621-actions{
+   position:relative!important;
+   bottom:auto!important;
+   background:transparent!important;
+   padding:8px 0 0!important;
+ }
+ #uw621ProfileModal .uwpo-tabs{
+   margin-top:6px!important;
+ }
+ #uw776LeadershipButton{
+   top:14px!important;
+   right:66px!important;
+ }
+}
+</style>
+<script id="uw-public-profile-hero-v5-js">
+(()=>{
+ const b=document.getElementById('uwBuildIndicator');
+ if(b)b.innerHTML='UNDERWEB // PROFILE HERO V5 &nbsp; QA BUILD 2026.09.21-16';
+})();
+</script>
+<!-- /UNDERWEB PUBLIC PROFILE HERO V5 -->
+
 </body>
 </html>
 
