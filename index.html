@@ -8342,10 +8342,28 @@ z-index:8!important
 <script id="uw-public-profile-hero-v5-js">
 (()=>{
  const b=document.getElementById('uwBuildIndicator');
- if(b)b.innerHTML='UNDERWEB // PROFILE HERO V5 &nbsp; QA BUILD 2026.09.21-17';
+ if(b)b.innerHTML='UNDERWEB // PROFILE HERO V5 &nbsp; BUILD 2026.09.21-18';
 })();
 </script>
 <!-- /UNDERWEB PUBLIC PROFILE HERO V5 -->
+
+
+<!-- COSMETICS V2 TEMPORARILY DISABLED -->
+<style id="uw-v2-disabled">
+.uwv2-profile-frame,.uwv2-equipped-frame,.uwv2-cosmetic-box,
+#uwCosmeticsV2QA,#uwv2QA{display:none!important}
+</style>
+<script id="uw-v2-disabled-js">
+(()=>{
+  const kill=()=>{
+    document.querySelectorAll('.uwv2-profile-frame,.uwv2-equipped-frame,.uwv2-cosmetic-box,#uwCosmeticsV2QA,#uwv2QA')
+      .forEach(el=>el.remove());
+  };
+  kill();
+  new MutationObserver(kill).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<!-- /COSMETICS V2 TEMPORARILY DISABLED -->
 
 </body>
 </html>
