@@ -8239,69 +8239,6 @@ body.uw-help-form-open #uwCreateFab{display:none!important}
 })();
 </script>
 
-
-<!-- PROFILE HERO V5 // LEGACY V1 FRAME FIT -->
-<style id="uw-hero-v5-v1-frame-fit">
-/* Fit the existing V1 sibling-frame renderer to the new larger hero PFP.
-   No V1 artwork/unlock/equip logic is changed. */
-#uw621ProfileModal .uw621-avatar{isolation:isolate!important}
-#uw621ProfileModal .uw621-avatar + .uwpf,
-#uw621ProfileModal .uw621-avatar ~ .uwpf{
-  position:absolute!important;
-  left:50%!important;
-  top:50%!important;
-  width:118%!important;
-  height:118%!important;
-  transform:translate(-50%,-50%)!important;
-  transform-origin:center!important;
-  pointer-events:none!important;
-  z-index:9!important;
-  overflow:visible!important;
-}
-
-/* Some legacy frames are injected inside the avatar instead of beside it. */
-#uw621ProfileModal .uw621-avatar>.uwpf{
-  position:absolute!important;
-  left:50%!important;
-  top:50%!important;
-  width:118%!important;
-  height:118%!important;
-  inset:auto!important;
-  transform:translate(-50%,-50%)!important;
-  transform-origin:center!important;
-  pointer-events:none!important;
-  z-index:9!important;
-  overflow:visible!important;
-}
-
-@media(max-width:700px){
- #uw621ProfileModal .uw621-avatar + .uwpf,
- #uw621ProfileModal .uw621-avatar ~ .uwpf,
- #uw621ProfileModal .uw621-avatar>.uwpf{
-   width:116%!important;
-   height:116%!important;
- }
-}
-</style>
-<script id="uw-hero-v5-v1-frame-fit-js">
-(()=>{
- const fit=()=>{
-   const modal=document.getElementById('uw621ProfileModal');
-   if(!modal)return;
-   const avatar=modal.querySelector('.uw621-avatar');
-   if(!avatar)return;
-   avatar.style.overflow='visible';
-   // If a legacy sibling frame exists, anchor its containing header so percentage
-   // positioning resolves against the new hero area rather than the page.
-   const head=avatar.closest('.uw621-head');
-   if(head)head.style.position='relative';
- };
- fit();
- new MutationObserver(fit).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
-<!-- /PROFILE HERO V5 // LEGACY V1 FRAME FIT -->
-
 </body>
 </html>
 
