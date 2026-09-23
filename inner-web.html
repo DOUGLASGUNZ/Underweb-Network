@@ -65,19 +65,58 @@ a{color:inherit;text-decoration:none}.shell{width:min(1180px,calc(100% - 34px));
 <article class="tier featured"><div class="code">CLEARANCE // II</div><h3>SIGNAL</h3><div class="price">$10 <small>/ month</small></div><ul><li>Everything in CONNECTED</li><li>Complete monthly Signal Drops</li><li>Unity materials & avatar assets</li><li>Creator Kits</li><li>Academy tutorials</li><li>Premium Vault artifacts + future Labs</li></ul><button class="btn" data-connect="signal">Establish Connection</button></article>
 </div></section>
 
-<section class="section" id="vault"><div class="section-head"><div><div class="kicker">Restricted archive</div><h2>THE VAULT</h2></div><span class="code">AUTH // PREVIEW MODE</span></div><div class="vaultbar"><div class="terminal"><div>&gt; IDENTITY <strong>GUEST</strong></div><div>&gt; CLEARANCE <strong>NONE</strong></div><div>&gt; CONNECTION <strong>UNESTABLISHED</strong></div><br><div class="muted">Authenticate through your UnderWeb account to resolve live clearance.</div><div class="statgrid"><div class="stat"><b>06</b>Avatar Lab</div><div class="stat"><b>12</b>Materials</div><div class="stat"><b>03</b>Creator Kits</div><div class="stat"><b>08</b>Cosmetics</div><div class="stat"><b>04</b>Academy</div><div class="stat"><b>00</b>Labs</div></div></div><div class="terminal"><div class="code">CURRENT SIGNAL</div><h3 style="font:900 2rem Inter,sans-serif;margin:14px 0">WEB OF THE DEAD</h3><div class="muted">SIGNAL//001 · OCT 2026</div><br><button class="btn" onclick="document.querySelector('#collection').scrollIntoView()">Inspect Artifacts</button></div></div></section>
+<section class="section" id="vault"><div class="section-head"><div><div class="kicker">Restricted archive</div><h2>THE VAULT</h2></div><span class="code" id="iwAuthState">AUTH // CHECKING</span></div><div class="vaultbar"><div class="terminal"><div>&gt; IDENTITY <strong id="iwIdentity">CHECKING</strong></div><div>&gt; CLEARANCE <strong id="iwClearance">—</strong></div><div>&gt; CONNECTION <strong id="iwConnection">RESOLVING</strong></div><br><div class="muted" id="iwMessage">Resolving your existing UnderWeb session and Inner Web clearance.</div><div class="statgrid"><div class="stat"><b>06</b>Avatar Lab</div><div class="stat"><b>12</b>Materials</div><div class="stat"><b>03</b>Creator Kits</div><div class="stat"><b>08</b>Cosmetics</div><div class="stat"><b>04</b>Academy</div><div class="stat"><b>00</b>Labs</div></div></div><div class="terminal"><div class="code">CURRENT SIGNAL</div><h3 style="font:900 2rem Inter,sans-serif;margin:14px 0">WEB OF THE DEAD</h3><div class="muted">SIGNAL//001 · OCT 2026</div><br><button class="btn" onclick="document.querySelector('#collection').scrollIntoView()">Inspect Artifacts</button></div></div></section>
 
-<section class="section" id="collection"><div class="section-head"><div><div class="kicker">Signal//001 Collection</div><h2>ARTIFACTS</h2></div><span class="muted">Ownership persists after a Signal ends.</span></div><div class="artifacts">
-<article class="artifact"><div class="code">ARTIFACT // 001-01</div><h4>DEAD SIGNAL EYES</h4><p>Animated Halloween eye material built around the UnderWeb signal.</p><div class="lock">SIGNAL CLEARANCE REQUIRED</div></article>
-<article class="artifact"><div class="code">ARTIFACT // 001-02</div><h4>PARASITIC WEB</h4><p>Crawling web and tendril material preset for avatar surfaces.</p><div class="lock">SIGNAL CLEARANCE REQUIRED</div></article>
-<article class="artifact"><div class="code">ARTIFACT // 001-03</div><h4>GRAVE SIGNAL</h4><p>Bone and skeletal material with corrupted network markings.</p><div class="lock">SIGNAL CLEARANCE REQUIRED</div></article>
-<article class="artifact"><div class="code">ARTIFACT // 001-04</div><h4>MARKED BY THE WEB</h4><p>Halloween tattoo and decal collection for creators.</p><div class="lock">SIGNAL CLEARANCE REQUIRED</div></article>
-<article class="artifact"><div class="code">ARTIFACT // 001-05</div><h4>AFTERDARK CREATOR KIT</h4><p>Overlays, corrupted marks and event graphics for Halloween media.</p><div class="lock">SIGNAL CLEARANCE REQUIRED</div></article>
-<article class="artifact founding"><div class="code">FOUNDING ARTIFACT</div><h4>FOUNDING SIGNAL // 2026</h4><p>Permanent launch-era collectible. Once the founding transmission closes, it cannot be acquired again.</p><div class="lock">LIMITED // SIGNAL 001</div></article>
-</div></section>
+<section class="section" id="collection"><div class="section-head"><div><div class="kicker">Your Inner Web archive</div><h2>COLLECTION</h2></div><span class="muted" id="iwCollectionMeta">Sign in to resolve ownership.</span></div><div class="artifacts" id="iwCollectionGrid"><article class="artifact locked"><div class="code">SYSTEM</div><h4>RESOLVING COLLECTION</h4><p>Your permanent artifacts will appear here after authentication.</p><div class="lock">WAITING FOR UNDERWEB SESSION</div></article></div></section>
 <footer class="footer"><span>UNDERWEB // THE INNER WEB</span><span>V0.1 PROTOTYPE · MEMBERSHIP PROVIDER NOT YET CONNECTED</span></footer>
 </div>
 <script>
-document.querySelectorAll('[data-connect]').forEach(b=>b.addEventListener('click',()=>{const t=b.dataset.connect.toUpperCase();alert(t+' // CONNECTION FLOW NOT YET LIVE\n\nThe Inner Web interface is ready. Membership-provider linking is intentionally disabled until entitlement testing is complete.')}))
+const IW={tier:'none',status:'inactive',user:null,catalog:[],owned:[]};
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function supa(){return window.supabaseClient||window.supabase||window.sb||null}
+function rank(t,status){if(t==='owner')return 99;if(status!=='active')return 0;return t==='signal'?2:t==='connected'?1:0}
+function need(t){return t==='signal'?2:t==='connected'?1:0}
+function setIdentity(){
+ const signed=!!IW.user;
+ document.querySelector('#iwIdentity').textContent=signed?(IW.user.user_metadata?.display_name||IW.user.email||'MEMBER'):'GUEST';
+ document.querySelector('#iwClearance').textContent=IW.tier.toUpperCase();
+ document.querySelector('#iwConnection').textContent=signed?(IW.status==='active'||IW.tier==='owner'?'ESTABLISHED':'ACCOUNT LINKED'):'UNESTABLISHED';
+ document.querySelector('#iwAuthState').textContent=signed?'AUTH // VERIFIED':'AUTH // GUEST';
+ document.querySelector('#iwMessage').textContent=signed?'Clearance resolved from your UnderWeb account. Permanent claims remain in your collection after membership ends.':'Sign in through UnderWeb to resolve membership clearance and your permanent collection.';
+}
+function renderCollection(){
+ const grid=document.querySelector('#iwCollectionGrid'),meta=document.querySelector('#iwCollectionMeta');
+ if(!IW.user){meta.textContent='Sign in to resolve ownership.';grid.innerHTML='<article class="artifact locked"><div class="code">GUEST</div><h4>COLLECTION LOCKED</h4><p>Your permanent artifacts are attached to your UnderWeb account.</p><div class="lock">SIGN IN REQUIRED</div></article>';return}
+ meta.textContent=IW.owned.length+' permanent artifact'+(IW.owned.length===1?'':'s')+' discovered.';
+ const ownedIds=new Set(IW.owned.map(x=>x.item_id));
+ const collectible=IW.catalog.filter(x=>x.collectible);
+ if(!collectible.length){grid.innerHTML='<article class="artifact locked"><div class="code">VAULT</div><h4>NO ACTIVE ARTIFACTS</h4><p>The catalog is connected, but no collectible artifacts are currently published.</p></article>';return}
+ grid.innerHTML=collectible.map(x=>{
+  const owned=ownedIds.has(x.item_id)||x.owned, allowed=x.access_allowed||rank(IW.tier,IW.status)>=need(x.required_tier);
+  const action=owned?'OWNED // PERMANENT':(!x.downloadable&&allowed?'<button class="btn iw-claim" data-item="'+esc(x.item_id)+'">CLAIM ARTIFACT</button>':(allowed&&x.downloadable?'DOWNLOAD // RELEASE PENDING':esc((x.required_tier||'free').toUpperCase())+' CLEARANCE REQUIRED'));
+  return '<article class="artifact '+(owned?'':'locked')+'"><div class="code">'+esc((x.category||'artifact').replaceAll('_',' '))+'</div><h4>'+esc(x.name)+'</h4><p>'+esc(x.description||'')+'</p><div class="lock">'+action+'</div></article>'
+ }).join('');
+ document.querySelectorAll('.iw-claim').forEach(b=>b.onclick=()=>claimArtifact(b.dataset.item,b));
+}
+async function claimArtifact(id,button){
+ const sb=supa(); if(!sb?.rpc)return alert('Inner Web backend is not available on this page yet.');
+ button.disabled=true;button.textContent='CLAIMING…';
+ try{const {data,error}=await sb.rpc('uw_claim_artifact',{p_item_id:id});if(error)throw error;const row=Array.isArray(data)?data[0]:data;if(!row?.claimed)throw new Error(row?.reason||'Claim denied');await loadInnerWeb();}
+ catch(e){alert('CLAIM FAILED // '+(e.message||e));button.disabled=false;button.textContent='CLAIM ARTIFACT'}
+}
+async function loadInnerWeb(){
+ const sb=supa();
+ if(!sb?.auth){IW.user=null;setIdentity();renderCollection();return}
+ try{
+  const session=await sb.auth.getSession();IW.user=session?.data?.session?.user||null;
+  if(!IW.user){setIdentity();renderCollection();return}
+  const [status,collection,catalog]=await Promise.all([sb.rpc('uw_my_inner_web_status'),sb.rpc('uw_my_artifact_collection'),sb.rpc('uw_inner_web_catalog')]);
+  if(status.error)throw status.error;if(collection.error)throw collection.error;if(catalog.error)throw catalog.error;
+  const st=Array.isArray(status.data)?status.data[0]:status.data||{};IW.tier=st.tier||'none';IW.status=st.status||'inactive';IW.owned=collection.data||[];IW.catalog=catalog.data||[];
+  setIdentity();renderCollection();
+ }catch(e){document.querySelector('#iwAuthState').textContent='AUTH // BACKEND SETUP REQUIRED';document.querySelector('#iwMessage').textContent='Inner Web tables/RPCs are not live in this environment yet. Run inner_web_migration.sql in Supabase, then reload.';console.error('[InnerWeb]',e);renderCollection()}
+}
+document.querySelectorAll('[data-connect]').forEach(b=>b.addEventListener('click',()=>alert(b.dataset.connect.toUpperCase()+' // MEMBERSHIP LINKING COMES NEXT\n\nAccount recognition, clearance, claims and permanent collections are wired first.')));
+window.addEventListener('DOMContentLoaded',loadInnerWeb);
 </script>
 </body></html>
