@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#050807" />
+  <title>UnderWeb — Maintenance</title>
+  <style>
+    :root{
+      --bg:#030504;
+      --panel:#07100b;
+      --line:#173c28;
+      --green:#62ff8f;
+      --green2:#19d85b;
+      --muted:#8ea397;
+      --text:#f2fff6;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{overflow-x:hidden}
+    body:before{
+      content:"";
+      position:fixed;inset:0;pointer-events:none;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(25,216,91,.10), transparent 28%),
+        linear-gradient(rgba(98,255,143,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(98,255,143,.025) 1px, transparent 1px);
+      background-size:auto,48px 48px,48px 48px;
+      mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),transparent 90%);
+    }
+    .noise{
+      position:fixed;inset:-30%;pointer-events:none;opacity:.06;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+      animation:drift 10s linear infinite;
+    }
+    @keyframes drift{to{transform:translate3d(5%,4%,0)}}
+    .wrap{
+      min-height:100svh;display:grid;place-items:center;
+      padding:28px;
+    }
+    .card{
+      width:min(900px,100%);
+      background:linear-gradient(180deg,rgba(9,18,12,.92),rgba(4,8,6,.88));
+      border:1px solid rgba(98,255,143,.22);
+      box-shadow:0 0 0 1px rgba(98,255,143,.03),0 30px 100px rgba(0,0,0,.6),0 0 80px rgba(25,216,91,.06);
+      border-radius:28px;
+      padding:54px clamp(24px,6vw,70px);
+      position:relative;
+      overflow:hidden;
+      backdrop-filter:blur(10px);
+    }
+    .card:before,.card:after{
+      content:"";position:absolute;inset:auto;
+      border:1px solid rgba(98,255,143,.12);border-radius:50%;
+    }
+    .card:before{width:420px;height:420px;right:-240px;top:-220px}
+    .card:after{width:280px;height:280px;right:-160px;top:-140px}
+    .sigil{
+      width:86px;height:86px;margin-bottom:28px;position:relative;
+      border:1px solid rgba(98,255,143,.30);
+      border-radius:26px;
+      display:grid;place-items:center;
+      box-shadow:inset 0 0 30px rgba(98,255,143,.05),0 0 30px rgba(25,216,91,.08);
+    }
+    .eye{
+      width:48px;height:28px;border:2px solid var(--green);
+      border-radius:70% 10% 70% 10%/70% 10% 70% 10%;
+      transform:rotate(45deg);
+      display:grid;place-items:center;
+      box-shadow:0 0 18px rgba(98,255,143,.35);
+    }
+    .eye:after{
+      content:"";width:12px;height:12px;border-radius:50%;background:var(--green);
+      box-shadow:0 0 16px var(--green);
+    }
+    .kicker{
+      color:var(--green);font-size:.78rem;letter-spacing:.24em;
+      text-transform:uppercase;font-weight:800;margin-bottom:12px;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(3.4rem,10vw,7.7rem);
+      line-height:.86;
+      letter-spacing:-.065em;
+      text-transform:uppercase;
+      font-weight:950;
+    }
+    h1 span{display:block;color:var(--green);text-shadow:0 0 32px rgba(98,255,143,.16)}
+    .copy{
+      margin-top:30px;max-width:700px;
+      color:#c8d6cd;font-size:clamp(1.02rem,2vw,1.22rem);line-height:1.72;
+    }
+    .copy strong{color:#fff}
+    .status{
+      margin-top:34px;
+      display:flex;align-items:center;gap:12px;
+      color:var(--muted);font-size:.93rem;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;background:var(--green2);
+      box-shadow:0 0 16px rgba(25,216,91,.75);
+      animation:pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse{50%{opacity:.35;transform:scale(.72)}}
+    .footer{
+      margin-top:46px;padding-top:22px;border-top:1px solid rgba(98,255,143,.12);
+      display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      color:#617268;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;
+    }
+    @media(max-width:600px){
+      .card{padding:36px 22px;border-radius:22px}
+      .sigil{width:72px;height:72px}
+      .footer{margin-top:36px}
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+  <main class="wrap">
+    <section class="card">
+      <div class="sigil" aria-hidden="true"><div class="eye"></div></div>
+      <div class="kicker">UnderWeb Network Status</div>
+      <h1>System <span>Paused.</span></h1>
+      <div class="copy">
+        UnderWeb is currently in <strong>maintenance mode</strong> while the network takes a break.
+        Active development, applications, events, creator onboarding, and normal operations are temporarily paused.
+        <br><br>
+        Nothing has been deleted. Nothing has been finalized. The site and its data are being preserved while we decide what comes next.
+      </div>
+      <div class="status">
+        <span class="dot"></span>
+        <span>Infrastructure preserved · Public operations paused</span>
+      </div>
+      <div class="footer">
+        <span>underweb.cloud</span>
+        <span>No reopening date at this time</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
