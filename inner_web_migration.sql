@@ -109,5 +109,76 @@ $$;
 revoke all on function public.uw_my_artifact_collection() from public;
 grant execute on function public.uw_my_artifact_collection() to authenticated;
 
+-- Claim a non-downloadable collectible the signed-in user currently qualifies for.
+-- Downloadable files remain server-mediated so storage paths never become browser entitlements.
+create or replace function public.uw_claim_artifact(p_item_id text)
+returns table(item_id text,claimed boolean,reason text)
+language plpgsql security definer set search_path=public as $
+declare
+ uid uuid:=auth.uid();
+ v_item public.vault_items%rowtype;
+ v_tier text:='none';
+ v_status text:='inactive';
+ v_rank int:=0;
+ v_need int:=0;
+ v_signal public.signal_drops%rowtype;
+begin
+ if uid is null then return query select p_item_id,false,'sign_in_required'; return; end if;
+ select * into v_item from public.vault_items where id=p_item_id and active=true;
+ if not found then return query select p_item_id,false,'not_found'; return; end if;
+ if v_item.downloadable then return query select p_item_id,false,'download_requires_server'; return; end if;
+ if not v_item.collectible then return query select p_item_id,false,'not_collectible'; return; end if;
+
+ select coalesce(m.tier,'none'),coalesce(m.status,'inactive') into v_tier,v_status
+ from (select uid) u left join public.inner_web_memberships m on m.user_id=u.uid;
+
+ if v_tier='owner' then v_rank:=99;
+ elsif v_status='active' and v_tier='signal' then v_rank:=2;
+ elsif v_status='active' and v_tier='connected' then v_rank:=1;
+ else v_rank:=0; end if;
+
+ v_need:=case v_item.required_tier when 'signal' then 2 when 'connected' then 1 else 0 end;
+ if v_rank<v_need then return query select p_item_id,false,'clearance_required'; return; end if;
+
+ if coalesce(v_item.metadata->>'signal','')<>'' then
+   select d.* into v_signal
+   from public.signal_drop_items m join public.signal_drops d on d.id=m.signal_id
+   where m.item_id=p_item_id order by d.starts_at desc nulls last limit 1;
+   if found and v_tier<>'owner' then
+     if not v_signal.active or (v_signal.starts_at is not null and now()<v_signal.starts_at)
+        or (v_signal.ends_at is not null and now()>=v_signal.ends_at) then
+       return query select p_item_id,false,'signal_closed'; return;
+     end if;
+   end if;
+ end if;
+
+ insert into public.user_entitlements(user_id,item_id,source,metadata)
+ values(uid,p_item_id,'claim',jsonb_build_object('tier',v_tier))
+ on conflict(user_id,item_id) do nothing;
+ return query select p_item_id,true,'claimed';
+end $;
+revoke all on function public.uw_claim_artifact(text) from public;
+grant execute on function public.uw_claim_artifact(text) to authenticated;
+
+-- Catalog reader returns access state without exposing private storage paths.
+create or replace function public.uw_inner_web_catalog()
+returns table(item_id text,name text,description text,category text,required_tier text,downloadable boolean,collectible boolean,owned boolean,access_allowed boolean)
+language sql stable security definer set search_path=public as $
+ with me as (
+   select auth.uid() uid,
+          coalesce(m.tier,'none') tier,
+          coalesce(m.status,'inactive') status
+   from (select auth.uid() uid) u left join public.inner_web_memberships m on m.user_id=u.uid
+ ), ranked as (
+   select *,case when tier='owner' then 99 when status='active' and tier='signal' then 2 when status='active' and tier='connected' then 1 else 0 end rank from me
+ )
+ select v.id,v.name,v.description,v.category,v.required_tier,v.downloadable,v.collectible,
+        exists(select 1 from public.user_entitlements e where e.user_id=ranked.uid and e.item_id=v.id),
+        (ranked.rank>=case v.required_tier when 'signal' then 2 when 'connected' then 1 else 0 end)
+ from public.vault_items v cross join ranked where v.active=true order by v.created_at,v.id;
+$;
+revoke all on function public.uw_inner_web_catalog() from public;
+grant execute on function public.uw_inner_web_catalog() to anon,authenticated;
+
 -- NOTE: claims, membership sync and signed download URLs belong in trusted server/Edge Function code.
 -- Never place the Supabase service-role key in browser JavaScript.
