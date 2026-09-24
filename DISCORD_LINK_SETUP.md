@@ -26,7 +26,7 @@ Also apply the existing transfer-package migration:
 The bot link is configured for:
 
 ```text
-https://underweb.cloud/account/discord/link
+https://www.underweb.cloud/account/discord/link
 ```
 
 Configure the static host so that this URL serves:
@@ -73,7 +73,7 @@ supabase functions deploy redeem-discord-link
 Configure the function environment variable:
 
 ```text
-UNDERWEB_SITE_ORIGIN=https://underweb.cloud
+UNDERWEB_SITE_ORIGIN=https://www.underweb.cloud
 ```
 
 Supabase supplies `SUPABASE_URL` and `SUPABASE_ANON_KEY` to Edge Functions.
@@ -91,13 +91,13 @@ public.redeem_discord_link_token(text)
 In Supabase Dashboard, under Authentication → URL Configuration, add:
 
 ```text
-https://underweb.cloud/account/discord/link
+https://www.underweb.cloud/account/discord/link
 ```
 
 If Vercel canonicalizes the route with a trailing slash, also add:
 
 ```text
-https://underweb.cloud/account/discord/link/
+https://www.underweb.cloud/account/discord/link/
 ```
 
 ## Security flow
@@ -119,7 +119,7 @@ https://underweb.cloud/account/discord/link/
 
 1. Deploy the SQL function.
 2. Deploy the Edge Function.
-3. Publish the page at `/account/discord/link`.
+3. Publish the page at `/account/discord/link` on `www.underweb.cloud`.
 4. Set the bot's `UNDERWEB_DISCORD_LINK_URL` to the published URL.
 5. Run `/link` in Discord.
 6. Open the private link while signed out.
