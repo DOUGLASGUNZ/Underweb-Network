@@ -112,17 +112,33 @@ function renderCollection(){
  const ownedCards=ownedCatalog.map(x=>'<article class="artifact"><div class="code">'+esc((x.category||'artifact').replaceAll('_',' '))+'</div><h4>'+esc(x.name)+'</h4><p>'+esc(x.description||'')+'</p><div class="lock">OWNED // PERMANENT</div></article>').join('');
  const availableCards=claimable.map(x=>{
   const allowed=x.access_allowed||rank(IW.tier,IW.status)>=need(x.required_tier);
-  const action=!x.downloadable&&allowed?'<button class="btn iw-claim" data-item="'+esc(x.item_id)+'">CLAIM ARTIFACT</button>':(allowed&&x.downloadable?'SECURE DOWNLOAD // RELEASE PENDING':esc((x.required_tier||'free').toUpperCase())+' CLEARANCE REQUIRED');
+  const action=!x.downloadable&&allowed?'<button class="btn iw-claim" data-item="'+esc(x.item_id)+'">CLAIM ARTIFACT</button>':(allowed&&x.downloadable?'<button class="btn iw-download" data-item="'+esc(x.item_id)+'">ACQUIRE ARTIFACT</button>':esc((x.required_tier||'free').toUpperCase())+' CLEARANCE REQUIRED');
   return '<article class="artifact locked"><div class="code">'+esc((x.category||'artifact').replaceAll('_',' '))+'</div><h4>'+esc(x.name)+'</h4><p>'+esc(x.description||'')+'</p><div class="lock">'+action+'</div></article>'
  }).join('');
  grid.innerHTML=(ownedCards||'<article class="artifact locked"><div class="code">COLLECTION</div><h4>NO ARTIFACTS CLAIMED</h4><p>Claim eligible collectibles below to permanently attach them to your UnderWeb account.</p></article>')+availableCards;
  document.querySelectorAll('.iw-claim').forEach(b=>b.onclick=()=>claimArtifact(b.dataset.item,b));
+ document.querySelectorAll('.iw-download').forEach(b=>b.onclick=()=>downloadArtifact(b.dataset.item,b));
 }
 async function claimArtifact(id,button){
  const sb=supa(); if(!sb?.rpc)return alert('Inner Web backend is not available on this page yet.');
  button.disabled=true;button.textContent='CLAIMING…';
  try{const {data,error}=await sb.rpc('uw_claim_artifact',{p_item_id:id});if(error)throw error;const row=Array.isArray(data)?data[0]:data;if(!row?.claimed)throw new Error(row?.reason||'Claim denied');await loadInnerWeb();}
  catch(e){alert('CLAIM FAILED // '+(e.message||e));button.disabled=false;button.textContent='CLAIM ARTIFACT'}
+}
+async function downloadArtifact(id,button){
+ const sb=supa(); if(!sb?.functions?.invoke)return alert('Secure Vault delivery is unavailable on this page.');
+ button.disabled=true;button.textContent='AUTHORIZING…';
+ try{
+  const {data,error}=await sb.functions.invoke('inner-web-download',{body:{item_id:id}});
+  if(error)throw error;
+  if(!data?.url)throw new Error(data?.error||'No signed download returned');
+  button.textContent='DOWNLOAD READY';
+  window.location.assign(data.url);
+  setTimeout(()=>{button.disabled=false;button.textContent='ACQUIRE ARTIFACT'},2500);
+ }catch(e){
+  alert('DOWNLOAD FAILED // '+(e.message||e));
+  button.disabled=false;button.textContent='ACQUIRE ARTIFACT';
+ }
 }
 async function loadInnerWeb(){
  const sb=supa();
