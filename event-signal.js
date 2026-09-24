@@ -224,6 +224,7 @@
     var newEventButton = el("button", "btn", "Create new event");
     newEventButton.type = "button";
     newEventButton.hidden = true;
+    newEventButton.style.display = "none";
     if (submit) submit.insertAdjacentElement("afterend", newEventButton);
     var statusNote = document.getElementById("eventSaveStatus");
 
@@ -258,6 +259,7 @@
       });
       if (fileInput) fileInput.disabled = !!event;
       newEventButton.hidden = !event;
+      newEventButton.style.display = event ? "" : "none";
       if (submit) submit.textContent = event ? "Save Signal Details" : "Submit Event";
       var heading = editor.querySelector("h3");
       if (heading) heading.textContent = event ? "Edit Signal Details" : "New Event";
@@ -274,6 +276,7 @@
         if (input) input.value = "";
       });
       if (fileInput) fileInput.value = "";
+      if (statusNote) statusNote.textContent = "Events submit as PENDING and require leadership approval. Discord publishing stays server-side.";
       updatePoster();
     }
     async function editEvent(id) {
