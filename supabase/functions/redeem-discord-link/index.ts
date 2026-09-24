@@ -6,7 +6,7 @@ const supabaseAnonKey =
   Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ??
   "";
 const expectedOrigin =
-  Deno.env.get("UNDERWEB_SITE_ORIGIN") ?? "https://underweb.cloud";
+  Deno.env.get("UNDERWEB_SITE_ORIGIN") ?? "https://www.underweb.cloud";
 
 const corsHeaders = {
   "access-control-allow-origin": expectedOrigin,
