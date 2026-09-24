@@ -1,0 +1,63 @@
+/* UnderWeb / spider collection — scoped to the existing profile surfaces. */
+#page-profile .uwsp-panel,
+#uw621ProfileModal .uwsp-public {
+  --uwsp-accent: var(--g, #38ff72);
+  --uwsp-line: var(--l, #123c21);
+  color: var(--t, #f2fff6);
+  border: 1px solid var(--uwsp-line);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #08150d 0%, #040906 68%, #0a110d 100%);
+  box-shadow: inset 0 1px 0 rgba(210,255,223,.055);
+  font-family: inherit;
+}
+#page-profile .uwsp-panel { padding: 17px 19px 18px; margin: 0 0 12px; }
+.uwsp-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; }
+.uwsp-eyebrow { display: block; color: var(--uwsp-accent); font: 900 10px/1.2 monospace; letter-spacing: .17em; margin-bottom: 5px; }
+.uwsp-head h3 { font-size: 19px; line-height: 1.1; margin: 0; letter-spacing: -.025em; }
+.uwsp-head p, .uwsp-note { color: var(--m, #789485); font-size: 11px; line-height: 1.55; margin: 7px 0 0; }
+.uwsp-count { flex: none; border: 1px solid var(--uwsp-line); padding: 7px 9px; color: var(--uwsp-accent); font: 800 10px monospace; letter-spacing: .06em; }
+.uwsp-state { padding: 16px 0 4px; color: var(--m, #789485); font-size: 12px; line-height: 1.6; }
+.uwsp-state strong { display: block; color: var(--t, #f2fff6); font-size: 13px; margin-bottom: 3px; }
+.uwsp-skeleton { height: 52px; margin-top: 12px; border: 1px solid var(--uwsp-line); background: #0e2014; opacity: .6; animation: uwsp-breathe 1.3s ease-in-out infinite alternate; }
+@keyframes uwsp-breathe { to { opacity: .25; } }
+.uwsp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 8px; margin-top: 14px; }
+.uwsp-item { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 10px; border: 1px solid var(--uwsp-line); border-radius: 9px; background: #071009; }
+.uwsp-mark { position: relative; flex: 0 0 27px; height: 27px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; color: var(--uwsp-accent); font: 800 15px/1 monospace; transform: rotate(-12deg); }
+.uwsp-mark::after { content: ''; position: absolute; inset: -4px; border: 1px dotted currentColor; border-radius: 50%; opacity: .35; }
+.uwsp-item[data-rarity="Shiny"] .uwsp-mark { color: #8cdaff; }
+.uwsp-item[data-rarity="Seasonal"] .uwsp-mark { color: #e7bd80; }
+.uwsp-item[data-rarity="Absurdly Rare"] .uwsp-mark { color: #e99cad; }
+.uwsp-info { min-width: 0; flex: 1; }
+.uwsp-info b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; line-height: 1.4; }
+.uwsp-info small { display: block; margin-top: 2px; color: var(--m, #789485); font: 800 9px monospace; text-transform: uppercase; letter-spacing: .06em; }
+.uwsp-quantity { color: var(--uwsp-accent); font: 800 10px monospace; white-space: nowrap; }
+.uwsp-select { cursor: pointer; width: 100%; text-align: left; font: inherit; color: inherit; transition: border-color .16s, background .16s, transform .16s; }
+.uwsp-select:hover { border-color: var(--uwsp-accent); transform: translateY(-2px); }
+.uwsp-select[aria-pressed="true"] { border-color: var(--uwsp-accent); background: #10291a; }
+.uwsp-select:disabled { cursor: not-allowed; opacity: .6; transform: none; }
+.uwsp-check { width: 15px; height: 15px; flex: none; border: 1px solid var(--m, #789485); border-radius: 3px; color: var(--uwsp-accent); font: 900 11px/13px monospace; text-align: center; }
+.uwsp-select[aria-pressed="true"] .uwsp-check { border-color: var(--uwsp-accent); }
+.uwsp-divider { height: 1px; background: var(--uwsp-line); margin: 17px 0 13px; }
+.uwsp-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.uwsp-switch { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-size: 11px; font-weight: 700; }
+.uwsp-switch input { accent-color: var(--uwsp-accent); width: 15px; height: 15px; }
+.uwsp-button, .uwsp-link { border: 1px solid var(--uwsp-accent); background: var(--uwsp-accent); color: #031008; border-radius: 4px; padding: 9px 13px; font: 900 10px monospace; letter-spacing: .08em; cursor: pointer; text-decoration: none; }
+.uwsp-button:hover, .uwsp-link:hover { filter: brightness(1.15); }
+.uwsp-button:disabled { opacity: .45; cursor: not-allowed; }
+.uwsp-button-secondary { color: var(--uwsp-accent); background: transparent; }
+.uwsp-feedback { color: var(--m, #789485); font: 700 10px/1.5 monospace; }
+.uwsp-feedback[data-tone="error"] { color: var(--danger, #ff5c68); }
+#uw621ProfileModal .uwsp-public { margin: 12px 0 0; padding: 13px 15px; }
+#uw621ProfileModal .uwsp-public .uwsp-head h3 { font-size: 15px; }
+#uw621ProfileModal .uwsp-public .uwsp-grid { grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); margin-top: 10px; }
+#uw621ProfileModal .uwsp-public .uwsp-item { padding: 8px; }
+@media (max-width: 700px) {
+  #page-profile .uwsp-panel { padding: 13px; }
+  .uwsp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .uwsp-item { padding: 8px; gap: 7px; }
+  .uwsp-info b { white-space: normal; font-size: 10px; }
+  .uwsp-head h3 { font-size: 16px; }
+  #uw621ProfileModal .uwsp-public .uwsp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 360px) { .uwsp-grid, #uw621ProfileModal .uwsp-public .uwsp-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .uwsp-skeleton { animation: none; } .uwsp-select { transition: none; } }
