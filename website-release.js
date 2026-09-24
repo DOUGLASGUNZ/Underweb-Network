@@ -28,7 +28,7 @@
     if (!document.getElementById("uwPublicReleaseHiddenStyle")) {
       const hiddenStyle = document.createElement("style");
       hiddenStyle.id = "uwPublicReleaseHiddenStyle";
-      hiddenStyle.textContent = "#uwPublicReleasePanel[hidden]{display:none!important}";
+      hiddenStyle.textContent = "#uwPublicReleasePanel[hidden],#uwPublicAnnouncementPanel[hidden]{display:none!important}";
       document.head.appendChild(hiddenStyle);
     }
     const page = get("page-announcements");
@@ -121,9 +121,121 @@
     }, 1000);
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mountReleaseForm, { once: true });
-  } else {
+  function mountPublicAnnouncementPanel() {
+    const page = get("page-announcements");
+    const releasePanel = get("uwPublicReleasePanel");
+    if (!page || !releasePanel || get("uwPublicAnnouncementPanel")) return;
+    releasePanel.insertAdjacentHTML("afterend", [
+      '<section class="uw-section" id="uwPublicAnnouncementPanel" hidden style="margin-bottom:16px">',
+      '<div class="uw-section-head"><h3>Public Discord Announcement</h3><small>Owner, Director, or Admin</small></div>',
+      '<p role="note" style="border-left:3px solid #ffb020;padding:10px 12px;background:rgba(255,176,32,.08)"><strong>PUBLIC:</strong> Publishing sends this message to the public UnderWeb activity feed and the configured Discord website channel. Do not include staff-only or private information. This is separate from the internal Staff Feed and release publisher.</p>',
+      '<form id="uwPublicAnnouncementForm" class="uw-form-grid">',
+      '<label class="uw-label full">Announcement title<input class="uw-input" name="title" required maxlength="240" placeholder="What should the community know?"></label>',
+      '<label class="uw-label full">Public message<textarea class="uw-textarea" name="body" required maxlength="3300" placeholder="Write the public announcement."></textarea></label>',
+      '<label class="uw-label full">Public UnderWeb URL (optional)<input class="uw-input" name="publicUrl" type="url" maxlength="500" placeholder="https://www.underweb.cloud/updates"></label>',
+      '<div class="full"><button class="btn hot" type="submit" id="uwPublicAnnouncementSubmit">PUBLISH PUBLIC ANNOUNCEMENT</button>',
+      '<p id="uwPublicAnnouncementStatus" role="status" aria-live="polite" style="margin:10px 0 0"></p>',
+      '<small>Only an active Owner, Director, or Admin can publish. Repeating the same pending submission is idempotent.</small></div>',
+      '</form></section>'
+    ].join(""));
+
+    const form = get("uwPublicAnnouncementForm");
+    const submit = get("uwPublicAnnouncementSubmit");
+    const status = get("uwPublicAnnouncementStatus");
+    let pendingSubmission = null;
+    const syncVisibility = () => {
+      const panel = get("uwPublicAnnouncementPanel");
+      if (panel) panel.hidden = !hasAdminRole();
+    };
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!hasAdminRole()) {
+        status.textContent = "Only an active Owner, Director, or Admin can publish a public announcement.";
+        return;
+      }
+      const data = new FormData(form);
+      const title = String(data.get("title") || "").trim();
+      const body = String(data.get("body") || "").trim();
+      const publicUrl = String(data.get("publicUrl") || "").trim();
+      if (!title || title.length > 240) {
+        status.textContent = "Enter a title between 1 and 240 characters.";
+        return;
+      }
+      if (!body || body.length > 3300) {
+        status.textContent = "Enter a public message between 1 and 3,300 characters.";
+        return;
+      }
+      if (publicUrl && (!isValidPublicUrl(publicUrl) || publicUrl.length > 500)) {
+        status.textContent = "The optional link must be an HTTPS page on underweb.cloud.";
+        return;
+      }
+      if (typeof uwSupabase === "undefined") {
+        status.textContent = "The website database client is not available. Please refresh and try again.";
+        return;
+      }
+      const signature = JSON.stringify([title, body, publicUrl]);
+      if (!pendingSubmission || pendingSubmission.signature !== signature) {
+        try {
+          const secureCrypto = window.crypto;
+          let key;
+          if (secureCrypto && typeof secureCrypto.randomUUID === "function") {
+            key = secureCrypto.randomUUID();
+          } else if (secureCrypto && typeof secureCrypto.getRandomValues === "function") {
+            const bytes = secureCrypto.getRandomValues(new Uint8Array(16));
+            bytes[6] = (bytes[6] & 15) | 64;
+            bytes[8] = (bytes[8] & 63) | 128;
+            const hex = Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join("");
+            key = [hex.slice(0, 8), hex.slice(8, 12), hex.slice(12, 16), hex.slice(16, 20), hex.slice(20)].join("-");
+          } else {
+            throw new Error("Secure announcement key generation is unavailable in this browser.");
+          }
+          pendingSubmission = { signature, key };
+        } catch (error) {
+          status.textContent = error?.message || "Could not prepare a safe announcement request.";
+          return;
+        }
+      }
+      submit.disabled = true;
+      submit.textContent = "PUBLISHING…";
+      status.textContent = "Publishing public announcement…";
+      try {
+        const { data: activityId, error } = await uwSupabase.rpc("publish_public_announcement", {
+          p_announcement_key: pendingSubmission.key,
+          p_title: title,
+          p_body: body,
+          p_public_url: publicUrl || null,
+        });
+        if (error) throw error;
+        if (!activityId) throw new Error("The public announcement publisher returned no activity ID.");
+        form.reset();
+        pendingSubmission = null;
+        status.textContent = "Public announcement recorded. The Discord bot will post it after its next successful check.";
+      } catch (error) {
+        status.textContent = error?.message || "The public announcement could not be published. Please try again.";
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "PUBLISH PUBLIC ANNOUNCEMENT";
+        syncVisibility();
+      }
+    });
+    syncVisibility();
+    if (typeof uwSupabase !== "undefined" && uwSupabase.auth?.onAuthStateChange) {
+      uwSupabase.auth.onAuthStateChange(() => setTimeout(syncVisibility, 0));
+    }
+    page.addEventListener("click", () => setTimeout(syncVisibility, 250));
+    window.setInterval(() => {
+      if (page.classList.contains("active")) syncVisibility();
+    }, 1000);
+  }
+
+  function mountWebsiteForms() {
     mountReleaseForm();
+    mountPublicAnnouncementPanel();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mountWebsiteForms, { once: true });
+  } else {
+    mountWebsiteForms();
   }
 })();
