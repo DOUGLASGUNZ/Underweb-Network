@@ -72,7 +72,8 @@ begin
     if field not in ('host', 'partner', 'doors', 'platform', 'genres',
                      'performers', 'groupUrl', 'eventUrl', 'instanceUrl')
        or jsonb_typeof(p_details -> field) <> 'string'
-       or length(field_value) > case when field = 'performers' then 3000 else 2048 end
+       or (field = 'performers' and length(field_value) > 3000)
+       or (field <> 'performers' and length(field_value) > 2048)
     then
       raise exception 'Invalid Signal detail: %', field using errcode = '22023';
     end if;
