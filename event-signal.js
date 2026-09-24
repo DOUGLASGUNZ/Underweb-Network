@@ -1,4 +1,5 @@
-/* UnderWeb Event Signal: local preview and inert payload only. No network requests. */
+/* UnderWeb Event Signal: live preview plus optional private event details.
+   Discord publishing remains in the existing website flow. */
 (function () {
   "use strict";
 
@@ -183,9 +184,9 @@
     if (coverage) coverage.classList.add("uwes-coverage");
 
     var options = add(editor, "section", "uwes-options");
-    options.setAttribute("aria-label", "Optional Event Signal preview fields");
+    options.setAttribute("aria-label", "Optional Event Signal details");
     add(options, "h4", "", "Signal details");
-    add(options, "p", "", "Preview-only draft fields. NOT saved on Submit Event and NOT published to Discord. Keep a separate copy if needed.");
+    add(options, "p", "", "These optional details are saved with your event for later editing. They are not published to Discord.");
     var optionGrid = add(options, "div", "uwes-option-grid");
     field(optionGrid, "Host", "host");
     field(optionGrid, "Partner", "partner");
@@ -208,16 +209,138 @@
     var legacyCopy = document.getElementById("copyDiscordBtn");
     if (legacyPreview) legacyPreview.textContent = "Preview saved-fields post";
     if (legacyCopy) legacyCopy.textContent = "Copy saved-fields post";
-    var legacyNote = el("small", "uwes-legacy-note", "These existing post tools use saved event fields only; preview-only Signal details are excluded.");
+    var legacyNote = el("small", "uwes-legacy-note", "These existing post tools use the original event fields only; saved Signal details are excluded.");
     if (legacyPreview) editor.insertBefore(legacyNote, legacyPreview);
     var overlay = document.getElementById("discordPreviewOverlay");
     if (overlay) {
       var dialog = overlay.querySelector(".uw-dialog");
-      if (dialog) dialog.insertBefore(el("p", "uwes-legacy-note", "Existing text post preview: Signal draft-only details are not included or saved."), dialog.querySelector("#discordPreviewText"));
+      if (dialog) dialog.insertBefore(el("p", "uwes-legacy-note", "Existing text post preview: saved Signal details are not included or sent to Discord."), dialog.querySelector("#discordPreviewText"));
     }
 
     var posterUrl = null;
+    var savedCoverUrl = null;
+    var editingEvent = null;
     var fileInput = document.getElementById("eventCoverInput");
+    var newEventButton = el("button", "btn", "Create new event");
+    newEventButton.type = "button";
+    newEventButton.hidden = true;
+    if (submit) submit.insertAdjacentElement("afterend", newEventButton);
+    var statusNote = document.getElementById("eventSaveStatus");
+
+    function details() {
+      var result = {};
+      OPTIONAL.forEach(function (key) {
+        result[key] = clean(document.getElementById("uwes-" + key)?.value, key === "performers" ? 3000 : 2048);
+      });
+      ["groupUrl", "eventUrl", "instanceUrl"].forEach(function (key) {
+        if (result[key] && !buttonUrl(key, result[key])) {
+          throw new Error("Enter a valid " + key.replace(/([A-Z])/g, " $1").toLowerCase() + " (approved HTTPS domain only).");
+        }
+      });
+      return result;
+    }
+    function hasDetails(data) { return Object.values(data).some(Boolean); }
+    async function ensureReady() {
+      var result = await uwSupabase.rpc("uw_event_signal_ready");
+      if (result.error || result.data !== true) {
+        throw new Error("Event Signal storage is not ready. The Event Signal database migration must be applied before submitting these details.");
+      }
+    }
+    async function saveDetails(eventId, data) {
+      var result = await uwSupabase.rpc("uw_save_event_signal", { p_event_id: eventId, p_details: data });
+      if (result.error) throw result.error;
+    }
+    function setEditorMode(event) {
+      editingEvent = event || null;
+      Object.keys(FIELD_IDS).forEach(function (key) {
+        var input = document.getElementById(FIELD_IDS[key]);
+        if (input) input.disabled = !!event;
+      });
+      if (fileInput) fileInput.disabled = !!event;
+      newEventButton.hidden = !event;
+      if (submit) submit.textContent = event ? "Save Signal Details" : "Submit Event";
+      var heading = editor.querySelector("h3");
+      if (heading) heading.textContent = event ? "Edit Signal Details" : "New Event";
+    }
+    function reset() {
+      setEditorMode(null);
+      savedCoverUrl = null;
+      Object.keys(FIELD_IDS).forEach(function (key) {
+        var input = document.getElementById(FIELD_IDS[key]);
+        if (input) input.value = key === "group" ? "underweb" : "";
+      });
+      OPTIONAL.forEach(function (key) {
+        var input = document.getElementById("uwes-" + key);
+        if (input) input.value = "";
+      });
+      if (fileInput) fileInput.value = "";
+      updatePoster();
+    }
+    async function editEvent(id) {
+      if (typeof uwBeta === "undefined" || typeof currentSession === "undefined") return;
+      var event = (uwBeta.events || []).find(function (item) {
+        return item.id === id && item.created_by === currentSession?.user?.id && item.status === "pending";
+      });
+      if (!event) return toast("Only the creator can edit a pending event's Signal details.");
+      var result = await uwSupabase.rpc("uw_get_event_signal", { p_event_id: event.id });
+      if (result.error) return toast(result.error.message || "Could not load Signal details.");
+      var start = event.starts_at ? new Date(event.starts_at) : null;
+      var end = event.ends_at ? new Date(event.ends_at) : null;
+      var local = function (d) {
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      };
+      var times = {
+        title: event.title, group: event.group_scope, startDate: start && local(start),
+        startTime: start && String(start.getHours()).padStart(2, "0") + ":" + String(start.getMinutes()).padStart(2, "0"),
+        endDate: end && local(end), endTime: end && String(end.getHours()).padStart(2, "0") + ":" + String(end.getMinutes()).padStart(2, "0"),
+        location: event.location, description: event.description
+      };
+      Object.keys(FIELD_IDS).forEach(function (key) {
+        var input = document.getElementById(FIELD_IDS[key]);
+        if (input) input.value = times[key] || "";
+      });
+      OPTIONAL.forEach(function (key) {
+        var input = document.getElementById("uwes-" + key);
+        if (input) input.value = typeof result.data?.[key] === "string" ? result.data[key] : "";
+      });
+      if (fileInput) fileInput.value = "";
+      savedCoverUrl = publicHttps(event.cover_url);
+      setEditorMode(event);
+      updatePoster();
+      if (statusNote) statusNote.textContent = "Editing saved Signal details only. Original event fields and Discord publishing are unchanged.";
+      showPage("eventbuilder");
+    }
+    async function saveEdit() {
+      if (!editingEvent || !submit) return;
+      submit.disabled = true;
+      submit.textContent = "SAVING…";
+      try {
+        await saveDetails(editingEvent.id, details());
+        if (statusNote) statusNote.textContent = "Signal details saved. Reload and select Edit Signal to view them again.";
+        toast("Signal details saved.");
+      } catch (err) {
+        if (statusNote) statusNote.textContent = err.message || "Signal details could not be saved.";
+        toast(err.message || "Signal details could not be saved.");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Save Signal Details";
+      }
+    }
+    function resumeCreatedEvent(id) {
+      setEditorMode({ id: id });
+      if (statusNote) statusNote.textContent = "The event was created, but its Signal details were not saved. Your entries remain here; press Save Signal Details to retry. Do not submit another event.";
+    }
+    newEventButton.addEventListener("click", reset);
+    document.addEventListener("click", function (e) {
+      var button = e.target.closest("[data-event-signal-edit]");
+      if (button) editEvent(button.dataset.eventSignalEdit);
+    });
+    window.UnderwebEventSignal = Object.freeze({
+      createPayload: payload, details: details, hasDetails: hasDetails,
+      ensureReady: ensureReady, saveDetails: saveDetails, editEvent: editEvent,
+      saveEdit: saveEdit, reset: reset, resumeCreatedEvent: resumeCreatedEvent,
+      get editingEventId() { return editingEvent?.id || null; }
+    });
     function readDraft() {
       var d = {};
       Object.keys(FIELD_IDS).forEach(function (key) { d[key] = document.getElementById(FIELD_IDS[key])?.value || ""; });
@@ -238,13 +361,13 @@
       add(badge, "i", "uwes-dot").setAttribute("aria-hidden", "true");
       add(badge, "span", "", state.toUpperCase());
       var poster = add(preview, "div", "uwes-poster");
-      if (posterUrl) {
+      if (posterUrl || savedCoverUrl) {
         var img = add(poster, "img");
-        img.alt = "Local cover preview";
-        img.src = posterUrl;
+        img.alt = "Event cover preview";
+        img.src = posterUrl || savedCoverUrl;
         img.onerror = function () { poster.replaceChildren(); posterFallback(poster); };
       } else posterFallback(poster);
-      add(poster, "span", "uwes-poster-tag", "LOCAL PREVIEW / NOT UPLOADED");
+      add(poster, "span", "uwes-poster-tag", savedCoverUrl ? "SAVED EVENT COVER" : "LOCAL PREVIEW / NOT UPLOADED");
       add(preview, "div", "uwes-title", present(d.title));
       add(preview, "div", "uwes-group", d.group);
       add(preview, "p", "uwes-description", present(d.description));
@@ -285,7 +408,7 @@
       });
       var stateSection = section(preview, "SIGNAL STATUS");
       add(stateSection, "div", "uwes-value", state === "Not set" ? "Not set · Add a valid start and end to determine status." : state + " · Based on the event window in your local time.");
-      add(preview, "p", "uwes-footnote", "Signal details and links are preview-only. Submit Event saves the existing event fields for approval; it does not send this preview.");
+      add(preview, "p", "uwes-footnote", "Signal details are saved privately with this event. This preview is not sent to Discord.");
     }
     function posterFallback(parent) {
       var fallback = add(parent, "div", "uwes-poster-fallback");
@@ -307,13 +430,6 @@
       if (event.target === fileInput) updatePoster();
       else if (event.target.closest(".uw-event-editor")) render();
     });
-    var saveStatus = document.getElementById("eventSaveStatus");
-    if (saveStatus) new MutationObserver(function () {
-      if (/^PENDING APPROVAL/.test(saveStatus.textContent.trim())) {
-        OPTIONAL.forEach(function (key) { var input = document.getElementById("uwes-" + key); if (input) input.value = ""; });
-        updatePoster();
-      }
-    }).observe(saveStatus, { childList: true, characterData: true, subtree: true });
     window.setInterval(function () {
       if (!document.hidden && page.classList.contains("active")) render();
     }, 60000);
