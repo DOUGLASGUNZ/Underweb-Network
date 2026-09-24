@@ -1,0 +1,95 @@
+/* The desktop Help shortcut and Guides/Vault launcher keep their existing UI. */
+@media (max-width: 1050px) {
+  :root {
+    --uw-mobile-nav-top: 72px;
+    --uw-mobile-build-space: 34px;
+    --uw-mobile-action-gap: 12px;
+  }
+
+  /* The original fixed Guides/Vault launcher is replaced by menu entries. */
+  #uwVaultGuideLauncher,
+  .uw-help-fab,
+  #feedbackFab,
+  .feedback-fab,
+  .uw-feedback-fab,
+  [data-feedback-fab] {
+    display: none !important;
+  }
+
+  body #uwBuildIndicator {
+    left: 8px !important;
+    bottom: calc(var(--uw-mobile-nav-top) + 7px) !important;
+    max-width: calc(100vw - 16px);
+    box-sizing: border-box;
+  }
+
+  #uwCreateFab {
+    right: max(12px, env(safe-area-inset-right)) !important;
+    bottom: calc(var(--uw-mobile-nav-top) + var(--uw-mobile-build-space) + var(--uw-mobile-action-gap)) !important;
+    width: 48px;
+    height: 48px;
+    z-index: 9995;
+    overflow: visible !important;
+  }
+
+  #uwCreateFab::before {
+    content: "QUICK ACTIONS" !important;
+    right: 58px !important;
+    font-size: 9px !important;
+    padding: 8px 10px !important;
+  }
+
+  #uwCreateFab[aria-expanded="true"] {
+    background: #10331b;
+    box-shadow: 0 0 0 6px rgba(69, 255, 114, .08), 0 0 32px rgba(69, 255, 114, .25);
+  }
+
+  #uwMobileActionsMenu {
+    position: fixed;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(var(--uw-mobile-nav-top) + var(--uw-mobile-build-space) + var(--uw-mobile-action-gap) + 56px);
+    z-index: 9995;
+    width: min(252px, calc(100vw - 24px));
+    max-height: calc(100dvh - var(--uw-mobile-nav-top) - 155px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 9px;
+    border: 1px solid rgba(85, 255, 145, .38);
+    border-radius: 14px;
+    background: rgba(2, 10, 5, .98);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .6);
+  }
+
+  #uwMobileActionsMenu[hidden] { display: none !important; }
+
+  #uwMobileActionsMenu button {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    padding: 10px 13px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #eaffef;
+    font: 800 11px/1.25 monospace;
+    letter-spacing: .08em;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  #uwMobileActionsMenu button:hover,
+  #uwMobileActionsMenu button:focus-visible {
+    outline: 1px solid rgba(85, 255, 145, .48);
+    background: rgba(85, 255, 145, .1);
+    color: #55ff91;
+  }
+
+  body[data-theme="symbiotes"] #uwMobileActionsMenu {
+    border-color: rgba(98, 170, 255, .48);
+  }
+}
+
+@media (min-width: 1051px) {
+  #uwMobileActionsMenu { display: none !important; }
+}
