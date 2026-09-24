@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/account/discord/link",
+      "destination": "/account/discord/link/index.html"
+    }
+  ]
+}
