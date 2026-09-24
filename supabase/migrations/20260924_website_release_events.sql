@@ -77,7 +77,9 @@ begin
     return existing_activity_id;
   end if;
 
-  release_body := trim(p_body);
+  -- Keep the editorial release key with the public activity event so the bot
+  -- can match it to a GitHub tag without guessing from prose or a UUID.
+  release_body := 'Release key: ' || trim(p_release_key) || E'\n\n' || trim(p_body);
   if nullif(trim(coalesce(p_public_url, '')), '') is not null then
     release_body := release_body || E'\n\n' || trim(p_public_url);
   end if;

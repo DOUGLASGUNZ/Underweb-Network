@@ -25,6 +25,12 @@
   };
 
   function mountReleaseForm() {
+    if (!document.getElementById("uwPublicReleaseHiddenStyle")) {
+      const hiddenStyle = document.createElement("style");
+      hiddenStyle.id = "uwPublicReleaseHiddenStyle";
+      hiddenStyle.textContent = "#uwPublicReleasePanel[hidden]{display:none!important}";
+      document.head.appendChild(hiddenStyle);
+    }
     const page = get("page-announcements");
     const postButton = get("postAnnouncementBtn");
     if (!page || !postButton || get("uwPublicReleasePanel")) return;
