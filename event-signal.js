@@ -1,5 +1,5 @@
-/* UnderWeb Event Signal: live preview plus optional private event details.
-   Discord publishing remains in the existing website flow. */
+/* UnderWeb Event Signal: live preview and creator-only editing of details.
+   Approved event announcements are published by the Discord bot. */
 (function () {
   "use strict";
 
@@ -111,17 +111,17 @@
       { name: "TRANSMISSION SCHEDULE", value: ("Start: " + discordSafe(formatDate(times.start)) + "\nEnd: " + discordSafe(formatDate(times.end)) + "\nDoors: " + clockLabel(d.doors) + "\n" + (rows.length ? rows.map(function (r) { return clockLabel(r.time) + " ━━● " + discordSafe(r.name, 120); }).join("\n") : "Performers: Not set")).slice(0, 900), inline: false },
       { name: "ACCESS", value: "Location: " + discordSafe(present(d.location), 240) + "\nPlatform: " + discordSafe(present(d.platform), 80) + "\nGenres: " + discordSafe(present(d.genres), 240), inline: false },
       { name: "CONNECTED THROUGH", value: "Event page: " + discordSafe(buttonUrl("eventUrl", d.eventUrl) || "Not set", 270) + "\nVRChat group: " + discordSafe(buttonUrl("groupUrl", d.groupUrl) || "Not set", 270) + "\nInstance: " + discordSafe(buttonUrl("instanceUrl", d.instanceUrl) || "Not set", 270), inline: false },
-      { name: "SIGNAL STATUS", value: status(times, now) + " / Draft preview only", inline: false }
+      { name: "SIGNAL STATUS", value: status(times, now) + " / Posts after approval", inline: false }
     ];
     var embed = {
       title: "UNDERWEB // EVENT SIGNAL — " + discordSafe(present(d.title), 220),
       description: discordSafe(present(d.description), 1800),
       color: 0x3898ff,
       fields: fields,
-      footer: { text: "Preview draft • Submitting an event does not publish this signal." }
+      footer: { text: "Preview • Discord posts only after approval." }
     };
     // A local cover file uses a blob: URL for the browser preview. Only a saved
-    // public HTTPS cover URL may go into a future Discord embed.
+    // public HTTPS cover URL may go into the approved Discord announcement.
     var coverUrl = publicHttps(d.cover_url || d.coverUrl);
     if (coverUrl) embed.image = { url: coverUrl };
     var buttons = BUTTONS.map(function (item) {
@@ -186,7 +186,7 @@
     var options = add(editor, "section", "uwes-options");
     options.setAttribute("aria-label", "Optional Event Signal details");
     add(options, "h4", "", "Signal details");
-    add(options, "p", "", "These optional details are saved with your event for later editing. They are not published to Discord.");
+    add(options, "p", "", "These details are saved with your event and included in its Discord announcement after approval, including the instance link.");
     var optionGrid = add(options, "div", "uwes-option-grid");
     field(optionGrid, "Host", "host");
     field(optionGrid, "Partner", "partner");
@@ -207,14 +207,14 @@
     else grid.appendChild(preview);
     var legacyPreview = document.getElementById("previewDiscordBtn");
     var legacyCopy = document.getElementById("copyDiscordBtn");
-    if (legacyPreview) legacyPreview.textContent = "Preview saved-fields post";
-    if (legacyCopy) legacyCopy.textContent = "Copy saved-fields post";
-    var legacyNote = el("small", "uwes-legacy-note", "These existing post tools use the original event fields only; saved Signal details are excluded.");
+    if (legacyPreview) legacyPreview.textContent = "Preview legacy text post";
+    if (legacyCopy) legacyCopy.textContent = "Copy legacy text post";
+    var legacyNote = el("small", "uwes-legacy-note", "These older text tools show original event fields only. The approved Discord announcement includes saved Signal details.");
     if (legacyPreview) editor.insertBefore(legacyNote, legacyPreview);
     var overlay = document.getElementById("discordPreviewOverlay");
     if (overlay) {
       var dialog = overlay.querySelector(".uw-dialog");
-      if (dialog) dialog.insertBefore(el("p", "uwes-legacy-note", "Existing text post preview: saved Signal details are not included or sent to Discord."), dialog.querySelector("#discordPreviewText"));
+      if (dialog) dialog.insertBefore(el("p", "uwes-legacy-note", "This older text preview excludes Signal details. The approved Discord announcement includes them."), dialog.querySelector("#discordPreviewText"));
     }
 
     var posterUrl = null;
@@ -310,7 +310,7 @@
       savedCoverUrl = publicHttps(event.cover_url);
       setEditorMode(event);
       updatePoster();
-      if (statusNote) statusNote.textContent = "Editing saved Signal details only. Original event fields and Discord publishing are unchanged.";
+       if (statusNote) statusNote.textContent = "Editing saved Signal details only. They will appear in Discord after the pending event is approved.";
       showPage("eventbuilder");
     }
     async function saveEdit() {
@@ -411,7 +411,7 @@
       });
       var stateSection = section(preview, "SIGNAL STATUS");
       add(stateSection, "div", "uwes-value", state === "Not set" ? "Not set · Add a valid start and end to determine status." : state + " · Based on the event window in your local time.");
-      add(preview, "p", "uwes-footnote", "Signal details are saved privately with this event. This preview is not sent to Discord.");
+      add(preview, "p", "uwes-footnote", "Nothing posts before approval. Saved Signal details, including the instance link, go into the approved Discord announcement.");
     }
     function posterFallback(parent) {
       var fallback = add(parent, "div", "uwes-poster-fallback");
