@@ -1702,7 +1702,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
     <article class="uw72-connect" id="uwDiscordCard">
       <div class="uw72-service">DISCORD</div>
       <h3 id="uwDiscordState">CHECKING CONNECTION…</h3>
-      <p>Connect Discord to verify ownership for UnderWeb bot and spider features. Disconnect here to remove both the OAuth identity and bot link. UnderWeb never asks for your Discord password.</p>
+      <p>Connect Discord to verify ownership for UnderWeb bot and spider features. Disconnect here to remove the identity and bot link. Discord server roles are managed separately. UnderWeb never asks for your Discord password.</p>
       <div id="uwDiscordIdentity" class="meta" hidden></div>
       <button class="btn hot" id="uwDiscordConnect" disabled>CONNECT DISCORD</button>
       <button class="btn" id="uwDiscordDisconnect" type="button" hidden>DISCONNECT DISCORD</button>
@@ -3581,7 +3581,7 @@ async function uwConnectDiscord() {
 async function uwDisconnectDiscord() {
   const btn = document.getElementById('uwDiscordDisconnect');
   const note = document.getElementById('uwDiscordNote');
-  if (!window.confirm('Disconnect Discord from UnderWeb? This also removes access to linked bot and spider features.')) return;
+  if (!window.confirm('Disconnect Discord from UnderWeb? Linked bot and spider features will stop working. Discord server roles are managed separately and may require staff review.')) return;
   if (btn) btn.disabled = true;
   let oauthRemoved = false;
   try {
