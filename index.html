@@ -1701,11 +1701,12 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
     </article>
     <article class="uw72-connect" id="uwDiscordCard">
       <div class="uw72-service">DISCORD</div>
-      <h3 id="uwDiscordState">NOT CONNECTED</h3>
-      <p>Link Discord securely with OAuth. Your existing UnderWeb account stays the same; Discord is attached as a verified identity and never controls your Network authority.</p>
+      <h3 id="uwDiscordState">CHECKING CONNECTION…</h3>
+      <p>Connect Discord to verify ownership for UnderWeb bot and spider features. Disconnect here to remove both the OAuth identity and bot link. UnderWeb never asks for your Discord password.</p>
       <div id="uwDiscordIdentity" class="meta" hidden></div>
-      <button class="btn hot" id="uwDiscordConnect">CONNECT DISCORD</button>
-      <small id="uwDiscordNote">UnderWeb never asks for or stores your Discord password.</small>
+      <button class="btn hot" id="uwDiscordConnect" disabled>CONNECT DISCORD</button>
+      <button class="btn" id="uwDiscordDisconnect" type="button" hidden>DISCONNECT DISCORD</button>
+      <small id="uwDiscordNote">Checking connection…</small>
     </article>
   </div>
   <div id="uw721StaffVerifyWrap" class="uw721-staffverify" hidden>
@@ -3483,56 +3484,136 @@ async function uw721ReviewVrc(id,approve){
  toast(error?error.message:(approve?'VRChat identity verified.':'VRChat claim denied.'));
  if(!error)uw721LoadStaffVerification();
 }
-function uwDiscordIdentity(){
- const ids=(currentSession?.user?.identities||[]);
- return ids.find(i=>String(i.provider||'').toLowerCase()==='discord')||null;
+// Replaces the Discord connection functions in the live site's Connected Accounts block.
+// The verified OAuth provider ID and the bot's profile link must agree.
+function uwDiscordIdentity(user = currentSession?.user) {
+  return (user?.identities || []).find(i => String(i.provider || '').toLowerCase() === 'discord') || null;
 }
-function uwDiscordMeta(identity){
- const d=identity?.identity_data||{};
- const username=d.username||d.full_name||d.name||d.preferred_username||'Discord user';
- const discordId=identity?.id||d.provider_id||d.sub||'';
- const avatar=d.avatar_url||d.picture||'';
- return {username,discordId,avatar};
+function uwDiscordMeta(identity) {
+  const d = identity?.identity_data || {};
+  return {
+    username: d.username || d.full_name || d.name || d.preferred_username || 'Discord user',
+    discordId: String(d.provider_id || d.sub || ''),
+    avatar: d.avatar_url || d.picture || ''
+  };
 }
-async function uwLoadDiscordConnection(){
- const state=document.getElementById('uwDiscordState'), box=document.getElementById('uwDiscordIdentity'), btn=document.getElementById('uwDiscordConnect'), note=document.getElementById('uwDiscordNote');
- if(!state||!btn)return;
- const {data:{session},error}=await uwSupabase.auth.getSession();
- if(error||!session?.user){state.textContent='SIGN IN REQUIRED';btn.disabled=true;return}
- currentSession=session;
- const identity=(session.user.identities||[]).find(i=>String(i.provider||'').toLowerCase()==='discord');
- if(!identity){state.textContent='NOT CONNECTED';state.style.color='';box.hidden=true;btn.disabled=false;btn.textContent='CONNECT DISCORD';return}
- const m=uwDiscordMeta(identity);
- state.textContent='DISCORD // CONNECTED';state.style.color='#45ff72';
- box.hidden=false;
- box.innerHTML=`${m.avatar?`<img src="${uw72Esc(m.avatar)}" alt="" style="width:42px;height:42px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px">`:''}<strong>${uw72Esc(m.username)}</strong>${m.discordId?`<br><small>Discord ID: ${uw72Esc(m.discordId)}</small>`:''}`;
- btn.disabled=true;btn.textContent='CONNECTED ✓';
- if(note)note.textContent='Discord is securely linked to this UnderWeb account.';
+async function uwLoadDiscordConnection() {
+  const state = document.getElementById('uwDiscordState');
+  const box = document.getElementById('uwDiscordIdentity');
+  const btn = document.getElementById('uwDiscordConnect');
+  const disconnect = document.getElementById('uwDiscordDisconnect');
+  const note = document.getElementById('uwDiscordNote');
+  if (!state || !btn || !disconnect || !note) return;
+  state.textContent = 'CHECKING CONNECTION…';
+  btn.disabled = true;
+  disconnect.hidden = true;
+  box.hidden = true;
+  const { data: { user }, error: authError } = await uwSupabase.auth.getUser();
+  if (authError || !user) {
+    state.textContent = 'SIGN IN REQUIRED';
+    note.textContent = 'Sign in to manage your Discord connection.';
+    return;
+  }
+  const identity = uwDiscordIdentity(user);
+  const { data: profile, error: profileError } = await uwSupabase.from('profiles')
+    .select('discord_user_id').eq('id', user.id).maybeSingle();
+  if (profileError || !profile) {
+    state.textContent = 'CONNECTION UNAVAILABLE';
+    note.textContent = 'Could not check your UnderWeb profile. Try again later.';
+    return;
+  }
+  let linkedId = profile.discord_user_id || '';
+  let syncError = null;
+  if (identity) {
+    // The RPC obtains the provider ID from the caller's verified Auth identity.
+    // A mismatch or another account owning it is rejected without overwriting either link.
+    const { error } = await uwSupabase.rpc('uw_sync_my_discord_link');
+    syncError = error;
+    if (!error) linkedId = uwDiscordMeta(identity).discordId;
+  }
+  const meta = identity ? uwDiscordMeta(identity) : null;
+  if (identity) {
+    box.hidden = false;
+    box.innerHTML = `${meta.avatar ? `<img src="${uw72Esc(meta.avatar)}" alt="" style="width:42px;height:42px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px">` : ''}<strong>${uw72Esc(meta.username)}</strong>${meta.discordId ? `<br><small>Discord ID: ${uw72Esc(meta.discordId)}</small>` : ''}`;
+  } else if (linkedId) {
+    box.hidden = false;
+    box.textContent = `Bot link: Discord ID ${linkedId}`;
+  }
+  btn.disabled = !!identity;
+  btn.textContent = identity ? 'OAUTH CONNECTED ✓' : 'CONNECT DISCORD';
+  disconnect.hidden = !identity && !linkedId;
+  if (identity && !syncError && linkedId === meta.discordId) {
+    state.textContent = 'DISCORD // CONNECTED';
+    note.textContent = 'Your verified Discord identity is linked to UnderWeb and bot features.';
+  } else if (identity) {
+    state.textContent = 'DISCORD // ACTION NEEDED';
+    note.textContent = syncError?.message?.includes('discord_oauth_identity_owned_by_other_user')
+      ? 'This Discord identity belongs to another UnderWeb account. Contact staff; no link was changed.'
+      : syncError?.message?.includes('profile_discord_link_conflict')
+        ? 'This profile has a different bot link. No link was changed. Disconnect here before linking a different Discord account.'
+        : 'OAuth is connected, but bot features are not linked. Please try again later or contact staff.';
+  } else if (linkedId) {
+    state.textContent = 'BOT LINK ONLY';
+    note.textContent = 'Bot features are linked, but Discord OAuth is not connected. You can disconnect the bot link here.';
+  } else {
+    state.textContent = 'NOT CONNECTED';
+    note.textContent = 'UnderWeb never asks for or stores your Discord password.';
+  }
 }
-async function uwConnectDiscord(){
- const btn=document.getElementById('uwDiscordConnect'),note=document.getElementById('uwDiscordNote');
- try{
-  const {data:{session},error:sessionError}=await uwSupabase.auth.getSession();
-  if(sessionError)throw sessionError;
-  if(!session?.user)throw new Error('Sign in to UnderWeb first.');
-  const existing=(session.user.identities||[]).find(i=>String(i.provider||'').toLowerCase()==='discord');
-  if(existing){await uwLoadDiscordConnection();return}
-  if(btn){btn.disabled=true;btn.textContent='OPENING DISCORD…'}
-  if(note)note.textContent='Authorize Discord, then you will return to UnderWeb.';
-  const {data,error}=await uwSupabase.auth.linkIdentity({provider:'discord',options:{redirectTo:'https://www.underweb.cloud'}});
-  if(error)throw error;
-  if(data?.url)window.location.assign(data.url);
- }catch(e){
-  if(note)note.textContent=e?.message||'Discord connection failed.';
-  if(btn){btn.disabled=false;btn.textContent='CONNECT DISCORD'}
- }
+async function uwConnectDiscord() {
+  const btn = document.getElementById('uwDiscordConnect');
+  const note = document.getElementById('uwDiscordNote');
+  try {
+    const { data: { session }, error: sessionError } = await uwSupabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!session?.user) throw new Error('Sign in to UnderWeb first.');
+    if (uwDiscordIdentity(session.user)) { await uwLoadDiscordConnection(); return; }
+    if (btn) { btn.disabled = true; btn.textContent = 'OPENING DISCORD…'; }
+    if (note) note.textContent = 'Authorize Discord, then you will return to UnderWeb.';
+    const { data, error } = await uwSupabase.auth.linkIdentity({ provider: 'discord', options: { redirectTo: 'https://www.underweb.cloud' } });
+    if (error) throw error;
+    if (data?.url) window.location.assign(data.url);
+  } catch (error) {
+    if (note) note.textContent = error?.message || 'Discord connection failed.';
+    if (btn) { btn.disabled = false; btn.textContent = 'CONNECT DISCORD'; }
+  }
 }
-async function uwDiscordReturnRefresh(){
- try{
-  const {data:{session}}=await uwSupabase.auth.getSession();
-  if(session)currentSession=session;
-  await uwLoadDiscordConnection();
- }catch(_){ }
+async function uwDisconnectDiscord() {
+  const btn = document.getElementById('uwDiscordDisconnect');
+  const note = document.getElementById('uwDiscordNote');
+  if (!window.confirm('Disconnect Discord from UnderWeb? This also removes access to linked bot and spider features.')) return;
+  if (btn) btn.disabled = true;
+  let oauthRemoved = false;
+  try {
+    const { data: { user }, error: authError } = await uwSupabase.auth.getUser();
+    if (authError || !user) throw authError || new Error('Sign in to UnderWeb first.');
+    const identity = uwDiscordIdentity(user);
+    if (identity) {
+      if ((user.identities || []).length < 2) throw new Error('Add another sign-in method before disconnecting Discord.');
+      const { error } = await uwSupabase.auth.unlinkIdentity(identity);
+      if (error) throw error;
+      oauthRemoved = true;
+    }
+    const { error } = await uwSupabase.rpc('uw_revoke_my_discord_link');
+    if (error) throw error;
+    await uwLoadDiscordConnection();
+  } catch (error) {
+    // OAuth and profile writes cannot be atomic across Supabase Auth and Postgres.
+    // Show an explicit partial-failure state and keep Disconnect available for retry.
+    await uwLoadDiscordConnection();
+    if (note) note.textContent = oauthRemoved
+      ? 'Discord OAuth was removed, but the bot link could not be revoked. Retry Disconnect or contact staff.'
+      : error?.message || 'Discord disconnect failed. No bot link was released.';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+async function uwDiscordReturnRefresh() {
+  try {
+    const { data: { session } } = await uwSupabase.auth.getSession();
+    if (session) currentSession = session;
+    await uwLoadDiscordConnection();
+  } catch (_) { }
 }
 
 async function uw72LoadNotifications(){
@@ -3547,6 +3628,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.querySelectorAll('[data-uw72-gallery]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-uw72-gallery]').forEach(x=>x.classList.remove('active'));b.classList.add('active');uw72GalleryFilter=b.dataset.uw72Gallery;uw72LoadGallery()});
  document.getElementById('uw72SaveVrc')?.addEventListener('click',uw72SaveVrc);
  document.getElementById('uwDiscordConnect')?.addEventListener('click',uwConnectDiscord);
+ document.getElementById('uwDiscordDisconnect')?.addEventListener('click',uwDisconnectDiscord);
  document.getElementById('uw721RequestVerify')?.addEventListener('click',uw721RequestVerify);
  document.getElementById('uw72MarkRead')?.addEventListener('click',async()=>{await uwSupabase.from('network_notifications').update({read_at:new Date().toISOString()}).eq('user_id',currentSession.user.id).is('read_at',null);uw72LoadNotifications()});
  document.getElementById('uw72SavePrefs')?.addEventListener('click',async()=>{const g=id=>document.getElementById(id)?.checked!==false;const {error}=await uwSupabase.from('notification_preferences').upsert({user_id:currentSession.user.id,projects:g('uw72PrefProjects'),events:g('uw72PrefEvents'),roles:g('uw72PrefRoles'),staff:g('uw72PrefStaff'),updated_at:new Date().toISOString()});toast(error?error.message:'Notification preferences saved.')});
