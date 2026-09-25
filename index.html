@@ -3519,7 +3519,8 @@ async function uwLoadDiscordConnection() {
     .select('discord_user_id').eq('id', user.id).maybeSingle();
   if (profileError || !profile) {
     state.textContent = 'CONNECTION UNAVAILABLE';
-    note.textContent = 'Could not check your UnderWeb profile. Try again later.';
+    disconnect.hidden = !identity;
+    note.textContent = 'Could not check your UnderWeb profile. You can still try Disconnect, but contact staff if the bot link remains.';
     return;
   }
   let linkedId = profile.discord_user_id || '';
