@@ -133,10 +133,20 @@ set search_path = ''
 as $$
 declare
   v_user_id uuid := auth.uid();
+  v_discord_id text;
   v_rows integer;
 begin
   if v_user_id is null then
     raise exception 'not_authenticated' using errcode = '42501';
+  end if;
+
+  select p.discord_user_id
+    into v_discord_id
+    from public.profiles as p
+   where p.id = v_user_id
+   for update;
+  if not found then
+    raise exception 'profile_not_found' using errcode = 'P0001';
   end if;
 
   if exists (
@@ -148,14 +158,26 @@ begin
       using errcode = 'P0001';
   end if;
 
+  -- A split-owned OAuth identity is also a reason to keep the profile link:
+  -- fail closed if any Auth user still has this Discord provider ID.
+  if v_discord_id is not null and exists (
+    select 1 from auth.identities as i
+     where i.provider = 'discord'
+       and i.provider_id = v_discord_id
+  ) then
+    raise exception 'discord_oauth_identity_still_owned'
+      using errcode = 'P0001';
+  end if;
+
   update public.profiles as p
      set discord_user_id = null
    where p.id = v_user_id
-     and p.discord_user_id is not null
+     and p.discord_user_id = v_discord_id
+     and v_discord_id is not null
      and not exists (
        select 1 from auth.identities as i
-        where i.user_id = v_user_id
-          and i.provider = 'discord'
+        where i.provider = 'discord'
+          and i.provider_id = v_discord_id
      );
   get diagnostics v_rows = row_count;
   return query select v_rows = 1;
