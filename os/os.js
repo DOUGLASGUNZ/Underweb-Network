@@ -10,7 +10,7 @@ async function count(table,filters=[]){let q=state.client.from(table).select('*'
 async function boot(){
  const cfg=window.UNDERWEB_OS_CONFIG||{};
  if(!cfg.supabaseUrl||!cfg.supabaseAnonKey||!window.supabase?.createClient){text('[data-os-feed-state]','NOT CONFIGURED');return}
- state.client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+ state.client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:cfg.storageKey||'underweb-auth-v1'}});
  try{
   const {data:{session}}=await state.client.auth.getSession();state.user=session?.user||null;
   if(state.user){
