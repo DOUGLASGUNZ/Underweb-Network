@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>UnderWeb OS // Network</title>
-<link rel="stylesheet" href="./os.css">
+<link rel="stylesheet" href="./os.css">\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="scan"></div>
@@ -33,7 +33,7 @@
 <article><span>SIGNAL MEMBERS</span><strong>—</strong><small>membership bridge pending</small></article>
 </section>
 <div class="grid">
-<section class="panel wide"><div class="panel-head"><h3>NETWORK ACTIVITY</h3><button>VIEW ALL</button></div><div class="empty"><b>ACTIVITY BRIDGE READY</b><span>This panel will consume existing UnderWeb activity data. No fake feed entries.</span></div></section>
+<section class="panel wide"><div class="panel-head"><h3>NETWORK ACTIVITY</h3><span class="pill" data-os-feed-state>NOT CONNECTED</span></div><div data-os-activity><div class="empty"><b>CONNECTING NETWORK FEED</b><span>Loading verified public activity…</span></div></div></section>
 <section class="panel"><div class="panel-head"><h3>LIVE NOW</h3><span class="pill">BRIDGE PENDING</span></div><div class="empty"><b>VRCHAT / UWX</b><span>Presence appears here once a real service source is connected.</span></div></section>
 <section class="panel"><div class="panel-head"><h3>UPCOMING EVENT</h3><span class="pill">EVENTS</span></div><div class="empty"><b>EVENT DATA READY</b><span>Existing approved events will populate this card.</span></div></section>
 <section class="panel"><div class="panel-head"><h3>CREATOR SPOTLIGHT</h3><span class="pill">DISCOVER</span></div><div class="empty"><b>CREATOR NETWORK</b><span>Featured profiles will use real creator records.</span></div></section>
@@ -43,4 +43,4 @@
 </main>
 </div>
 <nav class="mobile-nav"><a class="active">⌂<span>HOME</span></a><a>⌕<span>DISCOVER</span></a><a>◉<span>LIVE</span></a><a>▣<span>VAULT</span></a><a>♙<span>YOU</span></a></nav>
-</body></html>
+<script src="./os.js"></script>\n</body></html>
