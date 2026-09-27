@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const state={client:null,user:null,profile:null,roles:[]};
+const state={client:null,user:null,profile:null,roles:[],identity:null};
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const text=(s,v)=>{const e=$(s);if(e)e.textContent=v};
@@ -14,12 +14,12 @@ async function boot(){
  try{
   const {data:{session}}=await state.client.auth.getSession();state.user=session?.user||null;
   if(state.user){
-   const [{data:p},{data:r}]=await Promise.all([
+   const [{data:p},{data:r},{data:identity,error:identityError}]=await Promise.all([
     state.client.from('profiles').select('id,display_name,username,avatar_url,public_profile').eq('id',state.user.id).maybeSingle(),
     state.client.from('user_roles').select('role_slug,status').eq('user_id',state.user.id).eq('status','active')
    ]);
-   state.profile=p||null;state.roles=r||[];
-   text('[data-os-name]',state.profile?.display_name||state.profile?.username||'NETWORK USER');
+   state.profile=p||null;state.roles=r||[];state.identity=!identityError&&identity?.length?identity[0]:null;
+   text('[data-os-name]',state.identity?.display_name||state.profile?.display_name||state.profile?.username||'NETWORK USER');\n   if(state.identity){const box=$('[data-os-identity]');if(box)box.hidden=false;text('[data-os-id]',state.identity.underweb_id||'—');const roles=state.identity.roles||[];text('[data-os-role]',roles.length?roles.map(x=>String(x).toUpperCase()).join(' // '):'MEMBER');text('[data-os-discord]',state.identity.discord_linked?'DISCORD ✓':'DISCORD —');text('[data-os-vrchat]',state.identity.vrchat_username?'VRCHAT ✓ '+state.identity.vrchat_username:'VRCHAT —')}
    if(state.roles.some(x=>['owner','director','admin'].includes(String(x.role_slug).toLowerCase()))){const c=$('[data-os-control]');if(c)c.hidden=false}
   } else text('[data-os-name]','GUEST');
   const now=new Date().toISOString();
