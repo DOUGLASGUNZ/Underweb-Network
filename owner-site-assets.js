@@ -35,7 +35,7 @@ upload.addEventListener("click",async()=>{
  if(!clean||!clean.startsWith("site-assets/"))return say("Path must begin with site-assets/.");
  const objectPath=user.id+"/"+clean;
  upload.disabled=true;say("Uploading…");
- const {error}=await sb.storage.from("network-media").upload(objectPath,f,{upsert:true,contentType:f.type,cacheControl:"3600"});
+ const {error}=await sb.storage.from("network-media").upload(objectPath,f,{upsert:false,contentType:f.type,cacheControl:"3600"});
  if(error){upload.disabled=false;return say(error.message)}
  const {data}=sb.storage.from("network-media").getPublicUrl(objectPath);
  say("UPLOAD COMPLETE\n\n"+data.publicUrl,true); upload.disabled=false;
