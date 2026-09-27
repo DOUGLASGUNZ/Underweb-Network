@@ -2,12 +2,21 @@
 const SUPABASE_URL="https://pxipclkptxpqukefwexh.supabase.co";
 const SUPABASE_KEY="sb_publishable_g6XQVQvYVSWpIskA7r_1cQ_CaHkVnmc";
 const OWNER_ID="582affa4-c6d4-4bcb-bdf3-a26bf40dcad7";
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storageKey:"underweb-auth-v1",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const UNDERWEB_AUTH_STORAGE_KEY="underweb-auth-v1";
+const UNDERWEB_LEGACY_AUTH_STORAGE_KEY="sb-pxipclkptxpqukefwexh-auth-token";
+try{
+ if(!window.localStorage.getItem(UNDERWEB_AUTH_STORAGE_KEY)){
+  const legacy=window.localStorage.getItem(UNDERWEB_LEGACY_AUTH_STORAGE_KEY);
+  if(legacy) window.localStorage.setItem(UNDERWEB_AUTH_STORAGE_KEY,legacy);
+ }
+}catch(e){console.warn("Auth storage migration unavailable",e)}
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:UNDERWEB_AUTH_STORAGE_KEY}});
 const $=id=>document.getElementById(id), auth=$("auth"), file=$("file"), path=$("path"), upload=$("upload"), status=$("status"), preview=$("preview");
 let user=null;
 const say=(m,ok=false)=>{status.className=ok?"good":"bad";status.textContent=m};
 async function boot(){
- const {data:{session}}=await sb.auth.getSession();
+ const {data:{session},error:sessionError}=await sb.auth.getSession();
+ if(sessionError){auth.innerHTML='<span class="bad">Session error: '+sessionError.message+'</span>';return}
  user=session?.user||null;
  if(!user){auth.innerHTML='<span class="bad">Not signed in. Sign into UnderWeb first, then reopen this page.</span>';return}
  if(user.id!==OWNER_ID){auth.innerHTML='<span class="bad">Owner access only.</span>';return}
