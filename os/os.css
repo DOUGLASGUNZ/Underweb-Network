@@ -44,3 +44,12 @@ conic-gradient(from 0deg at 82% 50%,transparent 0 7deg,rgba(92,255,118,.16) 8deg
 .workload article{position:relative;overflow:hidden;clip-path:polygon(0 0,90% 0,100% 14%,100% 100%,0 100%)}.workload article:after{content:"";position:absolute;left:0;bottom:0;width:35%;height:1px;background:var(--acid)}
 .mod-feed article:hover,.feed-item:hover{background:#8dff3f08}
 @media(max-width:760px){.hero{clip-path:polygon(0 0,94% 0,100% 7%,100% 100%,0 100%)}.web-mark{position:absolute;right:-55px;top:-35px;width:180px;height:180px;opacity:.35;margin:0;transform:scale(.72)}.hero>div:first-child{position:relative;z-index:2}.hero h2{max-width:320px}.identity-mini{display:none}.metrics article{clip-path:polygon(0 0,90% 0,100% 14%,100% 100%,0 100%)}}
+
+/* Generated UnderWeb hero art integration */
+.network-hero.hero-art{background-image:
+linear-gradient(90deg,rgba(1,4,2,.97) 0%,rgba(2,7,4,.88) 35%,rgba(2,6,4,.48) 66%,rgba(1,4,2,.76) 100%),
+linear-gradient(0deg,rgba(1,4,2,.82),rgba(1,4,2,.08) 55%,rgba(1,4,2,.42)),
+url("./assets/underweb-hero.webp");background-size:cover;background-position:center 52%;background-repeat:no-repeat}
+.network-hero.hero-art:before{opacity:.15}.network-hero.hero-art .web-mark{opacity:.58;mix-blend-mode:screen}
+.network-hero.hero-art>div:first-child{padding:12px 18px;background:linear-gradient(90deg,rgba(1,5,3,.68),rgba(1,5,3,.18),transparent);border-left:1px solid rgba(141,255,63,.45);backdrop-filter:blur(1.5px)}
+@media(max-width:760px){.network-hero.hero-art{background-position:62% center}.network-hero.hero-art>div:first-child{padding:8px 10px;background:linear-gradient(90deg,rgba(1,5,3,.86),rgba(1,5,3,.45),transparent)}}
