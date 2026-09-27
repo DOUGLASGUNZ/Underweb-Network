@@ -33,7 +33,7 @@ upload.addEventListener("click",async()=>{
  if(f.size>8*1024*1024)return say("Asset exceeds the 8 MB network-media limit.");
  const clean=path.value.trim().replace(/^\/+|\.\.+/g,"").replace(/[^a-zA-Z0-9._\/-]/g,"-");
  if(!clean||!clean.startsWith("site-assets/"))return say("Path must begin with site-assets/.");
- const objectPath=user.id+"/"+clean;
+ const dot=clean.lastIndexOf("."); const stamp=Date.now(); const versioned=dot>0?clean.slice(0,dot)+"-"+stamp+clean.slice(dot):clean+"-"+stamp; const objectPath=user.id+"/"+versioned;
  upload.disabled=true;say("Uploading…");
  const {error}=await sb.storage.from("network-media").upload(objectPath,f,{upsert:false,contentType:f.type,cacheControl:"3600"});
  if(error){upload.disabled=false;return say(error.message)}
