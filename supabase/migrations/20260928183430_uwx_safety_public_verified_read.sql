@@ -1,0 +1,2 @@
+-- Historical public reviewed-summary read policy applied to the connected project.
+-- The final active and unexpired read policies are defined in 20260928194708.

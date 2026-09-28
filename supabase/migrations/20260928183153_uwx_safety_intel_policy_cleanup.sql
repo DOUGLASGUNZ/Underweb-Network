@@ -1,0 +1,2 @@
+-- Historical Safety Intel policy cleanup applied to the connected project.
+-- The final private reviewer policies are defined in 20260928194708.

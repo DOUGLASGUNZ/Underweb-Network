@@ -7,6 +7,8 @@
 
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>The UnderWeb — Community Operations 0.6.1.4</title>
+<link rel="stylesheet" href="/safety-intel.css?v=1">
+<script src="/safety-intel.js?v=1" defer></script>
 <style>
 :root{
   --g:#38ff72;--g2:#0cbb4c;--bg:#010302;--p:#050a07;--p2:#08110b;--l:#123c21;
@@ -1314,6 +1316,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 <button class="side-item" data-page="profile">My Profile</button>
 <button class="side-item" data-page="gallery">Network</button>
 <button class="side-item" data-page="help">Help &amp; Support <span class="badge" id="uwHelpMyOpen">—</span></button>
+<button class="side-item" data-page="safety">Safety Intel <span>◇</span></button>
 <div class="side-label" data-requires-staff="true">Staff</div>
 <div class="uw-staff-side" data-requires-staff="true">
 <button class="side-item uw-staff-toggle" data-page="command" type="button">Command Center <span class="badge" id="uw60CommandCount">—</span></button>
@@ -1326,6 +1329,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
 <button data-page="applications">Applications</button>
 <button data-page="role-review">Role Review</button>
 <button data-page="tickets">Tickets &amp; Support</button>
+<button data-page="safety">Safety Review</button>
 <button data-page="partner-admin">Partners</button>
 <button data-uw790-media-review="true">Media Review <span id="uwStaffMediaBadge"></span></button>
 <button data-page="moderation" data-uw-mod-nav="true">Moderation</button>
@@ -1801,7 +1805,7 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
       <button data-uwhelp-type="partnership_application"><b>PARTNERSHIP APPLICATION</b><span>Bring your community, group or organization into the Partner Network.</span></button>
       <button data-uwhelp-type="event_booking"><b>EVENT / BOOKING REQUEST</b><span>Request an event, booking, performance slot or organized collaboration.</span></button>
       <button data-uwhelp-type="collaboration"><b>COLLABORATION REQUEST</b><span>Pitch a creator, community or project collaboration.</span></button>
-      <button data-uwhelp-type="member_report"><b>MEMBER REPORT</b><span>Privately report a member, safety concern or community issue.</span></button>
+      <button data-page="safety"><b>MEMBER SAFETY REPORT</b><span>Privately report a VRChat user for staff review. Reports from UWX come to the same queue.</span></button>
       <button data-uwhelp-type="idea"><b>💡 SUBMIT AN IDEA</b><span>Pitch a website feature, creator tool, event idea, Discord/VRChat integration, community improvement, or anything else you want us to consider.</span></button>
       <button data-uwhelp-type="general_support"><b>GENERAL SUPPORT</b><span>Something broken, confusing, or not covered above? Start here.</span></button>
     </div>
@@ -1825,6 +1829,51 @@ body[data-theme="symbiotes"] #uwCreateFab::before{color:#62aaff;border-color:rgb
   </section>
 </div></section>
 <!-- UNDERWEB HELP CENTER V1 END -->
+<section class="page" id="page-safety"><div class="wrap uwsi-wrap">
+  <div class="uwsi-hero">
+    <div><span class="eyebrow">UNDERWEB // COMMUNITY AWARENESS</span><h1>SAFETY INTEL</h1>
+      <p>Send a private report to UnderWeb staff. A report is never a public warning until staff review it. UWX and the website use the same review queue.</p></div>
+    <span class="uwsi-seal">REVIEWED<br>BEFORE SHARING</span>
+  </div>
+  <div class="uwsi-grid">
+    <section class="uwsi-panel">
+      <div class="uwsi-panel-head"><span>01 // REPORT</span><h2>What happened?</h2></div>
+      <p class="uwsi-help">Sign in with your UnderWeb account. Reports and evidence are visible only to you and authorized reviewers.</p>
+      <form id="uwsiForm" class="uwsi-form">
+        <label>VRChat user ID *<input id="uwsiUserId" class="uw-input" placeholder="usr_..." required maxlength="80" autocomplete="off"></label>
+        <label>Last known display name<input id="uwsiDisplayName" class="uw-input" maxlength="100" placeholder="Optional"></label>
+        <div class="uwsi-two">
+          <label>Category *<select id="uwsiCategory" class="uw-select" required>
+            <option value="">Choose one</option><option value="crashing">Crashing</option><option value="doxxing_privacy_threat">Doxxing / privacy threat</option><option value="harassment">Harassment</option><option value="scam_impersonation">Scam / impersonation</option><option value="malicious_client_behavior">Malicious client behavior</option><option value="ban_evasion">Ban evasion</option><option value="other">Other harmful behavior</option>
+          </select></label>
+          <label>Suggested severity *<select id="uwsiSeverity" class="uw-select" required><option value="info">Info</option><option value="caution" selected>Caution</option><option value="high">High</option></select></label>
+        </div>
+        <div class="uwsi-two">
+          <label>Incident date / time<input id="uwsiIncidentAt" class="uw-input" type="datetime-local"></label>
+          <label>World or location<input id="uwsiWorld" class="uw-input" maxlength="160" placeholder="Optional"></label>
+        </div>
+        <label>Details *<textarea id="uwsiSummary" class="uw-textarea" minlength="10" maxlength="2000" required placeholder="Describe the behavior and what you directly observed. Keep private information out of this form."></textarea></label>
+        <label>Private evidence link<input id="uwsiEvidence" class="uw-input" type="url" placeholder="https://... (optional)"></label>
+        <p class="uwsi-help">Do not include addresses, phone numbers, passwords, IP addresses, or doxxed material. Staff may request evidence through a private channel.</p>
+        <div id="uwsiFormStatus" class="uwsi-message" role="status" aria-live="polite"></div>
+        <button id="uwsiSubmit" class="btn hot" type="submit">SUBMIT PRIVATE REPORT</button>
+      </form>
+    </section>
+    <section class="uwsi-panel">
+      <div class="uwsi-panel-head"><span>02 // TRACK</span><h2>Your reports</h2></div>
+      <p class="uwsi-help">Only you and authorized UnderWeb reviewers can see your pending details.</p>
+      <button class="uw-mini-btn" id="uwsiReloadMine" type="button">REFRESH</button>
+      <div id="uwsiMine" class="uwsi-list"><div class="uw-empty">Sign in to see your reports.</div></div>
+      <div class="uwsi-rule">UWX only displays active reviewed summaries. No record is a guarantee of safety, and UWX takes no automatic enforcement action.</div>
+    </section>
+  </div>
+  <section id="uwsiStaff" class="uwsi-panel uwsi-staff" hidden>
+    <div class="uwsi-panel-head"><span>STAFF // PRIVATE REVIEW</span><h2>Review queue</h2></div>
+    <p class="uwsi-help">Review evidence privately. Write a separate sanitized public summary before verifying a report.</p>
+    <div class="uwsi-toolbar"><select id="uwsiFilter" class="uw-select"><option value="pending">Pending</option><option value="reviewing">Reviewing</option><option value="verified">Verified</option><option value="rejected">Rejected</option><option value="expired">Expired</option></select><button id="uwsiReloadQueue" class="uw-mini-btn" type="button">REFRESH QUEUE</button></div>
+    <div id="uwsiQueue" class="uwsi-list"><div class="uw-empty">Loading review queue…</div></div>
+  </section>
+</div></section>
 <section class="page" id="page-applications"><div class="wrap">
 <div class="uw-page-title"><div class="eyebrow">STAFF OPERATIONS</div><h1>Applications</h1><p>Review DJ, creative, performer, staff, partnership, and other network applications.</p></div>
 <div class="uw-kpi-strip"><div class="uw-kpi"><b id="appsPendingKpi">—</b><span>Pending</span></div><div class="uw-kpi"><b id="appsReviewKpi">—</b><span>Reviewing</span></div><div class="uw-kpi"><b id="appsAcceptedKpi">—</b><span>Accepted</span></div><div class="uw-kpi"><b id="appsTotalKpi">—</b><span>Total</span></div></div>
