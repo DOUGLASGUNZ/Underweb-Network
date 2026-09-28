@@ -1,0 +1,42 @@
+/* A restrained public-entry polish layered over, not instead of, UnderWeb. */
+#page-home .uwh-hero-center { align-items: flex-start; text-align: left; }
+#page-home .uwh-hero-center h1 {
+  font-size: clamp(60px, 6.4vw, 98px);
+  line-height: .85;
+  letter-spacing: -.045em;
+  margin: 20px 0 24px;
+}
+#page-home .uwh-hero-center > p:not(.uwh-tagline) {
+  max-width: 520px;
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.55;
+  color: #c0d1c4;
+  margin: 15px 0 0;
+}
+#page-home .uwh-tagline { color: #78de95 !important; font-size: 10px !important; line-height: 1.7; }
+#page-home .uw70-hero-actions { flex-wrap: wrap; gap: 10px; margin-top: 27px; }
+#page-home .uw70-hero-actions .btn { min-height: 49px; padding: 13px 20px; letter-spacing: .07em; }
+#page-home .uw70-hero-actions .btn.hot { box-shadow: 0 8px 32px rgba(69,255,114,.12); }
+.uwh-hero-note { margin-top: 30px; padding-top: 15px; border-top: 1px solid #25412c; color: #819a88; letter-spacing: .18em; font: 700 9px/1.5 monospace; }
+.uw70-emptycard .btn, .uw62-empty .btn, .uw63-empty .btn { margin-top: 15px; }
+.uw62-empty h3, .uw63-empty h3 { margin-bottom: 7px; }
+.uw62-empty p { color: #9ab2a3; max-width: 480px; }
+/* Retain the header join flow, but let the single hero CTA lead first-visit. */
+.uw70-top .uw70-actions > [data-action="join"] { background: transparent !important; color: #c5efd0 !important; border-color: #396446 !important; box-shadow: none !important; }
+@media (max-width: 650px) {
+  /* Keep the original avatar photography, but make the invitation visible
+     before the 62px persistent mobile navigation. */
+  #page-home .uwh-hero { min-height: 0; }
+  #page-home .uwh-photo-left { height: clamp(118px, 17dvh, 148px); }
+  #page-home .uwh-photo-left img { object-position: 50% 28%; }
+  #page-home .uwh-hero-center { margin-top: -24px; padding: 10px 16px 19px; }
+  #page-home .uwh-eye { width: 38px; height: 38px; margin-bottom: 6px; }
+  #page-home .uwh-eye span { font-size: 22px; }
+  #page-home .uwh-hero-center h1 { font-size: clamp(52px, 13vw, 68px); margin: 10px 0 8px; }
+  #page-home .uwh-tagline { margin: 4px 0 0; font-size: 9px !important; }
+  #page-home .uwh-hero-center > p:not(.uwh-tagline) { margin-top: 9px; font-size: 14px; line-height: 1.4; }
+  #page-home .uwh-hero-center .uw70-hero-actions { display: flex !important; margin-top: 15px; }
+  #page-home .uw70-hero-actions .btn { min-height: 45px; padding: 11px 16px; }
+  #page-home .uw70-hero-actions .btn { flex: 1 1 100%; justify-content: center; }
+  #page-home .uwh-hero-note { margin-top: 13px; padding-top: 10px; }
+}
