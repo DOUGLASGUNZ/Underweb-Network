@@ -1,4 +1,4 @@
-/* Safety Intel shares the site's UnderWeb session and Supabase RLS policies. */
+/* Anonymous Safety Intel intake; only existing staff sessions can review. */
 (() => {
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -14,6 +14,11 @@
   const label = value => categories[value] || 'Other';
   const date = value => value ? new Date(value).toLocaleString() : 'Not specified';
   const client = () => typeof uwSupabase === 'undefined' ? null : uwSupabase;
+  const intakeClient = typeof window.supabase !== 'undefined' &&
+    typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_PUBLISHABLE_KEY !== 'undefined'
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+        auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
+      }) : null;
   const message = (value, error = false) => {
     const el = $('uwsiFormStatus');
     if (el) { el.textContent = value; el.classList.toggle('error', error); }
@@ -21,30 +26,28 @@
   let loadingQueue = false;
 
   async function session() {
-    const sb = client();
+    const sb = intakeClient;
     if (!sb) return null;
     return (await sb.auth.getSession()).data.session;
   }
   function safeLink(raw) {
     try {
       const url = new URL(raw);
-      return ['https:', 'http:'].includes(url.protocol) ? url.href : '';
+      if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) return '';
+      if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(url.hostname) || url.hostname.includes(':')) return '';
+      return url.href;
     } catch (_) { return ''; }
   }
   async function submit(event) {
     event.preventDefault();
-    const sb = client(), account = await session();
-    if (!account?.user) {
-      message('Sign in to your UnderWeb account, then submit this report.', true);
-      if (typeof passwordlessSignIn === 'function') passwordlessSignIn();
-      return;
-    }
+    const sb = client();
+    if (!sb) return message('Reporting is temporarily unavailable.', true);
     const id = $('uwsiUserId').value.trim();
     const summary = $('uwsiSummary').value.trim();
     const link = $('uwsiEvidence').value.trim();
     if (!validId(id)) return message('Enter a valid VRChat usr_ ID.', true);
     if (summary.length < 10 || summary.length > 2000) return message('Details must be 10–2000 characters.', true);
-    if (link && !safeLink(link)) return message('Evidence links must start with https:// or http://.', true);
+    if (link && !safeLink(link)) return message('Use an http(s) evidence link without credentials or an IP address.', true);
     const button = $('uwsiSubmit');
     button.disabled = true;
     message('Submitting privately…');
@@ -59,48 +62,19 @@
         incident_world: $('uwsiWorld').value.trim() || null,
         summary,
         status: 'pending',
-        reporter_user_id: account.user.id
+        source: 'website',
+        private_evidence_url: link ? safeLink(link) : null
       };
-      const result = await sb.from('uwx_safety_reports').insert(payload).select('id').single();
+      const result = await sb.from('uwx_safety_reports').insert(payload);
       if (result.error) throw result.error;
-      if (link) {
-        const evidence = await sb.from('uwx_safety_evidence').insert({
-          report_id: result.data.id, submitted_by: account.user.id,
-          evidence_type: 'other', url: safeLink(link)
-        });
-        if (evidence.error) {
-          message('Report submitted, but the evidence link failed to attach. Share it privately with staff and include report ID ' + result.data.id + '.', true);
-        } else message('Private report submitted. Staff will review it before any public warning.');
-      } else message('Private report submitted. Staff will review it before any public warning.');
+      message('Private report submitted. Staff will review it before any public warning.');
       $('uwsiForm').reset();
-      await loadMine();
       if (!$('uwsiStaff').hidden) await loadQueue();
     } catch (error) {
       message(error?.message || 'Report could not be submitted.', true);
     } finally {
       button.disabled = false;
     }
-  }
-  async function loadMine() {
-    const box = $('uwsiMine'), sb = client(), account = await session();
-    if (!box || !sb) return;
-    if (!account?.user) {
-      box.innerHTML = '<div class="uw-empty">Sign in to see your private reports.</div>';
-      return;
-    }
-    box.innerHTML = '<div class="uw-empty">Loading your reports…</div>';
-    const { data, error } = await sb.from('uwx_safety_reports')
-      .select('id,vrchat_user_id,last_known_display_name,category,status,created_at,updated_at')
-      .eq('reporter_user_id', account.user.id).order('created_at', { ascending:false }).limit(50);
-    if (error) {
-      box.textContent = 'Your reports could not be loaded: ' + error.message;
-      return;
-    }
-    box.innerHTML = data?.length ? data.map(row => `<article class="uwsi-item">
-      <div class="uwsi-item-head"><div><small>${esc(label(row.category))} · ${esc(date(row.created_at))}</small>
-      <h3>${esc(row.last_known_display_name || row.vrchat_user_id)}</h3><small>${esc(row.vrchat_user_id)}</small></div>
-      <span class="uwsi-badge ${esc(row.status)}">${esc(row.status)}</span></div>
-    </article>`).join('') : '<div class="uw-empty">You have not submitted a Safety Intel report yet.</div>';
   }
   async function isStaff() {
     const account = await session();
@@ -115,7 +89,7 @@
     box.innerHTML = '<div class="uw-empty">Loading private reports…</div>';
     try {
       const { data, error } = await sb.from('uwx_safety_reports')
-        .select('id,vrchat_user_id,last_known_display_name,category,suggested_severity,incident_at,incident_world,summary,status,created_at,public_summary')
+        .select('id,vrchat_user_id,last_known_display_name,category,suggested_severity,incident_at,incident_world,summary,status,created_at,public_summary,source,private_evidence_url')
         .eq('status', $('uwsiFilter').value).order('created_at', { ascending:false }).limit(75);
       if (error) throw error;
       const ids = (data || []).map(row => row.id);
@@ -140,7 +114,7 @@
             <span class="uwsi-badge ${esc(row.status)}">${esc(row.status)}</span></div>
           <p>${esc(row.summary)}</p>
           <small>Suggested: ${esc(row.suggested_severity)} · Incident: ${esc(date(row.incident_at))} · ${esc(row.incident_world || 'Location not specified')}</small>
-          <div>${evidence}</div>
+          <div>${row.private_evidence_url && safeLink(row.private_evidence_url) ? `<a class="uwsi-evidence" href="${esc(safeLink(row.private_evidence_url))}" target="_blank" rel="noopener noreferrer">Private evidence link ↗</a>` : ''}${evidence}</div>
           <div class="uwsi-review">
             <label>Internal review note<textarea class="uw-textarea" data-uwsi-note maxlength="2000" placeholder="Required for rejection or expiry"></textarea></label>
             <label>Sanitized public summary<textarea class="uw-textarea" data-uwsi-public minlength="20" maxlength="500" placeholder="Only verified behavior. Never include evidence links, private details, reporter identity, or doxxed material.">${esc(row.public_summary || '')}</textarea></label>
@@ -187,21 +161,16 @@
       if (error) throw error;
       if (typeof toast === 'function') toast('Safety review saved.');
       await loadQueue();
-      await loadMine();
     } catch (error) {
       alert('Review could not be saved: ' + (error?.message || 'Unknown error'));
     } finally { button.disabled = false; }
   }
   async function loadPage() {
-    const account = await session();
-    if (!account) message('Sign in with your UnderWeb account to submit a private report.');
-    await loadMine();
     const staff = await isStaff();
     $('uwsiStaff').hidden = !staff;
     if (staff) await loadQueue();
   }
   $('uwsiForm')?.addEventListener('submit', submit);
-  $('uwsiReloadMine')?.addEventListener('click', loadMine);
   $('uwsiReloadQueue')?.addEventListener('click', loadQueue);
   $('uwsiFilter')?.addEventListener('change', loadQueue);
   $('uwsiQueue')?.addEventListener('click', event => {
