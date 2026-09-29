@@ -95,6 +95,21 @@
 #page-eventbuilder .uwes-action:hover:not([aria-disabled]) { transform: translateY(-2px); color: #fff; }
 #page-eventbuilder .uwes-action[aria-disabled="true"] { opacity: .45; cursor: not-allowed; background: #1a2b42; border-color: #314560; }
 #page-eventbuilder .uwes-footnote { font: 10px/1.6 "IBM Plex Mono", monospace; color: #93aac4; margin: 15px 0 0; }
+.uwes-review {
+  width: min(620px, calc(100vw - 28px)); max-height: min(85vh, 800px);
+  overflow: auto; border: 1px solid #438ad2; border-radius: 12px;
+  padding: 24px; background: #0d1830; color: #f0f6ff;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+}
+.uwes-review::backdrop { background: #020713c9; }
+.uwes-review h2 { margin: 0 0 8px; font-size: 22px; overflow-wrap: anywhere; }
+.uwes-review p { color: #a7b9cf; font-size: 13px; }
+.uwes-review-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 20px 0; }
+.uwes-review .uwes-fact { min-width: 0; background: #14223b; border: 1px solid #263d5f; padding: 10px; border-radius: 6px; }
+.uwes-review .uwes-label { display: block; margin-bottom: 4px; color: #99b4d1; font: 700 10px "IBM Plex Mono", monospace; text-transform: uppercase; }
+.uwes-review .uwes-value { overflow-wrap: anywhere; white-space: pre-wrap; font-size: 13px; }
+.uwes-review .uwes-value.is-missing { color: #8fa6c1; }
+@media (max-width: 520px) { .uwes-review-fields { grid-template-columns: 1fr; } }
 #page-eventbuilder .uwes-options { margin: 22px 0 18px; border: 1px solid #345780; border-radius: 12px; background: #0c182bdc; padding: 17px; color: #e9f3ff; font-family: "Space Grotesk", "Trebuchet MS", sans-serif; }
 #page-eventbuilder .uwes-options h4 { margin: 0 0 4px; font-size: 16px; letter-spacing: -.02em; color: #e9f3ff; }
 #page-eventbuilder .uwes-options p { margin: 0 0 15px; color: #a9c3df; line-height: 1.5; font-size: 12px; }
