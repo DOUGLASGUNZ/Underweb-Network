@@ -3,16 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
     <title>Connect Discord // UnderWeb</title>
     <style>
       :root {
         color-scheme: dark;
-        --bg: #020504;
-        --panel: #07100b;
-        --line: rgba(146, 255, 184, 0.2);
-        --text: #e8f5eb;
-        --muted: #9aafa0;
-        --accent: #8dffb5;
+        --bg: #030711;
+        --panel: #071426;
+        --line: rgba(66, 164, 255, 0.25);
+        --text: #edf6ff;
+        --muted: #a2b4ce;
+        --accent: #42a4ff;
         --danger: #ff9898;
       }
       * { box-sizing: border-box; }
@@ -24,7 +25,7 @@
         padding: 24px;
         color: var(--text);
         background:
-          radial-gradient(circle at 50% 0%, rgba(94, 192, 117, 0.13), transparent 42%),
+          radial-gradient(circle at 50% 0%, rgba(31, 112, 255, 0.18), transparent 42%),
           var(--bg);
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
@@ -33,7 +34,7 @@
         border: 1px solid var(--line);
         border-radius: 18px;
         padding: 28px;
-        background: linear-gradient(145deg, rgba(12, 28, 18, 0.96), rgba(3, 8, 5, 0.98));
+        background: linear-gradient(145deg, rgba(8, 25, 48, 0.96), rgba(3, 8, 18, 0.98));
         box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
       }
       .kicker {
@@ -68,7 +69,7 @@
         padding: 12px 16px;
         border: 1px solid var(--accent);
         border-radius: 10px;
-        color: #031007;
+        color: #030b18;
         background: var(--accent);
         font: inherit;
         font-weight: 800;
@@ -81,6 +82,11 @@
         background: transparent;
       }
       button:disabled { cursor: wait; opacity: 0.55; }
+      button:focus-visible, a:focus-visible, input:focus-visible {
+        outline: 2px solid var(--text);
+        outline-offset: 4px;
+      }
+      .account { color: var(--text); font-weight: 700; overflow-wrap: anywhere; }
       [hidden] { display: none !important; }
       .status { margin-top: 20px; color: var(--accent); }
       .error { margin-top: 20px; color: var(--danger); }
@@ -113,10 +119,13 @@
 
       <section id="signedIn" hidden>
         <div class="notice">
-          You are signed in. Confirming will link the Discord account that
-          generated this private verification link.
+          Link Discord to this UnderWeb account:
+          <div id="accountEmail" class="account"></div>
+          Confirming connects the Discord account that generated this private
+          link. If this is the wrong UnderWeb account, cancel and switch accounts
+          on the main website first.
         </div>
-        <button id="redeemButton" type="button">Confirm Discord connection</button>
+        <button id="redeemButton" type="button" disabled>Confirm Discord connection</button>
         <a class="button secondary" href="/">Cancel</a>
       </section>
 
@@ -154,6 +163,9 @@
       const el = (id) => document.getElementById(id);
       const show = (id) => { el(id).hidden = false; };
       const hide = (id) => { el(id).hidden = true; };
+      let confirmedUserId = null;
+      let linkCompleted = false;
+      let renderGeneration = 0;
 
       function setError(message) {
         el("error").textContent = message;
@@ -185,6 +197,12 @@
       }
 
       async function renderAuthState() {
+        const generation = ++renderGeneration;
+        if (linkCompleted) return;
+        confirmedUserId = null;
+        el("redeemButton").disabled = true;
+        hide("signedIn");
+        hide("signedOut");
         const token = localStorage.getItem(LINK_TOKEN_STORAGE_KEY);
         if (!token) {
           hide("loading");
@@ -192,19 +210,27 @@
           return;
         }
 
-        const { data, error } = await supabaseClient.auth.getSession();
-        hide("loading");
-        if (error) {
+        try {
+          const { data, error } = await supabaseClient.auth.getUser();
+          if (generation !== renderGeneration || linkCompleted) return;
+          hide("loading");
+          if (error && error.name !== "AuthSessionMissingError") {
+            setError("UnderWeb session lookup failed. Please reload and try again.");
+            return;
+          }
+          hide("error");
+          if (data.user) {
+            confirmedUserId = data.user.id;
+            el("accountEmail").textContent = data.user.email || "Your signed-in UnderWeb profile";
+            el("redeemButton").disabled = false;
+            show("signedIn");
+          } else {
+            show("signedOut");
+          }
+        } catch (_) {
+          if (generation !== renderGeneration || linkCompleted) return;
+          hide("loading");
           setError("UnderWeb session lookup failed. Please reload and try again.");
-          return;
-        }
-
-        if (data.session?.user) {
-          show("signedIn");
-          hide("signedOut");
-        } else {
-          show("signedOut");
-          hide("signedIn");
         }
       }
 
@@ -214,20 +240,24 @@
         button.disabled = true;
         hide("error");
         const email = el("email").value.trim();
-        const { error } = await supabaseClient.auth.signInWithOtp({
-          email,
-          options: { emailRedirectTo: window.location.href }
-        });
-        button.disabled = false;
-        if (error) {
+        try {
+          const { error } = await supabaseClient.auth.signInWithOtp({
+            email,
+            options: { emailRedirectTo: window.location.href }
+          });
+          if (error) throw error;
+          setStatus("Check your email for the secure UnderWeb sign-in link.");
+        } catch (_) {
           setError("UnderWeb sign-in could not start. Please try again.");
-          return;
+        } finally {
+          button.disabled = false;
         }
-        setStatus("Check your email for the secure UnderWeb sign-in link.");
       });
 
       el("redeemButton").addEventListener("click", async () => {
         const button = el("redeemButton");
+        if (button.disabled || linkCompleted) return;
+        const expectedUserId = confirmedUserId;
         const token = localStorage.getItem(LINK_TOKEN_STORAGE_KEY);
         if (!token) {
           setError("This verification link is missing, expired, or already used.");
@@ -237,23 +267,47 @@
         button.disabled = true;
         hide("error");
         setStatus("Confirming your Discord connection…");
-        const { data, error } = await supabaseClient.functions.invoke(
-          REDEEM_FUNCTION,
-          { body: { token } }
-        );
-        button.disabled = false;
-
-        if (error || !data?.linked) {
-          setError(
-            data?.error ||
-            "The Discord connection could not be completed. Please try again."
+        try {
+          // Bind redemption to the verified session we checked, even if another
+          // tab switches the shared UnderWeb session while this request runs.
+          const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+          if (sessionError || !sessionData.session?.access_token) {
+            await renderAuthState();
+            setError("Sign in to UnderWeb again before confirming this connection.");
+            return;
+          }
+          const { data: authData, error: authError } = await supabaseClient.auth.getUser(sessionData.session.access_token);
+          if (authError || !authData.user) {
+            await renderAuthState();
+            setError("Sign in to UnderWeb again before confirming this connection.");
+            return;
+          }
+          if (!expectedUserId || authData.user.id !== expectedUserId) {
+            await renderAuthState();
+            setError("Your UnderWeb account changed. Check the account shown above, then confirm again.");
+            return;
+          }
+          const { data, error } = await supabaseClient.functions.invoke(
+            REDEEM_FUNCTION,
+            {
+              body: { token },
+              headers: { Authorization: `Bearer ${sessionData.session.access_token}` }
+            }
           );
-          return;
+          if (error || !data?.linked) {
+            setError("The Discord connection could not be completed. Request a fresh /link in Discord if this one expired.");
+            return;
+          }
+          linkCompleted = true;
+          localStorage.removeItem(LINK_TOKEN_STORAGE_KEY);
+          hide("signedIn");
+          hide("signedOut");
+          setStatus("Your Discord account is now linked to UnderWeb.");
+        } catch (_) {
+          setError("The connection was interrupted. Please try again.");
+        } finally {
+          button.disabled = linkCompleted || !confirmedUserId;
         }
-
-        localStorage.removeItem(LINK_TOKEN_STORAGE_KEY);
-        hide("signedIn");
-        setStatus("Your Discord account is now linked to UnderWeb.");
       });
 
       captureToken();

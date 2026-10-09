@@ -134,3 +134,23 @@ This bundle adds only the Discord-link page. It does not modify the existing
 root `index.html`. The page must be published as its own static route or
 rewrite. The existing root page can continue using its current authentication
 and Inner Web behavior unchanged.
+## New worker integration
+
+This existing private-token page redeems links into `public.profiles.discord_user_id`.
+The Railway M1 worker reads `uw_discord.links` through `underweb-discord`; these
+are separate link stores. A successful connection here does not yet activate
+M1 Verified-role synchronization. Keep `DRY_RUN=true` and `apply_enabled=false`
+until a reviewed convergence migration and an authenticated linking pilot
+confirm that both flows use the same identity and revocation rules. Do not
+copy profile links into the worker table without reviewing their provenance.
+
+The confirmation page names the verified UnderWeb account and sends redemption
+with the exact session checked immediately before confirmation. Cross-tab
+account switching prompts the member to confirm the new account. Network
+interruptions leave the sign-in and redemption buttons available to retry.
+
+Run the offline confirmation checks with:
+
+```sh
+node --test tests/discord-link.test.mjs
+```
