@@ -45,3 +45,50 @@ create policy "Visible creator profiles are public"
 create policy "Visible creator profiles, or staff"
   on public.creator_profiles for select to authenticated
   using (public_visible = true or public.is_underweb_staff(auth.uid()));
+
+-- 5. Bans and suspensions were only shown as a warning; the server still granted
+--    network access. uw_has_network_access() gates ~18 RLS policies, so making it
+--    return false for an active ban or suspension blocks protected data and
+--    actions server-side. Owners are never locked out (recovery).
+create or replace function public.uw_has_network_access()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+    select coalesce(
+        exists (
+            select 1 from public.user_roles ur
+            where ur.user_id = auth.uid()
+              and lower(btrim(ur.status)) = 'active'
+              and lower(btrim(ur.role_slug)) = 'owner'
+        )
+        or (
+            not exists (
+                select 1 from public.user_restrictions r
+                where r.user_id = auth.uid()
+                  and r.active
+                  and lower(r.restriction_type) in ('ban', 'suspend')
+                  and (r.expires_at is null or r.expires_at > now())
+            )
+            and (
+                exists (
+                    select 1 from public.user_roles ur
+                    where ur.user_id = auth.uid()
+                      and lower(btrim(ur.status)) = 'active'
+                      and lower(btrim(ur.role_slug)) = 'director'
+                )
+                or exists (
+                    select 1 from public.network_connections nc
+                    where nc.user_id = auth.uid()
+                      and lower(btrim(nc.provider)) = 'vrchat'
+                      and lower(btrim(nc.verification_status)) = 'verified'
+                )
+            )
+        ),
+        false
+    );
+$$;
+revoke execute on function public.uw_has_network_access() from public, anon;
+grant execute on function public.uw_has_network_access() to authenticated;
