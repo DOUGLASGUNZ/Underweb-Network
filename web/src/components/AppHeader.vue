@@ -34,6 +34,7 @@
                 <template v-if="account.signedIn.value">
                     <RouterLink to="/me" class="drawer-link">My profile</RouterLink>
                     <RouterLink to="/me/edit" class="drawer-link">Edit profile</RouterLink>
+                    <RouterLink to="/roles" class="drawer-link">Roles & applications</RouterLink>
                     <RouterLink to="/connections" class="drawer-link">Connected accounts</RouterLink>
                 </template>
                 <a :href="LEGACY_SITE" class="drawer-link" rel="noopener">More tools on the current site ↗</a>
@@ -60,6 +61,7 @@
         const items = [{ to: '/', label: 'Home' }];
         if (account.signedIn.value) {
             items.push({ to: '/discover', label: 'Discover' }, { to: '/events', label: 'Events' });
+            if (account.isStaff.value) items.push({ to: '/staff', label: 'Staff' });
         }
         return items;
     });

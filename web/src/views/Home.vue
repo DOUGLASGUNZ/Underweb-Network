@@ -98,6 +98,7 @@
                 <div class="cluster" style="margin-top: 12px">
                     <RouterLink to="/me" class="btn btn-sm">View profile</RouterLink>
                     <RouterLink to="/me/edit" class="btn btn-sm">Edit profile</RouterLink>
+                    <RouterLink v-if="account.hasAccess.value" to="/roles" class="btn btn-sm">Roles</RouterLink>
                 </div>
             </section>
         </div>

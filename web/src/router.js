@@ -12,6 +12,8 @@ const routes = [
     { path: '/me', name: 'me', redirect: () => (account.state.profile?.username ? `/u/${account.state.profile.username}` : '/welcome') },
     { path: '/me/edit', name: 'profile-edit', component: () => import('./views/ProfileEdit.vue'), meta: { auth: true, onboarded: true, title: 'Edit profile' } },
     { path: '/connections', name: 'connections', component: () => import('./views/Connections.vue'), meta: { auth: true, onboarded: true, title: 'Connected accounts' } },
+    { path: '/roles', name: 'roles', component: () => import('./views/Roles.vue'), meta: { auth: true, onboarded: true, access: true, title: 'Roles' } },
+    { path: '/staff', name: 'staff', component: () => import('./views/staff/StaffHub.vue'), meta: { auth: true, onboarded: true, access: true, staff: true, title: 'Staff tools' } },
     { path: '/restricted', name: 'restricted', component: () => import('./views/Restricted.vue'), meta: { auth: true, title: 'Account restricted' } },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('./views/NotFound.vue'), meta: { title: 'Not found' } }
 ];
