@@ -11,8 +11,15 @@ alter view public.network_partners_public set (security_invoker = true);
 alter function public.set_updated_at() set search_path = pg_catalog, public;
 
 -- 3. Security-definer functions were callable by logged-out visitors (anon)
---    through /rest/v1/rpc/*. Nothing logged-out needs them, except
---    uw_can_manage_partners, which public RLS policies call.
+--    through /rest/v1/rpc/*, including owner/staff tools. Revoke anon access
+--    from all of them except the ones the public site really uses logged out
+--    (checked against the live index.html / spider-collection.js on 2026-10-15):
+--      uw_can_manage_partners           - called by public partner RLS policies
+--      uw_network_pulse_v2              - home page "Radar" activity feed
+--      uw_profile_milestones,
+--      uw_profile_network_activity,
+--      uw_profile_partner_affiliations  - public profile popup sections
+--      uw_public_spiders                - public spider collection on profiles
 --    Signed-in members keep their access; trigger functions lose direct
 --    RPC access entirely (triggers still fire — EXECUTE is not checked then).
 do $$
@@ -23,7 +30,14 @@ begin
     from pg_proc p
     where p.pronamespace = 'public'::regnamespace and p.prosecdef
   loop
-    if f.proname <> 'uw_can_manage_partners' then
+    if f.proname not in (
+      'uw_can_manage_partners',
+      'uw_network_pulse_v2',
+      'uw_profile_milestones',
+      'uw_profile_network_activity',
+      'uw_profile_partner_affiliations',
+      'uw_public_spiders'
+    ) then
       execute format('revoke execute on function %s from public, anon', f.sig);
     end if;
     if f.is_trigger then
