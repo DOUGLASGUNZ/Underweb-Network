@@ -21,7 +21,7 @@ npm run build    # outputs dist/
 4. Supabase → Authentication → Email Templates → **Magic Link**: include `{{ .Token }}` so emails contain the 6-digit code as well as the link. Codes are the reliable path on phones (the link can open in a different browser).
 5. When the new site covers everything, point `underweb.cloud` at the new project. Sessions carry over (same storage key).
 
-Optional environment variables: `VITE_LEGACY_SITE` (where "current site" links go), `VITE_DISCORD_INVITE`.
+Optional environment variables: `VITE_LEGACY_SITE` (where "current site" links go), `VITE_DISCORD_INVITE`, `VITE_MEDIA_BASE_URL` (World Media host, e.g. `https://douglasgunz.github.io/underweb-media`).
 
 ## What's here (phase 1 — foundation)
 

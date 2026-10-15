@@ -60,6 +60,7 @@
         const items = [{ to: '/', label: 'Home' }];
         if (account.signedIn.value) {
             items.push({ to: '/discover', label: 'Discover' }, { to: '/events', label: 'Events' });
+            if (account.isLeadership.value) items.push({ to: '/staff/media', label: 'World media' });
         }
         return items;
     });
