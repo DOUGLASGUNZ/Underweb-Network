@@ -5,7 +5,8 @@
 # So every few minutes this copies the hub's feeds from the Supabase edge functions to:
 #   https://douglasgunz.github.io/Underweb-Network/feeds/hub-roles.txt   (staff / DJ / VIP roles)
 #   https://douglasgunz.github.io/Underweb-Network/feeds/hub-root.txt    (the permanent ROOT ACCESS list)
-# Only the feeds are published - nothing else from this repo goes on Pages.
+#   https://douglasgunz.github.io/Underweb-Network/w/hub/...             (creator cards, see tools/hub-cards)
+# Only the feeds and the rendered hub images are published - nothing else from this repo goes on Pages.
 # One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
 name: Hub feeds to GitHub Pages
 
@@ -15,7 +16,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [".github/workflows/hub-feeds.yml"]
+    paths: [".github/workflows/hub-feeds.yml", "tools/hub-cards/**"]
 
 permissions:
   contents: read
@@ -33,6 +34,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools/hub-cards
+
       - name: Fetch the feeds
         shell: bash
         run: |
@@ -51,6 +56,18 @@ jobs:
           printf 'UnderWeb hub feeds. Updated %s.\n' "$(date -u +%FT%TZ)" > site/feeds/index.txt
           printf '<!doctype html><meta charset="utf-8"><title>UnderWeb</title><p>UnderWeb hub feeds live in <a href="feeds/">/feeds</a>.</p>' > site/index.html
           touch site/.nojekyll
+
+      # Creator cards for the hub's Creator Room and Stage (approved, opted-in creators only).
+      # If this step fails the feeds above still publish.
+      - name: Render hub creator cards
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 3 --max-time 30 "https://pxipclkptxpqukefwexh.supabase.co/functions/v1/hub-cards" -o cards.json
+          python3 -m pip install --quiet --disable-pip-version-check "pillow>=10,<12" "fonttools>=4.40,<5"
+          python3 tools/hub-cards/render.py cards.json site --world hub
+          echo "Rendered: $(find site/w -name '*.jpg' | wc -l) image(s)"
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
