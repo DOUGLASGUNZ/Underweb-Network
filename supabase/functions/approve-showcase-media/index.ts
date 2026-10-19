@@ -58,7 +58,7 @@ async function shareToDiscord(
     const isImage = (media.media_type || "image") === "image";
     const embed: Record<string, unknown> = {
       title: clip(media.title || "Untitled", 200),
-      url: `https://underweb.cloud/profile/${encodeURIComponent(media.user_id)}`,
+      url: `https://underweb.cloud/#profile=${encodeURIComponent(media.user_id)}`,
       color: 0x3df514,
       author: { name: `📸 ${name}` },
       footer: { text: "UnderWeb showcase · approved by staff" },
