@@ -1,0 +1,77 @@
+# UnderWeb hub world feeds on GitHub Pages.
+#
+# VRChat only downloads text from a short list of trusted hosts unless a player turns on
+# "Allow Untrusted URLs" (most visitors haven't). *.github.io is on that list, Supabase isn't.
+# So every few minutes this copies the hub's feeds from the Supabase edge functions to:
+#   https://douglasgunz.github.io/Underweb-Network/feeds/hub-roles.txt   (staff / DJ / VIP roles)
+#   https://douglasgunz.github.io/Underweb-Network/feeds/hub-root.txt    (the permanent ROOT ACCESS list)
+#   https://douglasgunz.github.io/Underweb-Network/w/hub/...             (creator cards, see tools/hub-cards)
+# Only the feeds and the rendered hub images are published - nothing else from this repo goes on Pages.
+# One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
+name: Hub feeds to GitHub Pages
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/hub-feeds.yml", "tools/hub-cards/**"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: hub-feeds
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools/hub-cards
+
+      - name: Fetch the feeds
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site/feeds
+          base="https://pxipclkptxpqukefwexh.supabase.co/functions/v1"
+          fetch() {  # name  url  header
+            local out="site/feeds/$1.txt"
+            curl -fsS --retry 3 --max-time 30 "$2" -o "$out.tmp"
+            head -c 16 "$out.tmp" | grep -q "^$3" || { echo "::error::$1 feed looks wrong"; head -c 200 "$out.tmp"; exit 1; }
+            mv "$out.tmp" "$out"
+            echo "$1: $(wc -l < "$out") line(s)"
+          }
+          fetch hub-roles "$base/hub-roles" "UWROLES"
+          fetch hub-root  "$base/hub-root"  "UWROOT"
+          printf 'UnderWeb hub feeds. Updated %s.\n' "$(date -u +%FT%TZ)" > site/feeds/index.txt
+          printf '<!doctype html><meta charset="utf-8"><title>UnderWeb</title><p>UnderWeb hub feeds live in <a href="feeds/">/feeds</a>.</p>' > site/index.html
+          touch site/.nojekyll
+
+      # Creator cards for the hub's Creator Room and Stage (approved, opted-in creators only).
+      # If this step fails the feeds above still publish.
+      - name: Render hub creator cards
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 3 --max-time 30 "https://pxipclkptxpqukefwexh.supabase.co/functions/v1/hub-cards" -o cards.json
+          python3 -m pip install --quiet --disable-pip-version-check "pillow>=10,<12" "fonttools>=4.40,<5"
+          python3 tools/hub-cards/render.py cards.json site --world hub
+          echo "Rendered: $(find site/w -name '*.jpg' | wc -l) image(s)"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
