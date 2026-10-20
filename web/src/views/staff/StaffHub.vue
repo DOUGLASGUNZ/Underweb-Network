@@ -22,6 +22,7 @@
             <RoleReviewPanel v-else-if="tab === 'roles'" @count="(n) => (counts.roles = n)" />
             <VerifyPanel v-else-if="tab === 'verify'" @count="(n) => (counts.verify = n)" />
             <EventPanel v-else-if="tab === 'events'" @count="(n) => (counts.events = n)" />
+            <EventControlPanel v-else-if="tab === 'control'" />
             <HubCardQueue v-else-if="tab === 'hubcards'" @count="(n) => (counts.hubcards = n)" />
             <AvailabilityPanel v-else-if="tab === 'availability'" />
         </KeepAlive>
@@ -30,7 +31,7 @@
             Posters, frames and screens in our VRChat worlds: <RouterLink to="/staff/media">World Media Manager</RouterLink>.
         </p>
         <p class="muted small more">
-            Moderation, partners, tickets, announcements and Event Control are on the <a :href="`${LEGACY_SITE}/`">classic site ↗</a>.
+            Moderation, partners, tickets and announcements are on the <a :href="`${LEGACY_SITE}/`">classic site ↗</a>.
         </p>
     </section>
 </template>
@@ -43,20 +44,23 @@
     import VerifyPanel from '../../components/staff/VerifyPanel.vue';
     import EventPanel from '../../components/staff/EventPanel.vue';
     import AvailabilityPanel from '../../components/staff/AvailabilityPanel.vue';
+    import EventControlPanel from '../../components/staff/EventControlPanel.vue';
     import HubCardQueue from '../../components/staff/HubCardQueue.vue';
     import { LEGACY_SITE } from '../../lib/config';
     import { account } from '../../lib/account';
 
     const route = useRoute();
-    const tabs = [
+    const allTabs = [
         { id: 'media', label: 'Media review' },
         { id: 'roles', label: 'Role applications' },
         { id: 'verify', label: 'VRChat checks' },
         { id: 'events', label: 'Events' },
+        { id: 'control', label: 'Event Control', leadership: true },
         { id: 'hubcards', label: 'Hub cards' },
         { id: 'availability', label: 'Availability' }
     ];
-    const tab = computed(() => (tabs.some((t) => t.id === route.query.tab) ? route.query.tab : 'media'));
+    const tabs = computed(() => allTabs.filter((t) => !t.leadership || account.isLeadership.value));
+    const tab = computed(() => (tabs.value.some((t) => t.id === route.query.tab) ? route.query.tab : 'media'));
     const counts = reactive({ media: 0, roles: 0, verify: 0, events: 0, hubcards: 0 });
 </script>
 
