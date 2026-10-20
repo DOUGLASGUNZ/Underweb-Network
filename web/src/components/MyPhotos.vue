@@ -1,12 +1,14 @@
 <template>
-    <section v-if="loading || items.length" class="card photos" aria-labelledby="ph-h">
+    <section id="photos" class="card photos" aria-labelledby="ph-h">
         <p class="eyebrow">YOUR SHOWCASE</p>
         <h2 id="ph-h">YOUR PHOTOS &amp; WORK</h2>
         <p class="muted small">
-            Staff approve everything first. Once it's approved you can put it on the hub's art wall, or post it to the UnderWeb Discord.
+            Post shots and work from UnderWeb nights. Staff approve everything first; then it goes where you ticked — the gallery, the hub's art wall,
+            the Discord.
         </p>
+        <UploadWork @uploaded="load" />
         <div v-if="loading" class="skeleton" style="height: 180px"></div>
-        <div v-else class="list">
+        <div v-else-if="items.length" class="list">
             <article v-for="it in items" :key="it.id" class="item">
                 <div class="thumb">
                     <img v-if="isPublic(it)" :src="it.media_url" alt="" loading="lazy" />
@@ -18,7 +20,7 @@
                     <template v-if="it.moderation_status === 'approved'">
                         <label v-if="it.media_type === 'image'" class="tick">
                             <input type="checkbox" :checked="it.show_in_hub" @change="wall(it, $event.target.checked)" />
-                            On the hub art wall
+                            In the gallery &amp; on the hub wall
                         </label>
                         <span v-if="it.discord_posted_at" class="posted">Posted to Discord ✓</span>
                         <button v-else class="btn btn-sm btn-soft" type="button" :disabled="busy === it.id" @click="share(it)">
@@ -31,9 +33,7 @@
                 </div>
             </article>
         </div>
-        <p class="muted small more">
-            Add more from VRChat with UWX, or upload on the <a :href="`${LEGACY_SITE}/`" rel="noopener">classic site ↗</a>.
-        </p>
+        <p class="muted small more">Tip: with UWX running, photos you take in VRChat can be sent here straight from the game.</p>
     </section>
 </template>
 
@@ -43,7 +43,7 @@
     import { supabase, SUPABASE_URL, friendlyError } from '../lib/supabase';
     import { toast } from '../lib/toast';
     import { setOnHubWall } from '../lib/hubCard';
-    import { LEGACY_SITE } from '../lib/config';
+    import UploadWork from './UploadWork.vue';
 
     const items = ref([]);
     const loading = ref(true);

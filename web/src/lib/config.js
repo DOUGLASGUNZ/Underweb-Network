@@ -2,7 +2,7 @@
 // served from /classic on the same domain. Links to it are labelled.
 export const LEGACY_SITE = import.meta.env.VITE_LEGACY_SITE || '/classic';
 
-export const DISCORD_INVITE = import.meta.env.VITE_DISCORD_INVITE || '';
+export const DISCORD_INVITE = import.meta.env.VITE_DISCORD_INVITE || 'https://discord.gg/underweb';
 
 export const ROLE_SIGILS = Object.freeze({
     owner: '/media/roles/owner.webp',

@@ -31,15 +31,19 @@ export async function nextEvent() {
             .limit(1);
         if (data?.[0]) return data[0];
     }
-    const { data } = await supabase
-        .from('events')
-        .select('id,title,starts_at,ends_at,vrchat_world_name,artwork_url')
-        .neq('status', 'cancelled')
-        .gte('starts_at', since)
-        .order('starts_at')
-        .limit(1);
-    const e = data?.[0];
-    return e ? { id: e.id, title: e.title, starts_at: e.starts_at, ends_at: e.ends_at, location: e.vrchat_world_name, cover_url: e.artwork_url } : null;
+    const list = await publicEvents('upcoming');
+    return list[0] || null;
+}
+
+/** Published events for visitors, via the public-events feed (no instance links, nothing private). */
+export async function publicEvents(when = 'upcoming') {
+    try {
+        const r = await fetch(`${SUPABASE_URL}/functions/v1/public-events?when=${when === 'past' ? 'past' : 'upcoming'}`);
+        const j = r.ok ? await r.json() : null;
+        return j?.events || [];
+    } catch {
+        return [];
+    }
 }
 
 /**

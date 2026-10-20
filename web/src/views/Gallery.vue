@@ -21,10 +21,13 @@
         <section class="card post">
             <h2>POST YOUR OWN</h2>
             <ol>
-                <li><strong>From VRChat:</strong> with UWX running, take a photo — UWX offers to send it to your showcase.</li>
-                <li><strong>From the site:</strong> upload to your showcase on your profile.</li>
-                <li>Tick <em>show on the hub wall</em> and/or <em>post to Discord</em>. Staff approve it, and it goes up.</li>
+                <li><strong>On the site:</strong> My UnderWeb → Your photos &amp; work → choose a photo.</li>
+                <li><strong>From VRChat:</strong> with UWX running, take a photo — UWX offers to send it.</li>
+                <li>Tick where it goes: the gallery and hub wall, the Discord, or both. Staff approve it and it goes up.</li>
             </ol>
+            <RouterLink :to="account.signedIn.value ? '/me#photos' : '/signin?new=1&next=/me'" class="btn btn-primary">
+                {{ account.signedIn.value ? 'Post a photo' : 'Make an account to post' }}
+            </RouterLink>
         </section>
     </section>
 </template>
@@ -67,6 +70,9 @@
     .post h2 {
         font-size: 28px;
         margin-bottom: 10px;
+    }
+    .post .btn {
+        margin-top: 16px;
     }
     .post ol {
         margin: 0;
