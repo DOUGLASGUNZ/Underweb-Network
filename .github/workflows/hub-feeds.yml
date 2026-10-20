@@ -65,8 +65,9 @@ jobs:
         run: |
           set -euo pipefail
           curl -fsS --retry 3 --max-time 30 "https://pxipclkptxpqukefwexh.supabase.co/functions/v1/hub-cards" -o cards.json
+          curl -fsS --retry 3 --max-time 30 "https://pxipclkptxpqukefwexh.supabase.co/functions/v1/public-events" -o events.json || echo '{"events":[]}' > events.json
           python3 -m pip install --quiet --disable-pip-version-check "pillow>=10,<12" "fonttools>=4.40,<5"
-          python3 tools/hub-cards/render.py cards.json site --world hub
+          python3 tools/hub-cards/render.py cards.json site --world hub --events events.json
           echo "Rendered: $(find site/w -name '*.jpg' | wc -l) image(s)"
 
       - uses: actions/configure-pages@v5

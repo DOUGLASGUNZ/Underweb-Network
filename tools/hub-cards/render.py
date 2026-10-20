@@ -1,13 +1,14 @@
 """Render UnderWeb hub creator cards from the hub-cards feed.
 
 Usage:
-    python render.py FEED.json OUT_DIR [--world hub] [--now 2026-10-20T00:00:00Z]
+    python render.py FEED.json OUT_DIR [--world hub] [--events EVENTS.json] [--now 2026-10-20T00:00:00Z]
 
 Reads the JSON from the `hub-cards` edge function and writes, under OUT_DIR/w/<world>/:
     CREATOR_MARKET_01..08/1.jpg   Creator Market cards        (1024x1280)
     CREATOR_FEATURED_01/1.jpg     Featured creator of the week (1920x1080)
     STAGE_DJS/1..12.jpg           Resident DJ cards, rotating  (1920x1080)
     CREATOR_WALL/1..12.jpg        Members' photos & art        (1920x1080)
+    EVENT_NEXT/1.jpg              Next published event poster  (1920x1080, needs --events)
     manifest.json                 which gallery positions are active (read by the hub world), plus per slot
                                   `ids` + `likes` (which card is at each position, its ♥ count - the hub's like
                                   buttons use them) and a top-level `names` list (the Creator Room's name wall)
@@ -417,6 +418,70 @@ def wall_card(item: dict, art: Image.Image) -> Image.Image:
 # ---------- main ----------
 
 
+def event_card(ev: dict, art: Image.Image | None, now: dt.datetime) -> Image.Image:
+    """The hub's next-event screen: flyer on the left, what/when/where on the right."""
+    from zoneinfo import ZoneInfo
+    W, H = 1920, 1080
+    if art is not None:
+        img = Image.new('RGB', (W, H), BG)
+        img.paste(cover(art, 1000, H, 0.35), (0, 0))
+        fade = Image.new('L', (300, H), 0)
+        fd = ImageDraw.Draw(fade)
+        for x in range(300):
+            fd.line([(x, 0), (x, H)], fill=int(255 * (x / 299) ** 1.3))
+        img.paste(Image.new('RGB', (300, H), BG), (700, 0), fade)
+        x = 1000
+    else:
+        img = _glow_bg(W, H, (-200, 100, 900, 1000))
+        x = 130
+    d = ImageDraw.Draw(img)
+    start = dt.datetime.fromisoformat(ev['starts_at'].replace('Z', '+00:00'))
+    end = dt.datetime.fromisoformat(ev['ends_at'].replace('Z', '+00:00')) if ev.get('ends_at') else start + dt.timedelta(hours=4)
+    et = start.astimezone(ZoneInfo('America/New_York'))
+    if start <= now <= end:
+        tag, dot = 'LIVE NOW', (255, 70, 70)
+    elif et.date() == now.astimezone(ZoneInfo('America/New_York')).date():
+        tag, dot = 'TONIGHT', G
+    else:
+        tag, dot = 'NEXT EVENT', None
+    maxw = W - x - 110
+    pill(d, x, 120, tag, mono(34), dot=dot)
+    title = clean(ev.get('title')).upper() or 'UNDERWEB EVENT'
+    # Up to two lines of title, then shrink.
+    words, lines, cur = title.split(), [], ''
+    tf = anton(150 if art is None else 120)
+    for wd in words:
+        t = f'{cur} {wd}'.strip()
+        if text_width(d, t, tf) <= maxw or not cur:
+            cur = t
+        else:
+            lines.append(cur)
+            cur = wd
+    lines.append(cur)
+    if len(lines) > 2:
+        lines = [lines[0], ellipsize(d, ' '.join(lines[1:]), tf, maxw)]
+    y = 230
+    for ln in lines:
+        f = fit_face(d, ln, anton, tf.font.size, maxw, 56)
+        draw_text(d, (x, y), ln, f, TXT)
+        y += f.font.size + 10
+    y += 44
+    when = et.strftime('%a %b %d').upper().replace(' 0', ' ') + '  ·  ' + et.strftime('%I:%M %p').lstrip('0') + ' ET'
+    draw_text(d, (x, y), when, mono(46), G)
+    y += 80
+    loc = clean(ev.get('location')) or 'UnderWeb'
+    draw_text(d, (x, y), ellipsize(d, loc, inter(44, 600), maxw), inter(44, 600), MUTED)
+    qsize = 230
+    qy = H - 110 - qsize
+    paste_qr(img, d, 'https://underweb.cloud/events', x + 8, qy, qsize)
+    tx = x + 8 + qsize + 44
+    draw_text(d, (tx, qy + 40), 'All upcoming nights', inter(44, 700), TXT)
+    draw_text(d, (tx, qy + 100), 'underweb.cloud/events', mono(30, 600), G)
+    draw_text(d, (tx, qy + 168), 'UNDERWEB', anton(40), G)
+    frame(d, W, H)
+    return img
+
+
 def save(img: Image.Image, path: str):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     img.save(path, 'JPEG', quality=88, optimize=True, progressive=False)
@@ -439,6 +504,7 @@ def main(argv=None):
     ap.add_argument('out')
     ap.add_argument('--world', default='hub')
     ap.add_argument('--now', default=None, help='ISO time, for testing the weekly rotation')
+    ap.add_argument('--events', default=None, help='JSON from the public-events function (next-event screen)')
     args = ap.parse_args(argv)
 
     feed = json.load(open(args.feed, encoding='utf-8'))
@@ -496,6 +562,23 @@ def main(argv=None):
     manifest['CREATOR_WALL'] = {'active': list(range(1, len(wall) + 1)), 'rotate': 12,
                                 'ids': [w['id'] for w in wall], 'likes': [int(w.get('likes') or 0) for w in wall]}
     print(f'CREATOR_WALL: {len(wall)} image(s)')
+
+    # Next event screen (from public-events; never instance links).
+    if args.events:
+        try:
+            evs = json.load(open(args.events, encoding='utf-8')).get('events', [])
+        except Exception as e:
+            print(f'  ! events feed unreadable: {e}', file=sys.stderr)
+            evs = []
+        upcoming = [e for e in evs if e.get('starts_at')]
+        if upcoming:
+            ev = upcoming[0]
+            save(event_card(ev, art(ev.get('cover_url')), now), os.path.join(root, 'EVENT_NEXT', '1.jpg'))
+            manifest['EVENT_NEXT'] = {'active': [1], 'ids': [ev['id']]}
+            print(f'EVENT_NEXT: {ev.get("title")}')
+        else:
+            manifest['EVENT_NEXT'] = {'active': []}
+            print('EVENT_NEXT: none')
 
     os.makedirs(root, exist_ok=True)
     with open(os.path.join(root, 'manifest.json'), 'w', encoding='utf-8') as f:
