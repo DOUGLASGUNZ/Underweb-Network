@@ -19,6 +19,10 @@
             <p class="status" :class="statusClass">
                 <strong>{{ statusTitle }}</strong> {{ statusText }}
             </p>
+            <p v-if="data.likes && (data.likes.total > 0 || status === 'approved')" class="likes">
+                <strong>&hearts; {{ data.likes.total }}</strong> {{ data.likes.total === 1 ? 'like' : 'likes' }} in the hub<span v-if="data.likes.week"> &middot; {{ data.likes.week }} this week</span>
+                <span class="muted"> — people tapping &hearts; under your card and your art-wall pieces in the Creator Room</span>
+            </p>
 
             <form class="form" @submit.prevent="save">
                 <fieldset class="kinds">
@@ -189,6 +193,14 @@
         border-radius: var(--radius-sm);
         border: 1px solid var(--line-strong);
         background: var(--panel-2);
+    }
+    .likes {
+        margin: -6px 0 18px;
+        font-size: 14px;
+    }
+    .likes strong {
+        color: var(--acid);
+        font-family: var(--font-mono);
     }
     .status strong {
         font-family: var(--font-mono);

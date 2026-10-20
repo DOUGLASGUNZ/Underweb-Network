@@ -53,11 +53,12 @@
     if (!uid) return false;
     state.uid = uid;
     state.notReady = false;
-    const [cardR, profR, showR, revR] = await Promise.all([
+    const [cardR, profR, showR, revR, likeR] = await Promise.all([
       client.from('hub_creator_cards').select('*').eq('user_id', uid).maybeSingle(),
       client.from('creator_profiles').select('avatar_url,banner_url,display_name,shop_url,shop_label').eq('user_id', uid).maybeSingle(),
       client.from('creator_showcase').select('id,title,media_url,media_type,moderation_status,show_in_hub').eq('user_id', uid).eq('moderation_status', 'approved').order('created_at', { ascending: false }),
-      client.rpc('uw_can_review_media')
+      client.rpc('uw_can_review_media'),
+      client.rpc('hub_my_likes')
     ]);
     if (cardR.error && /hub_creator_cards/.test(cardR.error.message || '')) {
       state.notReady = true;
@@ -73,6 +74,8 @@
       ...photos.map((p) => ({ url: p.media_url, label: p.title || 'Showcase' }))
     ];
     state.reviewer = revR.data === true;
+    const lk = Array.isArray(likeR?.data) ? likeR.data[0] : likeR?.data;
+    state.likes = lk && !likeR.error ? { total: Number(lk.total) || 0, week: Number(lk.this_week) || 0 } : null;
     if (state.reviewer) await loadQueue();
     return true;
   }
@@ -125,6 +128,11 @@
           ${state.card ? `<label class="uwhc-switch"><input type="checkbox" id="uwhcEnabled" ${c.enabled !== false ? 'checked' : ''}> Show in the hub</label>` : ''}
         </div>
         ${statusLine(state.card)}
+        ${
+          state.likes && (state.likes.total > 0 || state.card?.status === 'approved')
+            ? `<p class="uwhc-note"><b style="color:#38ff72">♥ ${state.likes.total}</b> ${state.likes.total === 1 ? 'like' : 'likes'} in the hub${state.likes.week ? ` · ${state.likes.week} this week` : ''} <small>(people tapping ♥ under your card and your art-wall pieces in the Creator Room)</small></p>`
+            : ''
+        }
         <form id="uwhcForm" class="uwhc-form">
           <fieldset class="uwhc-kinds"><legend>What kind of card?</legend>
             <label><input type="radio" name="kind" value="market" ${kind === 'market' ? 'checked' : ''}> <b>Creator Market</b><small>Avatars, assets, art — shown with a QR code to your shop</small></label>

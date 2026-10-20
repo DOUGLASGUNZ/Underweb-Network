@@ -5,6 +5,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 //   GET /hub-cards -> JSON the GitHub Pages job renders into images for the hub's slots:
 //     market: approved Creator Market cards   dj: approved Resident DJ cards
 //     wall:   approved showcase photos/art the owner opted into the hub
+//   every item carries `likes`: all-time ♥ from the hub's Creator Room (hub_card_likes)
 // Only staff-approved, switched-on, public information is returned. Cached 60s.
 const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -73,6 +74,11 @@ Deno.serve(async (req: Request) => {
   const cards: CardRow[] = cardsRes.error ? [] : (cardsRes.data ?? []) as CardRow[];
   const wall: WallRow[] = ((wallRes.error ? [] : wallRes.data ?? []) as WallRow[]).filter((w) => String(w.media_url || "").startsWith(STORAGE));
   const who = await names([...new Set([...cards.map((c) => c.user_id), ...wall.map((w) => w.user_id)])]);
+  const likes = new Map<string, number>();
+  {
+    const { data, error } = await supabase.rpc("hub_like_counts");
+    if (!error) for (const r of (data ?? []) as { card_id: string; likes: number }[]) likes.set(String(r.card_id), Number(r.likes) || 0);
+  }
 
   const card = (c: CardRow) => ({
     id: c.user_id,
@@ -84,6 +90,7 @@ Deno.serve(async (req: Request) => {
     extra_link_url: httpsOrNull(c.extra_link_url),
     profile_url: `https://underweb.cloud/#profile=${c.user_id}`,
     approved_at: c.reviewed_at,
+    likes: likes.get(c.user_id) ?? 0,
   });
 
   return json({
@@ -91,6 +98,6 @@ Deno.serve(async (req: Request) => {
     generated_at: new Date().toISOString(),
     market: cards.filter((c) => c.kind === "market").map(card).filter((c) => c.image_url),
     dj: cards.filter((c) => c.kind === "dj").map(card).filter((c) => c.image_url),
-    wall: wall.map((w) => ({ id: w.id, title: clip(w.title, 60) || "Untitled", by: who.get(w.user_id) || "UnderWeb member", image_url: w.media_url })),
+    wall: wall.map((w) => ({ id: w.id, title: clip(w.title, 60) || "Untitled", by: who.get(w.user_id) || "UnderWeb member", image_url: w.media_url, likes: likes.get(String(w.id)) ?? 0 })),
   });
 });

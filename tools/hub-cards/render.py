@@ -8,7 +8,9 @@ Reads the JSON from the `hub-cards` edge function and writes, under OUT_DIR/w/<w
     CREATOR_FEATURED_01/1.jpg     Featured creator of the week (1920x1080)
     STAGE_DJS/1..12.jpg           Resident DJ cards, rotating  (1920x1080)
     CREATOR_WALL/1..12.jpg        Members' photos & art        (1920x1080)
-    manifest.json                 which gallery positions are active (read by the hub world)
+    manifest.json                 which gallery positions are active (read by the hub world), plus per slot
+                                  `ids` + `likes` (which card is at each position, its ♥ count - the hub's like
+                                  buttons use them) and a top-level `names` list (the Creator Room's name wall)
 
 Everything drawn here is public (it hangs in a public world). The feed only contains
 staff-approved, opted-in cards. Images are only fetched from UnderWeb's own storage.
@@ -420,6 +422,17 @@ def save(img: Image.Image, path: str):
     img.save(path, 'JPEG', quality=88, optimize=True, progressive=False)
 
 
+def creator_names(feed: dict) -> list[str]:
+    """Everyone with approved work in the hub, for the Creator Room's name wall (A-Z, no repeats)."""
+    seen: dict[str, str] = {}
+    people = [c.get('name') for c in feed.get('market', []) + feed.get('dj', [])] + [w.get('by') for w in feed.get('wall', [])]
+    for n in people:
+        n = clean(n)[:40]
+        if n and n not in ('UnderWeb creator', 'UnderWeb member'):
+            seen.setdefault(n.casefold(), n)
+    return sorted(seen.values(), key=str.casefold)[:300]
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument('feed')
@@ -450,7 +463,7 @@ def main(argv=None):
         slot = f'CREATOR_MARKET_{i + 1:02d}'
         if i < len(market):
             save(market_card(market[i], art(market[i]['image_url'])), os.path.join(root, slot, '1.jpg'))
-            manifest[slot] = {'active': [1]}
+            manifest[slot] = {'active': [1], 'ids': [market[i]['id']], 'likes': [int(market[i].get('likes') or 0)]}
             print(f'{slot}: {market[i]["name"]}')
         else:
             manifest[slot] = {'active': []}  # empty -> the world shows its "your work here" fallback
@@ -459,7 +472,8 @@ def main(argv=None):
     djs = [c for c in feed.get('dj', []) if art(c.get('image_url'))][:MAX_GALLERY]
     for i, c in enumerate(djs):
         save(dj_card(c, art(c['image_url'])), os.path.join(root, 'STAGE_DJS', f'{i + 1}.jpg'))
-    manifest['STAGE_DJS'] = {'active': list(range(1, len(djs) + 1)), 'rotate': 15}
+    manifest['STAGE_DJS'] = {'active': list(range(1, len(djs) + 1)), 'rotate': 15,
+                             'ids': [c['id'] for c in djs], 'likes': [int(c.get('likes') or 0) for c in djs]}
     print(f'STAGE_DJS: {len(djs)} card(s)')
 
     # Featured creator of the week: everyone with an approved card takes turns.
@@ -470,7 +484,7 @@ def main(argv=None):
     if everyone:
         pick = everyone[week % len(everyone)]
         save(featured_card(pick, art(pick['image_url']), week_start), os.path.join(root, 'CREATOR_FEATURED_01', '1.jpg'))
-        manifest['CREATOR_FEATURED_01'] = {'active': [1]}
+        manifest['CREATOR_FEATURED_01'] = {'active': [1], 'ids': [pick['id']], 'likes': [int(pick.get('likes') or 0)]}
         print(f'CREATOR_FEATURED_01: {pick["name"]}')
     else:
         manifest['CREATOR_FEATURED_01'] = {'active': []}
@@ -479,12 +493,13 @@ def main(argv=None):
     wall = [w for w in feed.get('wall', []) if art(w.get('image_url'))][:MAX_GALLERY]
     for i, w in enumerate(wall):
         save(wall_card(w, art(w['image_url'])), os.path.join(root, 'CREATOR_WALL', f'{i + 1}.jpg'))
-    manifest['CREATOR_WALL'] = {'active': list(range(1, len(wall) + 1)), 'rotate': 12}
+    manifest['CREATOR_WALL'] = {'active': list(range(1, len(wall) + 1)), 'rotate': 12,
+                                'ids': [w['id'] for w in wall], 'likes': [int(w.get('likes') or 0) for w in wall]}
     print(f'CREATOR_WALL: {len(wall)} image(s)')
 
     os.makedirs(root, exist_ok=True)
     with open(os.path.join(root, 'manifest.json'), 'w', encoding='utf-8') as f:
-        json.dump({'v': 1, 'generated_at': now.isoformat(), 'slots': manifest}, f, separators=(',', ':'))
+        json.dump({'v': 1, 'generated_at': now.isoformat(), 'slots': manifest, 'names': creator_names(feed)}, f, separators=(',', ':'))
 
 
 if __name__ == '__main__':
