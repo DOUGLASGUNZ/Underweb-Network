@@ -1,11 +1,16 @@
 <template>
     <section class="wrap page signin">
         <div class="card panel">
-            <div class="eyebrow">UnderWeb account</div>
-            <h1 class="page-title">Sign in</h1>
+            <div class="eyebrow">{{ isNew ? 'Free · 18+' : 'UnderWeb account' }}</div>
+            <h1 class="page-title">{{ isNew ? 'Create your account' : 'Sign in' }}</h1>
 
             <template v-if="step === 'email'">
-                <p class="muted">No password. We email you a sign-in code and link. New here? The same step creates your account.</p>
+                <p class="muted">No password to remember. {{ isNew ? 'Already have an account? The same buttons sign you in.' : 'New here? The same buttons create your account.' }}</p>
+                <button class="btn btn-discord" type="button" :disabled="busy" @click="discord">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a19.9 19.9 0 0 0 6 3l1.3-2a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2a19.8 19.8 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8.5 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm7 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
+                    Continue with Discord
+                </button>
+                <div class="or"><span>or use an email code</span></div>
                 <form class="stack" @submit.prevent="sendCode">
                     <label class="field">
                         <span>Email</span>
@@ -50,7 +55,7 @@
 </template>
 
 <script setup>
-    import { onBeforeUnmount, ref, watch } from 'vue';
+    import { computed, onBeforeUnmount, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { supabase, authRedirectUrl, friendlyError } from '../lib/supabase';
     import { account } from '../lib/account';
@@ -65,8 +70,25 @@
     const cooldown = ref(0);
     let cooldownTimer = null;
 
+    const isNew = computed(() => route.query.new === '1');
+
+    async function discord() {
+        error.value = '';
+        busy.value = true;
+        try {
+            sessionStorage.setItem('uw_next', next());
+        } catch {
+            /* ignore */
+        }
+        const { error: err } = await supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: authRedirectUrl() } });
+        if (err) {
+            busy.value = false;
+            error.value = friendlyError(err);
+        }
+    }
+
     const next = () => {
-        const n = String(route.query.next || '/');
+        const n = String(route.query.next || (isNew.value ? '/start' : '/'));
         return n.startsWith('/') && !n.startsWith('//') ? n : '/';
     };
 
@@ -141,6 +163,33 @@
         width: 100%;
         max-width: 440px;
         padding: 28px;
+    }
+    .btn-discord {
+        width: 100%;
+        min-height: 50px;
+        background: #5865f2;
+        border-color: #5865f2;
+        color: #fff;
+        margin: 8px 0 4px;
+    }
+    .btn-discord:hover {
+        background: #4752c4;
+        color: #fff;
+    }
+    .or {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 16px 0;
+        color: var(--muted);
+        font-size: 13px;
+    }
+    .or::before,
+    .or::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--line);
     }
     .code {
         font-family: var(--font-mono);

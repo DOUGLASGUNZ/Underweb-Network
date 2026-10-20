@@ -1,8 +1,10 @@
 <template>
-    <section class="wrap page">
-        <div class="eyebrow">Creator network</div>
-        <h1 class="page-title">Discover</h1>
-        <p class="muted intro">DJs, performers, artists and builders across UnderWeb. Open a profile to see their work and how to reach them.</p>
+    <section :class="embedded ? '' : 'wrap page'">
+        <template v-if="!embedded">
+            <div class="eyebrow">Creator network</div>
+            <h1 class="page-title">Discover</h1>
+            <p class="muted intro">DJs, performers, artists and builders across UnderWeb. Open a profile to see their work and how to reach them.</p>
+        </template>
 
         <form class="filters" role="search" @submit.prevent>
             <label class="field grow">
@@ -29,12 +31,12 @@
         <template v-else>
             <p class="muted small count">{{ filtered.length }} of {{ creators.length }} creators</p>
             <div v-if="filtered.length" class="cards">
-                <RouterLink v-for="c in filtered" :key="c.user_id" :to="`/u/${c.user_id}`" class="card">
+                <RouterLink v-for="c in filtered" :key="c.user_id" :to="`/u/${c.user_id}`" class="ccard">
                     <div class="banner">
                         <img v-if="c.banner_url" :src="c.banner_url" alt="" loading="lazy" />
                     </div>
-                    <div class="card-body">
-                        <Avatar :src="c.avatar_url" :name="c.display_name" :size="56" class="card-av" />
+                    <div class="ccard-body">
+                        <Avatar :src="c.avatar_url" :name="c.display_name" :size="56" class="ccard-av" />
                         <h2>{{ c.display_name || 'Creator' }}</h2>
                         <p class="headline">{{ c.headline || c.primary_specialty || 'UnderWeb creator' }}</p>
                         <div class="cluster tags">
@@ -47,7 +49,7 @@
             <div v-else class="notice">No creators match. Try a different search or clear the filters.</div>
         </template>
 
-        <section class="panel people" aria-labelledby="people-h">
+        <section v-if="account.signedIn.value" class="panel people" aria-labelledby="people-h">
             <h2 id="people-h" class="label">Looking for someone who isn't a creator?</h2>
             <form class="claim" @submit.prevent="searchPeople">
                 <label class="sr-only" for="people-q">Member name</label>
@@ -67,6 +69,9 @@
     import { computed, onMounted, ref } from 'vue';
     import Avatar from '../components/Avatar.vue';
     import { supabase, friendlyError } from '../lib/supabase';
+    import { account } from '../lib/account';
+
+    defineProps({ embedded: Boolean });
 
     const creators = ref([]);
     const loading = ref(true);
@@ -156,7 +161,7 @@
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
         gap: 14px;
     }
-    .card {
+    .ccard {
         display: block;
         border: 1px solid var(--line);
         border-radius: var(--radius);
@@ -165,7 +170,7 @@
         color: var(--text);
         transition: border-color 0.15s, transform 0.15s;
     }
-    .card:hover {
+    .ccard:hover {
         border-color: var(--line-strong);
         transform: translateY(-2px);
         color: var(--text);
@@ -173,7 +178,7 @@
     .banner {
         height: 84px;
         background:
-            radial-gradient(circle at 30% 120%, rgba(61, 245, 20, 0.18), transparent 60%),
+            radial-gradient(circle at 30% 120%, rgba(56, 255, 114, 0.18), transparent 60%),
             var(--panel-2);
     }
     .banner img {
@@ -182,15 +187,21 @@
         object-fit: cover;
         display: block;
     }
-    .card-body {
+    .ccard .chip {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .ccard-body {
         padding: 0 16px 16px;
     }
-    .card-av {
+    .ccard-av {
         margin-top: -28px;
         border: 2px solid var(--void);
     }
-    .card h2 {
-        font-size: 18px;
+    .ccard h2 {
+        font-size: 24px;
+        letter-spacing: 0.02em;
         margin: 8px 0 2px;
     }
     .headline {

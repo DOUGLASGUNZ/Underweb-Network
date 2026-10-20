@@ -24,8 +24,8 @@
         background: var(--panel-2);
         border: 1px solid var(--line-strong);
         overflow: hidden;
-        font-family: var(--font-display);
-        font-weight: 700;
+        font-family: var(--font-ui);
+        font-weight: 800;
         color: var(--acid);
     }
     .av img {

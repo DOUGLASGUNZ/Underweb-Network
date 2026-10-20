@@ -69,8 +69,8 @@
         padding: 0 14px;
         border-bottom: 2px solid transparent;
         color: var(--muted);
-        font-family: var(--font-display);
-        font-weight: 600;
+        font-family: var(--font-ui);
+        font-weight: 700;
         white-space: nowrap;
     }
     .tab[aria-selected='true'] {
