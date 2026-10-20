@@ -15,6 +15,7 @@
                 <RouterLink v-if="account.state.profile?.username" :to="`/u/${account.state.profile.username}`" class="btn btn-sm">View my profile</RouterLink>
                 <RouterLink to="/me/edit" class="btn btn-sm">Edit profile</RouterLink>
                 <RouterLink to="/connections" class="btn btn-sm">Connected accounts</RouterLink>
+                <button class="btn btn-sm btn-danger" type="button" @click="doSignOut">Sign out</button>
             </div>
         </div>
 
@@ -88,10 +89,19 @@
     import NextEventCard from '../components/NextEventCard.vue';
     import HubCardPanel from '../components/HubCardPanel.vue';
     import MyPhotos from '../components/MyPhotos.vue';
-    import { account } from '../lib/account';
+    import { useRouter } from 'vue-router';
+    import { account, signOut } from '../lib/account';
+    import { toast } from '../lib/toast';
     import { MEMBER_PERKS } from '../lib/perks';
     import { nextEvent, setupProgress } from '../lib/community';
     import { LEGACY_SITE } from '../lib/config';
+
+    const router = useRouter();
+    async function doSignOut() {
+        await signOut();
+        toast('Signed out on this device.', 'ok');
+        router.push('/');
+    }
 
     const isCreator = computed(() => account.state.roles.some((r) => String(r.category).toLowerCase() === 'creator') || account.isOwner.value);
     // Creator perks only matter to creators; members see the member ones first.
