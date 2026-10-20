@@ -62,3 +62,19 @@ router.beforeEach(async (to) => {
 router.afterEach((to) => {
     document.title = to.meta.title ? `${to.meta.title} · UnderWeb` : 'UnderWeb — Find your people in VRChat';
 });
+
+// After a new deploy, a tab opened earlier still points at the old page files,
+// which no longer exist — clicking a link would silently do nothing. When that
+// happens, load the page fresh (once) so the click goes through.
+const STALE_CHUNK = /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed|Unable to preload CSS/i;
+router.onError((err, to) => {
+    if (!STALE_CHUNK.test(String(err?.message || err))) return;
+    let last = 0;
+    try {
+        last = Number(sessionStorage.getItem('uw_chunk_reload') || 0);
+        sessionStorage.setItem('uw_chunk_reload', String(Date.now()));
+    } catch {
+        /* storage blocked — still reload once */
+    }
+    if (Date.now() - last > 10000) window.location.assign(to?.fullPath || window.location.href);
+});
