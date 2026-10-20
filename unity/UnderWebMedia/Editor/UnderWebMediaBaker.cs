@@ -72,16 +72,38 @@ namespace UnderWeb.Media.Editor
                 .OrderBy(s => s.slotKey)
                 .ToList();
 
+        /// <summary>
+        /// Bake every slot in the open scene without the window (other tools call this, e.g. the hub's
+        /// Build Creator Room). Saves the host + world id like the window does. Returns the report.
+        /// </summary>
+        public static string BakeAll(string baseUrl, string slug)
+        {
+            var w = CreateInstance<UnderWebMediaBaker>();
+            try
+            {
+                w._baseUrl = (baseUrl ?? "").Trim().TrimEnd('/');
+                w._slug = (slug ?? "").Trim().ToLowerInvariant();
+                w._quiet = true;
+                w.Bake(FindSlots());
+                return w._report;
+            }
+            finally { DestroyImmediate(w); }
+        }
+
+        private bool _quiet;
+
         private void Bake(List<UnderWebMediaSlot> slots)
         {
             if (!_baseUrl.StartsWith("https://") || !_baseUrl.Contains(".github.io"))
             {
+                if (_quiet) { _report = "Not baked: the media host must be an https://….github.io address."; return; }
                 if (!EditorUtility.DisplayDialog("Media host isn't on github.io",
                         "VRChat only loads images from allow-listed hosts for most players. *.github.io is allowed; other hosts need players to enable 'Allow Untrusted URLs'. Bake anyway?",
                         "Bake anyway", "Cancel")) return;
             }
             if (!SlugRule.IsMatch(_slug))
             {
+                if (_quiet) { _report = "Not baked: the world id must be lowercase letters, numbers and dashes."; return; }
                 EditorUtility.DisplayDialog("World id", "Use the short world id from the website: lowercase letters, numbers and dashes.", "OK");
                 return;
             }
@@ -91,7 +113,7 @@ namespace UnderWeb.Media.Editor
             foreach (var d in dupes) problems.Add($"Slot ID {d} is used more than once — each poster needs its own ID.");
             foreach (var s in slots.Where(s => !KeyRule.IsMatch(s.slotKey ?? ""))) problems.Add($"\"{s.slotKey}\" on {s.name}: use CAPITALS, numbers and _ (e.g. EVENT_BOARD_01).");
             foreach (var s in slots.Where(s => s.targetRenderer == null)) problems.Add($"{s.slotKey}: no Target Renderer set.");
-            if (problems.Count > 0 && !EditorUtility.DisplayDialog("Fix these first?", string.Join("\n", problems), "Bake anyway", "Cancel")) return;
+            if (problems.Count > 0 && !_quiet && !EditorUtility.DisplayDialog("Fix these first?", string.Join("\n", problems), "Bake anyway", "Cancel")) return;
 
             EditorPrefs.SetString(PrefBase, _baseUrl);
             EditorPrefs.SetString(SceneKey, _slug);

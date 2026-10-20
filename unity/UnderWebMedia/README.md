@@ -29,6 +29,13 @@ Addresses: `https://<you>.github.io/underweb-media/w/<world-id>/<SLOT_ID>/<n>.jp
 
 Re-run **Bake** only when you add, remove or rename slots (then upload the world again).
 
+## Load On Enter (rooms full of pictures)
+
+Tick **Load On Enter** on a slot and it downloads nothing on join. Put an **UnderWeb Media Room** on any object,
+set its box (center + half size) and list its slots in load order: when a player walks in it asks for the first
+image of every slot, then the rest of each gallery; 90 s after they leave, the textures are let go. Slot IDs and
+addresses don't change, so the website side is the same.
+
 ## Limits to know
 
 - Players see new posters on join, or at the next refresh while they're in the world.

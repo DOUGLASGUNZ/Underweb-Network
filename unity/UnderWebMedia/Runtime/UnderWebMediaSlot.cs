@@ -15,6 +15,10 @@ namespace UnderWeb.Media
     /// Single slot: shows image 1. Gallery: rotates through the images the website marks
     /// active in the manifest. Shows the fallback texture until a download succeeds or
     /// if it fails.
+    ///
+    /// Load On Enter (optional): the slot shows its fallback and downloads nothing until an
+    /// UnderWebMediaRoom asks it to (when you walk into its room), and lets its textures go
+    /// again a while after you leave. Slot IDs and addresses are unchanged either way.
     /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class UnderWebMediaSlot : UdonSharpBehaviour
@@ -33,6 +37,10 @@ namespace UnderWeb.Media
         [Tooltip("Shown before the first download and whenever one fails.")]
         public Texture2D fallback;
 
+        [Header("Lazy loading (optional)")]
+        [Tooltip("Download nothing on join: wait until an UnderWebMediaRoom says a player walked into this slot's room.")]
+        public bool loadOnEnter = false;
+
         [Header("Baked by Tools → UnderWeb → Bake Media URLs (don't edit by hand)")]
         public VRCUrl[] urls;
 
@@ -44,9 +52,13 @@ namespace UnderWeb.Media
         private bool _rotating;
         private Material _material;
         private bool _started;
+        private bool _wanted;      // loadOnEnter: true while the room wants us loaded
+        private bool _restDone;    // loadOnEnter: images 2+ have been asked for
+        private float _rotateDue;  // ignores a stale rotation tick left over from before a Release
 
         private void Start()
         {
+            if (_started) return;
             _downloader = new VRCImageDownloader();
             _textures = new Texture2D[Mathf.Max(1, gallerySize)];
             if (targetRenderer != null)
@@ -58,7 +70,46 @@ namespace UnderWeb.Media
             _started = true;
             // Until the manifest arrives, assume every baked position may be in use.
             if (_active == null) SetAllActive();
-            LoadActive();
+            if (!loadOnEnter) LoadActive();
+        }
+
+        private bool Live() { return !loadOnEnter || _wanted; }
+
+        /// <summary>Load On Enter: download the first active image only (so every screen in a room shows something fast).</summary>
+        public void LoadFirst()
+        {
+            if (!_started) Start();
+            _wanted = true;
+            if (urls == null || _downloader == null || _active == null || _activeCount == 0) return;
+            int pos = _active[0];
+            if (pos >= 1 && pos <= urls.Length && pos <= _textures.Length && _textures[pos - 1] == null && urls[pos - 1] != null)
+                _downloader.DownloadImage(urls[pos - 1], null, (IUdonEventReceiver)this, null);
+        }
+
+        /// <summary>Load On Enter: download the rest of the gallery (call after every slot's LoadFirst).</summary>
+        public void LoadRest()
+        {
+            if (!_started) Start();
+            _wanted = true;
+            if (_restDone || urls == null || _downloader == null || _active == null) return;
+            _restDone = true;
+            for (int i = 1; i < _activeCount; i++)
+            {
+                int pos = _active[i];
+                if (pos < 1 || pos > urls.Length || pos > _textures.Length || urls[pos - 1] == null || _textures[pos - 1] != null) continue;
+                _downloader.DownloadImage(urls[pos - 1], null, (IUdonEventReceiver)this, null);
+            }
+        }
+
+        /// <summary>Load On Enter: everyone left the room a while ago - drop the downloaded textures, show the fallback.</summary>
+        public void Release()
+        {
+            if (!loadOnEnter || !_started) return;
+            _wanted = false; _restDone = false; _rotating = false; _showIndex = 0;
+            ApplyTexture(fallback);
+            if (_downloader != null) _downloader.Dispose();   // frees every texture it downloaded
+            _downloader = new VRCImageDownloader();
+            _textures = new Texture2D[Mathf.Max(1, gallerySize)];
         }
 
         private void SetAllActive()
@@ -80,13 +131,13 @@ namespace UnderWeb.Media
                 ApplyTexture(fallback);
                 return;
             }
-            if (_started) LoadActive();
+            if (_started && Live()) LoadActive();
         }
 
         /// <summary>Re-download everything that's active (the world calls this on its refresh timer).</summary>
         public void Refresh()
         {
-            if (_started) LoadActive();
+            if (_started && Live()) LoadActive();
         }
 
         private void LoadActive()
@@ -104,6 +155,7 @@ namespace UnderWeb.Media
 
         public override void OnImageLoadSuccess(IVRCImageDownload result)
         {
+            if (!Live()) return;   // arrived after we were released
             int pos = PositionOf(result.Url);
             if (pos < 1) return;
             _textures[pos - 1] = result.Result;
@@ -158,12 +210,15 @@ namespace UnderWeb.Media
         private void StartRotation()
         {
             _rotating = true;
-            SendCustomEventDelayedSeconds(nameof(_RotateTick), Mathf.Max(3f, rotateSeconds));
+            float wait = Mathf.Max(3f, rotateSeconds);
+            _rotateDue = Time.time + wait;
+            SendCustomEventDelayedSeconds(nameof(_RotateTick), wait);
         }
 
         public void _RotateTick()
         {
-            if (_activeCount <= 1)
+            if (!_rotating || Time.time < _rotateDue - 0.5f) return;
+            if (_activeCount <= 1 || !Live())
             {
                 _rotating = false;
                 return;

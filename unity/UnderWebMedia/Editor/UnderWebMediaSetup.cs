@@ -15,8 +15,15 @@ namespace UnderWeb.Media.Editor
         [MenuItem("Tools/UnderWeb/Set Up Media Scripts")]
         public static void Setup()
         {
+            int created = EnsurePrograms();
+            EditorUtility.DisplayDialog("UnderWeb Media", created > 0 ? $"Created {created} program asset(s). You can now add UnderWeb Media Slot to posters." : "Already set up.", "OK");
+        }
+
+        /// <summary>Same as the menu item, without the dialog (other tools call this). Returns how many program assets it created.</summary>
+        public static int EnsurePrograms()
+        {
             int created = 0;
-            foreach (var type in new[] { typeof(UnderWebMediaSlot), typeof(UnderWebMediaWorld) })
+            foreach (var type in new[] { typeof(UnderWebMediaSlot), typeof(UnderWebMediaWorld), typeof(UnderWebMediaRoom) })
             {
                 string[] guids = AssetDatabase.FindAssets($"{type.Name} t:MonoScript");
                 MonoScript script = null;
@@ -38,7 +45,7 @@ namespace UnderWeb.Media.Editor
             }
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh(); // UdonSharp compiles the new program assets on refresh
-            EditorUtility.DisplayDialog("UnderWeb Media", created > 0 ? $"Created {created} program asset(s). You can now add UnderWeb Media Slot to posters." : "Already set up.", "OK");
+            return created;
         }
     }
 }
