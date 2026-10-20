@@ -5,6 +5,7 @@
 # So every few minutes this copies the hub's feeds from the Supabase edge functions to:
 #   https://douglasgunz.github.io/Underweb-Network/feeds/hub-roles.txt   (staff / DJ / VIP roles)
 #   https://douglasgunz.github.io/Underweb-Network/feeds/hub-root.txt    (the permanent ROOT ACCESS list)
+#   https://douglasgunz.github.io/Underweb-Network/feeds/blackscreen.txt (UnderWeb Cinema catalog, no file links)
 #   https://douglasgunz.github.io/Underweb-Network/w/hub/...             (creator cards, see tools/hub-cards)
 # Only the feeds and the rendered hub images are published - nothing else from this repo goes on Pages.
 # One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
@@ -16,7 +17,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [".github/workflows/hub-feeds.yml", "tools/hub-cards/**"]
+    paths: [".github/workflows/hub-feeds.yml", "tools/hub-cards/**", "supabase/functions/blackscreen/**"]
 
 permissions:
   contents: read
@@ -56,6 +57,20 @@ jobs:
           printf 'UnderWeb hub feeds. Updated %s.\n' "$(date -u +%FT%TZ)" > site/feeds/index.txt
           printf '<!doctype html><meta charset="utf-8"><title>UnderWeb</title><p>UnderWeb hub feeds live in <a href="feeds/">/feeds</a>.</p>' > site/index.html
           touch site/.nojekyll
+
+      # UnderWeb Cinema (Project Blackscreen): keep the media checks fresh, then mirror the catalog so the
+      # world can load it from a trusted host. If this step fails the other feeds still publish.
+      - name: Cinema catalog
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://pxipclkptxpqukefwexh.supabase.co/functions/v1/blackscreen"
+          curl -fsS --max-time 150 "$base/check" || echo "::warning::cinema check didn't finish"
+          curl -fsS --retry 3 --max-time 30 "$base/feed" -o site/feeds/blackscreen.txt.tmp
+          head -c 13 site/feeds/blackscreen.txt.tmp | grep -q "^BLACKSCREEN" || { echo "::error::blackscreen feed looks wrong"; exit 1; }
+          mv site/feeds/blackscreen.txt.tmp site/feeds/blackscreen.txt
+          echo "blackscreen: $(wc -l < site/feeds/blackscreen.txt) line(s)"
 
       # Creator cards for the hub's Creator Room and Stage (approved, opted-in creators only).
       # If this step fails the feeds above still publish.
