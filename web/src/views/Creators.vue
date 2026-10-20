@@ -46,7 +46,7 @@
             <RouterLink v-if="account.signedIn.value" to="/me" class="btn btn-lg">Set up my hub card</RouterLink>
         </div>
         <p v-if="account.signedIn.value" class="muted small">
-            Showcase uploads are still on the <a :href="`${LEGACY_SITE}/`" rel="noopener">current site ↗</a> while they move over.
+            Showcase uploads are still on the <a :href="`${LEGACY_SITE}/`" rel="noopener">classic site ↗</a> while they move over.
         </p>
 
         <h2 class="section-title dir-title">MEET THE CREATORS</h2>

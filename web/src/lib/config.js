@@ -1,6 +1,6 @@
-// Features that haven't moved to the new site yet still live on the current one.
-// Links to it are labelled so nobody hits a dead end while the rebuild finishes.
-export const LEGACY_SITE = import.meta.env.VITE_LEGACY_SITE || 'https://www.underweb.cloud';
+// Features that haven't moved to the new site yet live on the classic site,
+// served from /classic on the same domain. Links to it are labelled.
+export const LEGACY_SITE = import.meta.env.VITE_LEGACY_SITE || '/classic';
 
 export const DISCORD_INVITE = import.meta.env.VITE_DISCORD_INVITE || '';
 

@@ -76,17 +76,6 @@
                 </div>
             </form>
 
-            <div v-if="data.photos.length" class="wall">
-                <h3>On the hub's art wall</h3>
-                <p class="muted small">Tick approved photos or art to show on the hub's screens. Anyone visiting the hub can see them.</p>
-                <div class="images">
-                    <label v-for="ph in data.photos" :key="ph.id" class="img" :class="{ on: ph.show_in_hub }">
-                        <input type="checkbox" class="wall-check" :checked="ph.show_in_hub" @change="wall(ph, $event.target.checked)" />
-                        <img :src="ph.media_url" alt="" loading="lazy" />
-                        <span>{{ ph.title || 'Untitled' }}</span>
-                    </label>
-                </div>
-            </div>
         </template>
     </section>
 </template>
@@ -96,7 +85,7 @@
     import { account } from '../lib/account';
     import { friendlyError } from '../lib/supabase';
     import { toast } from '../lib/toast';
-    import { loadMyHubCard, removeHubCard, saveHubCard, setHubCardEnabled, setOnHubWall } from '../lib/hubCard';
+    import { loadMyHubCard, removeHubCard, saveHubCard, setHubCardEnabled } from '../lib/hubCard';
 
     const emit = defineEmits(['reviewer']);
     const data = ref(null);
@@ -160,15 +149,6 @@
         if (!window.confirm('Remove your hub card? It disappears from the hub at the next update.')) return;
         run(() => removeHubCard(account.userId.value), 'Hub card removed.');
     };
-    async function wall(ph, on) {
-        try {
-            await setOnHubWall(account.userId.value, ph.id, on);
-            ph.show_in_hub = on;
-            toast(on ? 'Added to the hub art wall.' : 'Removed from the hub art wall.', 'ok');
-        } catch (e) {
-            toast(friendlyError(e), 'error');
-        }
-    }
 </script>
 
 <style scoped>

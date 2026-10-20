@@ -6,7 +6,7 @@
                 <a v-if="DISCORD_INVITE" :href="DISCORD_INVITE" rel="noopener">Discord</a>
                 <RouterLink to="/start">Help</RouterLink>
                 <RouterLink v-if="account.signedIn.value" to="/connections">Connected accounts</RouterLink>
-                <a :href="LEGACY_SITE" rel="noopener" class="quiet">Older tools (current site) ↗</a>
+                <a :href="LEGACY_SITE" rel="noopener" class="quiet">Classic site ↗</a>
             </nav>
         </div>
     </footer>

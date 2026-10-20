@@ -33,7 +33,7 @@
         </div>
 
         <p v-if="account.isStaff.value" class="muted small more">
-            Hosting? Propose events in <RouterLink to="/staff">Staff</RouterLink>; Event Control is on the <a :href="LEGACY_SITE" rel="noopener">current site ↗</a>.
+            Hosting? Propose events in <RouterLink to="/staff">Staff</RouterLink>; Event Control is on the <a :href="LEGACY_SITE" rel="noopener">classic site ↗</a>.
         </p>
     </section>
 </template>

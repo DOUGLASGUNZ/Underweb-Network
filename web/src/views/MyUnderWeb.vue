@@ -45,6 +45,8 @@
                     </div>
                 </section>
 
+                <MyPhotos />
+
                 <!-- Perks -->
                 <section class="perks-sec">
                     <h2 class="sub">YOUR PERKS</h2>
@@ -85,6 +87,7 @@
     import Icon from '../components/Icon.vue';
     import NextEventCard from '../components/NextEventCard.vue';
     import HubCardPanel from '../components/HubCardPanel.vue';
+    import MyPhotos from '../components/MyPhotos.vue';
     import { account } from '../lib/account';
     import { MEMBER_PERKS } from '../lib/perks';
     import { nextEvent, setupProgress } from '../lib/community';

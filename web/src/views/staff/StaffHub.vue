@@ -18,7 +18,8 @@
         </div>
 
         <KeepAlive>
-            <RoleReviewPanel v-if="tab === 'roles'" @count="(n) => (counts.roles = n)" />
+            <MediaReviewPanel v-if="tab === 'media'" @count="(n) => (counts.media = n)" />
+            <RoleReviewPanel v-else-if="tab === 'roles'" @count="(n) => (counts.roles = n)" />
             <VerifyPanel v-else-if="tab === 'verify'" @count="(n) => (counts.verify = n)" />
             <EventPanel v-else-if="tab === 'events'" @count="(n) => (counts.events = n)" />
             <HubCardQueue v-else-if="tab === 'hubcards'" @count="(n) => (counts.hubcards = n)" />
@@ -26,7 +27,7 @@
         </KeepAlive>
 
         <p class="muted small more">
-            Moderation, partners, tickets and announcements are still on the <a :href="LEGACY_SITE" rel="noopener">current site ↗</a>.
+            Moderation, partners, tickets, announcements and Event Control are on the <a :href="`${LEGACY_SITE}/`">classic site ↗</a>.
         </p>
     </section>
 </template>
@@ -34,6 +35,7 @@
 <script setup>
     import { computed, reactive } from 'vue';
     import { useRoute } from 'vue-router';
+    import MediaReviewPanel from '../../components/staff/MediaReviewPanel.vue';
     import RoleReviewPanel from '../../components/staff/RoleReviewPanel.vue';
     import VerifyPanel from '../../components/staff/VerifyPanel.vue';
     import EventPanel from '../../components/staff/EventPanel.vue';
@@ -43,14 +45,15 @@
 
     const route = useRoute();
     const tabs = [
+        { id: 'media', label: 'Media review' },
         { id: 'roles', label: 'Role applications' },
         { id: 'verify', label: 'VRChat checks' },
         { id: 'events', label: 'Events' },
         { id: 'hubcards', label: 'Hub cards' },
         { id: 'availability', label: 'Availability' }
     ];
-    const tab = computed(() => (tabs.some((t) => t.id === route.query.tab) ? route.query.tab : 'roles'));
-    const counts = reactive({ roles: 0, verify: 0, events: 0, hubcards: 0 });
+    const tab = computed(() => (tabs.some((t) => t.id === route.query.tab) ? route.query.tab : 'media'));
+    const counts = reactive({ media: 0, roles: 0, verify: 0, events: 0, hubcards: 0 });
 </script>
 
 <style scoped>
