@@ -12,7 +12,7 @@ const routes = [
     { path: '/creators', name: 'creators', component: () => import('./views/Creators.vue'), meta: { title: 'Creators' } },
     { path: '/discover', redirect: '/creators' },
     { path: '/u/:username', name: 'profile', component: () => import('./views/Profile.vue'), meta: { auth: true, onboarded: true, title: 'Profile' } },
-    { path: '/me', name: 'me', redirect: () => (account.state.profile?.username ? `/u/${account.state.profile.username}` : '/welcome') },
+    { path: '/me', name: 'me', component: () => import('./views/MyUnderWeb.vue'), meta: { auth: true, onboarded: true, title: 'My UnderWeb' } },
     { path: '/me/edit', name: 'profile-edit', component: () => import('./views/ProfileEdit.vue'), meta: { auth: true, onboarded: true, title: 'Edit profile' } },
     { path: '/connections', name: 'connections', component: () => import('./views/Connections.vue'), meta: { auth: true, onboarded: true, title: 'Connected accounts' } },
     { path: '/roles', name: 'roles', component: () => import('./views/Roles.vue'), meta: { auth: true, onboarded: true, access: true, title: 'Roles' } },
@@ -34,7 +34,14 @@ export const router = createRouter({
 // These guards decide what the UI shows. They are not the security boundary —
 // the database's RLS policies and RPC checks are. A determined user who skips
 // these screens still can't read or change anything the server doesn't allow.
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 router.beforeEach(async (to) => {
+    // Old-style creator links (hub QR codes, Discord posts): underweb.cloud/#profile=<id>
+    if (to.path === '/' && to.hash.startsWith('#profile=')) {
+        const id = to.hash.slice('#profile='.length);
+        if (UUID.test(id)) return { path: `/u/${id}`, replace: true };
+    }
     const m = to.meta;
     if (!m.auth) return true;
     await whenAccountReady();

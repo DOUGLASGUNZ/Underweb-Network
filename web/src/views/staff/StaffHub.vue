@@ -21,6 +21,7 @@
             <RoleReviewPanel v-if="tab === 'roles'" @count="(n) => (counts.roles = n)" />
             <VerifyPanel v-else-if="tab === 'verify'" @count="(n) => (counts.verify = n)" />
             <EventPanel v-else-if="tab === 'events'" @count="(n) => (counts.events = n)" />
+            <HubCardQueue v-else-if="tab === 'hubcards'" @count="(n) => (counts.hubcards = n)" />
             <AvailabilityPanel v-else-if="tab === 'availability'" />
         </KeepAlive>
 
@@ -37,6 +38,7 @@
     import VerifyPanel from '../../components/staff/VerifyPanel.vue';
     import EventPanel from '../../components/staff/EventPanel.vue';
     import AvailabilityPanel from '../../components/staff/AvailabilityPanel.vue';
+    import HubCardQueue from '../../components/staff/HubCardQueue.vue';
     import { LEGACY_SITE } from '../../lib/config';
 
     const route = useRoute();
@@ -44,10 +46,11 @@
         { id: 'roles', label: 'Role applications' },
         { id: 'verify', label: 'VRChat checks' },
         { id: 'events', label: 'Events' },
+        { id: 'hubcards', label: 'Hub cards' },
         { id: 'availability', label: 'Availability' }
     ];
     const tab = computed(() => (tabs.some((t) => t.id === route.query.tab) ? route.query.tab : 'roles'));
-    const counts = reactive({ roles: 0, verify: 0, events: 0 });
+    const counts = reactive({ roles: 0, verify: 0, events: 0, hubcards: 0 });
 </script>
 
 <style scoped>

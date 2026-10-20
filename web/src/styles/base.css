@@ -309,9 +309,11 @@ h3 {
     align-items: center;
 }
 .page {
-    padding: 32px 0 72px;
+    padding-top: 40px;
+    padding-bottom: 72px;
 }
 .page-title {
+    text-transform: uppercase;
     font-size: clamp(40px, 7vw, 64px);
     margin: 8px 0 10px;
 }

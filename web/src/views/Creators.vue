@@ -43,9 +43,11 @@
             <RouterLink v-if="!account.signedIn.value" to="/signin?new=1&next=/start" class="btn btn-primary btn-lg">Create your free account</RouterLink>
             <RouterLink v-else-if="account.hasAccess.value" to="/roles" class="btn btn-primary btn-lg">Apply for a creator role</RouterLink>
             <RouterLink v-else to="/start" class="btn btn-primary btn-lg">Finish setting up first</RouterLink>
-            <a v-if="account.signedIn.value" :href="`${LEGACY_SITE}/`" rel="noopener" class="btn btn-lg">Set up my hub card ↗</a>
+            <RouterLink v-if="account.signedIn.value" to="/me" class="btn btn-lg">Set up my hub card</RouterLink>
         </div>
-        <p v-if="account.signedIn.value" class="muted small">Your hub card lives on your profile on the current site for now (Profile → Your hub card).</p>
+        <p v-if="account.signedIn.value" class="muted small">
+            Showcase uploads are still on the <a :href="`${LEGACY_SITE}/`" rel="noopener">current site ↗</a> while they move over.
+        </p>
 
         <h2 class="section-title dir-title">MEET THE CREATORS</h2>
         <Discover embedded />
