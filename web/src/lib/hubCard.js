@@ -24,7 +24,7 @@ export function httpsUrl(raw) {
 const notReady = (e) => !!e && /hub_creator_cards|show_in_hub/.test(e.message || '');
 
 export async function loadMyHubCard(uid) {
-    const [cardR, profR, showR, revR] = await Promise.all([
+    const [cardR, profR, showR, revR, likeR] = await Promise.all([
         supabase.from('hub_creator_cards').select('*').eq('user_id', uid).maybeSingle(),
         supabase.from('creator_profiles').select('avatar_url,banner_url,display_name,shop_url,shop_label').eq('user_id', uid).maybeSingle(),
         supabase
@@ -33,7 +33,8 @@ export async function loadMyHubCard(uid) {
             .eq('user_id', uid)
             .eq('moderation_status', 'approved')
             .order('created_at', { ascending: false }),
-        supabase.rpc('uw_can_review_media')
+        supabase.rpc('uw_can_review_media'),
+        supabase.rpc('hub_my_likes')
     ]);
     if (notReady(cardR.error)) return { notReady: true };
     const profile = profR.data || {};
@@ -43,7 +44,10 @@ export async function loadMyHubCard(uid) {
         ...(ownImage(profile.avatar_url, uid) ? [{ url: profile.avatar_url, label: 'Profile picture' }] : []),
         ...photos.map((p) => ({ url: p.media_url, label: p.title || 'Showcase' }))
     ];
-    return { notReady: false, card: cardR.data || null, profile, photos, images, reviewer: revR.data === true };
+    // ♥ from the hub's Creator Room (your card + your art-wall pieces); null if the likes migration isn't there
+    const lk = Array.isArray(likeR?.data) ? likeR.data[0] : likeR?.data;
+    const likes = lk && !likeR.error ? { total: Number(lk.total) || 0, week: Number(lk.this_week) || 0 } : null;
+    return { notReady: false, card: cardR.data || null, profile, photos, images, reviewer: revR.data === true, likes };
 }
 
 export async function saveHubCard(uid, form) {
