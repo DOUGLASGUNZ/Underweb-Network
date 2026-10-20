@@ -3891,11 +3891,12 @@ async function uw743Upload(file){
  if(file.size>limit)return toast(video?'Video must be 100 MB or smaller.':'Image must be 12 MB or smaller.');
  const title=prompt('Title for this work:',file.name.replace(/\.[^.]+$/,''))?.trim();if(title===null)return;
  const caption=prompt('Optional caption / description:')||'';
+ const shareToDiscord=confirm('Also post it to the UnderWeb Discord once staff approve it?\n\nOK = yes, post it   ·   Cancel = just the site');
  const ext=(file.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'');
  const path=`${currentSession.user.id}/${Date.now()}-${crypto.randomUUID?.()||Math.random().toString(36).slice(2)}.${ext}`;
  const up=await uwSupabase.storage.from('creator-showcase-pending').upload(path,file,{upsert:false,contentType:file.type});
  if(up.error)return toast(up.error.message);
- const ins=await uwSupabase.from('creator_showcase').insert({user_id:currentSession.user.id,media_url:'pending://'+path,storage_path:path,media_type:video?'video':'image',title:title||'Untitled Work',caption,is_featured:false,sort_order:0,moderation_status:'pending'});
+ const ins=await uwSupabase.from('creator_showcase').insert({user_id:currentSession.user.id,media_url:'pending://'+path,storage_path:path,media_type:video?'video':'image',title:title||'Untitled Work',caption,is_featured:false,sort_order:0,moderation_status:'pending',share_to_discord:shareToDiscord});
  if(ins.error){await uwSupabase.storage.from('creator-showcase-pending').remove([path]);return toast(ins.error.message)}
  return true;
 }
