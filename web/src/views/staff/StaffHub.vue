@@ -24,6 +24,7 @@
             <EventPanel v-else-if="tab === 'events'" @count="(n) => (counts.events = n)" />
             <EventControlPanel v-else-if="tab === 'control'" />
             <SupportersPanel v-else-if="tab === 'supporters'" />
+            <RolesPanel v-else-if="tab === 'people'" />
             <HubCardQueue v-else-if="tab === 'hubcards'" @count="(n) => (counts.hubcards = n)" />
             <AvailabilityPanel v-else-if="tab === 'availability'" />
         </KeepAlive>
@@ -47,6 +48,7 @@
     import AvailabilityPanel from '../../components/staff/AvailabilityPanel.vue';
     import EventControlPanel from '../../components/staff/EventControlPanel.vue';
     import SupportersPanel from '../../components/staff/SupportersPanel.vue';
+    import RolesPanel from '../../components/staff/RolesPanel.vue';
     import HubCardQueue from '../../components/staff/HubCardQueue.vue';
     import { LEGACY_SITE } from '../../lib/config';
     import { account } from '../../lib/account';
@@ -55,6 +57,7 @@
     const allTabs = [
         { id: 'media', label: 'Media review' },
         { id: 'roles', label: 'Role applications' },
+        { id: 'people', label: 'People & roles', leadership: true },
         { id: 'verify', label: 'VRChat checks' },
         { id: 'events', label: 'Events' },
         { id: 'control', label: 'Event Control', leadership: true },
