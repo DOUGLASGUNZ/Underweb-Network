@@ -1,241 +1,339 @@
 <template>
-    <!-- Signed out: what UnderWeb is -->
-    <template v-if="!account.signedIn.value">
-        <section class="hero">
-            <div class="wrap hero-in">
-                <div class="hero-copy">
-                    <div class="eyebrow">The UnderWeb Network · VRChat · 18+</div>
-                    <h1>Find your people.<br />Build the scene.</h1>
-                    <p class="lead">
-                        A creator and community network for VRChat — DJs, performers, avatar and world creators, photographers, and the friends
-                        who show up. Find collaborators, join events, and keep your crew in one place.
-                    </p>
-                    <div class="cluster">
-                        <RouterLink to="/signin" class="btn btn-primary">Join or sign in</RouterLink>
-                        <a href="#what" class="btn">What's here</a>
+    <!-- Hero: one message, one action -->
+    <section class="wrap hero">
+        <div class="hero-copy">
+            <p class="eyebrow">VRCHAT COMMUNITY · 18+</p>
+            <template v-if="!account.signedIn.value">
+                <h1>COME FOR THE NIGHTS.<br /><span class="hl">STAY FOR THE PEOPLE.</span></h1>
+                <p class="lead hero-lead">
+                    Music video nights, cinema, hangouts — and the DJs, avatar makers and world builders who make them happen. Show up, get known, make
+                    things together.
+                </p>
+                <div class="cluster ctas">
+                    <RouterLink to="/signin?new=1" class="btn btn-primary btn-lg">Create your free account</RouterLink>
+                    <a href="#next" class="btn btn-lg">See the next event</a>
+                </div>
+                <p class="muted small">Takes a few minutes. Sign in with Discord or an email code.</p>
+            </template>
+            <template v-else>
+                <h1>WELCOME BACK,<br /><span class="hl">{{ firstName }}.</span></h1>
+                <p class="lead hero-lead">Here's what's on, and what's next for you.</p>
+                <div v-if="setup && setupLeft" class="setup">
+                    <div class="setup-top">
+                        <strong>{{ setupDone }} of {{ setupTotal }} setup steps done</strong>
+                        <span class="muted">{{ setupLeft }} to go</span>
                     </div>
+                    <div class="bar" role="progressbar" aria-valuemin="0" :aria-valuemax="setupTotal" :aria-valuenow="setupDone" aria-label="Setup progress">
+                        <div :style="{ width: `${Math.round((setupDone / setupTotal) * 100)}%` }"></div>
+                    </div>
+                    <RouterLink to="/start" class="btn btn-primary">Finish setting up</RouterLink>
                 </div>
-                <div class="hero-art">
-                    <img src="/media/hero.webp" alt="UnderWeb members together in a VRChat world" width="640" height="768" />
+                <div v-else class="cluster ctas">
+                    <RouterLink to="/me" class="btn btn-primary btn-lg">My UnderWeb</RouterLink>
+                    <RouterLink to="/events" class="btn btn-lg">Events</RouterLink>
                 </div>
-            </div>
-        </section>
-        <section id="what" class="wrap page">
-            <div class="grid-auto">
-                <div v-for="f in features" :key="f.title" class="panel feature">
-                    <div class="eyebrow">{{ f.kicker }}</div>
-                    <h2>{{ f.title }}</h2>
-                    <p class="muted">{{ f.body }}</p>
-                </div>
-            </div>
-            <div class="notice notice-acid join-note">
-                <strong>How joining works:</strong> sign in with your email, pick a username, then verify you own your VRChat account. Verified members
-                get the creator directory, events and projects. We never ask for your VRChat password.
-            </div>
-        </section>
-    </template>
-
-    <!-- Signed in: your dashboard -->
-    <section v-else class="wrap page">
-        <div class="eyebrow">Welcome back</div>
-        <h1 class="page-title">{{ account.displayName.value }}</h1>
-
-        <div v-if="!account.onboarded.value" class="notice notice-caution step">
-            <strong>Finish setting up your profile.</strong>
-            <RouterLink to="/welcome" class="btn btn-sm btn-primary">Set up profile</RouterLink>
+            </template>
         </div>
-        <div v-else-if="!account.hasAccess.value" class="notice notice-caution step">
+        <div id="next" class="hero-card">
+            <NextEventCard :event="next" :loading="nextLoading" />
+        </div>
+    </section>
+
+    <!-- Why make an account -->
+    <section class="band">
+        <div class="wrap section">
+            <p class="eyebrow">WHY MAKE AN ACCOUNT</p>
+            <h2 class="section-title">WHAT MEMBERS GET</h2>
+            <div class="perks">
+                <div v-for="p in MEMBER_PERKS" :key="p.id" class="card" :class="{ 'card-hi': p.status === 'live' }">
+                    <div class="perk-top">
+                        <Icon :name="p.icon" class="ic" />
+                        <span v-if="p.status === 'soon'" class="chip chip-soon">Coming soon</span>
+                        <span v-else class="chip chip-acid">Live now</span>
+                    </div>
+                    <h3>{{ p.title }}</h3>
+                    <p>{{ p.body }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Two ways in -->
+    <section v-if="!account.signedIn.value" class="wrap section">
+        <h2 class="section-title">PICK YOUR WAY IN</h2>
+        <div class="ways">
+            <div class="way">
+                <p class="eyebrow blue">I'M HERE TO HANG OUT</p>
+                <h3>Find the nights worth showing up for.</h3>
+                <ul>
+                    <li>See what's on and get a reminder before it starts</li>
+                    <li>Collect badges on your profile</li>
+                    <li>Post and browse photos from every night</li>
+                </ul>
+                <RouterLink to="/signin?new=1" class="btn way-btn blue-btn">Join as a member</RouterLink>
+            </div>
+            <div class="way way-hi">
+                <p class="eyebrow">I MAKE THINGS</p>
+                <h3>DJ, build avatars or worlds, shoot photos?</h3>
+                <ul>
+                    <li>A creator profile with a showcase of your work</li>
+                    <li>Your card on the hub's Creator Market wall or DJ stage screen</li>
+                    <li>Get featured on the hub screen and in the Discord</li>
+                </ul>
+                <div class="cluster">
+                    <RouterLink to="/signin?new=1" class="btn btn-primary way-btn">Join as a creator</RouterLink>
+                    <RouterLink to="/creators" class="btn way-btn">What creators get</RouterLink>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery strip -->
+    <section class="wrap section" :class="{ 'no-top': !account.signedIn.value }">
+        <div class="sec-head">
             <div>
-                <strong>{{ accessCopy.title }}</strong>
-                <p class="muted small" style="margin: 2px 0 0">{{ accessCopy.body }}</p>
+                <p class="eyebrow">FROM THE LAST FEW NIGHTS</p>
+                <h2 class="section-title tight">GALLERY</h2>
             </div>
-            <RouterLink to="/connections" class="btn btn-sm btn-primary">{{ accessCopy.cta }}</RouterLink>
+            <RouterLink to="/gallery" class="see-all">See all photos →</RouterLink>
         </div>
+        <GalleryGrid :items="photos.slice(0, 3)" :loading="photosLoading" />
+    </section>
 
-        <div class="grid-auto dash">
-            <section class="panel" aria-labelledby="ev-h">
-                <div class="panel-head">
-                    <h2 id="ev-h">UPCOMING EVENTS</h2>
-                    <RouterLink v-if="account.hasAccess.value" to="/events" class="small">All events</RouterLink>
-                </div>
-                <div v-if="eventsLoading" class="stack"><div v-for="i in 3" :key="i" class="skeleton" style="height: 52px"></div></div>
-                <p v-else-if="eventsError" class="error-text">{{ eventsError }}</p>
-                <p v-else-if="!events.length" class="muted small">No upcoming events yet. Check back soon.</p>
-                <EventRow v-for="ev in events" :key="ev.id" :event="ev" />
-            </section>
-
-            <section class="panel" aria-labelledby="pulse-h">
-                <div class="panel-head"><h2 id="pulse-h">NETWORK PULSE</h2></div>
-                <div v-if="pulseLoading" class="stack"><div v-for="i in 4" :key="i" class="skeleton" style="height: 40px"></div></div>
-                <p v-else-if="!pulse.length" class="muted small">Nothing new yet.</p>
-                <div v-for="(p, i) in pulse" :key="i" class="row-line pulse">
-                    <span class="chip" :class="{ 'chip-acid': p.event_type === 'announcement' }">{{ pulseLabel(p.event_type) }}</span>
-                    <div>
-                        <div>{{ p.headline }}</div>
-                        <div v-if="p.detail" class="muted small">{{ p.detail }}</div>
-                        <div class="label" style="margin-top: 2px">{{ relativeTime(p.created_at) }}</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="panel" aria-labelledby="you-h">
-                <div class="panel-head"><h2 id="you-h">YOUR ACCOUNT</h2></div>
-                <div class="row-line acct">
-                    <span>Roles</span>
-                    <span class="cluster" style="justify-content: flex-end">
-                        <RoleChip v-for="r in account.state.roles.slice(0, 4)" :key="r.slug" :role="r" />
-                        <span v-if="!account.state.roles.length" class="muted small">Member</span>
-                    </span>
-                </div>
-                <div class="row-line acct">
-                    <span>VRChat</span>
-                    <span :class="account.hasAccess.value ? 'ok' : 'muted'">{{ account.hasAccess.value ? 'Verified' : accessCopy.short }}</span>
-                </div>
-                <div v-if="account.state.identity?.underweb_id" class="row-line acct">
-                    <span>Network ID</span>
-                    <span class="label">{{ account.state.identity.underweb_id }}</span>
-                </div>
-                <div class="cluster" style="margin-top: 12px">
-                    <RouterLink to="/me" class="btn btn-sm">View profile</RouterLink>
-                    <RouterLink to="/me/edit" class="btn btn-sm">Edit profile</RouterLink>
-                </div>
-            </section>
+    <!-- How joining works -->
+    <section v-if="!account.signedIn.value" class="band">
+        <div class="wrap section">
+            <p class="eyebrow">HOW JOINING WORKS</p>
+            <h2 class="section-title">THREE STEPS. THAT'S IT.</h2>
+            <ol class="steps">
+                <li v-for="(s, i) in joinSteps" :key="s.title" class="card">
+                    <span class="num">{{ i + 1 }}</span>
+                    <h3>{{ s.title }}</h3>
+                    <p>{{ s.body }}</p>
+                </li>
+            </ol>
+            <div class="cluster ctas end">
+                <RouterLink to="/signin?new=1" class="btn btn-primary btn-lg">Create your free account</RouterLink>
+                <span class="muted">Already a member? <RouterLink to="/signin">Sign in</RouterLink></span>
+            </div>
         </div>
     </section>
 </template>
 
 <script setup>
     import { computed, ref, watch } from 'vue';
-    import EventRow from '../components/EventRow.vue';
-    import RoleChip from '../components/RoleChip.vue';
+    import Icon from '../components/Icon.vue';
+    import NextEventCard from '../components/NextEventCard.vue';
+    import GalleryGrid from '../components/GalleryGrid.vue';
     import { account } from '../lib/account';
-    import { supabase, friendlyError } from '../lib/supabase';
-    import { relativeTime } from '../lib/format';
+    import { MEMBER_PERKS } from '../lib/perks';
+    import { galleryItems, nextEvent, setupProgress } from '../lib/community';
 
-    const features = [
-        { kicker: 'Discover', title: 'A directory worth sharing', body: 'Verified creators with portfolios, specialties and how to book or collaborate with them.' },
-        { kicker: 'Events', title: 'Nights you can find', body: 'Upcoming, live and past UnderWeb events with times in your own time zone.' },
-        { kicker: 'Projects', title: 'Build things together', body: 'Open roles on worlds, sets and shoots — apply in a tap, get invited by name.' },
-        { kicker: 'Identity', title: 'One verified you', body: 'Link VRChat and Discord once. Your roles and badges follow you across UnderWeb.' }
+    const joinSteps = [
+        { title: 'Create your account', body: 'Sign in with Discord or an email code. No password to remember.' },
+        { title: "Prove it's your VRChat", body: 'Put a short code in your VRChat bio and staff confirm it. We never ask for your VRChat password.' },
+        { title: 'Come to a night', body: 'Check the next event, show up, and start collecting badges.' }
     ];
 
-    const accessCopy = computed(() => {
-        const s = account.state.accessState;
-        if (s === 'pending') return { title: 'VRChat verification is waiting for review', body: 'Staff will check your code shortly.', cta: 'View status', short: 'Pending review' };
-        if (s === 'needs_attention') return { title: 'Your VRChat verification needs attention', body: 'Staff couldn’t confirm it. Check the code and try again.', cta: 'Fix it', short: 'Needs attention' };
-        if (s === 'unverified') return { title: 'Finish verifying your VRChat account', body: 'Put your code in your VRChat bio, then submit.', cta: 'Continue', short: 'Not verified' };
-        return { title: 'Verify your VRChat account to unlock UnderWeb', body: 'The directory, events and projects are for verified members.', cta: 'Verify now', short: 'Not connected' };
-    });
+    const firstName = computed(() => String(account.displayName.value || '').split(/\s+/)[0].toUpperCase());
 
-    const events = ref([]);
-    const eventsLoading = ref(false);
-    const eventsError = ref('');
-    const pulse = ref([]);
-    const pulseLoading = ref(false);
+    const next = ref(null);
+    const nextLoading = ref(true);
+    const photos = ref([]);
+    const photosLoading = ref(true);
+    const setup = ref(null);
 
-    const pulseLabel = (t) => ({ creator: 'Creator', announcement: 'News', profile_picture: 'Profile', event: 'Event' })[t] || 'Update';
+    const REQUIRED = ['profile', 'vrchat', 'discord'];
+    const setupTotal = REQUIRED.length + 1; // + account
+    const setupDone = computed(() => (setup.value ? 1 + REQUIRED.filter((k) => setup.value[k]).length : 0));
+    const setupLeft = computed(() => setupTotal - setupDone.value);
 
     async function load() {
-        if (!account.signedIn.value || !account.hasAccess.value) return;
-        eventsLoading.value = pulseLoading.value = true;
-        const since = new Date(Date.now() - 4 * 3600 * 1000).toISOString();
-        const [ev, pu] = await Promise.all([
-            supabase
-                .from('network_events')
-                .select('id,title,starts_at,ends_at,location,group_scope,status,cover_url')
-                .eq('status', 'published')
-                .gte('starts_at', since)
-                .order('starts_at')
-                .limit(5),
-            supabase.rpc('uw_network_pulse_v2', { p_limit: 6 })
-        ]);
-        events.value = ev.data || [];
-        eventsError.value = ev.error ? friendlyError(ev.error) : '';
-        pulse.value = pu.data || [];
-        eventsLoading.value = pulseLoading.value = false;
+        if (account.state.loading) return;
+        nextLoading.value = photosLoading.value = true;
+        const [n, p, s] = await Promise.all([nextEvent().catch(() => null), galleryItems(6).catch(() => []), setupProgress().catch(() => null)]);
+        next.value = n;
+        photos.value = p;
+        setup.value = s;
+        nextLoading.value = photosLoading.value = false;
     }
-
-    watch(() => [account.signedIn.value, account.hasAccess.value], load, { immediate: true });
+    watch(() => [account.state.loading, account.signedIn.value, account.hasAccess.value], load, { immediate: true });
 </script>
 
 <style scoped>
     .hero {
-        border-bottom: 1px solid var(--line);
-    }
-    .hero-in {
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
         gap: 40px;
-        padding-top: 48px;
-        padding-bottom: 48px;
+        align-items: center;
+        padding-top: 64px;
+        padding-bottom: 56px;
     }
     .hero-copy {
-        flex: 1 1 460px;
+        flex: 999 1 520px;
         min-width: 0;
     }
-    .hero-copy h1 {
-        font-size: clamp(40px, 8vw, 68px);
-        line-height: 1.02;
-        margin: 14px 0 18px;
+    .hero-copy .eyebrow {
+        margin: 0 0 18px;
     }
-    .lead {
-        color: var(--text-2);
-        font-size: 18px;
-        max-width: 560px;
-        margin: 0 0 28px;
+    h1 {
+        font-size: clamp(48px, 9vw, 84px);
+        line-height: 0.95;
     }
-    .hero-art {
+    .hl {
+        color: var(--acid);
+    }
+    .hero-lead {
+        margin-top: 24px;
+        font-size: 19px;
+    }
+    .ctas {
+        gap: 12px;
+        margin: 32px 0 14px;
+    }
+    .ctas.end {
+        margin: 32px 0 0;
+        gap: 16px;
+    }
+    .hero-card {
         flex: 1 1 340px;
         min-width: 0;
     }
-    .hero-art img {
-        width: 100%;
-        height: auto;
-        max-height: 460px;
-        object-fit: cover;
-        object-position: center 30%;
+    .setup {
+        margin-top: 28px;
+        max-width: 560px;
+        padding: 20px;
+        border: 1px solid var(--line-strong);
         border-radius: var(--radius);
-        border: 1px solid var(--line);
-        display: block;
+        background: #06120a;
     }
-    .feature h2 {
-        font-size: 20px;
-        margin: 8px 0 6px;
-    }
-    .feature p {
-        margin: 0;
-    }
-    .join-note {
-        margin-top: 20px;
-    }
-    .step {
+    .setup-top {
         display: flex;
-        flex-wrap: wrap;
-        align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin: 16px 0;
+        font-size: 14px;
+        margin-bottom: 8px;
     }
-    .dash {
-        margin-top: 20px;
-        align-items: start;
+    .bar {
+        height: 10px;
+        border-radius: 999px;
+        background: #0b1a10;
+        overflow: hidden;
+        margin-bottom: 16px;
     }
-    .pulse {
+    .bar div {
+        height: 100%;
+        background: var(--acid);
+        border-radius: 999px;
+    }
+    .perks {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+        gap: 16px;
+    }
+    .perk-top {
         display: flex;
-        gap: 12px;
+        justify-content: space-between;
         align-items: flex-start;
     }
-    .pulse .chip {
-        margin-top: 3px;
+    .ic {
+        color: var(--acid);
     }
-    .acct {
+    .card h3 {
+        margin: 14px 0 6px;
+        font-size: 20px;
+    }
+    .card p {
+        margin: 0;
+        color: #a9bfb1;
+        font-size: 15px;
+    }
+    .ways {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+        gap: 20px;
+    }
+    .way {
+        padding: 30px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: var(--panel);
         display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .way-hi {
+        border-color: var(--line-strong);
+    }
+    .way .eyebrow {
+        margin: 0;
+    }
+    .eyebrow.blue {
+        color: #429cff;
+    }
+    .way h3 {
+        font-size: 26px;
+    }
+    .way ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--text-2);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .way .cluster,
+    .way > .way-btn {
+        margin-top: auto;
+    }
+    .way > .way-btn {
+        align-self: flex-start;
+    }
+    .blue-btn {
+        border-color: #2a5f8f;
+        color: #9cc8ff;
+    }
+    .blue-btn:hover {
+        border-color: #9cc8ff;
+        color: #cfe4ff;
+    }
+    .no-top {
+        padding-top: 0;
+    }
+    .sec-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
         justify-content: space-between;
         gap: 12px;
-        align-items: center;
+        margin-bottom: 20px;
     }
-    .ok {
+    .section-title.tight {
+        margin-bottom: 0;
+    }
+    .see-all {
+        font-weight: 700;
+    }
+    .steps {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+        gap: 16px;
+    }
+    .num {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        background: var(--acid-deep);
         color: var(--acid);
+        font-family: var(--font-mono);
+        font-weight: 700;
+    }
+    .steps h3 {
+        font-size: 19px;
     }
 </style>

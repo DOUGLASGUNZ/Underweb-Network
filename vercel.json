@@ -1,8 +1,52 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd web && npm ci",
+  "buildCommand": "cd web && npm run build && cp -r ../account dist/account && mkdir -p dist/classic && cp ../index.html dist/classic/index.html && cp ../*.js ../*.css ../robots.txt dist/ && cp -rn ../media/. dist/media/",
+  "outputDirectory": "web/dist",
   "rewrites": [
     {
       "source": "/account/discord/link",
       "destination": "/account/discord/link/index.html"
+    },
+    {
+      "source": "/classic",
+      "destination": "/classic/index.html"
+    },
+    {
+      "source": "/((?!assets/|media/|account/|classic/|favicon).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
   ]
 }

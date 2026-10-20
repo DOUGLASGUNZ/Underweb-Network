@@ -80,7 +80,7 @@
                 </section>
                 <section v-else class="notice small">
                     Creator fields (headline, specialties, banner, Discover listing) unlock when you hold a creator role. Apply for one on the
-                    <a :href="LEGACY_SITE" rel="noopener">current site ↗</a>.
+                    <a :href="LEGACY_SITE" rel="noopener">classic site ↗</a>.
                 </section>
             </div>
 

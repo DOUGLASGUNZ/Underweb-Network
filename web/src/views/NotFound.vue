@@ -5,7 +5,7 @@
         <p class="muted">That page doesn't exist on the new site. It may still be on the current one.</p>
         <div class="cluster">
             <RouterLink to="/" class="btn btn-primary">Home</RouterLink>
-            <a :href="LEGACY_SITE" class="btn" rel="noopener">Current site ↗</a>
+            <a :href="LEGACY_SITE" class="btn" rel="noopener">Classic site ↗</a>
         </div>
     </section>
 </template>

@@ -1,11 +1,12 @@
 <template>
     <footer class="ftr">
         <div class="wrap ftr-in">
-            <span class="muted small">UnderWeb Network · an 18+ VRChat creator and community network</span>
-            <nav class="cluster small" aria-label="Footer">
-                <RouterLink v-if="account.signedIn.value" to="/connections">Connected accounts</RouterLink>
-                <a :href="LEGACY_SITE" rel="noopener">Help &amp; more tools (current site)</a>
+            <span>The UnderWeb · an 18+ VRChat community</span>
+            <nav class="links" aria-label="Footer">
                 <a v-if="DISCORD_INVITE" :href="DISCORD_INVITE" rel="noopener">Discord</a>
+                <RouterLink to="/start">Help</RouterLink>
+                <RouterLink v-if="account.signedIn.value" to="/connections">Connected accounts</RouterLink>
+                <a :href="LEGACY_SITE" rel="noopener" class="quiet">Classic site ↗</a>
             </nav>
         </div>
     </footer>
@@ -19,14 +20,23 @@
 <style scoped>
     .ftr {
         border-top: 1px solid var(--line);
-        margin-top: 40px;
+        font-size: 14px;
+        color: var(--muted);
     }
     .ftr-in {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        gap: 12px;
-        padding-top: 22px;
-        padding-bottom: calc(22px + env(safe-area-inset-bottom));
+        gap: 16px;
+        padding-top: 28px;
+        padding-bottom: calc(28px + env(safe-area-inset-bottom));
+    }
+    .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .quiet {
+        color: var(--muted);
     }
 </style>
