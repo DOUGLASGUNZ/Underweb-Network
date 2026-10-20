@@ -7,7 +7,7 @@
         <div v-if="!member" class="notice notice-acid lock">
             <div>
                 <strong>{{ account.signedIn.value ? 'Verify your VRChat to see the full calendar.' : 'Members see the full calendar.' }}</strong>
-                <p class="muted small" style="margin: 2px 0 0">Public nights are listed below. Members also get member-only nights and reminders.</p>
+                <p class="muted small" style="margin: 2px 0 0">Upcoming nights are listed below. Members also get event pings in the Discord and their badges.</p>
             </div>
             <RouterLink :to="account.signedIn.value ? '/start' : '/signin?new=1&next=/events'" class="btn btn-primary btn-sm">{{ account.signedIn.value ? 'Finish setup' : 'Create account' }}</RouterLink>
         </div>
@@ -45,6 +45,7 @@
     import { localTimeZone } from '../lib/format';
     import { LEGACY_SITE } from '../lib/config';
     import { account } from '../lib/account';
+    import { publicEvents } from '../lib/community';
 
     const member = computed(() => account.signedIn.value && account.hasAccess.value);
 
@@ -66,16 +67,10 @@
         error.value = '';
         const cutoff = new Date(Date.now() - 4 * 3600 * 1000).toISOString();
         if (!member.value) {
-            // Public calendar: anything staff published (not drafts) is visible signed out.
-            let pub = supabase.from('events').select('id,title,description,starts_at,ends_at,vrchat_world_name,artwork_url,group_scope,status').neq('status', 'cancelled');
-            pub = which === 'upcoming' ? pub.gte('starts_at', cutoff).order('starts_at').limit(50) : pub.lt('starts_at', cutoff).order('starts_at', { ascending: false }).limit(30);
-            const { data, error: err } = await pub;
+            // Public calendar: published events only, without instance links.
+            const list = await publicEvents(which);
             loading.value = false;
-            if (err) {
-                error.value = friendlyError(err);
-                return;
-            }
-            events.value = { ...events.value, [which]: (data || []).map((e) => ({ ...e, location: e.vrchat_world_name, cover_url: e.artwork_url })) };
+            events.value = { ...events.value, [which]: list };
             return;
         }
         let query = supabase.from('network_events').select('id,title,description,starts_at,ends_at,location,group_scope,status,cover_url');

@@ -73,7 +73,7 @@
                     <RouterLink v-if="account.hasAccess.value" to="/roles">Roles &amp; applications</RouterLink>
                     <RouterLink to="/creators">Creators</RouterLink>
                     <RouterLink v-if="account.isStaff.value" to="/staff">Staff tools</RouterLink>
-                    <a :href="`${LEGACY_SITE}/`" rel="noopener">Showcase uploads &amp; older tools ↗</a>
+                    <a :href="`${LEGACY_SITE}/`" rel="noopener">Classic site ↗</a>
                 </section>
             </aside>
         </div>
