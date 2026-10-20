@@ -36,6 +36,8 @@ namespace UnderWeb.Media
         public string textureProperty = "_MainTex";
         [Tooltip("Shown before the first download and whenever one fails.")]
         public Texture2D fallback;
+        [Tooltip("Optional: other screens that show the same picture (same material index + texture property). No extra downloads.")]
+        public Renderer[] alsoShowOn;
 
         [Header("Lazy loading (optional)")]
         [Tooltip("Download nothing on join: wait until an UnderWebMediaRoom says a player walked into this slot's room.")]
@@ -51,6 +53,10 @@ namespace UnderWeb.Media
         private int _showIndex;
         private bool _rotating;
         private Material _material;
+        private Material[] _mirrors;
+        private int _shownPos;       // 1-based position on screen right now, 0 = the fallback
+        private string[] _ids;       // per position, from the manifest's optional "ids" (e.g. which creator's card it is)
+        private int[] _likes;        // per position, from the manifest's optional "likes"
         private bool _started;
         private bool _wanted;      // loadOnEnter: true while the room wants us loaded
         private bool _restDone;    // loadOnEnter: images 2+ have been asked for
@@ -65,6 +71,16 @@ namespace UnderWeb.Media
             {
                 Material[] mats = targetRenderer.materials; // instance materials, so other objects aren't affected
                 if (materialIndex >= 0 && materialIndex < mats.Length) _material = mats[materialIndex];
+            }
+            if (alsoShowOn != null)
+            {
+                _mirrors = new Material[alsoShowOn.Length];
+                for (int i = 0; i < alsoShowOn.Length; i++)
+                {
+                    if (alsoShowOn[i] == null) continue;
+                    Material[] ms = alsoShowOn[i].materials;
+                    if (materialIndex >= 0 && materialIndex < ms.Length) _mirrors[i] = ms[materialIndex];
+                }
             }
             ApplyTexture(fallback);
             _started = true;
@@ -134,6 +150,28 @@ namespace UnderWeb.Media
             if (_started && Live()) LoadActive();
         }
 
+        /// <summary>Called by UnderWebMediaWorld with the manifest's optional per-position "ids" and "likes" (index 0 = position 1).</summary>
+        public void ApplyExtras(string[] ids, int[] likes)
+        {
+            _ids = ids;
+            _likes = likes;
+        }
+
+        /// <summary>The 1-based position showing right now (0 = the fallback is showing).</summary>
+        public int CurrentPosition() { return _shownPos; }
+        /// <summary>The manifest id of what's showing right now ("" if none / the fallback).</summary>
+        public string CurrentId()
+        {
+            if (_shownPos < 1 || _ids == null || _shownPos > _ids.Length || _ids[_shownPos - 1] == null) return "";
+            return _ids[_shownPos - 1];
+        }
+        /// <summary>The manifest's like count for what's showing right now (0 if none).</summary>
+        public int CurrentLikes()
+        {
+            if (_shownPos < 1 || _likes == null || _shownPos > _likes.Length) return 0;
+            return _likes[_shownPos - 1];
+        }
+
         /// <summary>Re-download everything that's active (the world calls this on its refresh timer).</summary>
         public void Refresh()
         {
@@ -190,6 +228,7 @@ namespace UnderWeb.Media
         private void ShowCurrent()
         {
             Texture2D tex = CurrentTexture();
+            _shownPos = tex != null ? _active[_showIndex % _activeCount] : 0;
             if (tex == null)
             {
                 // Show the first image that has arrived instead of nothing.
@@ -200,6 +239,7 @@ namespace UnderWeb.Media
                     {
                         _showIndex = i;
                         tex = _textures[pos - 1];
+                        _shownPos = pos;
                         break;
                     }
                 }
@@ -234,8 +274,9 @@ namespace UnderWeb.Media
 
         private void ApplyTexture(Texture tex)
         {
-            if (_material == null) return;
-            _material.SetTexture(textureProperty, tex);
+            if (tex == fallback || tex == null) _shownPos = 0;
+            if (_material != null) _material.SetTexture(textureProperty, tex);
+            if (_mirrors != null) for (int i = 0; i < _mirrors.Length; i++) if (_mirrors[i] != null) _mirrors[i].SetTexture(textureProperty, tex);
         }
 
         private void OnDestroy()

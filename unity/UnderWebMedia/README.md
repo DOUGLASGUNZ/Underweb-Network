@@ -36,6 +36,13 @@ set its box (center + half size) and list its slots in load order: when a player
 image of every slot, then the rest of each gallery; 90 s after they leave, the textures are let go. Slot IDs and
 addresses don't change, so the website side is the same.
 
+## Extras in the manifest (optional)
+
+Per slot, `ids` and `likes` (one per position) let world scripts ask a slot what's showing:
+`CurrentPosition()`, `CurrentId()`, `CurrentLikes()` (the hub's ♥ buttons use them). A top-level `names`
+list ends up in `UnderWebMediaWorld.names` (`manifestVersion` goes up on every load).
+**Also Show On**: other renderers that show the same picture, with no extra download.
+
 ## Limits to know
 
 - Players see new posters on join, or at the next refresh while they're in the world.

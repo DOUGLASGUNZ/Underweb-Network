@@ -25,6 +25,12 @@ namespace UnderWeb.Media
         public VRCUrl manifestUrl;
         public UnderWebMediaSlot[] slots;
 
+        [Header("Filled from the manifest (read-only)")]
+        [Tooltip("The manifest's optional top-level \"names\" list (e.g. everyone with work in the world).")]
+        public string[] names = new string[0];
+        [Tooltip("Goes up by one every time the manifest loads, so other scripts can tell it changed.")]
+        public int manifestVersion;
+
         [Tooltip("How often people already in the world re-check for new posters. 0 = only on join.")]
         [Range(0f, 120f)] public float refreshMinutes = 15f;
 
@@ -57,6 +63,16 @@ namespace UnderWeb.Media
                 Debug.LogWarning("[UnderWebMedia] Manifest isn't valid JSON; slots keep their current images.");
                 return;
             }
+            if (root.DataDictionary.TryGetValue("names", TokenType.DataList, out DataToken namesTok))
+            {
+                DataList nl = namesTok.DataList;
+                int nn = 0;
+                string[] got = new string[Mathf.Min(nl.Count, 500)];
+                for (int j = 0; j < got.Length; j++) if (nl.TryGetValue(j, TokenType.String, out DataToken s)) got[nn++] = s.String;
+                names = new string[nn];
+                for (int j = 0; j < nn; j++) names[j] = got[j];
+            }
+            manifestVersion++;
             if (!root.DataDictionary.TryGetValue("slots", TokenType.DataDictionary, out DataToken slotMap)) return;
 
             for (int i = 0; i < slots.Length; i++)
@@ -81,6 +97,21 @@ namespace UnderWeb.Media
                         if (list.TryGetValue(j, TokenType.Double, out DataToken n)) positions[count++] = (int)n.Double;
                     }
                 }
+                // optional per-position extras: "ids" (strings) and "likes" (numbers), index 0 = position 1
+                int size = Mathf.Max(1, slot.gallerySize);
+                string[] ids = new string[size];
+                int[] likes = new int[size];
+                if (entry.DataDictionary.TryGetValue("ids", TokenType.DataList, out DataToken idsTok))
+                {
+                    DataList il = idsTok.DataList;
+                    for (int j = 0; j < il.Count && j < size; j++) if (il.TryGetValue(j, TokenType.String, out DataToken t)) ids[j] = t.String;
+                }
+                if (entry.DataDictionary.TryGetValue("likes", TokenType.DataList, out DataToken likesTok))
+                {
+                    DataList ll = likesTok.DataList;
+                    for (int j = 0; j < ll.Count && j < size; j++) if (ll.TryGetValue(j, TokenType.Double, out DataToken t)) likes[j] = (int)t.Double;
+                }
+                slot.ApplyExtras(ids, likes);
                 slot.ApplyManifest(positions, count, rotate);
             }
         }
