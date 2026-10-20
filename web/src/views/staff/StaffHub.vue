@@ -26,6 +26,9 @@
             <AvailabilityPanel v-else-if="tab === 'availability'" />
         </KeepAlive>
 
+        <p v-if="account.isLeadership.value" class="muted small more">
+            Posters, frames and screens in our VRChat worlds: <RouterLink to="/staff/media">World Media Manager</RouterLink>.
+        </p>
         <p class="muted small more">
             Moderation, partners, tickets, announcements and Event Control are on the <a :href="`${LEGACY_SITE}/`">classic site ↗</a>.
         </p>
@@ -42,6 +45,7 @@
     import AvailabilityPanel from '../../components/staff/AvailabilityPanel.vue';
     import HubCardQueue from '../../components/staff/HubCardQueue.vue';
     import { LEGACY_SITE } from '../../lib/config';
+    import { account } from '../../lib/account';
 
     const route = useRoute();
     const tabs = [

@@ -17,6 +17,12 @@ const routes = [
     { path: '/connections', name: 'connections', component: () => import('./views/Connections.vue'), meta: { auth: true, onboarded: true, title: 'Connected accounts' } },
     { path: '/roles', name: 'roles', component: () => import('./views/Roles.vue'), meta: { auth: true, onboarded: true, access: true, title: 'Roles' } },
     { path: '/staff', name: 'staff', component: () => import('./views/staff/StaffHub.vue'), meta: { auth: true, onboarded: true, access: true, staff: true, title: 'Staff tools' } },
+    {
+        path: '/staff/media',
+        name: 'world-media',
+        component: () => import('./views/staff/WorldMedia.vue'),
+        meta: { auth: true, onboarded: true, access: true, leadership: true, title: 'World Media Manager' }
+    },
     { path: '/restricted', name: 'restricted', component: () => import('./views/Restricted.vue'), meta: { auth: true, title: 'Account restricted' } },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('./views/NotFound.vue'), meta: { title: 'Not found' } }
 ];
@@ -49,6 +55,7 @@ router.beforeEach(async (to) => {
     if (account.isBanned.value && to.name !== 'restricted') return { name: 'restricted' };
     if (m.onboarded && !account.onboarded.value && to.name !== 'welcome') return { name: 'welcome', query: { next: to.fullPath } };
     if (m.access && !account.hasAccess.value) return { name: 'connections', query: { locked: to.name } };
+    if (m.leadership && !account.isLeadership.value) return { name: 'home' };
     return true;
 });
 
