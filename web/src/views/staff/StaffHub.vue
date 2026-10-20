@@ -23,6 +23,7 @@
             <VerifyPanel v-else-if="tab === 'verify'" @count="(n) => (counts.verify = n)" />
             <EventPanel v-else-if="tab === 'events'" @count="(n) => (counts.events = n)" />
             <EventControlPanel v-else-if="tab === 'control'" />
+            <SupportersPanel v-else-if="tab === 'supporters'" />
             <HubCardQueue v-else-if="tab === 'hubcards'" @count="(n) => (counts.hubcards = n)" />
             <AvailabilityPanel v-else-if="tab === 'availability'" />
         </KeepAlive>
@@ -45,6 +46,7 @@
     import EventPanel from '../../components/staff/EventPanel.vue';
     import AvailabilityPanel from '../../components/staff/AvailabilityPanel.vue';
     import EventControlPanel from '../../components/staff/EventControlPanel.vue';
+    import SupportersPanel from '../../components/staff/SupportersPanel.vue';
     import HubCardQueue from '../../components/staff/HubCardQueue.vue';
     import { LEGACY_SITE } from '../../lib/config';
     import { account } from '../../lib/account';
@@ -57,9 +59,10 @@
         { id: 'events', label: 'Events' },
         { id: 'control', label: 'Event Control', leadership: true },
         { id: 'hubcards', label: 'Hub cards' },
-        { id: 'availability', label: 'Availability' }
+        { id: 'availability', label: 'Availability' },
+        { id: 'supporters', label: 'Supporters', owner: true }
     ];
-    const tabs = computed(() => allTabs.filter((t) => !t.leadership || account.isLeadership.value));
+    const tabs = computed(() => allTabs.filter((t) => (!t.leadership || account.isLeadership.value) && (!t.owner || account.isOwner.value)));
     const tab = computed(() => (tabs.value.some((t) => t.id === route.query.tab) ? route.query.tab : 'media'));
     const counts = reactive({ media: 0, roles: 0, verify: 0, events: 0, hubcards: 0 });
 </script>
