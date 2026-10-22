@@ -5,6 +5,7 @@
             <nav class="links" aria-label="Footer">
                 <a v-if="DISCORD_INVITE" :href="DISCORD_INVITE" rel="noopener">Discord</a>
                 <RouterLink to="/start">Help</RouterLink>
+                <RouterLink to="/partners">Partner groups</RouterLink>
                 <RouterLink v-if="account.signedIn.value" to="/connections">Connected accounts</RouterLink>
                 <a :href="LEGACY_SITE" rel="noopener" class="quiet">Classic site ↗</a>
             </nav>
