@@ -299,3 +299,16 @@ revoke all on function public.uwx_public_progress() from public, anon;
 grant execute on function public.uwx_names(uuid, uuid[]), public.uwx_close_stale_shifts(uuid), public.uwx_help_update(uuid, text),
   public.uwx_review_group_application(uuid, boolean, text), public.uwx_grant_access(uuid, text, smallint), public.uwx_direct_access(uuid),
   public.uwx_flagged_subjects(uuid), public.uwx_staff_stats(uuid, timestamptz), public.uwx_public_progress() to authenticated;
+
+-- ───────── Discord moderation log state (written only by the uwx-mod-discord edge function) ─────────
+create table if not exists public.uwx_discord_state (
+  group_id uuid primary key references public.uwx_groups(id) on delete cascade,
+  events_cursor timestamptz,
+  entries_cursor bigint not null default 0,
+  backfilled_at timestamptz,
+  last_post_at timestamptz,
+  last_error text
+);
+alter table public.uwx_discord_state enable row level security;
+drop policy if exists uwx_discord_state_read on public.uwx_discord_state;
+create policy uwx_discord_state_read on public.uwx_discord_state for select to authenticated using (public.uwx_group_level(group_id) >= 1);
