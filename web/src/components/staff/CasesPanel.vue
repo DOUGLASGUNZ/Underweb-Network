@@ -210,9 +210,13 @@
         names.value = { ...names.value, ...(await namesFor(groupId.value, entries.value.map((e) => e.created_by).concat(open.value?.created_by))) };
     }
 
+    // Nudge UnderWeb to post the change to the staff Discord moderation log (no-op if not set up).
+    const nudgeModLog = () => supabase.functions.invoke('uwx-mod-discord', { body: {} }).catch(() => {});
+
     async function update(patch) {
         const { error: err } = await supabase.from('uwx_cases').update(patch).eq('id', open.value.id);
         if (err) return toast(/assign/i.test(err.message) ? 'Only managers can assign cases to someone else.' : friendlyError(err), 'error');
+        nudgeModLog();
         await select(open.value);
         load();
     }
@@ -231,6 +235,7 @@
         busy.value = false;
         if (err) return toast(friendlyError(err), 'error');
         noteText.value = '';
+        if (entryKind.value !== 'note') nudgeModLog();
         if (entryKind.value === 'appeal' && open.value.status !== 'appealed') await update({ status: 'appealed' });
         else await select(open.value);
     }
@@ -256,6 +261,7 @@
         if (err) return (formError.value = friendlyError(err));
         creating.value = false;
         toast('Case created.', 'ok');
+        nudgeModLog();
         await load();
         await select(data);
     }
