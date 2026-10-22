@@ -46,6 +46,8 @@
                     </div>
                 </section>
 
+                <RoadTo500 v-if="account.hasAccess.value" />
+
                 <MyPhotos />
 
                 <!-- Perks -->
@@ -89,6 +91,7 @@
     import NextEventCard from '../components/NextEventCard.vue';
     import HubCardPanel from '../components/HubCardPanel.vue';
     import MyPhotos from '../components/MyPhotos.vue';
+    import RoadTo500 from '../components/RoadTo500.vue';
     import { useRouter } from 'vue-router';
     import { account, signOut } from '../lib/account';
     import { toast } from '../lib/toast';

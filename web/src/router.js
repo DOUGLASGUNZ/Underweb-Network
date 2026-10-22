@@ -9,6 +9,7 @@ const routes = [
     { path: '/start', name: 'start', component: () => import('./views/StartHere.vue'), meta: { title: 'Start here' } },
     { path: '/events', name: 'events', component: () => import('./views/Events.vue'), meta: { title: 'Events' } },
     { path: '/gallery', name: 'gallery', component: () => import('./views/Gallery.vue'), meta: { title: 'Gallery' } },
+    { path: '/partners', name: 'partners', component: () => import('./views/Partners.vue'), meta: { title: 'Partner groups' } },
     { path: '/creators', name: 'creators', component: () => import('./views/Creators.vue'), meta: { title: 'Creators' } },
     { path: '/discover', redirect: '/creators' },
     { path: '/u/:username', name: 'profile', component: () => import('./views/Profile.vue'), meta: { auth: true, onboarded: true, title: 'Profile' } },

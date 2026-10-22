@@ -27,13 +27,16 @@
             <RolesPanel v-else-if="tab === 'people'" />
             <HubCardQueue v-else-if="tab === 'hubcards'" @count="(n) => (counts.hubcards = n)" />
             <AvailabilityPanel v-else-if="tab === 'availability'" />
+            <CasesPanel v-else-if="tab === 'cases'" />
+            <RecruitingPanel v-else-if="tab === 'recruiting'" @count="(n) => (counts.recruiting = n)" />
+            <PartnersPanel v-else-if="tab === 'partners'" @count="(n) => (counts.partners = n)" />
         </KeepAlive>
 
         <p v-if="account.isLeadership.value" class="muted small more">
             Posters, frames and screens in our VRChat worlds: <RouterLink to="/staff/media">World Media Manager</RouterLink>.
         </p>
         <p class="muted small more">
-            Moderation, partners, tickets and announcements are on the <a :href="`${LEGACY_SITE}/`">classic site ↗</a>.
+            Live group numbers, user lookups and the Staff Dashboard are in UWX. Tickets and announcements are on the <a :href="`${LEGACY_SITE}/`">classic site ↗</a>.
         </p>
     </section>
 </template>
@@ -50,6 +53,9 @@
     import SupportersPanel from '../../components/staff/SupportersPanel.vue';
     import RolesPanel from '../../components/staff/RolesPanel.vue';
     import HubCardQueue from '../../components/staff/HubCardQueue.vue';
+    import CasesPanel from '../../components/staff/CasesPanel.vue';
+    import RecruitingPanel from '../../components/staff/RecruitingPanel.vue';
+    import PartnersPanel from '../../components/staff/PartnersPanel.vue';
     import { LEGACY_SITE } from '../../lib/config';
     import { account } from '../../lib/account';
 
@@ -63,11 +69,14 @@
         { id: 'control', label: 'Event Control', leadership: true },
         { id: 'hubcards', label: 'Hub cards' },
         { id: 'availability', label: 'Availability' },
+        { id: 'cases', label: 'Cases' },
+        { id: 'recruiting', label: 'Recruits' },
+        { id: 'partners', label: 'Partner groups', leadership: true },
         { id: 'supporters', label: 'Supporters', owner: true }
     ];
     const tabs = computed(() => allTabs.filter((t) => (!t.leadership || account.isLeadership.value) && (!t.owner || account.isOwner.value)));
     const tab = computed(() => (tabs.value.some((t) => t.id === route.query.tab) ? route.query.tab : 'media'));
-    const counts = reactive({ media: 0, roles: 0, verify: 0, events: 0, hubcards: 0 });
+    const counts = reactive({ media: 0, roles: 0, verify: 0, events: 0, hubcards: 0, recruiting: 0, partners: 0 });
 </script>
 
 <style scoped>
