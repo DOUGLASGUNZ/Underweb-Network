@@ -30,6 +30,7 @@
             <CasesPanel v-else-if="tab === 'cases'" />
             <RecruitingPanel v-else-if="tab === 'recruiting'" @count="(n) => (counts.recruiting = n)" />
             <PartnersPanel v-else-if="tab === 'partners'" @count="(n) => (counts.partners = n)" />
+            <SilkPanel v-else-if="tab === 'silk'" />
         </KeepAlive>
 
         <p v-if="account.isLeadership.value" class="muted small more">
@@ -56,6 +57,7 @@
     import CasesPanel from '../../components/staff/CasesPanel.vue';
     import RecruitingPanel from '../../components/staff/RecruitingPanel.vue';
     import PartnersPanel from '../../components/staff/PartnersPanel.vue';
+    import SilkPanel from '../../components/staff/SilkPanel.vue';
     import { LEGACY_SITE } from '../../lib/config';
     import { account } from '../../lib/account';
 
@@ -72,6 +74,7 @@
         { id: 'cases', label: 'Cases' },
         { id: 'recruiting', label: 'Recruits' },
         { id: 'partners', label: 'Partner groups', leadership: true },
+        { id: 'silk', label: 'Silk', leadership: true },
         { id: 'supporters', label: 'Supporters', owner: true }
     ];
     const tabs = computed(() => allTabs.filter((t) => (!t.leadership || account.isLeadership.value) && (!t.owner || account.isOwner.value)));

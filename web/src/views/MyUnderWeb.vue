@@ -46,6 +46,7 @@
                     </div>
                 </section>
 
+                <SilkCard v-if="account.hasAccess.value" />
                 <RoadTo500 v-if="account.hasAccess.value" />
 
                 <MyPhotos />
@@ -92,6 +93,7 @@
     import HubCardPanel from '../components/HubCardPanel.vue';
     import MyPhotos from '../components/MyPhotos.vue';
     import RoadTo500 from '../components/RoadTo500.vue';
+    import SilkCard from '../components/SilkCard.vue';
     import { useRouter } from 'vue-router';
     import { account, signOut } from '../lib/account';
     import { toast } from '../lib/toast';
