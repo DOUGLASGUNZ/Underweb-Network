@@ -6,8 +6,8 @@ export const MEMBER_PERKS = [
         id: 'silk',
         icon: 'silk',
         title: 'Your Silk, saved',
-        body: 'Earn Silk for showing up, posting photos and bringing friends. Spend it in the hub casino. With an account it follows you — and puts you on the weekly leaderboard.',
-        status: 'soon'
+        body: 'Earn Silk for showing up at the hub (with UWX), events, streaks, approved photos and bringing friends. It stays in your account and puts you on the weekly leaderboard. Spending it in the hub casino is next.',
+        status: 'live'
     },
     {
         id: 'suite',
