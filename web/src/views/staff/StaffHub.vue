@@ -18,7 +18,8 @@
         </div>
 
         <KeepAlive>
-            <MediaReviewPanel v-if="tab === 'media'" @count="(n) => (counts.media = n)" />
+            <OwnerPanel v-if="tab === 'owner'" />
+            <MediaReviewPanel v-else-if="tab === 'media'" @count="(n) => (counts.media = n)" />
             <RoleReviewPanel v-else-if="tab === 'roles'" @count="(n) => (counts.roles = n)" />
             <VerifyPanel v-else-if="tab === 'verify'" @count="(n) => (counts.verify = n)" />
             <EventPanel v-else-if="tab === 'events'" @count="(n) => (counts.events = n)" />
@@ -58,11 +59,13 @@
     import RecruitingPanel from '../../components/staff/RecruitingPanel.vue';
     import PartnersPanel from '../../components/staff/PartnersPanel.vue';
     import SilkPanel from '../../components/staff/SilkPanel.vue';
+    import OwnerPanel from '../../components/staff/OwnerPanel.vue';
     import { LEGACY_SITE } from '../../lib/config';
     import { account } from '../../lib/account';
 
     const route = useRoute();
     const allTabs = [
+        { id: 'owner', label: 'Owner', leadership: true },
         { id: 'media', label: 'Media review' },
         { id: 'roles', label: 'Role applications' },
         { id: 'people', label: 'People & roles', leadership: true },
@@ -78,7 +81,7 @@
         { id: 'supporters', label: 'Supporters', owner: true }
     ];
     const tabs = computed(() => allTabs.filter((t) => (!t.leadership || account.isLeadership.value) && (!t.owner || account.isOwner.value)));
-    const tab = computed(() => (tabs.value.some((t) => t.id === route.query.tab) ? route.query.tab : 'media'));
+    const tab = computed(() => (tabs.value.some((t) => t.id === route.query.tab) ? route.query.tab : account.isLeadership.value ? 'owner' : 'media'));
     const counts = reactive({ media: 0, roles: 0, verify: 0, events: 0, hubcards: 0, recruiting: 0, partners: 0 });
 </script>
 
