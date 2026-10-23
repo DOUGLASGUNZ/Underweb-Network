@@ -103,7 +103,8 @@
                 </div>
             </div>
 
-            <p class="muted small">Updated {{ new Date(d.generated_at).toLocaleTimeString() }}. Staff access per role is in UWX → Group Intelligence → Settings & sharing.</p>
+            <router-link :to="{ query: { tab: 'people' } }" class="btn btn-sm btn-primary" style="align-self: flex-start">Manage people &amp; roles</router-link>
+            <p class="muted small">Updated {{ new Date(d.generated_at).toLocaleTimeString() }}. Which VRChat group roles get staff access in UWX is set in UWX → Group Intelligence → Settings & sharing.</p>
         </template>
     </section>
 </template>
