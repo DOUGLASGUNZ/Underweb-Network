@@ -280,7 +280,7 @@ create policy uwx_recaps_insert on public.uwx_event_recaps for insert to authent
 
 drop policy if exists uwx_apps_read on public.uwx_group_applications;
 create policy uwx_apps_read on public.uwx_group_applications for select to authenticated
-  using (applicant = auth.uid() or coalesce(public.uw_max_role_rank(auth.uid(), null), 0) >= 90);
+  using (applicant = auth.uid() or coalesce(public.uw_max_role_rank(), 0) >= 90);
 drop policy if exists uwx_apps_insert on public.uwx_group_applications;
 create policy uwx_apps_insert on public.uwx_group_applications for insert to authenticated
   with check (applicant = auth.uid() and status = 'pending' and reviewed_by is null);
