@@ -65,7 +65,7 @@
 
     const route = useRoute();
     const allTabs = [
-        { id: 'owner', label: 'Owner', leadership: true },
+        { id: 'owner', label: 'Owner', leadership: true, minRank: 90 },
         { id: 'media', label: 'Media review' },
         { id: 'roles', label: 'Role applications' },
         { id: 'people', label: 'People & roles', leadership: true },
@@ -80,8 +80,8 @@
         { id: 'silk', label: 'Silk', leadership: true },
         { id: 'supporters', label: 'Supporters', owner: true }
     ];
-    const tabs = computed(() => allTabs.filter((t) => (!t.leadership || account.isLeadership.value) && (!t.owner || account.isOwner.value)));
-    const tab = computed(() => (tabs.value.some((t) => t.id === route.query.tab) ? route.query.tab : account.isLeadership.value ? 'owner' : 'media'));
+    const tabs = computed(() => allTabs.filter((t) => (!t.leadership || account.isLeadership.value) && (!t.owner || account.isOwner.value) && (!t.minRank || account.maxRank.value >= t.minRank)));
+    const tab = computed(() => (tabs.value.some((t) => t.id === route.query.tab) ? route.query.tab : tabs.value.some((t) => t.id === 'owner') ? 'owner' : 'media'));
     const counts = reactive({ media: 0, roles: 0, verify: 0, events: 0, hubcards: 0, recruiting: 0, partners: 0 });
 </script>
 

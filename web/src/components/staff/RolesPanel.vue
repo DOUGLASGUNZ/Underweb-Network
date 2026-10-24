@@ -4,7 +4,7 @@
             <h2>People &amp; roles</h2>
         </div>
         <p class="muted small" style="margin: 0">
-            Find someone, then give or take away a role. The server decides which roles you're allowed to hand out (Owner and Directors can do most).
+            Tap someone below (or find any member) to give or take away a role. The server decides which roles you're allowed to hand out (Owner and Directors can do most).
             The Owner role itself is protected and can't be given here.
         </p>
 
@@ -24,13 +24,30 @@
             </button>
         </div>
 
+        <div v-if="!person && !results.length" class="stack">
+            <h3 class="label" style="margin: 0">Everyone with a role ({{ roster.length }})</h3>
+            <p v-if="rosterError" class="muted small">{{ rosterError }}</p>
+            <div v-for="grp in rosterGroups" :key="grp.label">
+                <div class="roster-head">{{ grp.label }}</div>
+                <button v-for="r in grp.people" :key="r.user_id" type="button" class="roster-row" @click="open(r)">
+                    <span class="grow">
+                        <strong>{{ r.display_name || r.username || 'Unnamed account' }}</strong>
+                        <span v-if="r.username" class="muted small"> @{{ r.username }}</span>
+                    </span>
+                    <span class="roster-roles">
+                        <span v-for="x in r.roles" :key="x.role_slug + x.group_scope" class="chip" :class="rank(x.role_slug) >= 55 ? 'chip-acid' : ''">{{ roleName(x.role_slug) }}</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
         <article v-if="person" class="panel stack">
             <div class="who">
                 <div>
                     <strong class="name">{{ person.display_name || person.username }}</strong>
                     <span v-if="person.username" class="muted small">@{{ person.username }}</span>
                 </div>
-                <button class="btn btn-sm btn-ghost" type="button" @click="person = null">Back to results</button>
+                <button class="btn btn-sm btn-ghost" type="button" @click="back">Back</button>
             </div>
 
             <div>
@@ -114,7 +131,30 @@
         return out;
     });
 
+    const roster = ref([]);
+    const rosterError = ref('');
+    async function loadRoster() {
+        const { data, error: err } = await supabase.rpc('uw_role_roster');
+        rosterError.value = err ? (/does not exist|schema cache/i.test(err.message) ? 'One database step for this list is still needed.' : friendlyError(err)) : '';
+        roster.value = data || [];
+    }
+    const rosterGroups = computed(() => {
+        const bands = [
+            { label: 'Leadership', min: 80 },
+            { label: 'Staff', min: 55 },
+            { label: 'Other roles', min: -1 }
+        ];
+        return bands
+            .map((b, i) => ({ label: b.label, people: roster.value.filter((r) => r.top_rank >= b.min && (i === 0 || r.top_rank < bands[i - 1].min)) }))
+            .filter((g) => g.people.length);
+    });
+    function back() {
+        person.value = null;
+        void loadRoster();
+    }
+
     onMounted(async () => {
+        void loadRoster();
         const { data } = await supabase.from('role_definitions').select('slug,name,authority_rank,category').eq('active', true).order('authority_rank', { ascending: false });
         defs.value = data || [];
     });
@@ -176,6 +216,35 @@
 </script>
 
 <style scoped>
+    .roster-head {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.6;
+        margin: 10px 0 4px;
+    }
+    .roster-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 10px;
+        align-items: center;
+        width: 100%;
+        padding: 10px 2px;
+        border: 0;
+        border-top: 1px solid var(--line);
+        background: none;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+    .roster-row:hover {
+        background: rgb(255 255 255 / 3%);
+    }
+    .roster-roles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
     .find,
     .give .row {
         display: flex;
