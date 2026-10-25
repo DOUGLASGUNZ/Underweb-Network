@@ -32,6 +32,7 @@
     import { toast } from '../../lib/toast';
     import { formatDateTime } from '../../lib/format';
     import { nameOf, resolveNames } from '../../lib/staff';
+    import { pushHubToWorld } from '../../lib/hubCard';
 
     const emit = defineEmits(['count']);
     const rows = ref([]);
@@ -80,6 +81,7 @@
             return;
         }
         toast(data?.discord === 'posted' ? 'Approved and posted to Discord.' : 'Approved and published.', 'ok');
+        void pushHubToWorld().catch(() => {}); // hub wall photos show up without waiting for the schedule
         load();
     }
 

@@ -99,7 +99,7 @@
     const text =
       s === 'approved'
         ? card.enabled
-          ? 'Approved — it\'s in the hub\'s Creator Room (updates within ~15 minutes).'
+          ? 'Approved — it\'s in the hub\'s Creator Room (new changes show up a few minutes after staff approve them).'
           : 'Approved, but switched off — turn it on to show it in the hub.'
         : s === 'rejected'
           ? `Not approved${card.review_note ? `: ${esc(card.review_note)}` : '.'} Change it and save to send it again.`

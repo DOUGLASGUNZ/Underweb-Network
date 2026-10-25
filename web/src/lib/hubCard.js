@@ -100,3 +100,24 @@ export async function reviewHubCard(userId, approve, note) {
     const { error } = await supabase.rpc('uw_review_hub_card', { p_user_id: userId, p_approve: approve, p_note: note || null });
     if (error) throw error;
 }
+
+/** Staff: start the hub-world update now instead of waiting for GitHub's (often hours-late) schedule. */
+export async function pushHubToWorld() {
+    const { data, error } = await supabase.functions.invoke('hub-cards-publish', { body: {} });
+    if (error) {
+        let code = '';
+        try {
+            code = (await error.context?.json())?.error || '';
+        } catch {
+            /* no body */
+        }
+        throw new Error(code === 'not_configured' || code === 'github_failed' ? "The hub update couldn't be started (GitHub permission). Tell Darko." : 'Could not start the hub update.');
+    }
+    return data?.status || 'started';
+}
+
+/** Staff: when the hub-world update last ran. */
+export async function hubPushStatus() {
+    const { data } = await supabase.functions.invoke('hub-cards-publish', { body: { status: true } });
+    return data?.last_run || null;
+}
