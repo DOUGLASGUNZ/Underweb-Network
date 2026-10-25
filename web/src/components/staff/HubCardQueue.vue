@@ -1,6 +1,12 @@
 <template>
     <section>
-        <p class="muted small">Hub cards waiting for review. Approved cards go into the hub world at the next update (within the hour).</p>
+        <div class="push">
+            <p class="muted small" style="margin: 0">
+                Approving starts a hub update right away — new cards show in the world about 5 minutes later (people already there may need to rejoin).
+                <template v-if="lastRun"><br />Last update: {{ lastRunText }}</template>
+            </p>
+            <button class="btn btn-sm btn-ghost" type="button" :disabled="pushing" @click="push(true)">{{ pushing ? 'Starting…' : 'Push to the world now' }}</button>
+        </div>
         <div v-if="loading" class="stack"><div v-for="i in 3" :key="i" class="skeleton" style="height: 96px"></div></div>
         <p v-else-if="error" class="error-text">{{ error }}</p>
         <div v-else-if="!rows.length" class="notice">Nothing waiting.</div>
@@ -23,10 +29,10 @@
 </template>
 
 <script setup>
-    import { onMounted, ref } from 'vue';
+    import { computed, onMounted, ref } from 'vue';
     import { friendlyError } from '../../lib/supabase';
     import { toast } from '../../lib/toast';
-    import { loadHubCardQueue, reviewHubCard } from '../../lib/hubCard';
+    import { hubPushStatus, loadHubCardQueue, pushHubToWorld, reviewHubCard } from '../../lib/hubCard';
 
     const emit = defineEmits(['count']);
     const rows = ref([]);
@@ -45,7 +51,35 @@
         emit('count', rows.value.length);
         loading.value = false;
     }
-    onMounted(load);
+    onMounted(() => {
+        load();
+        refreshStatus();
+    });
+
+    const lastRun = ref(null);
+    const pushing = ref(false);
+    async function refreshStatus() {
+        lastRun.value = await hubPushStatus().catch(() => null);
+    }
+    const lastRunText = computed(() => {
+        const r = lastRun.value;
+        if (!r) return '';
+        if (r.status !== 'completed') return 'running now';
+        const mins = Math.round((Date.now() - Date.parse(r.updated_at)) / 60000);
+        const ago = mins < 60 ? `${mins} min ago` : `${Math.floor(mins / 60)} h ${mins % 60} min ago`;
+        return r.conclusion === 'success' ? `finished ${ago}` : `failed ${ago}`;
+    });
+    async function push(manual) {
+        pushing.value = true;
+        try {
+            const status = await pushHubToWorld();
+            if (manual) toast(status === 'already_queued' ? 'An update is already about to run.' : 'Hub update started — about 5 minutes.', 'ok');
+        } catch (e) {
+            toast(e.message, 'error');
+        }
+        pushing.value = false;
+        setTimeout(refreshStatus, 4000);
+    }
 
     async function review(r, approve) {
         let note = null;
@@ -56,7 +90,8 @@
         busy.value = r.user_id;
         try {
             await reviewHubCard(r.user_id, approve, note);
-            toast(approve ? 'Approved — it goes into the hub at the next update.' : 'Rejected.', 'ok');
+            toast(approve ? 'Approved — in the hub in about 5 minutes.' : 'Rejected.', 'ok');
+            if (approve) void push(false);
             await load();
         } catch (e) {
             toast(friendlyError(e), 'error');
@@ -66,6 +101,13 @@
 </script>
 
 <style scoped>
+    .push {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        align-items: center;
+        justify-content: space-between;
+    }
     .row {
         display: flex;
         flex-wrap: wrap;

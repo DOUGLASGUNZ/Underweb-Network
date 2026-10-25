@@ -68,7 +68,7 @@
     const how = [
         { title: 'Make an account', body: 'Sign in with Discord or an email code, then verify your VRChat.' },
         { title: 'Get a creator role', body: 'Apply for the role that fits — DJ, avatar creator, world builder, photographer and more. Staff approve it.' },
-        { title: 'Add your work + hub card', body: 'Upload a few pieces to your showcase and fill in your hub card. Once staff approve it, the hub shows it within the hour.' }
+        { title: 'Add your work + hub card', body: 'Upload a few pieces to your showcase and fill in your hub card. Once staff approve it, it shows up in the hub a few minutes later.' }
     ];
 </script>
 

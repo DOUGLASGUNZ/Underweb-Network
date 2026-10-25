@@ -130,7 +130,7 @@
     const statusText = computed(() => {
         const c = data.value?.card;
         if (!c) return 'Fill this in and staff will review it.';
-        if (c.status === 'approved') return c.enabled ? "It's in the hub's Creator Room (updates within the hour)." : 'Switched off — turn it on to show it in the hub.';
+        if (c.status === 'approved') return c.enabled ? "It's in the hub's Creator Room." : 'Switched off — turn it on to show it in the hub.';
         if (c.status === 'rejected') return `${c.review_note ? `Staff said: ${c.review_note}. ` : ''}Change it and save to send it again.`;
         return 'Waiting for staff to approve it.';
     });
