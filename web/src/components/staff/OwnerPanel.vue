@@ -103,6 +103,30 @@
                 </div>
             </div>
 
+            <!-- Discord verification -->
+            <div class="panel stack">
+                <h3 class="label" style="margin: 0">Discord verification</h3>
+                <p v-if="!dv" class="muted small" style="margin: 0">Checking…</p>
+                <template v-else>
+                    <p v-if="dv.missing?.length" class="notice notice-caution" style="margin: 0">
+                        Not set up yet — missing Supabase secrets: {{ dv.missing.join(', ') }}
+                    </p>
+                    <p v-else-if="!dv.bot" class="notice notice-caution" style="margin: 0">The bot token doesn't work. Check DISCORD_BOT_TOKEN.</p>
+                    <div v-else class="line" style="border-top: 0; padding-top: 0">
+                        <span class="dot" /><span class="grow">Bot <strong>{{ dv.bot }}</strong> is connected</span>
+                    </div>
+                    <div class="tiles">
+                        <div class="tile"><span>Waiting on staff</span><strong :class="dv.waiting ? 'bad' : ''">{{ dv.waiting }}</strong></div>
+                        <div class="tile"><span>Let in automatically (7 d)</span><strong>{{ dv.week?.auto_verified || 0 }}</strong></div>
+                        <div class="tile"><span>Approved by staff (7 d)</span><strong>{{ dv.week?.approved || 0 }}</strong></div>
+                        <div class="tile"><span>Denied (7 d)</span><strong>{{ dv.week?.denied || 0 }}</strong></div>
+                    </div>
+                    <button class="btn btn-sm btn-ghost" type="button" style="align-self: flex-start" :disabled="dvBusy || dv.missing?.length" @click="postPanel">
+                        {{ dvBusy ? 'Posting…' : 'Post the Verify button in #verify' }}
+                    </button>
+                </template>
+            </div>
+
             <router-link :to="{ query: { tab: 'people' } }" class="btn btn-sm btn-primary" style="align-self: flex-start">Manage people &amp; roles</router-link>
             <p class="muted small">Updated {{ new Date(d.generated_at).toLocaleTimeString() }}. Which VRChat group roles get staff access in UWX is set in UWX → Group Intelligence → Settings & sharing.</p>
         </template>
@@ -130,8 +154,33 @@
         error.value = '';
         d.value = data;
     }
+    const dv = ref(null);
+    const dvBusy = ref(false);
+    async function loadDiscordVerify() {
+        const { data, error: err } = await supabase.functions.invoke('discord-verify', { body: { action: 'status' } });
+        dv.value = err ? { missing: ['(could not reach the verification bot)'] } : data;
+    }
+    async function postPanel() {
+        if (!window.confirm('Post the Verify panel in your #verify channel?')) return;
+        dvBusy.value = true;
+        const { data, error: err } = await supabase.functions.invoke('discord-verify', { body: { action: 'post_panel' } });
+        dvBusy.value = false;
+        if (err || !data?.ok) {
+            let detail = '';
+            try {
+                detail = (await err?.context?.json())?.detail || '';
+            } catch {
+                /* no body */
+            }
+            window.alert(`Couldn't post it. ${detail.includes('50013') || detail.includes('50001') ? "The bot can't post in that channel — give it View Channel + Send Messages there." : detail}`);
+            return;
+        }
+        window.alert('Posted. New members can verify now.');
+    }
+
     onMounted(() => {
         void load();
+        void loadDiscordVerify();
         timer = setInterval(() => document.visibilityState === 'visible' && load(), 60000);
     });
     onBeforeUnmount(() => clearInterval(timer));
