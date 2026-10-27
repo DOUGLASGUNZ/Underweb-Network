@@ -17,7 +17,8 @@ Status: **built and tested in the repositories. Not applied, deployed, or merged
 ## 2. Approved decisions (27 Oct)
 
 1. **Claim codes.** Single use, 10-minute expiry, 50 bits from a cryptographic random source. Shown only to the judge, once. Stored only as an HMAC (pepper in edge-function secrets). Redeemed atomically in SQL. Five wrong codes lock the record until a judge reissues. Redemption is rate-limited to 10 an hour per account. A code proves possession only. Claimed records are labelled "self-claimed". A claimant can view and withdraw consent, but cannot grant it. Claims grant no moderation, Silk, or other privilege.
-2. **Judges.** Linked staff only, using the existing role system: the caller's own session runs `uw_max_role_rank()` and needs rank 55 or higher (the staff-tools threshold).
+2. **Judges.** Staff-approved people only. A public person may act as judge in the courtroom when staff have approved them for that session. A result reaches the website only when a linked staff member submits it. The submission uses the existing role system: the caller's own session runs `uw_max_role_rank()` and needs rank 55 or higher (the staff-tools threshold). The submitting staff member answers for the result.
+   - Claim codes are never made in the courtroom. The website issues them on `/court/judge` after a result is submitted.
 3. **Privacy.** Guest cases are private by default. Public only when both parties have consented to publish and a judge has approved. Declining ends a case. Players can block, and can turn courtroom participation off.
 4. **Discord voting.** Community polls, one identity per vote, up to three changes, separate from the jury. Results are shown on the website. Verdict and poll posts go out only for public cases, and never mention anyone.
 5. **Architecture.** `court_parties` holds every participant. Claims are a separate table, so cases stay valid when someone links an account later. No changes to UWX tables.
@@ -71,6 +72,15 @@ What the tests cover: public privacy, filing, decline and blocking, the 24-hour 
 - **In-world (Unity) is not built.** Guest pickers, the private consent prompt, the result export (canonical JSON plus checksum, matching `logic.ts`), and the claim-code display are not written yet. The server accepts the format, but a guest cannot play the full courtroom from VRChat until the Unity side exists. This is the main launch blocker after the database is applied.
 - **Discord account linking is not reused for court identity.** A Discord participant is identified by their snowflake. Linking to a website account is left separate, so records are not merged automatically.
 - **A claim proves possession, not ownership.** Records are labelled accordingly.
+- **Courtroom Unity scripts** in `unity/courtroom/` are written but not compiled or tested in Unity. They need VRChat SDK 3 Worlds and UdonSharp. The one-click builder (`Editor/CourtRoomBuilder.cs`) is also untested.
+- **Known gaps in the room, to resolve before launch:**
+  - `exported_at` uses VRChat's server time. The bench converts it to ISO 8601 without .NET date types. Test this.
+  - The checksum uses a hand-written SHA-256 in UdonSharp (`CourtChecksum.cs`). Check it against the server's `sha256Hex` with a known test vector, then time it in-world.
+  - Jury tallies are counts, not one vote per player, so a juror can vote twice.
+  - Staff identity in-world is the instance owner or a display-name list. Display names can be copied. The website check remains the real gate.
+  - Labels use display names, which are cleaned to ASCII before export.
+  - The room has no damages input, so damages default to 0 until one is added.
+  - `accusation_id` is set to `ROOM-<case no>`. It must be replaced with the real website accusation ID before submission.
 
 ## 6. Deployment checklist (do not run until approved)
 
