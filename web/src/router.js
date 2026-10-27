@@ -24,6 +24,11 @@ const routes = [
         component: () => import('./views/staff/WorldMedia.vue'),
         meta: { auth: true, onboarded: true, access: true, leadership: true, title: 'World Media Manager' }
     },
+    { path: '/court', name: 'court', component: () => import('./views/court/CourtList.vue'), meta: { title: 'Court' } },
+    { path: '/court/case/:no', name: 'court-case', component: () => import('./views/court/CourtCase.vue'), meta: { title: 'Court case' } },
+    { path: '/court/file', name: 'court-file', component: () => import('./views/court/CourtFile.vue'), meta: { auth: true, onboarded: true, title: 'File a suit' } },
+    { path: '/court/claim', name: 'court-claim', component: () => import('./views/court/CourtClaim.vue'), meta: { auth: true, onboarded: true, title: 'Claim a record' } },
+    { path: '/court/judge', name: 'court-judge', component: () => import('./views/court/CourtJudge.vue'), meta: { auth: true, onboarded: true, access: true, staff: true, title: 'Court judge' } },
     { path: '/restricted', name: 'restricted', component: () => import('./views/Restricted.vue'), meta: { auth: true, title: 'Account restricted' } },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('./views/NotFound.vue'), meta: { title: 'Not found' } }
 ];
