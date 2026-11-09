@@ -313,6 +313,32 @@
        if (statusNote) statusNote.textContent = "Editing saved Signal details only. They will appear in Discord after the pending event is approved.";
       showPage("eventbuilder");
     }
+    async function viewEvent(id) {
+      var event = (uwBeta.events || []).find(function (item) { return item.id === id; });
+      if (!event) return toast("Event not available.");
+      var result = await uwSupabase.rpc("uw_get_event_signal", { p_event_id: id });
+      if (result.error) return toast(result.error.message || "Could not load Signal details.");
+      var data = result.data || {};
+      var dialog = el("dialog", "uwes-review");
+      var heading = add(dialog, "h2", "", "Signal details · " + event.title);
+      heading.id = "uwes-review-title";
+      dialog.setAttribute("aria-labelledby", heading.id);
+      add(dialog, "p", "", "Saved with this event. Approval and publishing are separate.");
+      var fields = add(dialog, "div", "uwes-review-fields");
+      [
+        ["Host", "host"], ["Partner", "partner"], ["Doors", "doors"],
+        ["Platform", "platform"], ["Genres", "genres"], ["Performers + set times", "performers"],
+        ["Event page", "eventUrl"], ["VRChat group", "groupUrl"], ["Instance", "instanceUrl"]
+      ].forEach(function (item) {
+        fact(fields, item[0], present(data[item[1]]));
+      });
+      var close = add(dialog, "button", "btn", "Close");
+      close.type = "button";
+      close.addEventListener("click", function () { dialog.close(); });
+      dialog.addEventListener("close", function () { dialog.remove(); });
+      document.body.appendChild(dialog);
+      dialog.showModal();
+    }
     async function saveEdit() {
       if (!editingEvent || !submit) return;
       submit.disabled = true;
@@ -337,10 +363,12 @@
     document.addEventListener("click", function (e) {
       var button = e.target.closest("[data-event-signal-edit]");
       if (button) editEvent(button.dataset.eventSignalEdit);
+      var view = e.target.closest("[data-event-signal-view]");
+      if (view) viewEvent(view.dataset.eventSignalView);
     });
     window.UnderwebEventSignal = Object.freeze({
       createPayload: payload, details: details, hasDetails: hasDetails,
-      ensureReady: ensureReady, saveDetails: saveDetails, editEvent: editEvent,
+      ensureReady: ensureReady, saveDetails: saveDetails, editEvent: editEvent, viewEvent: viewEvent,
       saveEdit: saveEdit, reset: reset, resumeCreatedEvent: resumeCreatedEvent,
       get editingEventId() { return editingEvent?.id || null; }
     });
