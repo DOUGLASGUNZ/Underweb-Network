@@ -5,16 +5,37 @@ export const MEMBER_PERKS = [
     {
         id: 'silk',
         icon: 'silk',
-        title: 'Your Silk, saved',
-        body: 'Earn Silk for showing up at the hub (with UWX), events, streaks, approved photos and bringing friends. It stays in your account and puts you on the weekly leaderboard. Spending it in the hub casino is next.',
+        title: 'One Silk balance',
+        body: 'Your casino balance shows on your account. Silk you earn on the site (hub check-ins, events, streaks, approved photos) lands in the casino by itself.',
         status: 'live'
     },
     {
-        id: 'suite',
-        icon: 'lock',
-        title: 'Book a VIP suite',
-        body: 'Reserve a private suite in the hub for you and your friends, right from the site.',
+        id: 'whales',
+        icon: 'badge',
+        title: 'Leaderboard & Hall of Whales',
+        body: 'See where you rank and every whale plaque in the casino, right from your phone.',
+        status: 'live'
+    },
+    {
+        id: 'friend',
+        icon: 'friend',
+        title: 'Bring a friend, get paid',
+        body: 'Every friend you bring in that staff verify drops a stack of Silk into your casino balance.',
+        status: 'live'
+    },
+    {
+        id: 'signal',
+        icon: 'stage',
+        title: 'Signal: live DJ nights',
+        body: 'Our live-music world. Set times and who is on decks, posted here first.',
         status: 'soon'
+    },
+    {
+        id: 'hub',
+        icon: 'screen',
+        title: 'Creators: a spot on the floor',
+        body: 'Your card on the Creator Market wall in the casino, with a QR code to your shop. Staff approve it, the casino shows it.',
+        status: 'live'
     },
     {
         id: 'drop',
@@ -22,27 +43,6 @@ export const MEMBER_PERKS = [
         title: 'A free Darko drop every month',
         body: 'A members-only shader or asset each month, plus a member discount on the Darko shop.',
         status: 'soon'
-    },
-    {
-        id: 'friend',
-        icon: 'friend',
-        title: 'Bring a friend, both win',
-        body: 'When a friend you invite verifies, you both get Silk — and a free suite night.',
-        status: 'soon'
-    },
-    {
-        id: 'hub',
-        icon: 'stage',
-        title: 'Creators: a real spot in the hub',
-        body: 'Your card on the Creator Market wall or the DJ stage screen, with a QR code to your shop or music. Staff approve it, the hub shows it.',
-        status: 'live'
-    },
-    {
-        id: 'featured',
-        icon: 'screen',
-        title: 'Creators: featured every week',
-        body: 'Approved photos and art play on the hub wall and post to the Discord, and one creator is featured on the hub screen each week.',
-        status: 'live'
     }
 ];
 
@@ -51,20 +51,20 @@ export const CREATOR_TYPES = [
     {
         id: 'dj',
         label: 'DJs',
-        pitch: 'Get heard at UnderWeb events and hangouts.',
+        pitch: 'Play Signal, our live-music world.',
         perks: [
-            { text: 'Resident DJ card on the hub stage screen — your logo, name and a QR to your music', status: 'live' },
+            { text: 'Resident DJ card on the Signal screen — your logo, name and a QR to your music', status: 'soon' },
             { text: '"Now on decks" card on the screen while you play', status: 'soon' },
-            { text: 'Request slots at events and hangouts from your profile', status: 'soon' },
+            { text: 'Request set times at Signal from your profile', status: 'soon' },
             { text: 'Your sets posted to the Discord', status: 'soon' }
         ]
     },
     {
         id: 'avatars',
         label: 'Avatars & assets',
-        pitch: 'Put your shop in front of everyone who walks through the hub.',
+        pitch: 'Put your shop in front of everyone on the casino floor.',
         perks: [
-            { text: 'Creator Market card in the hub — art, name, headline and a QR straight to your shop', status: 'live' },
+            { text: 'Creator Market card in the casino — art, name, headline and a QR straight to your shop', status: 'live' },
             { text: 'Featured creator of the week on the hub screen', status: 'live' },
             { text: 'Showcase page on the site with your best work', status: 'live' }
         ]
@@ -95,7 +95,7 @@ export const CREATOR_TYPES = [
         pitch: 'Open our nights with your work.',
         perks: [
             { text: 'Showcase page on the site with your videos', status: 'live' },
-            { text: 'Your video plays before events on the hub screen', status: 'soon' }
+            { text: 'Your video plays before sets on the Signal screen', status: 'soon' }
         ]
     }
 ];
