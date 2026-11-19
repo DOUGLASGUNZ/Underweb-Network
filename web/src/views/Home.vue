@@ -6,8 +6,8 @@
             <template v-if="!account.signedIn.value">
                 <h1>COME FOR THE NIGHTS.<br /><span class="hl">STAY FOR THE PEOPLE.</span></h1>
                 <p class="lead hero-lead">
-                    Music video nights, cinema, hangouts — and the DJs, avatar makers and world builders who make them happen. Show up, get known, make
-                    things together.
+                    A casino that never closes, live DJ nights in Signal, and the DJs, avatar makers and world builders who make it all happen. Show up,
+                    get known, make things together.
                 </p>
                 <div class="cluster ctas">
                     <RouterLink to="/signin?new=1" class="btn btn-primary btn-lg">Create your free account</RouterLink>
